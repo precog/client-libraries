@@ -25,18 +25,21 @@ package com.reportgrid.api
 
 import java.util.Date
 
+import scala.annotation.tailrec
+
 import rosetta.json.JsonImplementation
 import rosetta.io._
 
 /** Creates a new ReportGrid API based on the specified token, and implicitly
  * the Json implementation and HTTP client.
  */
-class ReportGridGeneric[Json](tokenId: String)(implicit val jsonImplementation: JsonImplementation[Json], httpClient: HttpClient[String]) extends Serialization[Json] {
+class ReportGridGeneric[Json](tokenId: String, config: ReportGridConfig = ReportGridConfig.Production)
+  (implicit val jsonImplementation: JsonImplementation[Json], httpClient: HttpClient[String]) extends Serialization[Json] {
   import jsonImplementation._
 
-  val ReportGridServicesRoot = "http://api.reportgrid.com/services/"
-
-  val AnalyticsServer: HttpClient[Json] = httpClient.url(ReportGridServicesRoot + "analytics/v0/").query("tokenId", tokenId).contentType("application/json")
+  val AnalyticsServer: HttpClient[Json] = httpClient.url(config.analyticsRootUrl).
+    query("tokenId", tokenId).
+    contentType("application/json")
 
   /** Tracks the event with the specified name and properties.
    *
@@ -56,40 +59,46 @@ class ReportGridGeneric[Json](tokenId: String)(implicit val jsonImplementation: 
       "count" -> count.serialize[Json]
     }
 
-    AnalyticsServer.post("vfs" + path.toString,
-      JsonObject(
-        List[(String, Json)]("events" -> properties) ++ timestampM.toList ++ countM.toList
-      )
-    )
+    val paths = if (rollup) path :: path.ancestors else path :: Nil
 
-    if (rollup) {
-      path.parent.map { parent =>
-        track(parent, name, properties, rollup, timestamp, count)
-      }
+    paths.foreach { path =>
+      AnalyticsServer.post("vfs" + path.toString,
+        JsonObject(
+          List[(String, Json)]("events" -> properties) ++ timestampM.toList ++ countM.toList
+        )
+      )
     }
   }
 
-  /** Lists all children of the specified path and property.
+  /** Lists all child properties of the property in the specified path.
    *
    * @param path      The path, such as "/videos/1"
    * @param property  The property, such as ".engagement.duration"
    */
-  def list(path: Path, property: Property): List[String] = list(path, Some(property))
+  def listChildProperties(path: Path, property: Property): List[Property] = list(path, Some(property)).map(child => Property(child))
+
+  /** Lists all child properties of the specified path.
+   *
+   * @param path      The path, such as "/videos/1"
+   * @param property  The property, such as ".engagement.duration"
+   */
+  def listChildProperties(path: Path): List[Property] = list(path, None).collect {
+    case property: String if (property.startsWith(".")) => Property(property)
+  }
 
   /**
-   * Lists all children of the specified path, both path children and event
-   * children.
+   * Lists all path children of the specified path.
    */
-  def list(path: Path): List[String] = list(path, None)
-
-  private def list(path: Path, property: Option[Property] = None): List[String] = {
-    AnalyticsServer.get("vfs" + path.toString + property.map(_.value).getOrElse("")).deserialize[List[String]]
+  def listChildPaths(path: Path): List[Path] = list(path, None).collect {
+    case path: String if (path.endsWith("/")) => Path(path)
   }
 
   /** Retrieves all values acquired by the specified property, over all
    * time periods. This list could potentially be quite large.
    *
-   * @property The event property, such as ".withdrawal.amount".
+   * {{{
+   * valuesOf(".withdrawal.amount").from("/customers/joe/")
+   * }}}
    */
   def valuesOf(property: Property) = new {
     def from(path: Path): List[Json] = {
@@ -172,6 +181,18 @@ class ReportGridGeneric[Json](tokenId: String)(implicit val jsonImplementation: 
     }
   }
 
+  def tokens(): List[String] = AnalyticsServer.get("vfs/tokens/").deserialize[List[String]]
+
+  def newToken(newToken: Token): String = {
+    AnalyticsServer.post("tokens/", newToken.serialize[Json]).deserialize[String]
+  }
+
+  def token(tokenId: String): Token = {
+    AnalyticsServer.get("tokens/" + tokenId).deserialize[Token]
+  }
+
+  def deleteToken(tokenId: String): Unit = AnalyticsServer.delete("vfs/tokens/" + tokenId)
+
   private def headersFrom(selection: Selection): Map[String, String] = {
     Map.empty[String, String] ++ ((selection match {
       case Count => Nil
@@ -184,15 +205,7 @@ class ReportGridGeneric[Json](tokenId: String)(implicit val jsonImplementation: 
     }): Iterable[(String, String)])
   }
 
-  def tokens: List[String] = AnalyticsServer.get("vfs/tokens/").deserialize[List[String]]
-
-  def newToken(newToken: Token): Unit = {
-    AnalyticsServer.post("tokens/", newToken.serialize[Json])
+  private def list(path: Path, property: Option[Property] = None): List[String] = {
+    AnalyticsServer.get("vfs" + path.toString + property.map(_.value).getOrElse("")).deserialize[List[String]]
   }
-
-  def token(tokenId: String): Token = {
-    AnalyticsServer.get("tokens/" + tokenId).deserialize[Token]
-  }
-
-  def deleteToken(tokenId: String): Unit = AnalyticsServer.delete("vfs/tokens/" + tokenId)
 }

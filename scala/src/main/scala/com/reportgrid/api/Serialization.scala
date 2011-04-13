@@ -69,8 +69,6 @@ trait Serialization[Json] {
 
   implicit val TokenToJson = new JsonSerializer[Token] {
     def serialize(v: Token): Json = JsonObject(Map(
-      "parentTokenId"   -> v.parentTokenId.serialize[Json],
-      "accountTokenId"  -> v.accountTokenId.serialize[Json],
       "path"            -> v.path.serialize[Json],
       "permissions"     -> v.permissions.serialize[Json],
       "expires"         -> v.expires.serialize[Json],
@@ -78,8 +76,6 @@ trait Serialization[Json] {
     ))
 
     def deserialize(v: Json): Token = Token(
-      parentTokenId   = v.get(".parentTokenId").deserialize[Option[String]],
-      accountTokenId  = v.get(".accountTokenId").deserialize[String],
       path            = v.get(".path").deserialize[Path],
       permissions     = v.get(".permissions").deserialize[Permissions],
       expires         = v.get(".expires").deserialize[Date],

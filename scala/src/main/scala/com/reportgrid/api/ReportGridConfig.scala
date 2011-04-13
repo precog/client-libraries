@@ -21,13 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.reportgrid.api.blueeyes
+package com.reportgrid.api
 
-import rosetta.json.JsonImplementation
-import rosetta.json.blueeyes.JsonBlueEyes
+/** Configuration information for the ReportGrid API.
+ */
+case class ReportGridConfig(
+  analyticsRootUrl: String
+)
 
-import blueeyes.json.JsonAST.JValue
+object ReportGridConfig {
+  val Production = ReportGridConfig(
+    analyticsRootUrl = "http://api.reportgrid.com/services/analytics/v0/"
+  )
 
-import com.reportgrid.api._
-
-case class ReportGrid(tokenId: String, config: ReportGridConfig = ReportGridConfig.Production) extends ReportGridGeneric[JValue](tokenId, config)(JsonBlueEyes, HttpClientApache.httpClient)
+  val Local = ReportGridConfig(
+    analyticsRootUrl = "http://localhost:8888/"
+  )
+}

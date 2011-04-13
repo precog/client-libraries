@@ -23,7 +23,7 @@ To create a facade, simply specify the token API as the only constructor paramet
 
     val api = new ReportGrid(tokenId)
 
-## Tracking Data
+# Tracking Data
 
     api.track(
       path       = "/customers/jdoe"
@@ -38,9 +38,13 @@ To create a facade, simply specify the token API as the only constructor paramet
       rollup     = true
     )
 
+# Hierarchy
+
 ## Virtual File System
 
     val children = api.list("/customers/")
+
+# Queries
 
 ## Property Values
 
@@ -62,6 +66,24 @@ To create a facade, simply specify the token API as the only constructor paramet
       ".transaction.gender" === "male" &&
       ".transaction.type"   === "purchase"
     }
+
+# Tokens
+
+## New Token
+
+    val newTokenId = api.newToken(token)
+
+## Get Token
+
+    val token = api.token(tokenId)
+
+## Delete Token
+
+    api.deleteToken(tokenId)
+
+## List Tokens
+
+    val tokens = api.tokens()
 
 # Customization
 

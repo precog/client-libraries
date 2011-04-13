@@ -30,4 +30,4 @@ import dispatch.json.JsValue
 
 import com.reportgrid.api._
 
-case class ReportGrid(tokenId: String) extends ReportGridGeneric[JsValue](tokenId)(JsonDispatch, HttpClientApache.httpClient)
+case class ReportGrid(tokenId: String, config: ReportGridConfig = ReportGridConfig.Production) extends ReportGridGeneric[JsValue](tokenId, config)(JsonDispatch, HttpClientApache.httpClient)

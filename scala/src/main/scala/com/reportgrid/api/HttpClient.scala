@@ -40,7 +40,11 @@ trait HttpClient[T] { self =>
   final def delete(url: String, headers: Map[String, String] = Map.empty[String, String]): T = request("DELETE", url, None, headers)
 
   final def url(prefix: String): HttpClient[T] = new HttpClient[T] {
-    def request(method: String, url: String, content: Option[T], headers: Map[String, String] = Map.empty[String, String]): T = self.request(method, cleanup(prefix + "/" + url), content, headers)
+    def request(method: String, url: String, content: Option[T], headers: Map[String, String] = Map.empty[String, String]): T = {
+      val prefix2 = if (prefix.endsWith("/")) prefix else prefix + "/"
+
+      self.request(method, prefix2 + url, content, headers)
+    }
   }
 
   final def queries(qs: (String, String)*): HttpClient[T] = if (qs.length == 0) self else new HttpClient[T] {
@@ -73,9 +77,17 @@ trait HttpClient[T] { self =>
 
   final def header(key: String, value: String): HttpClient[T] = headers((key, value))
 
-  final def contentType[S](contentTypeValue: String)(implicit serializer: Serializer[T, S]): HttpClient[S] = (new HttpClient[S] {
-    def request(method: String, url: String, content: Option[S], headers: Map[String, String] = Map.empty[String, String]): S = serializer.serialize(self.request(method, url, content.map(serializer.deserialize), headers))
-  }).header("Content-Type", contentTypeValue)
+  final def contentType[S](contentTypeValue: String)(implicit serializer: Serializer[S, T]): HttpClient[S] = (new HttpClient[S] {
+    def request(method: String, url: String, content: Option[S], headers: Map[String, String] = Map.empty[String, String]): S = {
+      val content2: Option[T]  = content.map(serializer.serialize _)
 
-  private def cleanup(s: String) = s.replaceAll("/+", "/")
+      val response: T = self.request(method, url, content2, headers)
+      val response2: S = serializer.deserialize(response)
+
+      println("content = " + content + ", content2 = " + content2)
+      println("response = " + response + ", response2 = " + response2)
+
+      response2
+    }
+  }).header("Content-Type", contentTypeValue)
 }

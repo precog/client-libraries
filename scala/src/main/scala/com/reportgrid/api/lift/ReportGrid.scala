@@ -30,4 +30,4 @@ import net.liftweb.json.JsonAST.JValue
 
 import com.reportgrid.api._
 
-case class ReportGrid(tokenId: String) extends ReportGridGeneric[JValue](tokenId)(JsonLift, HttpClientApache.httpClient)
+case class ReportGrid(tokenId: String, config: ReportGridConfig = ReportGridConfig.Production) extends ReportGridGeneric[JValue](tokenId, config)(JsonLift, HttpClientApache.httpClient)

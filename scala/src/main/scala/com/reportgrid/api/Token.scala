@@ -25,7 +25,7 @@ package com.reportgrid.api
 
 import java.util.Date
 
-case class Token(parentTokenId: Option[String], accountTokenId: String, path: Path, permissions: Permissions, expires: Date, limits: Limits) {
+case class Token(path: Path, permissions: Permissions, expires: Date, limits: Limits) {
   def expired  = expires.getTime <= new Date().getTime
   def canRead  = permissions.read
   def canWrite = permissions.write
