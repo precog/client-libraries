@@ -35,6 +35,11 @@ trait HttpClientApache {
     private val client = new DefaultHttpClient()
 
     def request(method: String, url: String, content: Option[String], headers: Map[String, String] = Map.empty[String, String]): String = {
+      //println("method  = " + method);
+      //println("url     = " + url);
+      //println("content = " + content);
+      //println("headers = " + headers.mkString(", "))
+
       val request = new HttpEntityEnclosingRequestBase {
         def getMethod = method.toUpperCase
       }
@@ -51,11 +56,25 @@ trait HttpClientApache {
         request.setEntity(new StringEntity(content))
       }
 
-      client.execute(request, new ResponseHandler[String] {
-        def handleResponse(response: HttpResponse): String = {
-          EntityUtils.toString(response.getEntity)
+      val result: Either[Exception, String] = client.execute(request, new ResponseHandler[Either[Exception, String]] {
+        def handleResponse(response: HttpResponse): Either[Exception, String] = {
+          val statusLine = response.getStatusLine
+
+          if (statusLine.getStatusCode != 200) {
+            Left(new Exception("HTTP " + method + " " + url + " (" +
+              headers.mkString(", ") + "): [" + content.map(_.toString).getOrElse("") + "]: " + statusLine.getReasonPhrase))
+          }
+          else {
+            Right(EntityUtils.toString(response.getEntity))
+          }
         }
       })
+
+      result match {
+        case Left(exception) => throw exception
+
+        case Right(response) => response
+      }
     }
   }
 }

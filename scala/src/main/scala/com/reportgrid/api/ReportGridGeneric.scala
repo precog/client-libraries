@@ -75,7 +75,9 @@ class ReportGridGeneric[Json](tokenId: String, config: ReportGridConfig = Report
    * @param path      The path, such as "/videos/1"
    * @param property  The property, such as ".engagement.duration"
    */
-  def listChildProperties(path: Path, property: Property): List[Property] = list(path, Some(property)).map(child => Property(child))
+  def listChildProperties(path: Path, property: Property): List[Property] = list(path, Some(property)).collect {
+    case Right(prop) => prop
+  }
 
   /** Lists all child properties of the specified path.
    *
@@ -83,14 +85,14 @@ class ReportGridGeneric[Json](tokenId: String, config: ReportGridConfig = Report
    * @param property  The property, such as ".engagement.duration"
    */
   def listChildProperties(path: Path): List[Property] = list(path, None).collect {
-    case property: String if (property.startsWith(".")) => Property(property)
+    case Right(prop) => prop
   }
 
   /**
    * Lists all path children of the specified path.
    */
   def listChildPaths(path: Path): List[Path] = list(path, None).collect {
-    case path: String if (path.endsWith("/")) => Path(path)
+    case Left(path) => path
   }
 
   /** Retrieves all values acquired by the specified property, over all
@@ -181,7 +183,7 @@ class ReportGridGeneric[Json](tokenId: String, config: ReportGridConfig = Report
     }
   }
 
-  def tokens(): List[String] = AnalyticsServer.get("vfs/tokens/").deserialize[List[String]]
+  def tokens(): List[String] = AnalyticsServer.get("tokens/").deserialize[List[String]]
 
   def newToken(newToken: Token): String = {
     AnalyticsServer.post("tokens/", newToken.serialize[Json]).deserialize[String]
@@ -191,7 +193,7 @@ class ReportGridGeneric[Json](tokenId: String, config: ReportGridConfig = Report
     AnalyticsServer.get("tokens/" + tokenId).deserialize[Token]
   }
 
-  def deleteToken(tokenId: String): Unit = AnalyticsServer.delete("vfs/tokens/" + tokenId)
+  def deleteToken(tokenId: String): Unit = AnalyticsServer.delete("tokens/" + tokenId)
 
   private def headersFrom(selection: Selection): Map[String, String] = {
     Map.empty[String, String] ++ ((selection match {
@@ -205,7 +207,10 @@ class ReportGridGeneric[Json](tokenId: String, config: ReportGridConfig = Report
     }): Iterable[(String, String)])
   }
 
-  private def list(path: Path, property: Option[Property] = None): List[String] = {
-    AnalyticsServer.get("vfs" + path.toString + property.map(_.value).getOrElse("")).deserialize[List[String]]
+  private def list(path: Path, property: Option[Property] = None): List[Either[Path, Property]] = {
+    AnalyticsServer.get("vfs" + path.toString + property.map(_.value).getOrElse("")).deserialize[List[String]].collect {
+      case path: String if (path.endsWith("/"))   => Left(Path(path))
+      case prop: String if (prop.startsWith(".")) => Right(Property(prop))
+    }
   }
 }
