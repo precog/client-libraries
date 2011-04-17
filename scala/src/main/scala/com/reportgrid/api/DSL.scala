@@ -35,8 +35,6 @@ sealed trait Selection extends Product {
 
 sealed trait Series extends Selection {
   def range: Option[(Date, Date)]
-
-  override def name = "series/" + super.name
 }
 object Series {
   case class Minute(range: Option[(Date, Date)] = None) extends Series
