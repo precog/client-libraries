@@ -126,7 +126,7 @@ class ReportGridGeneric[Json](tokenId: String, config: ReportGridConfig = Report
         val url     = "vfs" + path.toString + property.value + "/series/" + selection.name
         val headers = headersFrom(selection)
 
-        AnalyticsServer.get(url, headers).deserialize[List[(Date, Long)]]
+        AnalyticsServer.get(url, headers).get(selection.name).deserialize[List[(Date, Long)]]
       }
     }
 
@@ -141,7 +141,7 @@ class ReportGridGeneric[Json](tokenId: String, config: ReportGridConfig = Report
             ("from"   -> path.toString.serialize[Json]) ::
             ("where"  -> condition.serialize[Json]) :: Nil
           ), headers
-        ).deserialize[List[(Date, Long)]]
+        ).get(selection.name).deserialize[List[(Date, Long)]]
       }
     }
   }
