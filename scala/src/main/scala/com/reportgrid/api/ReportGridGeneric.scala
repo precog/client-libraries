@@ -61,12 +61,12 @@ class ReportGridGeneric[Json](tokenId: String, config: ReportGridConfig = Report
 
     val paths = if (rollup) path :: path.ancestors else path :: Nil
 
+    val data = JsonObject(
+      List[(String, Json)]("events" -> JsonObject(name -> properties)) ++ timestampM.toList ++ countM.toList
+    )
+
     paths.foreach { path =>
-      AnalyticsServer.post("vfs" + path.toString,
-        JsonObject(
-          List[(String, Json)]("events" -> properties) ++ timestampM.toList ++ countM.toList
-        )
-      )
+      AnalyticsServer.post("vfs" + path.toString, data)
     }
   }
 
