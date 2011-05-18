@@ -1,0 +1,7 @@
+<project name="reportgrid" url="https://github.com/reportgrid/client-libraries" license="BSD">
+    <user name="fponticelli"/>
+    <tag v="js"/>
+	<tag v="api"/>
+    <description>ReportGrid communication library</description>
+    <version name="0.0.1">initial release. JS wrapper only</version>
+</project>
