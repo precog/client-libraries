@@ -8,66 +8,9 @@
 	"buffers":
 	[
 		{
-			"file": "/Users/John/Documents/github/reportgrid-clients/README.md",
 			"settings":
 			{
-				"buffer_size": 1773,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/John/Documents/github/reportgrid-clients/scala/README.md",
-			"settings":
-			{
-				"buffer_size": 2192,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/John/Documents/github/reportgrid-clients/scala/src/main/scala/com/reportgrid/api/DSL.scala",
-			"settings":
-			{
-				"buffer_size": 4281,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/John/Documents/github/reportgrid-clients/scala/src/main/scala/com/reportgrid/api/ReportGridGeneric.scala",
-			"settings":
-			{
-				"buffer_size": 7817,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/John/Documents/github/reportgrid-clients/scala/src/main/scala/com/reportgrid/api/ReportGridConfig.scala",
-			"settings":
-			{
-				"buffer_size": 1672,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/John/Documents/github/reportgrid-clients/scala/src/main/scala/com/reportgrid/api/HttpClient.scala",
-			"settings":
-			{
-				"buffer_size": 4252,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/John/Documents/github/reportgrid-clients/scala/src/main/scala/com/reportgrid/api/Token.scala",
-			"settings":
-			{
-				"buffer_size": 1599,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/John/Documents/github/reportgrid-clients/scala/src/main/scala/com/reportgrid/api/Serialization.scala",
-			"settings":
-			{
-				"buffer_size": 3978,
+				"buffer_size": 0,
 				"line_ending": "Unix"
 			}
 		}
@@ -75,16 +18,6 @@
 	"build_system": "",
 	"file_history":
 	[
-		"/Users/John/Documents/github/reportgrid-clients/scala/src/main/scala/com/reportgrid/api/Path.scala",
-		"/Users/John/Documents/github/reportgrid-clients/scala/src/main/scala/com/reportgrid/api/ReportGridConfig.scala",
-		"/Users/John/Documents/github/reportgrid-clients/scala/src/main/scala/com/reportgrid/api/lift/ReportGrid.scala",
-		"/Users/John/Documents/github/reportgrid-clients/scala/src/main/scala/com/reportgrid/api/ReportGridGeneric.scala",
-		"/Users/John/Documents/github/reportgrid-clients/scala/src/main/scala/com/reportgrid/api/dispatch/ReportGrid.scala",
-		"/Users/John/Documents/github/reportgrid-clients/scala/src/main/scala/com/reportgrid/api/blueeyes/ReportGrid.scala",
-		"/Users/John/Documents/github/reportgrid-clients/scala/src/main/scala/com/reportgrid/api/ReportGrid.scala",
-		"/Users/John/Documents/github/reportgrid-clients/js/src/main/js/reportgrid-core.js",
-		"/Users/John/Documents/github/reportgrid-clients/scala/src/main/scala/com/reportgrid/api/DSL.scala",
-		"/Users/John/Documents/github/reportgrid-clients/LICENSE"
 	],
 	"find_in_files":
 	{
@@ -97,14 +30,9 @@
 	},
 	"find_state":
 	{
-		"case_sensitive": true,
+		"case_sensitive": false,
 		"find_history":
 		[
-			"cleanup",
-			"sanitizeProperty",
-			"field",
-			"Field",
-			"field"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -112,9 +40,6 @@
 		"regex": false,
 		"replace_history":
 		[
-			"property",
-			"Property",
-			"property"
 		],
 		"reverse": false,
 		"show_context": true,
@@ -126,227 +51,36 @@
 	{
 		"mount_points":
 		[
-			"/Users/John/Documents/github/reportgrid-clients"
+			"/Users/John/Documents/github/reportgrid/client-libraries/scala"
 		]
 	},
 	"groups":
 	[
 		{
-			"selected": 6,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "/Users/John/Documents/github/reportgrid-clients/README.md",
 					"settings":
 					{
-						"buffer_size": 1773,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1773,
-								1773
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/Markdown/Markdown.tmLanguage"
+							"syntax": "Packages/Text/Plain text.tmLanguage"
 						},
 						"translation.x": 0,
 						"translation.y": 0,
-						"zoom_level": 1
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "/Users/John/Documents/github/reportgrid-clients/scala/README.md",
-					"settings":
-					{
-						"buffer_size": 2192,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1939,
-								1939
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Markdown/Markdown.tmLanguage"
-						},
-						"translation.x": 0,
-						"translation.y": 508,
-						"zoom_level": 1
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "/Users/John/Documents/github/reportgrid-clients/scala/src/main/scala/com/reportgrid/api/DSL.scala",
-					"settings":
-					{
-						"buffer_size": 4281,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2968,
-								2968
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Scala/Scala.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0,
-						"translation.y": 928,
-						"zoom_level": 1
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "/Users/John/Documents/github/reportgrid-clients/scala/src/main/scala/com/reportgrid/api/ReportGridGeneric.scala",
-					"settings":
-					{
-						"buffer_size": 7817,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								6101,
-								6101
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Scala/Scala.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0,
-						"translation.y": 2078,
-						"zoom_level": 1
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "/Users/John/Documents/github/reportgrid-clients/scala/src/main/scala/com/reportgrid/api/ReportGridConfig.scala",
-					"settings":
-					{
-						"buffer_size": 1672,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1483,
-								1483
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Scala/Scala.tmLanguage"
-						},
-						"translation.x": 0,
-						"translation.y": 0,
-						"zoom_level": 1
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "/Users/John/Documents/github/reportgrid-clients/scala/src/main/scala/com/reportgrid/api/HttpClient.scala",
-					"settings":
-					{
-						"buffer_size": 4252,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2708,
-								2708
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Scala/Scala.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0,
-						"translation.y": 578,
-						"zoom_level": 1
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "/Users/John/Documents/github/reportgrid-clients/scala/src/main/scala/com/reportgrid/api/Token.scala",
-					"settings":
-					{
-						"buffer_size": 1599,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								459,
-								459
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Scala/Scala.tmLanguage"
-						},
-						"translation.x": 0,
-						"translation.y": 0,
-						"zoom_level": 1
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "/Users/John/Documents/github/reportgrid-clients/scala/src/main/scala/com/reportgrid/api/Serialization.scala",
-					"settings":
-					{
-						"buffer_size": 3978,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2419,
-								2419
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Scala/Scala.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0,
-						"translation.y": 580,
 						"zoom_level": 1
 					},
 					"type": "text"
@@ -397,6 +131,6 @@
 	"show_minimap": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 323,
+	"side_bar_width": 150,
 	"status_bar_visible": true
 }
