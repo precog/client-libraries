@@ -2,7 +2,7 @@ import sbt._
 
 class ScalaClientProject(info: ProjectInfo) extends DefaultProject(info) with Repositories {
   val rosetta       = "github"                    %% "rosetta-json"        % "0.2"  
-  val blueeyes      = "com.github.blueeyes"       %  "blueeyes"            % "0.3.18-SNAPSHOT" 
+  val blueeyes      = "com.github.blueeyes"       %  "blueeyes"            % "0.3.18" 
   val http_client   = "org.apache.httpcomponents" %  "httpclient"   % "4.1.1"
 
   val specs         = "org.scala-tools.testing"   %% "specs"        % "1.6.7"
