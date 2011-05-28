@@ -646,7 +646,7 @@ var ReportGrid = window.ReportGrid || {};
   /**
    * Retrieves all values of the specified property throughout all time.
    *
-   * ReportGrid.propertyValue("/customers/jdoe/blog-posts/1/", {property: "click.gender"});
+   * ReportGrid.propertyValues("/customers/jdoe/blog-posts/1/", {property: "click.gender"});
    * > ["male", "female", "unknown"]
    */
   ReportGrid.propertyValues = function(path_, options, success, failure) {
@@ -654,9 +654,9 @@ var ReportGrid = window.ReportGrid || {};
     var property = Util.sanitizeProperty(options.property);
 
     var description = 'Get all values of property ' + path + property;
-
+	var top = options.top ? 'top/' + options.top : ''
     http.get(
-      $.Config.analyticsServer + '/vfs' + (path + property) + '/values/',
+      $.Config.analyticsServer + '/vfs' + (path + property) + '/values/' + top,
       Util.createCallbacks(success, failure, description),
       {tokenId: $.Config.tokenId }
     );
@@ -754,23 +754,66 @@ var ReportGrid = window.ReportGrid || {};
     var path  = Util.sanitizePath(path_);
     var peri  = options.periodicity || "eternity";
 
-    Util.normalizeTime(options, 'start');
-    Util.normalizeTime(options, 'end');
-
     var description = 'Select series/' + peri + ' from ' + path + ' where ' + JSON.stringify(options.where);
 
+	var ob = {
+	  select: "series/" + peri,
+      from:   path,
+      where:  options.where
+	};
+	
+    var start = Util.normalizeTime(options, 'start');
+    var end = Util.normalizeTime(options, 'end');
+	
+	if(start) ob.start = start;
+	if(end) ob.end = end;
+	
     http.post(
       $.Config.analyticsServer + '/search',
-      {
-        select: "series/" + peri,
-        from:   path,
-        where:  options.where,
-        start:  options.start,
-        end:    options.end
-      },
+      ob,
       Util.createCallbacks(success, failure, description),
       {tokenId: $.Config.tokenId }
     );
+  }
+  
+  /**
+   * Intersect time series for events that meet the specified constraint. Note
+   * that constraints may involve at most one event.
+   *
+   * Options:
+   *
+   *  * properties
+   *  * periodicity
+   *  * start
+   *  * end
+   *
+   *
+   * ReportGrid.searchSeries("/advertisers/Nike", {periodicity: "hour", properties: [{"property" : ".impression.platform", "limit" : 3, "order" : "descending"}]});
+   * > {"iphone":{"hour":{"1239232323":293}},"android":{"hour":{"1239232323":155}},"blackberry":{"hour":{"1239232323":65}}}
+   */
+  ReportGrid.intersect = function(path_, options, success, failure) {
+	var path = Util.sanitizePath(path_);
+	var peri = options.periodicity || "eternity";
+
+	var description = 'Intersect series/' + peri + ' from ' + path + ' where ' + JSON.stringify(options.properties);
+	
+	var ob = {
+	  select:     "series/" + peri,
+	  from:       path,
+	  properties: options.properties
+	};
+	
+    var start = Util.normalizeTime(options, 'start');
+    var end = Util.normalizeTime(options, 'end');
+	if(start) ob.start = start;
+	if(end) ob.end = end;
+	
+	http.post(
+	  $.Config.analyticsServer + '/intersect',
+	  ob,
+	  Util.createCallbacks(success, failure, description),
+      {tokenId: $.Config.tokenId }
+	);
   }
 
   /** Lists all tokens.

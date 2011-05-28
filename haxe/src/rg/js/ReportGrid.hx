@@ -131,6 +131,8 @@ extern class ReportGrid
 	*/
 	public static function searchSeries(path : String, options : { }, ?success : Dynamic -> Void, ?failure : String -> Void) : Void;
 
+	public static function intersect(path : String, options : { }, ?success : Dynamic -> Void, ?failure : String -> Void) : Void;
+	
 	/**
 	* Lists all tokens.
 	*/
@@ -139,7 +141,7 @@ extern class ReportGrid
 	/**
 	* Creates a new token.
 	*/
-	public static function newToken(newToken : String, ?success : Array<String> -> Void, ?failure : String -> Void) : Void;
+	public static function newToken(newToken : {}, ?success : Array<String> -> Void, ?failure : String -> Void) : Void;
 	
 	/**
 	* Deletes the token with the specified id.
