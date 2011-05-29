@@ -21,13 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.reportgrid.api.dispatch
+package com.reportgrid.api
+package dispatch
 
-import rosetta.json.JsonImplementation
+import _root_.dispatch.json.JsValue
 import rosetta.json.dispatch.JsonDispatch
 
-import dispatch.json.JsValue
+trait DispatchReportGridClient extends ReportGridClient[JsValue] {
+  val jsonImplementation = JsonDispatch
+}
 
-import com.reportgrid.api._
-
-case class ReportGrid(tokenId: String, config: ReportGridConfig = ReportGridConfig.Production) extends ReportGridGeneric[JsValue](tokenId, config)(JsonDispatch, HttpClientApache.httpClient)
+case class ReportGrid(tokenId: String, config: ReportGridConfig = ReportGridConfig.Production) extends DispatchReportGridClient {
+  protected val httpClient = new HttpClientApache
+}

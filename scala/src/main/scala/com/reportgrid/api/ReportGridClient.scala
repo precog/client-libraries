@@ -33,13 +33,16 @@ import rosetta.io._
 /** Creates a new ReportGrid API based on the specified token, and implicitly
  * the Json implementation and HTTP client.
  */
-class ReportGridGeneric[Json](tokenId: String, config: ReportGridConfig = ReportGridConfig.Production)
-  (implicit val jsonImplementation: JsonImplementation[Json], httpClient: HttpClient[String]) extends Serialization[Json] {
+trait ReportGridClient[Json] extends Serialization[Json] {
+  val tokenId: String
+  val config: ReportGridConfig
+  protected val httpClient: HttpClient[String]
+
   import jsonImplementation._
 
-  val AnalyticsServer: HttpClient[Json] = httpClient.url(config.analyticsRootUrl).
-    query("tokenId", tokenId).
-    contentType("application/json")
+  lazy val AnalyticsServer: HttpClient[Json] =  httpClient.url(config.analyticsRootUrl).
+                                                query("tokenId", tokenId).
+                                                contentType("application/json")
 
   /** Tracks the event with the specified name and properties.
    *
@@ -104,7 +107,8 @@ class ReportGridGeneric[Json](tokenId: String, config: ReportGridConfig = Report
    */
   def valuesOf(property: Property) = new {
     def from(path: Path): List[Json] = {
-      AnalyticsServer.get("vfs" + path.toString + property.value + "/values/").deserialize[List[Json]]
+      val url = "vfs" + path.toString + property.value + "/values/"
+      AnalyticsServer.get(url).deserialize[List[Json]]
     }
   }
 
@@ -123,25 +127,31 @@ class ReportGridGeneric[Json](tokenId: String, config: ReportGridConfig = Report
   def select(selection: Series) = new {
     def of(property: Property) = new {
       def from(path: Path): List[(Date, Long)] = {
-        val url     = "vfs" + path.toString + property.value + "/series/" + selection.name
+        val url     = "vfs" + path.toString + property.value + "/" + selection.pathFragment
         val headers = headersFrom(selection)
-
-        AnalyticsServer.get(url, headers).get(selection.name).deserialize[List[(Date, Long)]]
+        try {
+          AnalyticsServer.get(url, headers).get(selection.name).deserialize[List[(Date, Long)]]
+        } catch {
+          case t: Throwable =>
+            println("url: " +  url)
+            println("headers: " + headers)
+            println("selection: " + selection.name)  
+            Nil
+        }
       }
     }
 
     def from(path: Path) = new {
       def where(condition: Condition[Json]): List[(Date, Long)] = {
-        val url     = "search"
-        val headers = headersFrom(selection)
+        val url  = "search"
+        val data = JsonObject(
+          ("select" -> selection.pathFragment.serialize[Json]) ::
+          ("from"   -> path.toString.serialize[Json]) ::
+          ("where"  -> condition.serialize[Json]) ::
+          rangeProperties(selection)
+        )
 
-        AnalyticsServer.post(url,
-          JsonObject(
-            ("select" -> ("series/" + selection.name).serialize[Json]) ::
-            ("from"   -> path.toString.serialize[Json]) ::
-            ("where"  -> condition.serialize[Json]) :: Nil
-          ), headers
-        ).get(selection.name).deserialize[List[(Date, Long)]]
+        AnalyticsServer.post(url, data).get(selection.name).deserialize[List[(Date, Long)]]
       }
     }
   }
@@ -161,27 +171,28 @@ class ReportGridGeneric[Json](tokenId: String, config: ReportGridConfig = Report
     def of(property: Property) = new {
       def from(path: Path): Long = {
         val url     = "vfs" + path.toString + property.value + "/" + selection.name
-        val headers = headersFrom(selection)
-
-        AnalyticsServer.get(url, headers).deserialize[Long]
+        AnalyticsServer.get(url).deserialize[Long]
       }
     }
 
     def from(path: Path) = new {
       def where(condition: Condition[Json]): Long = {
-        val url     = "search"
-        val headers = headersFrom(selection)
+        val url  = "search"
+        val data = JsonObject(
+          ("select" -> selection.pathFragment.serialize[Json]) ::
+          ("from"   -> path.toString.serialize[Json]) ::
+          ("where"  -> condition.serialize[Json]) :: Nil
+        )
 
-        AnalyticsServer.post(url,
-          JsonObject(
-            ("select" -> "count".serialize[Json]) ::
-            ("from"   -> path.toString.serialize[Json]) ::
-            ("where"  -> condition.serialize[Json]) :: Nil
-          ), headers
-        ).deserialize[Long]
+        AnalyticsServer.post(url, data).deserialize[Long]
       }
     }
   }
+
+  /**
+   * intersect(Counts) of top(10)(".click")
+   */
+  def intersect(selection: Selection) = new DimensionBuilder(selection, Nil)
 
   def tokens(): List[String] = AnalyticsServer.get("tokens/").deserialize[List[String]]
 
@@ -195,22 +206,88 @@ class ReportGridGeneric[Json](tokenId: String, config: ReportGridConfig = Report
 
   def deleteToken(tokenId: String): Unit = AnalyticsServer.delete("tokens/" + tokenId)
 
-  private def headersFrom(selection: Selection): Map[String, String] = {
-    Map.empty[String, String] ++ ((selection match {
-      case Count => Nil
-
-      case series: Series => series.range.toList.flatMap { tuple =>
-        val (start, end) = tuple
-
-        ("Range" -> ("time=" + start.getTime.toString + end.getTime.toString)) :: Nil
-      }
-    }): Iterable[(String, String)])
+  private def headersFrom(selection: Selection): Map[String, String] = Map(
+    selection.range.toList.map { case (start, end) => 
+      "Range" -> ("time=" + start.getTime.toString + "-" + end.getTime.toString)
+    }: _*
+  )
+  
+  private def rangeProperties(selection: Selection) = selection.range.toList.flatMap {
+    case (start, end) => 
+      ("start" -> start.serialize[Json]) ::
+      ("end"   -> end.serialize[Json])   :: Nil
   }
 
   private def list(path: Path, property: Option[Property] = None): List[Either[Path, Property]] = {
     AnalyticsServer.get("vfs" + path.toString + property.map(_.value).getOrElse("")).deserialize[List[String]].collect {
       case path: String if (path.endsWith("/"))   => Left(Path(path))
       case prop: String if (prop.startsWith(".")) => Right(Property(prop))
+    }
+  }
+
+  sealed trait Bias
+  case object High extends Bias
+  case object Low extends Bias
+  object Bias {
+    implicit def serializer: JsonSerializer[Bias] = new JsonSerializer[Bias] {
+      def serialize(bias: Bias) = bias match {
+        case High => "descending".serialize[Json]
+        case Low  => "ascending".serialize[Json]
+      }
+
+      def deserialize(json: Json) = json.deserialize[String] match {
+        case "descending" => High
+        case "ascending"  => Low
+      }
+    }
+  }
+
+  class DimensionBuilder(selection: Selection, dimensions: List[Dimension]) {
+    def top(limit: Int) = new {
+      def of(property: Property) = Dimensions(selection, Dimension(High, limit, property) :: dimensions)
+    }
+
+    def bottom(limit: Int) = new {
+      def of(property: Property) = Dimensions(selection, Dimension(Low, limit, property) :: dimensions)
+    }
+  }
+
+  case class Dimension(bias: Bias, limit: Int, property: Property)
+
+  object Dimension {
+    implicit def serializer : JsonSerializer[Dimension] = new JsonSerializer[Dimension] {
+      def serialize(dimension: Dimension): Json = {
+        JsonObject(
+          ("property",    dimension.property.toString.serialize[Json])   ::
+          ("limit",       dimension.limit.serialize[Json]) ::
+          ("order",       dimension.bias.serialize[Json])  :: Nil
+        )
+      }
+
+      def deserialize(json: Json): Dimension = json match {
+        case JsonObject(fields) => (for {
+          property <- fields.get("property").map(_.deserialize[String])
+          limit    <- fields.get("limit").map(_.deserialize[Int])
+          bias     <- fields.get("order").map(_.deserialize[Bias])
+        } yield {
+          Dimension(bias, limit, property)
+        }).get
+      }
+    }
+  }
+
+  case class Dimensions(selection: Selection, dims: List[Dimension]) {
+    def and = new DimensionBuilder(selection, dims)
+    def from(path: Path) = {
+      val url = "intersect"
+      val data = JsonObject(
+        ("select" -> selection.pathFragment.serialize[Json]) ::
+        ("from" -> path.toString.serialize[Json]) ::
+        ("properties" -> JsonArray(dims.map(_.serialize[Json]))) ::
+        rangeProperties(selection)
+      )
+
+      AnalyticsServer.post(url, data)
     }
   }
 }

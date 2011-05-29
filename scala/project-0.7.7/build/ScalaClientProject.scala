@@ -1,11 +1,11 @@
 import sbt._
+import netbeans.plugin._
 
-class ScalaClientProject(info: ProjectInfo) extends DefaultProject(info) with Repositories {
+class ScalaClientProject(info: ProjectInfo) extends DefaultProject(info) with Repositories with IdeaProject with SbtNetbeansPlugin {
   val rosetta       = "github"                    %% "rosetta-json"        % "0.2"  
-  val blueeyes      = "com.github.blueeyes"       %  "blueeyes"            % "0.3.18" 
-  val http_client   = "org.apache.httpcomponents" %  "httpclient"   % "4.1.1"
+  val http_client   = "org.apache.httpcomponents" %  "httpclient"          % "4.1.1"
 
-  val specs         = "org.scala-tools.testing"   %% "specs"        % "1.6.7"
+  val specs         = "org.scala-tools.testing"   %% "specs"        % "1.6.7" % "test"
   val scala_check   = "org.scala-tools.testing"   %% "scalacheck"   % "1.8"   % "test"
 
   def scala_check_framework = new TestFramework("org.scalacheck.ScalaCheckFramework")
