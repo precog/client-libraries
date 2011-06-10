@@ -550,7 +550,7 @@ var ReportGrid = window.ReportGrid || {};
    *
    * @param path      The path to the data.
    * @param options   An object that contains an optional type
-   *                  ("path" or "property") and an optional
+   *                  ("all", "path" or "property") and an optional
    *                  property (e.g. "transaction.sender").
    *
    * ReportGrid.children("/", {"type":"all"});
@@ -654,7 +654,7 @@ var ReportGrid = window.ReportGrid || {};
     var property = Util.sanitizeProperty(options.property);
 
     var description = 'Get all values of property ' + path + property;
-	var top = options.top ? 'top/' + options.top : ''
+	var top = options.top ? 'top/' + options.top : (options.bottom ? 'bottom/' + options.bottom : '');
     http.get(
       $.Config.analyticsServer + '/vfs' + (path + property) + '/values/' + top,
       Util.createCallbacks(success, failure, description),
@@ -689,7 +689,7 @@ var ReportGrid = window.ReportGrid || {};
    * Retrieves the time series count of when the property was equal to the
    * specified value.
    *
-   * ReportGrid.propertyValueSeries("/transactions/", {property: "withdrawal", periodicity: "hour"});
+   * ReportGrid.propertyValueSeries("/transactions/", {property: "click.gender", value: "male" periodicity: "hour"});
    * > {"hour":{"1239232323":293}}
    */
   ReportGrid.propertyValueSeries = function(path_, options, success, failure) {
@@ -788,7 +788,7 @@ var ReportGrid = window.ReportGrid || {};
    *  * end
    *
    *
-   * ReportGrid.searchSeries("/advertisers/Nike", {periodicity: "hour", properties: [{"property" : ".impression.platform", "limit" : 3, "order" : "descending"}]});
+   * ReportGrid.intersect("/advertisers/Nike", {periodicity: "hour", properties: [{"property" : ".impression.platform", "limit" : 3, "order" : "descending"}]});
    * > {"iphone":{"hour":{"1239232323":293}},"android":{"hour":{"1239232323":155}},"blackberry":{"hour":{"1239232323":65}}}
    */
   ReportGrid.intersect = function(path_, options, success, failure) {
