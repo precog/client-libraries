@@ -26,56 +26,53 @@ package com.reportgrid.api
 import org.apache.http.{HttpResponse}
 import org.apache.http.impl.client.{DefaultHttpClient}
 import org.apache.http.client.{ResponseHandler}
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager
 import org.apache.http.client.methods._
 import org.apache.http.entity._
 import org.apache.http.util.EntityUtils
 
-trait HttpClientApache {
-  implicit val httpClient: HttpClient[String] = new HttpClient[String] {
-    private val client = new DefaultHttpClient()
+class HttpClientApache extends HttpClient[String] {
+  private val client = new DefaultHttpClient(new ThreadSafeClientConnManager)
 
-    def request(method: String, url: String, content: Option[String], headers: Map[String, String] = Map.empty[String, String]): String = {
-      //println("method  = " + method);
-      //println("url     = " + url);
-      //println("content = " + content);
-      //println("headers = " + headers.mkString(", "))
+  def request(method: String, url: String, content: Option[String], headers: Map[String, String] = Map.empty[String, String]): String = {
+    //println("method  = " + method);
+    //println("url     = " + url);
+    //println("content = " + content);
+    //println("headers = " + headers.mkString(", "))
 
-      val request = new HttpEntityEnclosingRequestBase {
-        def getMethod = method.toUpperCase
-      }
+    val request = new HttpEntityEnclosingRequestBase {
+      def getMethod = method.toUpperCase
+    }
 
-      request.setURI(new java.net.URI(url))
+    request.setURI(new java.net.URI(url))
 
-      headers.foreach { tuple =>
-        val (name, value) = tuple
+    headers.foreach { tuple =>
+      val (name, value) = tuple
 
-        request.setHeader(name, value)
-      }
+      request.setHeader(name, value)
+    }
 
-      content.foreach { content =>
-        request.setEntity(new StringEntity(content))
-      }
+    content.foreach { content =>
+      request.setEntity(new StringEntity(content))
+    }
 
-      val result: Either[Exception, String] = client.execute(request, new ResponseHandler[Either[Exception, String]] {
-        def handleResponse(response: HttpResponse): Either[Exception, String] = {
-          val statusLine = response.getStatusLine
+    val result: Either[Exception, String] = client.execute(request, new ResponseHandler[Either[Exception, String]] {
+      def handleResponse(response: HttpResponse): Either[Exception, String] = {
+        val statusLine = response.getStatusLine
 
-          if (statusLine.getStatusCode != 200) {
-            Left(new Exception("HTTP " + method + " " + url + " (" +
-              headers.mkString(", ") + "): [" + content.map(_.toString).getOrElse("") + "]: " + statusLine.getReasonPhrase))
-          }
-          else {
-            Right(EntityUtils.toString(response.getEntity))
-          }
+        if (statusLine.getStatusCode != 200) {
+          Left(new Exception("HTTP " + method + " " + url + " (" +
+            headers.mkString(", ") + "): [" + content.map(_.toString).getOrElse("") + "]: " + statusLine.getReasonPhrase))
+        } else {
+          Right(EntityUtils.toString(response.getEntity))
         }
-      })
-
-      result match {
-        case Left(exception) => throw exception
-
-        case Right(response) => response
       }
+    })
+
+    result match {
+      case Left(exception) => throw exception
+
+      case Right(response) => response
     }
   }
 }
-object HttpClientApache extends HttpClientApache

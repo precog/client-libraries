@@ -25,9 +25,7 @@ package com.reportgrid.api
 
 /** Configuration information for the ReportGrid API.
  */
-case class ReportGridConfig(
-  analyticsRootUrl: String
-)
+case class ReportGridConfig(analyticsRootUrl: String)
 
 object ReportGridConfig {
   val Production = ReportGridConfig(

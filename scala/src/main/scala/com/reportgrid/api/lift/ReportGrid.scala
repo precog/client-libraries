@@ -21,13 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package com.reportgrid.api.lift
+package com.reportgrid.api
+package lift
 
-import rosetta.json.JsonImplementation
 import rosetta.json.lift.JsonLift
+import net.liftweb.json.JValue
 
-import net.liftweb.json.JsonAST.JValue
+trait LiftReportGridClient extends ReportGridClient[JValue] {
+  val jsonImplementation = JsonLift
+}
 
-import com.reportgrid.api._
-
-case class ReportGrid(tokenId: String, config: ReportGridConfig = ReportGridConfig.Production) extends ReportGridGeneric[JValue](tokenId, config)(JsonLift, HttpClientApache.httpClient)
+case class ReportGrid(tokenId: String, config: ReportGridConfig = ReportGridConfig.Production) extends LiftReportGridClient {
+  protected val httpClient = new HttpClientApache
+}

@@ -1,13 +1,12 @@
 import sbt._
+import netbeans.plugin._
 
-class ScalaClientProject(info: ProjectInfo) extends DefaultProject(info) with Repositories {
-  val blueeyes      = "com.github.blueeyes" %   "blueeyes"            % "0.2.9"   % "compile"
-  val dispatch_json = "net.databinder"      %%  "dispatch-http-json"  % "0.7.8"   % "compile"
-  val lift_json     = "net.liftweb"         %%  "lift-json"           % "2.2"     % "compile"
+class ScalaClientProject(info: ProjectInfo) extends DefaultProject(info) with Repositories with IdeaProject with SbtNetbeansPlugin {
+  val rosetta       = "github"                    %% "rosetta-json"        % "0.2"  
+  val http_client   = "org.apache.httpcomponents" %  "httpclient"          % "4.1.1"
 
+  val specs         = "org.scala-tools.testing"   %% "specs"        % "1.6.7" % "test"
   val scala_check   = "org.scala-tools.testing"   %% "scalacheck"   % "1.8"   % "test"
-  val specs         = "org.scala-tools.testing"   %% "specs"        % "1.6.7" % "compile"
-  val http_client   = "org.apache.httpcomponents" %  "httpclient"   % "4.1.1" % "compile"
 
   def scala_check_framework = new TestFramework("org.scalacheck.ScalaCheckFramework")
 
@@ -21,5 +20,5 @@ trait Repositories {
   val JBoss           = MavenRepository("JBoss Releases",             "http://repository.jboss.org/nexus/content/groups/public/")
   val Nexus           = MavenRepository("Nexus Scala Tools",          "http://nexus.scala-tools.org/content/repositories/releases/")
   val Maven           = MavenRepository("Maven Repo 1",               "http://repo1.maven.org/maven2/")
-  val Scalable        = MavenRepository("Maven Repo 2",               "http://scalablesolutions.se/akka/repository/")
+  val Scalable        = MavenRepository("Maven Repo 2",               "http://akka.io/repository/")
 }

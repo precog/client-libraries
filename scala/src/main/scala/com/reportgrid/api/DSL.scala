@@ -30,11 +30,14 @@ sealed trait Selection extends Product {
 
   def range: Option[(Date, Date)]
 
+  def pathFragment: String
+
   override def toString = name
 }
 
 sealed trait Series extends Selection {
   def range: Option[(Date, Date)]
+  override def pathFragment = "series/" + name
 }
 object Series {
   case class Minute(range: Option[(Date, Date)] = None) extends Series
@@ -62,7 +65,9 @@ object Series {
 
 case object Count extends Selection {
   def range = None
+  override def pathFragment = "count"
 }
+
 
 sealed trait Condition[Json] { self =>
   def & (that: Condition[Json]): Condition[Json] = self && that
@@ -116,3 +121,4 @@ object Property {
     new Property(value)
   }
 }
+
