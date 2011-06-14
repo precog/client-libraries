@@ -87,7 +87,7 @@ extern class ReportGrid
 	* ReportGrid.propertyValues("/customers/jdoe/blog-posts/1/", {property: "click.gender"});
 	* > ["male", "female", "unknown"]
 	*/
-	public static function propertyValues(path : String, options : { property : String }, ?success : Array<String> -> Void, ?failure : String -> Void) : Void;
+	public static function propertyValues(path : String, options : { }, ?success : Array<Dynamic> -> Void, ?failure : String -> Void) : Void;
 
 	/**
 	* Retrieves the total number of times the property was equal to the specified
