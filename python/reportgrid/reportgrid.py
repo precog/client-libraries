@@ -68,21 +68,6 @@ class Periodicity:
     Year     =  'year'
     Eternity =  'eternity'
 
-def sanitize_path(path):
-    """Sanitize a URL path"""
-
-    normpath = posixpath.normpath(path)
-    if path.endswith('/') and not normpath.endswith('/'):
-        normpath += '/'
-    return normpath
-
-def sanitize_property(property):
-    """Properties must always be prefixed with a period"""
-
-    if property and not property.startswith('.'):
-        property = '.%s' % property
-    return property
-
 class ReportGridError(Exception):
     """Base exception for all ReportGrid errors"""
 
@@ -194,7 +179,7 @@ class ReportGrid(object):
         # Sanitize path
         if not path.startswith(Path.Analytics.VFS):
             path = '%s/%s' % (Path.Analytics.VFS, path)
-        path = sanitize_path(path)
+        path = self.__sanitize_path(path)
 
         # Track event
         self.analytics.post(path, {
@@ -204,7 +189,7 @@ class ReportGrid(object):
         })
 
         # Roll up to parents if necessary
-        parent_path = sanitize_path('%s/../' % path)
+        parent_path = self.__sanitize_path('%s/../' % path)
         if rollup and parent_path.startswith(Path.Analytics.VFS) and \
            parent_path != Path.Analytics.VFS:
             self.track(parent_path, name, properties, rollup, timestamp, count)
@@ -212,10 +197,10 @@ class ReportGrid(object):
     def children(self, path, property='', type='all'):
         """Return children of the specified path"""
 
-        property = sanitize_property(property)
+        property = self.__sanitize_property(property)
         path = '%s/%s/%s' % (Path.Analytics.VFS, path, property)
 
-        children = self.analytics.get(sanitize_path(path))
+        children = self.analytics.get(self.__sanitize_path(path))
         if type == 'path':
             children = filter(lambda x: x.endswith('/'), children)
         elif type == 'property':
@@ -228,45 +213,45 @@ class ReportGrid(object):
     def property_count(self, path, property):
         """Return count of the specified property"""
 
-        property = sanitize_property(property)
+        property = self.__sanitize_property(property)
         path = '%s/%s/%s/count' % (Path.Analytics.VFS, path, property)
-        return self.analytics.get(sanitize_path(path))
+        return self.analytics.get(self.__sanitize_path(path))
 
     def property_series(self, path, property, periodicity=Periodicity.Eternity):
         """Return time series counts for the specified property"""
 
-        property = sanitize_property(property)
+        property = self.__sanitize_property(property)
         path = '%s/%s/%s/series/%s' % (Path.Analytics.VFS, path, property, periodicity)
-        return self.analytics.get(sanitize_path(path))
+        return self.analytics.get(self.__sanitize_path(path))
 
     def property_values(self, path, property):
         """Return all values of the specified property"""
 
-        property = sanitize_property(property)
+        property = self.__sanitize_property(property)
         path = '%s/%s/%s/values/' % (Path.Analytics.VFS, path, property)
-        return self.analytics.get(sanitize_path(path))
+        return self.analytics.get(self.__sanitize_path(path))
 
     def property_value_count(self, path, property, value):
         """Return count of the specified value for the specified property"""
 
-        property = sanitize_property(property)
+        property = self.__sanitize_property(property)
         path = '%s/%s/%s/values/%s/count' % (Path.Analytics.VFS, path, property, value)
-        return self.analytics.get(sanitize_path(path))
+        return self.analytics.get(self.__sanitize_path(path))
 
     def property_value_series(self, path, property, value, periodicity=Periodicity.Eternity):
         """Return time series counts for the specified value for the specified property"""
 
-        property = sanitize_property(property)
+        property = self.__sanitize_property(property)
         path = '%s/%s/%s/values/%s/series/%s' % (Path.Analytics.VFS, path, property,
                                                  value, periodicity)
-        return self.analytics.get(sanitize_path(path))
+        return self.analytics.get(self.__sanitize_path(path))
 
     def search_count(self, path, where={}):
         """Return a count by searching across a range of conditions"""
 
         return self.analytics.post(Path.Analytics.Search, body={
             'select': 'count',
-            'from'  : sanitize_path(path),
+            'from'  : self.__sanitize_path(path),
             'where' : where
         })
 
@@ -276,8 +261,23 @@ class ReportGrid(object):
 
         return self.analytics.post(Path.Analytics.Search, body={
             'select': 'series/%s' % periodicity,
-            'from'  : sanitize_path(path),
+            'from'  : self.__sanitize_path(path),
             'where' : where,
             'start' : start,
             'end'   : end
         })
+
+    def __sanitize_path(self, path):
+        """Sanitize a URL path"""
+
+        normpath = posixpath.normpath(path)
+        if path.endswith('/') and not normpath.endswith('/'):
+            normpath += '/'
+        return normpath
+
+    def __sanitize_property(self, property):
+        """Properties must always be prefixed with a period"""
+
+        if property and not property.startswith('.'):
+            property = '.%s' % property
+        return property
