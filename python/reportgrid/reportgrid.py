@@ -30,9 +30,9 @@ import time
 
 
 __app_name__     = 'reportgrid'
-__version__      = '2011.05.18'
-__author__       = 'ReportGrid, Inc.'
-__author_email__ = 'contact [at] reportgrid [dot] com'
+__version__      = '2011.06.15'
+__author__       = 'Michael T. Conigliaro'
+__author_email__ = 'mike [at] reportgrid [dot] com'
 __description__  = 'Python client library for ReportGrid (http://www.reportgrid.com)'
 __url__          = 'https://github.com/reportgrid/client-libraries/'
 
