@@ -108,7 +108,7 @@ trait Serialization[Json] {
           }
         )
 
-      case _ => error("Expected Condition as Json object but found: " + v)
+      case _ => sys.error("Expected Condition as Json object but found: " + v)
     }
   }
 }
