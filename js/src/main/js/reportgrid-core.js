@@ -118,8 +118,8 @@ var ReportGrid = window.ReportGrid || {};
       else return url + suffix + queries.join('&');
     },
 
-    getConsole: function() {
-      var console = window.console;
+    getConsole: function(enabled) {
+      var console = enabled ? window.console : undefined;
       if (!console) {
         console = {};
 
@@ -440,23 +440,29 @@ var ReportGrid = window.ReportGrid || {};
       }
     }
   }
+  
+  $.Bool = function(v) {
+    return v === true || v === 1 || (v = (""+v).toLowerCase()) == "true" || v == "on" || v == "1";
+  }
 
   $.Extend($.Config,
     {
-      analyticsServer: "" // TODO: Insert default location to analytics server
+      analyticsServer: "http://api.reportgrid.com/services/analytics/v0/",
+	  useJsonp : "true",
+	  enableLog : "false"
     }
   );
-
+  
   $.Config.analyticsServer = Util.removeTrailingSlash($.Config.analyticsServer);
 
   $.Http = function() {
-    return ReportGrid.$.Config.useJsonp ? ReportGrid.$.Http.Jsonp : ReportGrid.$.Http.Ajax;
+    return $.Bool(ReportGrid.$.Config.useJsonp) ? ReportGrid.$.Http.Jsonp : ReportGrid.$.Http.Ajax;
   }
 
   $.Http.Ajax  = Network.createHttpInterface(Network.doAjaxRequest);
   $.Http.Jsonp = Network.createHttpInterface(Network.doJsonpRequest);
 
-  var console = Util.getConsole();
+  var console = Util.getConsole($.Bool($.Config.enableLog));
 
   $.Log = {
     log:    function(text) { console.log(text);   },
@@ -802,9 +808,10 @@ var ReportGrid = window.ReportGrid || {};
 	  from:       path,
 	  properties: options.properties
 	};
-	
+
     var start = Util.normalizeTime(options, 'start');
     var end = Util.normalizeTime(options, 'end');
+
 	if(start) ob.start = start;
 	if(end) ob.end = end;
 	
