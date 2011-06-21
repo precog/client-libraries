@@ -16,6 +16,9 @@ class ReportGridAPI {
     
     private $_tokenID = null;
     
+    public $isError = false;
+    public $errorMessage = null;
+    
     /*
      * Initialize a new ReportGridAPI object
      *
@@ -261,7 +264,7 @@ class ReportGridAPI {
         
         $stream_context = stream_context_create($http_params);
         $file_pointer = fopen($json_endpoint, 'rb', false, $stream_context);
-        
+
         if (!$file_pointer) {
             $stream_contents = false;
         } else {
@@ -297,8 +300,23 @@ class ReportGridAPI {
                     $return_value = false;
                 }//end inner else           
             }//end middle else
+            
         } else {
-            throw new Exception("$verb $json_endpoint failed");
+
+            /*
+             * If there's an error message in the response 
+             * headers...send that back to the user
+             */
+            if (isset($http_response_header[0])) {
+                
+                $this->isError = true;
+                $this->errorMessage = $http_response_header[0];
+                $return_value = false;
+                
+            } else {
+                throw new Exception("$verb $json_endpoint failed");
+            }
+            
         }//end outer else
         
         return $return_value;

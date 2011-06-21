@@ -32,7 +32,7 @@ class Path private (private val path_ : String) {
 
   def - (that: Path): Path = if (this.path.startsWith(that.path)) {
     new Path(path.substring(that.path.length))
-  } else error("This path is not a descendent of that path: this = " + this.toString + ", that = " + that.toString)
+  } else sys.error("This path is not a descendent of that path: this = " + this.toString + ", that = " + that.toString)
 
   def / (that: Path) = new Path(this.path + "/" + that.path)
 
