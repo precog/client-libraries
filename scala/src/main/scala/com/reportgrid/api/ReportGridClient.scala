@@ -30,15 +30,25 @@ import scala.annotation.tailrec
 import rosetta.json.JsonImplementation
 import rosetta.io._
 
+case class Trackable[Json: JsonImplementation](path: Path, name: String, properties: Json, rollup: Boolean = false, timestamp: Option[Date] = None, count: Option[Int] = None, headers: Map[String, String] = Map.empty)
+
+trait ReportGridTrackingClient[Json] extends Serialization[Json] {
+  import jsonImplementation._
+
+  def track(trackable: Trackable[Json]): Unit = track(trackable.path, trackable.name, trackable.properties, trackable.rollup, trackable.timestamp, trackable.count)
+  def track(path: Path, name: String, properties: Json = EmptyObject, rollup: Boolean = false, timestamp: Option[Date] = None, count: Option[Int] = None, headers: Map[String, String] = Map.empty): Unit
+}
+
+
 /** Creates a new ReportGrid API based on the specified token, and implicitly
  * the Json implementation and HTTP client.
  */
-trait ReportGridClient[Json] extends Serialization[Json] {
+trait ReportGridClient[Json] extends ReportGridTrackingClient[Json] {
+  import jsonImplementation._
+
   val tokenId: String
   val config: ReportGridConfig
   protected val httpClient: HttpClient[String]
-
-  import jsonImplementation._
 
   lazy val AnalyticsServer: HttpClient[Json] =  httpClient.url(config.analyticsRootUrl).
                                                 query("tokenId", tokenId).
@@ -53,7 +63,7 @@ trait ReportGridClient[Json] extends Serialization[Json] {
    * @param timestamp   An optional timestamp denoting the time at which the event occurred.
    * @param count       An optional count of how many times the event occurred.
    */
-  def track(path: Path, name: String, properties: Json = EmptyObject, rollup: Boolean = false, timestamp: Option[Date] = None, count: Option[Int] = None): Unit = {
+  def track(path: Path, name: String, properties: Json = EmptyObject, rollup: Boolean = false, timestamp: Option[Date] = None, count: Option[Int] = None, headers: Map[String, String] = Map.empty): Unit = {
     val timestampM = timestamp.map { timestamp =>
       "timestamp" -> timestamp.getTime.serialize[Json]
     }
@@ -69,7 +79,7 @@ trait ReportGridClient[Json] extends Serialization[Json] {
     )
 
     paths.foreach { path =>
-      AnalyticsServer.post("vfs" + path.toString, data)
+      AnalyticsServer.post("vfs" + path.toString, data, headers)
     }
   }
 

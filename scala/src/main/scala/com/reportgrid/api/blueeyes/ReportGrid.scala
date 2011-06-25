@@ -26,16 +26,9 @@ package blueeyes
 
 import _root_.blueeyes.json.JsonAST.JValue
 import _root_.blueeyes.json.JsonAST.JObject
-import rosetta.json.blueeyes.JsonBlueEyes
+import rosetta.json.blueeyes._
 import java.util.Date
 
-trait BlueEyesReportGridClient extends ReportGridClient[JValue] {
-  val jsonImplementation = JsonBlueEyes
-}
-
-case class ReportGrid(tokenId: String, config: ReportGridConfig = ReportGridConfig.Production) extends BlueEyesReportGridClient {
+case class ReportGrid(tokenId: String, config: ReportGridConfig = ReportGridConfig.Production) extends ReportGridClient[JValue] {
   protected val httpClient = new HttpClientApache
 }
-
-case class Trackable(path: Path, name: String, properties: JObject = JObject(Nil), rollup: Boolean = false, timestamp: Option[Date] = None, count: Option[Int] = None)
-

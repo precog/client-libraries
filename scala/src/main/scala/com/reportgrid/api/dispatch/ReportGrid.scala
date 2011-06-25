@@ -25,12 +25,8 @@ package com.reportgrid.api
 package dispatch
 
 import _root_.dispatch.json.JsValue
-import rosetta.json.dispatch.JsonDispatch
+import rosetta.json.dispatch._
 
-trait DispatchReportGridClient extends ReportGridClient[JsValue] {
-  val jsonImplementation = JsonDispatch
-}
-
-case class ReportGrid(tokenId: String, config: ReportGridConfig = ReportGridConfig.Production) extends DispatchReportGridClient {
+case class ReportGrid(tokenId: String, config: ReportGridConfig = ReportGridConfig.Production) extends ReportGridClient[JsValue] {
   protected val httpClient = new HttpClientApache
 }

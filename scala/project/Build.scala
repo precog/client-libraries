@@ -19,7 +19,8 @@ object ScalaClientBuild extends Build {
       libraryDependencies ++= Seq(
         "org.apache.httpcomponents" %  "httpclient"          % "4.1.1",
         "net.databinder"            %% "dispatch-http-json"  % "0.8.3"   % "provided",
-        "net.liftweb"               %% "lift-json"           % "2.4-M2"  % "provided"
+        "net.liftweb"               %% "lift-json"           % "2.4-M2"  % "provided",
+        "org.scala-tools.testing"   %% "specs"               % "1.6.8"   % "test"
       )
     ) dependsOnAlt(blueeyes(base)) dependsOnAlt(rosetta(base)) 
     

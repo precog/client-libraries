@@ -28,9 +28,8 @@ import java.util.Date
 import rosetta.io._
 import rosetta.json.JsonImplementation
 
-trait Serialization[Json] {
-  val jsonImplementation: JsonImplementation[Json]
-
+abstract class Serialization[Json: JsonImplementation] {
+  val jsonImplementation = implicitly[JsonImplementation[Json]]
   import jsonImplementation._
 
   implicit val PathToJson = new JsonSerializer[Path] {
