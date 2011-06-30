@@ -46,10 +46,8 @@ class HttpClientApache extends HttpClient[String] {
 
     request.setURI(new java.net.URI(url))
 
-    headers.foreach { tuple =>
-      val (name, value) = tuple
-
-      request.setHeader(name, value)
+    headers.foreach { 
+      case (name, value) => request.setHeader(name, value)
     }
 
     content.foreach { content =>

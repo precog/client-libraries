@@ -95,7 +95,6 @@ trait ReportGridClient[Json] extends ReportGridTrackingClient[Json] {
   /** Lists all child properties of the specified path.
    *
    * @param path      The path, such as "/videos/1"
-   * @param property  The property, such as ".engagement.duration"
    */
   def listChildProperties(path: Path): List[Property] = list(path, None).collect {
     case Right(prop) => prop
