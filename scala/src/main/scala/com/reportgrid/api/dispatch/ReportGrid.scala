@@ -27,6 +27,5 @@ package dispatch
 import _root_.dispatch.json.JsValue
 import rosetta.json.dispatch._
 
-case class ReportGrid(tokenId: String, config: ReportGridConfig = ReportGridConfig.Production) extends ReportGridClient[JsValue] {
-  protected val httpClient = new HttpClientApache
-}
+case class ReportGrid(tokenId: String, server: Server = Server.Production) 
+extends ReportGridClient[JsValue](ReportGridConfig(tokenId, server, new HttpClientApache))

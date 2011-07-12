@@ -29,6 +29,5 @@ import _root_.blueeyes.json.JsonAST.JObject
 import rosetta.json.blueeyes._
 import java.util.Date
 
-case class ReportGrid(tokenId: String, config: ReportGridConfig = ReportGridConfig.Production) extends ReportGridClient[JValue] {
-  protected val httpClient = new HttpClientApache
-}
+case class ReportGrid(tokenId: String, server: Server = Server.Production) 
+extends ReportGridClient[JValue](ReportGridConfig(tokenId, server, new HttpClientApache))

@@ -32,26 +32,23 @@ import rosetta.io._
 
 case class Trackable[Json: JsonImplementation](path: Path, name: String, properties: Json, rollup: Boolean = false, timestamp: Option[Date] = None, count: Option[Int] = None, headers: Map[String, String] = Map.empty)
 
-trait ReportGridTrackingClient[Json] extends Serialization[Json] {
-  import jsonImplementation._
-
+abstract class ReportGridTrackingClient[Json](jsonImplementation: JsonImplementation[Json]) {
   def track(trackable: Trackable[Json]): Unit = track(trackable.path, trackable.name, trackable.properties, trackable.rollup, trackable.timestamp, trackable.count)
-  def track(path: Path, name: String, properties: Json = EmptyObject, rollup: Boolean = false, timestamp: Option[Date] = None, count: Option[Int] = None, headers: Map[String, String] = Map.empty): Unit
+  def track(path: Path, name: String, properties: Json = jsonImplementation.EmptyObject, rollup: Boolean = false, timestamp: Option[Date] = None, count: Option[Int] = None, headers: Map[String, String] = Map.empty): Unit
 }
 
 
 /** Creates a new ReportGrid API based on the specified token, and implicitly
  * the Json implementation and HTTP client.
  */
-trait ReportGridClient[Json] extends ReportGridTrackingClient[Json] {
+class ReportGridClient[Json](conf: ReportGridConfig)(implicit val jsonImplementation: JsonImplementation[Json]) extends ReportGridTrackingClient[Json](jsonImplementation) {
+  val serializer = new Serialization(jsonImplementation)
+
   import jsonImplementation._
+  import serializer._
 
-  val tokenId: String
-  val config: ReportGridConfig
-  protected val httpClient: HttpClient[String]
-
-  lazy val AnalyticsServer: HttpClient[Json] =  httpClient.url(config.analyticsRootUrl).
-                                                query("tokenId", tokenId).
+  lazy val AnalyticsServer: HttpClient[Json] =  conf.httpClient.url(conf.server.analyticsRootUrl).
+                                                query("tokenId", conf.tokenId).
                                                 contentType("application/json")
 
   /** Tracks the event with the specified name and properties.

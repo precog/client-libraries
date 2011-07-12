@@ -27,6 +27,5 @@ package lift
 import rosetta.json.lift._
 import net.liftweb.json.JValue
 
-case class ReportGrid(tokenId: String, config: ReportGridConfig = ReportGridConfig.Production) extends ReportGridClient[JValue] {
-  protected val httpClient = new HttpClientApache
-}
+case class ReportGrid(tokenId: String, server: Server = Server.Production) 
+extends ReportGridClient[JValue](ReportGridConfig(tokenId, server, new HttpClientApache))

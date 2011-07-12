@@ -23,16 +23,18 @@
  */
 package com.reportgrid.api
 
+case class ReportGridConfig(tokenId: String, server: Server, httpClient: HttpClient[String])
+
 /** Configuration information for the ReportGrid API.
  */
-case class ReportGridConfig(analyticsRootUrl: String)
+case class Server(analyticsRootUrl: String)
 
-object ReportGridConfig {
-  val Production = ReportGridConfig(
+object Server {
+  val Production = Server(
     analyticsRootUrl = "http://api.reportgrid.com/services/analytics/v0/"
   )
 
-  val Local = ReportGridConfig(
+  val Local = Server(
     analyticsRootUrl = "http://localhost:8888/"
   )
 }
