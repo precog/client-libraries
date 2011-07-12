@@ -5,6 +5,8 @@ import com.reportgrid.api.json.ToJson;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
+import java.util.ArrayList;
 import static java.net.URLEncoder.encode;
 
 /**
@@ -51,38 +53,51 @@ public class TrackingClient {
 	 * @param serializer The function used to serialize the event to a JSON string.
 	 * @throws IOException 
 	 */
-  public <T> void track(Path path, Event<T> event, ToJson<? super T> serializer) throws IOException {
-    URL trackingUrl = new URL(service.serviceUrl(), "vfs/" + path.relativize() + "?tokenId="+encode(tokenId, "UTF-8"));
-    HttpURLConnection conn = (HttpURLConnection) trackingUrl.openConnection();
-    conn.setDoOutput(true);
-    conn.setRequestMethod("POST");
-    conn.setRequestProperty("Content-Type", "application/json");
+  public <T> void track(Path path, Event<T> event, boolean rollup, ToJson<? super T> serializer) throws IOException {
+    List<Path> paths = new ArrayList<Path>();
+    paths.add(path);
 
-    String body = new StringBuilder("{")
-      .append("\"timestamp\":").append(event.getTimestamp().getTime()).append(",")
-      .append("\"events\":{")
-        .append("\"").append(event.getEventName()).append("\":").append(serializer.serialize(event.getEventData()))
-      .append("},")
-      .append("\"count\":").append(event.getCount())
-      .append("}")
-      .toString();
-
-    System.out.println(body);
-    
-    conn.setRequestProperty("Content-Length", "" + body.length());
-
-    DataOutputStream out = new DataOutputStream(conn.getOutputStream());
-    try {
-      out.writeBytes(body);
-    } finally {
-      out.flush();
-      out.close();
+    if (rollup) {
+      path = path.getPrefix();
+      while (path != null) {
+        paths.add(path);
+        path = path.getPrefix();
+      }
     }
 
-    if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
-      throw new IOException(
-              "Unexpected response from server: " + conn.getResponseCode() + ": " + conn.getResponseMessage() + 
-              "; tracking url " + trackingUrl); 
+    for (Path path : paths) {
+      URL trackingUrl = new URL(service.serviceUrl(), "vfs/" + path.relativize() + "?tokenId="+encode(tokenId, "UTF-8"));
+      HttpURLConnection conn = (HttpURLConnection) trackingUrl.openConnection();
+      conn.setDoOutput(true);
+      conn.setRequestMethod("POST");
+      conn.setRequestProperty("Content-Type", "application/json");
+
+      String body = new StringBuilder("{")
+        .append("\"timestamp\":").append(event.getTimestamp().getTime()).append(",")
+        .append("\"events\":{")
+          .append("\"").append(event.getEventName()).append("\":").append(serializer.serialize(event.getEventData()))
+        .append("},")
+        .append("\"count\":").append(event.getCount())
+        .append("}")
+        .toString();
+
+      System.out.println(body);
+      
+      conn.setRequestProperty("Content-Length", "" + body.length());
+
+      DataOutputStream out = new DataOutputStream(conn.getOutputStream());
+      try {
+        out.writeBytes(body);
+      } finally {
+        out.flush();
+        out.close();
+      }
+
+      if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
+        throw new IOException(
+                "Unexpected response from server: " + conn.getResponseCode() + ": " + conn.getResponseMessage() + 
+                "; tracking url " + trackingUrl); 
+      }
     }
   }
 }

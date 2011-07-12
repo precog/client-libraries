@@ -1,5 +1,6 @@
 package com.reportgrid.api;
 
+import com.reportgrid.api.json.gson.GsonToJson;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -16,11 +17,6 @@ import java.util.logging.Logger;
  * Unit test for simple tracking client.
  */
 public class ReportGridClientTest extends TestCase {
-		private static class GsonSerializer implements ToJson<Object> {
-				public String serialize(Object value) {
-					return new Gson().toJson(value);
-				}
-		}
 
 		private static class TestData {
 			private final int testInt = 42;	
@@ -59,7 +55,7 @@ public class ReportGridClientTest extends TestCase {
      * Rigorous Test :-)
      */
     public void testClient() throws IOException {
-			ToJson<Object> toJson = new GsonSerializer();
+			ToJson<Object> toJson = new GsonToJson();
 			TrackingClient testClient = new TrackingClient(Local, TrackingClient.TEST_TOKEN);
 
 			Event<TestData> testEvent = new Event<TestData>(new Date(), "test", new TestData(), 1);

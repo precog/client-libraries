@@ -40,6 +40,21 @@ public class Path {
 		}
 	}
 
+  /**
+   * Return the prefix of this path. May return null if the path is only
+   * one element long.
+   */
+  public Path getPrefix() {
+    String[] components = path.split("/");
+    if (components.length > 1) {
+      StringBuilder prefix = new StringBuilder();
+      for (int i = 0; i < components.length - 1; i++) prefix.append(components[i]).append("/");
+      return new Path(prefix.toString());
+    } else {
+      return null;
+    }
+  }
+
 	/**
 	 * Convert the path to a relative path.
 	 * @return 
