@@ -39,6 +39,7 @@ sealed trait Series extends Selection {
   def range: Option[(Date, Date)]
   override def pathFragment = "series/" + name
 }
+
 object Series {
   case class Minute(range: Option[(Date, Date)] = None) extends Series
   case class Hour  (range: Option[(Date, Date)] = None) extends Series
@@ -67,6 +68,10 @@ case object Count extends Selection {
   def range = None
   override def pathFragment = "count"
 }
+
+sealed trait SelectionResult 
+case class TimeSeries(periodicity: String, data: Map[Date, Long]) extends SelectionResult
+case class DeltaSet(zero: Long, data: Map[Long, Long]) extends SelectionResult
 
 
 sealed trait Condition[Json] { self =>

@@ -57,12 +57,13 @@ class HttpClientApache extends HttpClient[String] {
     val result: Either[Exception, String] = client.execute(request, new ResponseHandler[Either[Exception, String]] {
       def handleResponse(response: HttpResponse): Either[Exception, String] = {
         val statusLine = response.getStatusLine
+        val responseData = EntityUtils.toString(response.getEntity)
 
         if (statusLine.getStatusCode != 200) {
           Left(new Exception("HTTP " + method + " " + url + " (" +
             headers.mkString(", ") + "): [" + content.map(_.toString).getOrElse("") + "]: " + statusLine.getReasonPhrase))
         } else {
-          Right(EntityUtils.toString(response.getEntity))
+          Right(responseData)
         }
       }
     })

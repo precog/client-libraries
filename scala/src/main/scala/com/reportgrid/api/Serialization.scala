@@ -81,6 +81,39 @@ class Serialization[Json](val jsonImplementation: JsonImplementation[Json]) {
     )
   }
 
+  implicit def SelectionResultSerialization: JsonSerializer[SelectionResult] = new JsonSerializer[SelectionResult] {
+    def serialize(v: SelectionResult): Json = v match {
+      case TimeSeries(periodicity, data) => 
+        JsonObject(Map(
+          "periodicity" -> periodicity.serialize[Json],
+          "data" -> data.map{ case (k, v) => (k.getTime.toString, v)}.serialize[Json]
+        ))
+
+      case DeltaSet(zero, data) => 
+        JsonObject(Map(
+          "zero" -> zero.serialize[Json],
+          "data" -> data.map{ case (k, v) => (k.toString, v)}.serialize[Json]
+        ))
+    }
+    
+    def deserialize(v: Json): SelectionResult = {
+      v.get("periodicity") match {
+        case JsonNull =>
+          v.get("zero") match {
+            case JsonLong(l) => DeltaSet(l, v.get("data").deserialize[Iterable[(String, Long)]].map {
+              case (k, v) => (k.toLong, v)
+            }.toMap)
+            case JsonNull => sys.error("Selection result contained neither zero nor periodicity.")
+          }
+
+        case JsonString(periodicity) =>
+          TimeSeries(periodicity, v.get("data").deserialize[Iterable[(String, Long)]].map {
+            case (k, v) => (new Date(k.toLong), v)
+          }.toMap)
+      }
+    }
+  }
+
   implicit val ConditionToJson = new JsonSerializer[Condition[Json]] {
     def serialize(v: Condition[Json]): Json = v match {
       case Equals(p, v) => JsonObject(

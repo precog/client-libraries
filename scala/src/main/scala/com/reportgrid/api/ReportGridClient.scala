@@ -132,23 +132,15 @@ class ReportGridClient[Json](conf: ReportGridConfig)(implicit val jsonImplementa
    */
   def select(selection: Series) = new {
     def of(property: Property) = new {
-      def from(path: Path): List[(Date, Long)] = {
+      def from(path: Path): SelectionResult = {
         val url     = "vfs" + path.toString + property.value + "/" + selection.pathFragment
         val headers = headersFrom(selection)
-        try {
-          AnalyticsServer.get(url, headers).get(selection.name).deserialize[List[(Date, Long)]]
-        } catch {
-          case t: Throwable =>
-            println("url: " +  url)
-            println("headers: " + headers)
-            println("selection: " + selection.name)  
-            Nil
-        }
+        AnalyticsServer.get(url, headers).deserialize[SelectionResult]
       }
     }
 
     def from(path: Path) = new {
-      def where(condition: Condition[Json]): List[(Date, Long)] = {
+      def where(condition: Condition[Json]): SelectionResult = {
         val url  = "search"
         val data = JsonObject(
           ("select" -> selection.pathFragment.serialize[Json]) ::
@@ -157,7 +149,7 @@ class ReportGridClient[Json](conf: ReportGridConfig)(implicit val jsonImplementa
           rangeProperties(selection)
         )
 
-        AnalyticsServer.post(url, data).get(selection.name).deserialize[List[(Date, Long)]]
+        AnalyticsServer.post(url, data).deserialize[SelectionResult]
       }
     }
   }

@@ -80,7 +80,6 @@ trait HttpClient[T] { self =>
   final def contentType[S](contentTypeValue: String)(implicit serializer: Serializer[S, T]): HttpClient[S] = (new HttpClient[S] {
     def request(method: String, url: String, content: Option[S], headers: Map[String, String] = Map.empty[String, String]): S = {
       val response = self.request(method, url, content.map(serializer.serialize _), headers)
-
       serializer.deserialize(response)
     }
   }).header("Content-Type", contentTypeValue)
