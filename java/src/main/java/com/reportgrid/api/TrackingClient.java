@@ -65,8 +65,8 @@ public class TrackingClient {
       }
     }
 
-    for (Path path : paths) {
-      URL trackingUrl = new URL(service.serviceUrl(), "vfs/" + path.relativize() + "?tokenId="+encode(tokenId, "UTF-8"));
+    for (Path p : paths) {
+      URL trackingUrl = new URL(service.serviceUrl(), "vfs/" + p.relativize() + "?tokenId="+encode(tokenId, "UTF-8"));
       HttpURLConnection conn = (HttpURLConnection) trackingUrl.openConnection();
       conn.setDoOutput(true);
       conn.setRequestMethod("POST");
