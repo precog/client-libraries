@@ -100,16 +100,15 @@ class Serialization[Json](val jsonImplementation: JsonImplementation[Json]) {
       v.get("periodicity") match {
         case JsonNull =>
           v.get("zero") match {
-            case JsonLong(l) => DeltaSet(l, v.get("data").deserialize[Iterable[(String, Long)]].map {
+            case JsonLong(l) => DeltaSet(l, v.get("data").deserialize[List[(String, Long)]].map {
               case (k, v) => (k.toLong, v)
             }.toMap)
-            case JsonNull => sys.error("Selection result contained neither zero nor periodicity.")
+
+            case JsonNull => sys.error("Selection result " + v + " contained neither zero nor periodicity.")
           }
 
         case JsonString(periodicity) =>
-          TimeSeries(periodicity, v.get("data").deserialize[Iterable[(String, Long)]].map {
-            case (k, v) => (new Date(k.toLong), v)
-          }.toMap)
+          TimeSeries(periodicity, v.get("data").deserialize[List[(Date, Long)]].toMap)
       }
     }
   }
