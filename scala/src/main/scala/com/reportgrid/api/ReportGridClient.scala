@@ -33,7 +33,7 @@ import rosetta.io._
 case class Trackable[Json: JsonImplementation](path: Path, name: String, properties: Json, rollup: Boolean = false, timestamp: Option[Date] = None, count: Option[Int] = None, headers: Map[String, String] = Map.empty)
 
 abstract class ReportGridTrackingClient[Json](jsonImplementation: JsonImplementation[Json]) {
-  def track(trackable: Trackable[Json]): Unit = track(trackable.path, trackable.name, trackable.properties, trackable.rollup, trackable.timestamp, trackable.count)
+  def track(trackable: Trackable[Json]): Unit = track(trackable.path, trackable.name, trackable.properties, trackable.rollup, trackable.timestamp, trackable.count, trackable.headers)
   def track(path: Path, name: String, properties: Json = jsonImplementation.EmptyObject, rollup: Boolean = false, timestamp: Option[Date] = None, count: Option[Int] = None, headers: Map[String, String] = Map.empty): Unit
 }
 
