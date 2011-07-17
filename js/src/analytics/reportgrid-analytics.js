@@ -1,0 +1,110 @@
+// ReportGrid analytics client library
+
+(function ($) {
+  var
+
+  default_options = {pageEngagement:    'queueing',
+                     elementEngagement: 'none',
+                     reportParentPaths:  false,
+                     attention:          false},
+
+  // Script options: This becomes a hash that incorporates the default
+  // options with user overrides.
+
+    script_options = (function (querystring) {
+      for (var specified_options = {},
+               segments          = querystring.split(/&/),
+               current_kv_pair   = null,
+               i = 0, l = segments.length; i < l; ++i)
+
+        specified_options[(current_kv_pair = segments[i].split(/=/))[0]] =
+          current_kv_pair.slice(1).join('=');
+
+      return $.extend({}, default_options, specified_options);
+    })($('script').eq(-1).attr('src').replace(/^.*\?/, '')),
+
+  // Page path construction: The page's URL without a querystring or 'www.'
+  // prefix.
+
+    path_parser = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)\/([^?#]+)(?:\?[^#]*)?(#.*)?$/i,
+    normalize_path = function (path) {
+      return [].join.call(path_parser.exec(path), '/');
+    },
+
+    page_path = '/' + normalize_path(document.location.href),
+
+  // User identification: Check the cookie to see whether the user
+  // already has an identity. Otherwise provide a new one.
+
+    from_regexp = function (re, s) {
+      var result = re.exec(s);
+      return result && result[1];
+    },
+
+    in_a_century = (function (d) {
+      d.setDate(d.getDate() + 36500);
+      return d;
+    })(new Date()),
+
+    cookie = function (name, value) {
+      if (arguments.length > 1)
+        return from_regexp(new RegExp('\\b' + name + '=([^;]*)'), document.cookie);
+      document.cookie = name + '=' + value + '; expires=' + in_a_century.toUTCString();
+    },
+
+    new_user_identity = function () {
+      for (var uuid = '', i = 0; i < 32; ++i)
+        uuid += (Math.random() * 16 >>> 0).toString(16);
+
+      return cookie('reportgrid_identity', uuid);
+    },
+
+    user_identity = from_regexp(/\breportgrid_identity=([^;]*)/, document.cookie) ||
+                    new_user_identity(),
+
+  // Browser detection: Generalize the rendering engine and version to a
+  // standard format.
+
+    browser_version = ($.browser.msie    ? 'IE' :
+                       $.browser.mozilla ? 'FF' :
+                       $.browser.opera   ? 'Opera' : 'Webkit') +
+                      parseInt($.browser.version),
+
+  // Referrer detection: See whether a referrer exists, and if so normalize the
+  // path like we did with the one for this page.
+
+    referrer = !! document.referrer && normalize_path(document.referrer),
+
+  // Search engine keywords: Detect certain referrers and parse the query
+  // string to find out what the user was searching for.
+
+    google_search =
+      /^http:\/\/www\.google\.com/.test(document.referrer) &&
+      decodeURIComponent(from_regexp(/[\?&]q=([^&]*)/, document.referrer)),
+
+    yahoo_search  =
+      /^http:\/\/search\.yahoo\.com/.test(document.referrer) &&
+      decodeURIComponent(from_regexp(/[\?&]p=([^&]*)/, document.referrer)).replace(/+/g, ' '),
+
+    bing_search   =
+      /^http:\/\/www\.bing\.com/.test(document.referrer) &&
+      decodeURIComponent(from_regexp(/[\?&]q=([^&]*)/, document.referrer)).replace(/+/g, ' '),
+
+    search_keywords = google_search || yahoo_search || bing_search || '',
+
+  // Time offset detection: See what the difference is between local time and
+  // UTC. This tells us the timezone of the user.
+
+    time_offset = new Date().getHours() - new Date().getUTCHours(),
+
+  // Standard event properties: These are automatically attached to each event.
+  // Custom properties can be added as well.
+
+    standard_event_properties = function () {
+    };
+
+  // Event tracking function: Make it simpler to track events by preloading the
+  // page path and a standard set of event properties.
+
+
+})(jQuery);

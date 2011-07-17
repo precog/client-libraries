@@ -6,9 +6,7 @@ jquery_version=1.4-modified
 closure_compiler=closure-compiler/compiler.jar
 
 echo 1/4 Compiling source from individual files...
-cat ../jquery.$jquery_version.js ../jquery.path.js \
-    ../jquery.browser.js ../jquery.cookie.js \
-    ../jquery.identification.js \
+cat ../jquery.$jquery_version.js ../reportgrid-analytics.js \
   > ./reportgrid-analytics-uncompressed.js
 
 echo 2/4 Using closure compiler to perform dead code elimination...
