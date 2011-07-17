@@ -1,0 +1,32 @@
+#!/bin/bash
+# Constructs a minified build of the ReportGrid client library. This uses the
+# Google closure compiler and builds both regular and gzipped versions.
+
+jquery_version=1.4-modified
+closure_compiler=closure-compiler/compiler.jar
+
+echo 1/4 Compiling source from individual files...
+cat ../jquery.$jquery_version.js ../jquery.path.js \
+    ../jquery.browser.js ../jquery.cookie.js \
+    ../jquery.identification.js \
+  > ./reportgrid-analytics-uncompressed.js
+
+echo 2/4 Using closure compiler to perform dead code elimination...
+java -jar $closure_compiler --compilation_level=ADVANCED_OPTIMIZATIONS \
+  --js ./reportgrid-analytics-uncompressed.js \
+  --js_output_file ./reportgrid-analytics.js
+
+echo 3/4 Using closure compiler to perform basic minification...
+java -jar $closure_compiler --compilation_level=SIMPLE_OPTIMIZATIONS \
+  --js ./reportgrid-analytics-uncompressed.js \
+  --js_output_file ./reportgrid-analytics-uncompressed-minified.js
+
+echo 4/4 Gzipping result...
+gzip --best -c ./reportgrid-analytics.js > ./reportgrid-analytics.js.gz
+
+# Step 4. Report sizes to the user.
+echo
+echo Uncompressed bytes: $(wc -c ./reportgrid-analytics-uncompressed.js)
+echo Simply-minified bytes: $(wc -c ./reportgrid-analytics-uncompressed-minified.js)
+echo Closure-reduced bytes: $(wc -c ./reportgrid-analytics.js)
+echo Gzipped bytes: $(wc -c ./reportgrid-analytics.js.gz)
