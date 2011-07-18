@@ -32,6 +32,7 @@ The following features are functional:
 3. Unique visitor detection
 4. Repeat visitor detection
 5. Client timezone tracking
+6. Referrer tracking
 
 The following features are either unimplemented or are in progress:
 
@@ -40,5 +41,4 @@ The following features are either unimplemented or are in progress:
 3. Attention tracking
 4. Browser version, OS, and platform tracking
 5. Engagement / interaction totaling
-6. Referer tracking
-7. Search engine keyword tracking
+6. Search engine keyword tracking

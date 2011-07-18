@@ -121,6 +121,17 @@
 
     time_offset = new Date().getHours() - new Date().getUTCHours(),
 
+  // Element identity: Given an element, determine a reasonably small path that
+  // identifies it within the document.
+
+    identity_of = function (element) {
+      if (element.attr('id')) return element.attr('id');
+      var node_and_classes =
+        [element[0].nodeName].concat(element[0].className.split(/\s+/)).join('.');
+      if ($(node_and_classes).length === 1) return node_and_classes;
+      else identity_of(element.parent()) + ' > :eq(' + element.index() + ')';
+    },
+
   // Standard event properties: These are automatically attached to each event.
   // Custom properties can be added as well.
 
@@ -148,7 +159,9 @@
 
   // Visit/load tracking
   track('visited');
-  $(function () {track('loaded')});
+
+  var script_load_time = +new Date();
+  $(function () {track('loaded', {'~delay': +new Date() - script_load_time})});
 
   // Unique visit tracking
   if (user_is_unique) track('uniqueVisited');
@@ -161,11 +174,13 @@
                      node_name === 'button' ? 'buttonClicked' :
                      node_name === 'input'  ? 'submitClicked' :
                                                node_name + 'Clicked';
-    track(event_name);
+    track(event_name, {element:   identity_of($(this)),
+                       newWindow: $(this).attr('target') === '_blank'});
   });
 
+  // Email link tracking
   $('a[href^="mailto:"]').live('click', function (e) {
-    track('emailed');
+    track('emailed', {address: $(this).attr('href').replace(/^mailto:/, '')});
   });
 
 })(jQuery);
