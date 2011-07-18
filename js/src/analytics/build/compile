@@ -17,7 +17,7 @@ cp ../reportgrid-analytics.js reportgrid-analytics-uncompressed.js
 wc -c < reportgrid-analytics-uncompressed.js
 
 echo -n "2. minifying using closure compiler; size is "
-java -jar $closure_compiler --compilation_level ADVANCED_OPTIMIZATIONS \
+java -jar $closure_compiler --compilation_level SIMPLE_OPTIMIZATIONS \
   --js reportgrid-analytics-uncompressed.js \
   --js_output_file reportgrid-analytics.js
 wc -c < reportgrid-analytics.js

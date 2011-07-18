@@ -46,3 +46,4 @@ The following features are either unimplemented or are in progress:
 
 1. Attention tracking
 2. OS and platform platform tracking
+3. Bounce tracking (this may be covered by visits, unique visits, and referrers)

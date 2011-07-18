@@ -18,6 +18,10 @@
     return result && result[1];
   };
 
+  var round_to = function (n, rounding_base) {
+    return Math.round(n / rounding_base) * rounding_base;
+  };
+
 
   /**
    * Option parsing.
@@ -28,14 +32,19 @@
    *
    * interaction:       true (default) | false
    * attention:         true           | false (default)
-   * scroll:            true           | false (default)
+   * scrolling:         true           | false (default)
    */
 
   var script_options = (function () {
     var default_options   = {pageEngagement: 'queueing',
                              interaction:    false,
                              attention:      false,
-                             scroll:         false};
+                             scrolling:      false};
+
+    var schema            = {pageEngagement: /^queueing|polling|none$/,
+                             interaction:    /^true|false$/,
+                             attention:      /^true|false$/,
+                             scrolling:      /^true|false$/};
 
     var query_string      = $('script').eq(-1).attr('src').replace(/^.*\?/, '');
     var segments          = query_string.split(/&/);
@@ -51,6 +60,16 @@
     for (var i = 0, l = segments.length; i < l; ++i)
       specified_options[(current_kv_pair = segments[i].split(/=/))[0]] =
         parse(current_kv_pair.slice(1).join('='));
+
+    for (var k in specified_options) {
+      if (schema.hasOwnProperty(k) && specified_options.hasOwnProperty(k) &&
+          ! schema[k].test(specified_options[k]))
+        throw new Error('Invalid parameter for option "' + k + '": ' +
+                        specified_options[k]);
+
+      if (specified_options.hasOwnProperty(k) && ! schema.hasOwnProperty(k))
+        throw new Error('Unrecognized option: "' + k + '"');
+    }
 
     return $.extend({}, default_options, specified_options);
   })();
@@ -126,7 +145,7 @@
     return time_since_last_visit > 3600000 * 24 * 30 ? 'yearly' :
            time_since_last_visit > 3600000 * 24 * 7  ? 'monthly' :
            time_since_last_visit > 3600000 * 24      ? 'weekly' :
-           time_since_last_visit                     ? 'hourly' :
+           time_since_last_visit > 1000              ? 'hourly' :
                                                        'new';
   })();
 
@@ -221,7 +240,7 @@
     return {browserVersion:   browser_version,
             totalVisits:      user_visits,
             totalInteraction: user_total_interactions,
-            totalEngagement:  user_total_engagement + time_since_page_load(),
+            totalEngagement:  round_to(user_total_engagement + time_since_page_load(), 1000),
             referrer:         referrer,
             timeOffset:       time_offset,
             '~keywords':      search_keywords};
@@ -269,15 +288,17 @@
    *
    * Third, a page-load event is triggered once the page is done loading. This
    * contains a 'delay' field to indicate the delay perceived by the user. The
-   * delay is recorded in milliseconds.
+   * delay is recorded in milliseconds and rounded to the nearest 50.
    */
 
   track('visited');
 
-  if (user_is_unique) track('uniqueVisited');
-  else                track('repeatVisited', {timeFrame: last_visit_interval});
+  if (user_is_unique)
+    track('uniqueVisited');
+  else
+    track('repeatVisited', {timeFrame: last_visit_interval});
 
-  $(function () {track('loaded', {'~delay': time_since_page_load()})});
+  $(function () {track('loaded', {delay: round_to(time_since_page_load(), 50)})});
 
 
   /**
@@ -326,17 +347,17 @@
    * Scroll tracking.
    * The page is broken into ten virtual regions. When a region becomes visible
    * to the user, we fire off a 'saw' event (i.e. the user saw this region).
-   * Because this creates many API calls, scroll tracking is disabled by
-   * default.
+   * Because this creates up to 11 extra API calls per page view, this option
+   * is disabled by default.
    */
 
   var lowest_visible_region = 0;
 
-  if (script_options.scroll)
+  if (script_options.scrolling)
     setInterval(function () {
       var window_height   = $(window).height();
       var window_top      = $(window).scrollTop();
-      var document_height = $(document).height();
+      var document_height = $('body').height();
 
       var visibility      = (window_height + window_top) / document_height * 10 >>> 0;
 
@@ -354,23 +375,25 @@
    * interaction tracking, then every page element will track interactions.
    */
 
-    $('*').live('click', function (e) {
+  $('*').live('click', function (e) {
+    if (e.target === this) {
+      ++user_total_interactions;
+
       if (script_options.interaction)
         track('interaction', {element: identity_of($(this)),
                               type:    'click'});
+    }
+  });
 
+  $('*').live('keypress', function (e) {
+    if (e.target === this && e.which === 13) {
       ++user_total_interactions;
-    });
 
-    $('*').live('keypress', function (e) {
-      if (e.which === 13) {
-        if (script_options.interaction)
-          track('interaction', {element: identity_of($(this)),
-                                type:    'enterKey'});
-
-        ++user_total_interactions;
-      }
-    });
+      if (script_options.interaction)
+        track('interaction', {element: identity_of($(this)),
+                              type:    'enterKey'});
+    }
+  });
 
 
   /**
@@ -403,7 +426,7 @@
       cookie('reportgrid_page_engagement_time') &&
       cookie('reportgrid_page_engagement_last_url'))
 
-    track('engagedQueueing', {time: +cookie('reportgrid_page_engagement_time')},
+    track('engagedQueueing', {time: round_to(+cookie('reportgrid_page_engagement_time'), 100)},
                              cookie('reportgrid_page_engagement_last_url'));
 
   cookie('reportgrid_page_engagement_last_url', page_path);
@@ -430,7 +453,7 @@
 
   var setup_engagement_polling = function (interval) {
     setTimeout(function () {
-      track('engagedPolling', {time: time_since_page_load()});
+      track('engagedPolling', {time: round_to(time_since_page_load(), 1000)});
       setup_engagement_polling(interval * 2);
     }, interval);
   };
