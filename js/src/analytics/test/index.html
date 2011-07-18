@@ -3,16 +3,17 @@
 
   <title>ReportGrid Analytics Test Page</title>
 
-  <!-- Using the latest jQuery -->
   <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.js'></script>
 
-  <!-- Use the script that reuses the jQuery on the page -->
-  <script src='../build/reportgrid-analytics-no-jquery.js'></script>
+  <script src='../../reportgrid-core.js'></script>
+  <script src='../build/reportgrid-analytics-uncompressed.js'></script>
   </head>
 
   <body>
     <h1 id='section1'>Section</h1>
     <p>Some text that might get clicked on or interacted with</p>
+    <a href='#woot'>A link</a>
+    <button>A button that the user might click on</button>
 
     <form action='http://google.com/search' method='GET'>
       <input name='q'></input>

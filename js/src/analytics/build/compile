@@ -13,8 +13,7 @@ if [[ ! -f $closure_compiler ]]; then
 fi
 
 echo -n "1. assembling uncompressed file; size is "
-cat ../../reportgrid-core.js ../reportgrid-analytics.js \
-  > reportgrid-analytics-uncompressed.js
+cp ../reportgrid-analytics.js reportgrid-analytics-uncompressed.js
 wc -c < reportgrid-analytics-uncompressed.js
 
 echo -n "2. minifying using closure compiler; size is "

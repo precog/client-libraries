@@ -28,7 +28,7 @@
 
     path_parser = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)\/([^?#]+)(?:\?[^#]*)?(#.*)?$/i,
     normalize_path = function (path) {
-      return [].join.call(path_parser.exec(path), '/');
+      return [].join.call([].slice.call(path_parser.exec(path), 1), '/');
     },
 
     page_path = '/' + normalize_path(document.location.href),
@@ -47,9 +47,10 @@
     })(new Date()),
 
     cookie = function (name, value) {
-      if (arguments.length > 1)
+      if (arguments.length <= 1)
         return from_regexp(new RegExp('\\b' + name + '=([^;]*)'), document.cookie);
       document.cookie = name + '=' + value + '; expires=' + in_a_century.toUTCString();
+      return value;
     },
 
     user_is_unique = false,
@@ -58,7 +59,6 @@
       user_is_unique = true;
       for (var uuid = '', i = 0; i < 32; ++i)
         uuid += (Math.random() * 16 >>> 0).toString(16);
-
       return cookie('reportgrid_identity', uuid);
     },
 
@@ -83,7 +83,7 @@
     last_visit_interval = time_since_last_visit > 3600000 * 24 * 30 ? 'yearly' :
                           time_since_last_visit > 3600000 * 24 * 7  ? 'monthly' :
                           time_since_last_visit > 3600000 * 24      ? 'weekly' :
-                          time_since_last_visit > 3600000           ? 'hourly' :
+                          time_since_last_visit                     ? 'hourly' :
                                                                       'new',
 
   // Browser detection: Generalize the rendering engine and version to a
@@ -139,7 +139,7 @@
       var event_object = {};
       event_object[event_type] = $.extend({}, standard_event_properties(),
                                               properties || {});
-      return ReportGrid.track(page_path, event_object);
+      return ReportGrid.track(page_path, {event: event_object});
     };
 
   // Individual events.
@@ -150,6 +150,10 @@
   track('visited');
   $(function () {track('loaded')});
 
+  // Unique visit tracking
+  if (user_is_unique) track('uniqueVisited');
+  else                track('repeatVisited', {timeFrame: last_visit_interval});
+
   // Link/button/etc. click tracking
   $('a, button, input[type="submit"]').live('click', function (e) {
     var node_name  = this.nodeName.toLowerCase(),
@@ -158,6 +162,10 @@
                      node_name === 'input'  ? 'submitClicked' :
                                                node_name + 'Clicked';
     track(event_name);
+  });
+
+  $('a[href^="mailto:"]').live('click', function (e) {
+    track('emailed');
   });
 
 })(jQuery);

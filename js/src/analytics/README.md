@@ -25,17 +25,20 @@ The following options are supported:
 Implementation status
 =====================
 
-The following features are either unimplemented or are in progress:
+The following features are functional:
 
 1. Click tracking
-2. Engagement tracking
-3. Form submission tracking
-4. Page load / visit tracking
-5. Unique visitor detection
-6. Repeat visitor detection
-7. Attention tracking
-8. Browser version, OS, and platform tracking
-9. Engagement / interaction totaling
-10. Referer tracking
-11. Search engine keyword tracking
-12. Client timezone tracking
+2. Page load / visit tracking
+3. Unique visitor detection
+4. Repeat visitor detection
+5. Client timezone tracking
+
+The following features are either unimplemented or are in progress:
+
+1. Engagement tracking
+2. Form submission tracking
+3. Attention tracking
+4. Browser version, OS, and platform tracking
+5. Engagement / interaction totaling
+6. Referer tracking
+7. Search engine keyword tracking
