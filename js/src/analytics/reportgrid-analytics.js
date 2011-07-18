@@ -183,4 +183,13 @@
     track('emailed', {address: $(this).attr('href').replace(/^mailto:/, '')});
   });
 
+  // Queueing engagement tracking
+  if (script_options.pageEngagement === 'queueing' &&
+      +cookie('reportgrid_page_view_time'))
+    track('engaged', {time: +cookie('reportgrid_page_view_time')});
+
+  setInterval(function () {
+    cookie('reportgrid_page_view_time', +new Date() - script_load_time);
+  }, 100);
+
 })(jQuery);
