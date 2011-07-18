@@ -2,6 +2,17 @@
 
 (function ($) {
 
+  /**
+   * Utility functions.
+   * Because time is a side-effect, these functions are located at the top of
+   * the script.
+   */
+
+  var script_load_time = +new Date();
+  var time_since_page_load = function () {
+    return +new Date() - script_load_time;
+  };
+
   var from_regexp = function (re, s) {
     var result = re.exec(s);
     return result && result[1];
@@ -14,25 +25,32 @@
    * currently-supported parameters are:
    *
    * pageEngagement:    queueing (default) | polling | none
-   * elementEngagement: queueing           | polling | none (default)
-   * reportParentPaths: true | false (default)
-   * attention:         true | false (default)
+   *
+   * interaction:       true (default) | false
+   * attention:         true           | false (default)
+   * scroll:            true           | false (default)
    */
 
-  var default_options = {pageEngagement:    'queueing',
-                         elementEngagement: 'none',
-                         reportParentPaths:  false,
-                         attention:          false};
-
   var script_options = (function () {
+    var default_options   = {pageEngagement: 'queueing',
+                             interaction:    false,
+                             attention:      false,
+                             scroll:         false};
+
     var query_string      = $('script').eq(-1).attr('src').replace(/^.*\?/, '');
     var segments          = query_string.split(/&/);
     var current_kv_pair   = null;
     var specified_options = {};
 
+    var parse = function (value) {
+      if (value === 'false') return false;
+      if (value == +value)   return +value;
+      return value;
+    };
+
     for (var i = 0, l = segments.length; i < l; ++i)
       specified_options[(current_kv_pair = segments[i].split(/=/))[0]] =
-        current_kv_pair.slice(1).join('=');
+        parse(current_kv_pair.slice(1).join('='));
 
     return $.extend({}, default_options, specified_options);
   })();
@@ -111,6 +129,9 @@
            time_since_last_visit                     ? 'hourly' :
                                                        'new';
   })();
+
+  var user_total_interactions = 0;
+  var user_total_engagement   = +cookie('reportgrid_total_engagement') || 0;
 
 
   /**
@@ -197,11 +218,13 @@
    */
 
   var standard_event_properties = function () {
-    return {browserVersion: browser_version,
-            totalVisits:    user_visits,
-            referrer:       referrer,
-            timeOffset:     time_offset,
-            '~keywords':    search_keywords};
+    return {browserVersion:   browser_version,
+            totalVisits:      user_visits,
+            totalInteraction: user_total_interactions,
+            totalEngagement:  user_total_engagement + time_since_page_load(),
+            referrer:         referrer,
+            timeOffset:       time_offset,
+            '~keywords':      search_keywords};
   };
 
 
@@ -254,11 +277,6 @@
   if (user_is_unique) track('uniqueVisited');
   else                track('repeatVisited', {timeFrame: last_visit_interval});
 
-  var script_load_time = +new Date();
-  var time_since_page_load = function () {
-    return +new Date() - script_load_time;
-  };
-
   $(function () {track('loaded', {'~delay': time_since_page_load()})});
 
 
@@ -282,6 +300,77 @@
     track(event_name, {element:   identity_of($(this)),
                        newWindow: $(this).attr('target') === '_blank'});
   });
+
+
+  /**
+   * Form submit tracking.
+   * This is not the same as the user clicking a 'submit' button. The main
+   * difference is that a form-submit event also includes the values of input
+   * fields with finite numbers of possibilities. Right now this includes
+   * <select> and <input type='checkbox'>.
+   */
+
+  $('form').live('submit', function (e) {
+    var children  = $(this).find('select, input[type="checkbox"]');
+    var form_data = {};
+
+    children.each(function () {
+      form_data[identity_of($(this))] = $(this).val();
+    });
+
+    track('formSubmitted', form_data);
+  });
+
+
+  /**
+   * Scroll tracking.
+   * The page is broken into ten virtual regions. When a region becomes visible
+   * to the user, we fire off a 'saw' event (i.e. the user saw this region).
+   * Because this creates many API calls, scroll tracking is disabled by
+   * default.
+   */
+
+  var lowest_visible_region = 0;
+
+  if (script_options.scroll)
+    setInterval(function () {
+      var window_height   = $(window).height();
+      var window_top      = $(window).scrollTop();
+      var document_height = $(document).height();
+
+      var visibility      = (window_height + window_top) / document_height * 10 >>> 0;
+
+      if (visibility > lowest_visible_region) {
+        track('saw', {region: visibility});
+        lowest_visible_region = visibility;
+      }
+    }, 100);
+
+
+  /**
+   * Interaction tracking.
+   * Any element that is clicked on or that receives an 'enter' keypress event
+   * is considered to have been interacted with. If the script options specify
+   * interaction tracking, then every page element will track interactions.
+   */
+
+    $('*').live('click', function (e) {
+      if (script_options.interaction)
+        track('interaction', {element: identity_of($(this)),
+                              type:    'click'});
+
+      ++user_total_interactions;
+    });
+
+    $('*').live('keypress', function (e) {
+      if (e.which === 13) {
+        if (script_options.interaction)
+          track('interaction', {element: identity_of($(this)),
+                                type:    'enterKey'});
+
+        ++user_total_interactions;
+      }
+    });
 
 
   /**
@@ -314,13 +403,39 @@
       cookie('reportgrid_page_engagement_time') &&
       cookie('reportgrid_page_engagement_last_url'))
 
-    track('engaged', {time: +cookie('reportgrid_page_engagement_time')},
-                     cookie('reportgrid_page_engagement_last_url'));
+    track('engagedQueueing', {time: +cookie('reportgrid_page_engagement_time')},
+                             cookie('reportgrid_page_engagement_last_url'));
 
   cookie('reportgrid_page_engagement_last_url', page_path);
 
   setInterval(function () {
     cookie('reportgrid_page_engagement_time', time_since_page_load());
+    cookie('reportgrid_user_total_engagement',
+           user_total_engagement + time_since_page_load());
   }, 100);
+
+
+  /**
+   * Engagement tracking (polling).
+   * This uses a logarithmic event progression to continuously monitor the
+   * amount of time spent on the page. The first event is fired after one
+   * second, the next after two, the next after four, etc.
+   *
+   * It is important to separate observations made by queueing from those made
+   * by polling. The reason is that queueing events are non-cumulative; a user
+   * engaged for 10 seconds will emit exactly one event. Polling observations,
+   * on the other hand, are cumulative; a user engaged for 10 seconds will emit
+   * four events: engaged for 1 second, engaged for 2, 4, and 8.
+   */
+
+  var setup_engagement_polling = function (interval) {
+    setTimeout(function () {
+      track('engagedPolling', {time: time_since_page_load()});
+      setup_engagement_polling(interval * 2);
+    }, interval);
+  };
+
+  if (script_options.pageEngagement === 'polling')
+    setup_engagement_polling(1000);
 
 })(jQuery);

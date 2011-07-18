@@ -1,12 +1,16 @@
 Analytics library
 =================
 
-The analytics library automates the process of monitoring events on a page. Two
-scripts are provided to do this. One, `reportgrid-analytics.js`, includes a
-bundled copy of jQuery 1.4.0; the other, `reportgrid-analytics-no-jquery.js`,
-requires that you have jQuery enabled on the page already (and is
-correspondingly smaller). Apart from this usage distinction they have identical
-behavior.
+The analytics library automates the process of monitoring events on a page.
+Usage involves loading jQuery, loading the ReportGrid client core, and then
+loading the analytics script:
+
+    <script src='/path/to/jquery.js'></script>
+    <script src='/path/to/reportgrid-core.js'></script>
+    <script src='/path/to/reportgrid-analytics.js'></script>
+
+Production builds of `reportgrid-analytics.js` are located in the `build/`
+directory.
 
 Usage
 =====
@@ -16,16 +20,12 @@ in the script's URL. For example:
 
     <script src='/path/to/analytics.js?option=value&option=value'></script>
 
-The following options are supported:
-
-* `pageEngagement` = `queueing`, `polling`, or `none`. Defaults to `queueing`.
-* `elementEngagement` = `queueing`, `polling`, or `none`. Defaults to `none`.
-* `attention` = `true` or `false`. Defaults to `false`.
+The list of available options is documented in `reportgrid-analytics.js`.
 
 Implementation status
 =====================
 
-The following features are functional:
+The following features are implemented:
 
 1. Click tracking
 2. Page load / visit tracking
@@ -33,12 +33,16 @@ The following features are functional:
 4. Repeat visitor detection
 5. Client timezone tracking
 6. Referrer tracking
+7. Engagement tracking (queueing)
+8. Form submission tracking
+9. Scroll tracking
+10. Browser version tracking
+11. Search engine keyword tracking
+12. Interaction tracking
 
 The following features are either unimplemented or are in progress:
 
-1. Engagement tracking
-2. Form submission tracking
-3. Attention tracking
-4. Browser version, OS, and platform tracking
-5. Engagement / interaction totaling
-6. Search engine keyword tracking
+1. Engagement tracking (polling)
+2. Attention tracking
+3. OS and platform platform tracking
+4. Engagement / interaction totaling
