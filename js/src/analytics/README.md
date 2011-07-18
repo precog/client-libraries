@@ -39,10 +39,10 @@ The following features are implemented:
 10. Browser version tracking
 11. Search engine keyword tracking
 12. Interaction tracking
+13. Engagement / interaction totaling
+14. Engagement tracking (polling)
 
 The following features are either unimplemented or are in progress:
 
-1. Engagement tracking (polling)
-2. Attention tracking
-3. OS and platform platform tracking
-4. Engagement / interaction totaling
+1. Attention tracking
+2. OS and platform platform tracking
