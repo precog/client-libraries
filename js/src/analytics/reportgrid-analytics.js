@@ -52,15 +52,39 @@
       document.cookie = name + '=' + value + '; expires=' + in_a_century.toUTCString();
     },
 
+    user_is_unique = false,
+
     new_user_identity = function () {
+      user_is_unique = true;
       for (var uuid = '', i = 0; i < 32; ++i)
         uuid += (Math.random() * 16 >>> 0).toString(16);
 
       return cookie('reportgrid_identity', uuid);
     },
 
-    user_identity = from_regexp(/\breportgrid_identity=([^;]*)/, document.cookie) ||
-                    new_user_identity(),
+    user_identity = cookie('reportgrid_identity') || new_user_identity(),
+
+    user_visits = cookie('reportgrid_total_visits',
+                    (+cookie('reportgrid_total_visits') || 0) + 1),
+
+  // Repeat visitor timeframe: If the user has been here before, then they'll
+  // have a timestamp cookie indicating when they last visited. We read this to
+  // determine the time interval of their last visit. This could be daily,
+  // weekly, monthly, or yearly.
+
+    last_visit_time = function () {
+      var original = cookie('reportgrid_last_visit') || +new Date();
+      cookie('reportgrid_last_visit', +new Date());
+      return original;
+    },
+
+    time_since_last_visit = +new Date() - last_visit_time(),
+
+    last_visit_interval = time_since_last_visit > 3600000 * 24 * 30 ? 'yearly' :
+                          time_since_last_visit > 3600000 * 24 * 7  ? 'monthly' :
+                          time_since_last_visit > 3600000 * 24      ? 'weekly' :
+                          time_since_last_visit > 3600000           ? 'hourly' :
+                                                                      'new',
 
   // Browser detection: Generalize the rendering engine and version to a
   // standard format.
@@ -82,11 +106,11 @@
       /^http:\/\/www\.google\.com/.test(document.referrer) &&
       decodeURIComponent(from_regexp(/[\?&]q=([^&]*)/, document.referrer)),
 
-    yahoo_search  =
+    yahoo_search =
       /^http:\/\/search\.yahoo\.com/.test(document.referrer) &&
       decodeURIComponent(from_regexp(/[\?&]p=([^&]*)/, document.referrer)).replace(/+/g, ' '),
 
-    bing_search   =
+    bing_search =
       /^http:\/\/www\.bing\.com/.test(document.referrer) &&
       decodeURIComponent(from_regexp(/[\?&]q=([^&]*)/, document.referrer)).replace(/+/g, ' '),
 
@@ -101,10 +125,39 @@
   // Custom properties can be added as well.
 
     standard_event_properties = function () {
-    };
+      return {browserVersion: browser_version,
+              totalVisits:    user_visits,
+              referrer:       referrer,
+              timeOffset:     time_offset,
+              '~keywords':    search_keywords};
+    },
 
   // Event tracking function: Make it simpler to track events by preloading the
   // page path and a standard set of event properties.
 
+    track = ReportGrid.customEvent = function (event_type, properties) {
+      var event_object = {};
+      event_object[event_type] = $.extend({}, standard_event_properties(),
+                                              properties || {});
+      return ReportGrid.track(page_path, event_object);
+    };
+
+  // Individual events.
+  // From here down is the processing to handle individual events that are
+  // triggered by user actions.
+
+  // Visit/load tracking
+  track('visited');
+  $(function () {track('loaded')});
+
+  // Link/button/etc. click tracking
+  $('a, button, input[type="submit"]').live('click', function (e) {
+    var node_name  = this.nodeName.toLowerCase(),
+        event_name = node_name === 'a'      ? 'linkClicked' :
+                     node_name === 'button' ? 'buttonClicked' :
+                     node_name === 'input'  ? 'submitClicked' :
+                                               node_name + 'Clicked';
+    track(event_name);
+  });
 
 })(jQuery);
