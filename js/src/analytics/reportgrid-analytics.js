@@ -83,7 +83,7 @@
    */
 
   var normalize_path = ReportGrid.normalizePath = function (path) {
-    var path_parser = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)\/([^?#]+)/i;
+    var path_parser = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)\/([^\?#]+)/i;
     return [].join.call([].slice.call(path_parser.exec(path), 1), '/');
   };
 
@@ -188,10 +188,10 @@
       decodeURIComponent(from_regexp(/[\?&]q=([^&]*)/, document.referrer)) ||
 
     /^http:\/\/search\.yahoo\.com/.test(document.referrer) &&
-      decodeURIComponent(from_regexp(/[\?&]p=([^&]*)/, document.referrer)).replace(/+/g, ' ') ||
+      decodeURIComponent(from_regexp(/[\?&]p=([^&]*)/, document.referrer)).replace(/\+/g, ' ') ||
 
     /^http:\/\/www\.bing\.com/.test(document.referrer) &&
-      decodeURIComponent(from_regexp(/[\?&]q=([^&]*)/, document.referrer)).replace(/+/g, ' ') ||
+      decodeURIComponent(from_regexp(/[\?&]q=([^&]*)/, document.referrer)).replace(/\+/g, ' ') ||
 
     '';
 
