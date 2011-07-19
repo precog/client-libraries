@@ -267,13 +267,17 @@
    * ReportGrid.customEvent('...', ReportGrid.normalizePath(url));
    *
    * A '/' is automatically prepended to the path.
+   *
+   * A fourth argument 'timestamp' can be specified to backdate an event.
+   * If provided, 'timestamp' should be a Date object.
    */
 
-  var track = ReportGrid.customEvent = function (event_type, properties, path) {
+  var track = ReportGrid.customEvent = function (event_type, properties, path, timestamp) {
     var event_object = {};
     event_object[event_type] = $.extend({}, standard_event_properties(),
                                             properties || {});
-    return ReportGrid.track('/' + (path || page_path), {event: event_object});
+    return ReportGrid.track('/' + (path || page_path), {event:     event_object,
+                                                        timestamp: timestamp});
   };
 
 
@@ -420,6 +424,10 @@
    * method of engagement tracking later without losing data.
    *
    * For a more accurate model, see 'polling' engagement tracking.
+   *
+   * Note that the event sent here is backdated. This prevents misleading
+   * statistics about when users were engaged. (See the 'track' function above
+   * for details about sending backdated events.)
    */
 
   if (script_options.pageEngagement === 'queueing' &&
@@ -427,9 +435,11 @@
       cookie('reportgrid_page_engagement_last_url'))
 
     track('engagedQueueing', {time: round_to(+cookie('reportgrid_page_engagement_time'), 100)},
-                             cookie('reportgrid_page_engagement_last_url'));
+                             cookie('reportgrid_page_engagement_last_url'),
+                             new Date(+cookie('reportgrid_page_last_engagement_start_time')));
 
   cookie('reportgrid_page_engagement_last_url', page_path);
+  cookie('reportgrid_page_last_engagement_start_time', +new Date());
 
   setInterval(function () {
     cookie('reportgrid_page_engagement_time', time_since_page_load());

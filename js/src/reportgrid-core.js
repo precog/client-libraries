@@ -365,6 +365,10 @@ var ReportGrid = window.ReportGrid || {};
       script.setAttribute('src',  fullUrl);
       script.setAttribute('id',   funcName);
 
+      // Workaround for document.head being undefined.
+      if (! document.head)
+        document.head = document.getElementsByTagName('head')[0];
+
       document.head.appendChild(script);
     },
 
