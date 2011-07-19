@@ -12,16 +12,31 @@ if [[ ! -f $closure_compiler ]]; then
   exit 1
 fi
 
-echo -n "1. assembling uncompressed file; size is "
-cp ../reportgrid-analytics.js reportgrid-analytics-uncompressed.js
-wc -c < reportgrid-analytics-uncompressed.js
+composite() {
+  name=$1
+  shift
 
-echo -n "2. minifying using closure compiler; size is "
-java -jar $closure_compiler --compilation_level SIMPLE_OPTIMIZATIONS \
-  --js reportgrid-analytics-uncompressed.js \
-  --js_output_file reportgrid-analytics.js
-wc -c < reportgrid-analytics.js
+  echo
+  echo $name
+  echo
 
-echo -n "3. gzipping result; size is "
-gzip --best -c reportgrid-analytics.js > reportgrid-analytics.js.gz
-wc -c < reportgrid-analytics.js.gz
+  echo -n "1. assembling uncompressed file; size is "
+  cat "$@" > $name-uncompressed.js
+  wc -c < $name-uncompressed.js
+
+  echo -n "2. minifying using closure compiler; size is "
+  java -jar $closure_compiler --compilation_level SIMPLE_OPTIMIZATIONS \
+    --js $name-uncompressed.js \
+    --js_output_file $name.js
+  wc -c < $name.js
+
+  echo -n "3. gzipping result; size is "
+  gzip --best -c $name.js > $name.js.gz
+  wc -c < $name.js.gz
+}
+
+composite reportgrid-analytics ../reportgrid-analytics.js
+
+composite reportgrid-analytics-onefile ../jquery.1.4-modified.js \
+                                       ../../reportgrid-core.js \
+                                       ../reportgrid-analytics.js

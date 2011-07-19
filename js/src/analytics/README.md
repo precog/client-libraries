@@ -20,7 +20,30 @@ in the script's URL. For example:
 
     <script src='/path/to/analytics.js?option=value&option=value'></script>
 
-The list of available options is documented in `reportgrid-analytics.js`.
+These options are supported:
+
+* `pageEngagement`: `queueing` (default) | `polling` | `none`
+  Determines the method used to track the amount of time a user spends on a
+  page. By default (queueing), the user's engagement time is recorded but not
+  sent immediately. When the user visits another page on your website, their
+  last recorded time is sent. This has the advantage that it minimizes the
+  number of API calls made while still providing engagement data.
+
+  Another option is to use polling, which emits API requests at doubling
+  intervals starting with one second. The advantage of this approach is that you
+  get real-time engagement data (especially relevant for users who view only one
+  page) at the cost of using more API calls.
+
+  Engagement tracking can be disabled by setting the option to `none`.
+
+* `interaction`: `true` (default) | `false`
+  If true, any click or enter-key press anywhere in the document will be
+  reported. A short string identifying the element is sent with each event.
+
+* `scrolling`: `true` | `false` (default)
+  If true, the user's vertical scrolling will be tracked. This involves breaking
+  the document into ten evenly-sized strips and reporting when lower ones become
+  visible to the user.
 
 Implementation status
 =====================
