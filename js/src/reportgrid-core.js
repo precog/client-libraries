@@ -63,7 +63,7 @@ var ReportGrid = window.ReportGrid || {};
           var script = scripts[i];
           var src = script.getAttribute('src');
 
-          if (src && src.indexOf('reportgrid-core.js') != -1) {
+          if (src && src.indexOf('reportgrid') != -1) {
             return script;
           }
         }

@@ -31,7 +31,6 @@
    * pageEngagement:    queueing (default) | polling | none
    *
    * interaction:       true (default) | false
-   * attention:         true           | false (default)
    * scrolling:         true           | false (default)
    */
 
@@ -61,15 +60,14 @@
       specified_options[(current_kv_pair = segments[i].split(/=/))[0]] =
         parse(current_kv_pair.slice(1).join('='));
 
-    for (var k in specified_options) {
+    // No longer checking for undefined options. The reason is that this script
+    // must be bundlable with reportgrid-core.js, so not all parameters will be
+    // known.
+    for (var k in specified_options)
       if (schema.hasOwnProperty(k) && specified_options.hasOwnProperty(k) &&
           ! schema[k].test(specified_options[k]))
         throw new Error('Invalid parameter for option "' + k + '": ' +
                         specified_options[k]);
-
-      if (specified_options.hasOwnProperty(k) && ! schema.hasOwnProperty(k))
-        throw new Error('Unrecognized option: "' + k + '"');
-    }
 
     return $.extend({}, default_options, specified_options);
   })();

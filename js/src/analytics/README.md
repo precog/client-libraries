@@ -12,6 +12,19 @@ loading the analytics script:
 Production builds of `reportgrid-analytics.js` are located in the `build/`
 directory.
 
+A single-file build is also available. This includes a pre-trimmed version of
+jQuery 1.4.0, a copy of reportgrid-core, and a copy of reportgrid-analytics, all
+minified together:
+
+    <script src='build/reportgrid-analytics-onefile.js'></script>
+
+When using this script, query-string configuration options for both scripts
+should be combined. For example, if `reportgrid-core.js` is configured with
+`tokenId=10` and `reportgrid-analytics.js` is configured with
+`interaction=true`, then the script URL would look like this:
+
+    <script src='...-onefile.js?tokenId=10&interaction=true'></script>
+
 Usage
 =====
 
