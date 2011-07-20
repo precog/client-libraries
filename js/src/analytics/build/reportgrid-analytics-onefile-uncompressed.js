@@ -4840,6 +4840,137 @@ jQuery.each([ "Height", "Width" ], function( i, name ) {
 
 
 })(window);
+// Original plugin downloaded from http://www.stoimen.com/blog/2009/07/16/jquery-browser-and-os-detection-plugin/
+// Modified by Spencer Tipping
+
+(function($) {
+	
+	var BrowserDetect = {
+		init: function () {
+			this.browser = this.searchString(this.dataBrowser) || "An unknown browser";
+			this.version = this.searchVersion(navigator.userAgent)
+				|| this.searchVersion(navigator.appVersion)
+				|| "an unknown version";
+			this.OS = this.searchString(this.dataOS) || "an unknown OS";
+		},
+		searchString: function (data) {
+			for (var i=0;i<data.length;i++)	{
+				var dataString = data[i].string;
+				var dataProp = data[i].prop;
+				this.versionSearchString = data[i].versionSearch || data[i].identity;
+				if (dataString) {
+					if (dataString.indexOf(data[i].subString) != -1)
+						return data[i].identity;
+				}
+				else if (dataProp)
+					return data[i].identity;
+			}
+		},
+		searchVersion: function (dataString) {
+			var index = dataString.indexOf(this.versionSearchString);
+			if (index == -1) return;
+			return parseFloat(dataString.substring(index+this.versionSearchString.length+1));
+		},
+		dataBrowser: [
+			{
+				string: navigator.userAgent,
+				subString: "Chrome",
+				identity: "Chrome"
+			},
+			{ 	string: navigator.userAgent,
+				subString: "OmniWeb",
+				versionSearch: "OmniWeb/",
+				identity: "OmniWeb"
+			},
+			{
+				string: navigator.vendor,
+				subString: "Apple",
+				identity: "Safari",
+				versionSearch: "Version"
+			},
+			{
+				prop: window.opera,
+				identity: "Opera"
+			},
+			{
+				string: navigator.vendor,
+				subString: "iCab",
+				identity: "iCab"
+			},
+			{
+				string: navigator.vendor,
+				subString: "KDE",
+				identity: "Konqueror"
+			},
+			{
+				string: navigator.userAgent,
+				subString: "Firefox",
+				identity: "Firefox"
+			},
+			{
+				string: navigator.vendor,
+				subString: "Camino",
+				identity: "Camino"
+			},
+			{		// for newer Netscapes (6+)
+				string: navigator.userAgent,
+				subString: "Netscape",
+				identity: "Netscape"
+			},
+			{
+				string: navigator.userAgent,
+				subString: "MSIE",
+				identity: "Explorer",
+				versionSearch: "MSIE"
+			},
+			{
+				string: navigator.userAgent,
+				subString: "Gecko",
+				identity: "Mozilla",
+				versionSearch: "rv"
+			},
+			{ 		// for older Netscapes (4-)
+				string: navigator.userAgent,
+				subString: "Mozilla",
+				identity: "Netscape",
+				versionSearch: "Mozilla"
+			}
+		],
+		dataOS : [
+			{
+				string: navigator.platform,
+				subString: "Win",
+				identity: "Windows"
+			},
+			{
+				string: navigator.platform,
+				subString: "Mac",
+				identity: "Mac"
+			},
+			{
+				string: navigator.userAgent,
+				subString: "iPhone",
+				identity: "iPhone/iPod"
+		    },
+                        {
+                                string: navigator.appVersion,
+                                subString: 'Android',
+                                identity: 'Android'
+                        },
+			{
+				string: navigator.platform,
+				subString: "Linux",
+				identity: "Linux"
+			}
+		]
+	
+	};
+	
+	BrowserDetect.init();
+	
+	$.client = { os : BrowserDetect.OS, browser : BrowserDetect.browser, version : BrowserDetect.version };
+	
+})(jQuery);
 /* Copyright (C) 2011 by ReportGrid, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -5777,12 +5908,7 @@ var ReportGrid = window.ReportGrid || {};
   /**
    * Option parsing.
    * The user configures the script by including query-string parameters. The
-   * currently-supported parameters are:
-   *
-   * pageEngagement:    queueing (default) | polling | none
-   *
-   * interaction:       true (default) | false
-   * scrolling:         true           | false (default)
+   * currently-supported parameters are documented in the README.
    */
 
   var script_options = (function () {
@@ -5907,13 +6033,15 @@ var ReportGrid = window.ReportGrid || {};
    * Normalize the name of the rendering engine and its major version. We don't
    * want too many combinations of values, but we do want to know which engines
    * should be optimized for.
+   *
+   * This is now handled by the jquery.client plugin.
    */
 
-  var browser_version = ($.browser.msie    ? 'IE' :
-                         $.browser.mozilla ? 'FF' :
-                         $.browser.opera   ? 'Opera' : 'Webkit') +
-                        parseInt($.browser.version);
-
+  var browser_version  = $.client.browser + ' ' + $.client.version;
+  var operating_system = $.client.os;
+  var platform         = /iphone/i.test(operating_system) ||
+                         /android/i.test(operating_system) ? 'mobile' :
+                                                             'standard';
 
   /**
    * Referrer detection.
@@ -5987,6 +6115,8 @@ var ReportGrid = window.ReportGrid || {};
 
   var standard_event_properties = function () {
     return {browserVersion:   browser_version,
+            operatingSystem:  operating_system,
+            platform:         platform,
             totalVisits:      user_visits,
             totalInteraction: user_total_interactions,
             totalEngagement:  round_to(user_total_engagement + time_since_page_load(), 1000),
@@ -6219,5 +6349,45 @@ var ReportGrid = window.ReportGrid || {};
 
   if (script_options.pageEngagement === 'polling')
     setup_engagement_polling(1000);
+
+
+  /**
+   * Attention tracking.
+   * Track every mouse movement made by the user. This is very expensive, but
+   * potentially useful to discover where the user hovers on the page.
+   *
+   * To do this, each element is split into a 5x5 grid of logical tiles. When
+   * the mouse moves into a new tile (or new element), a new event is reported.
+   */
+
+  if (script_options.attention) {
+    var attention_last_element = null;
+    var attention_last_x       = 0;
+    var attention_last_y       = 0;
+
+    $('*').live('mousemove', function (e) {
+      if (this !== e.target) return;
+
+      // Identify the tile.
+      var element_position = $(this).offset();
+      var relative_x       = e.pageX - element_position.left;
+      var relative_y       = e.pageY - element_position.top;
+      var tile_x           = round_to(relative_x / $(this).width(),  0.2) * 5 >>> 0;
+      var tile_y           = round_to(relative_y / $(this).height(), 0.2) * 5 >>> 0;
+
+      if (tile_x === attention_last_x &&
+          tile_y === attention_last_y &&
+          this   === attention_last_element)
+        return;
+
+      attention_last_element = this;
+      attention_last_x       = tile_x;
+      attention_last_y       = tile_y;
+
+      track('attention', {element: identity_of($(this)),
+                          tileX:   tile_x,
+                          tileY:   tile_y});
+    });
+  }
 
 })(jQuery);

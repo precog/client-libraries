@@ -26,12 +26,7 @@
   /**
    * Option parsing.
    * The user configures the script by including query-string parameters. The
-   * currently-supported parameters are:
-   *
-   * pageEngagement:    queueing (default) | polling | none
-   *
-   * interaction:       true (default) | false
-   * scrolling:         true           | false (default)
+   * currently-supported parameters are documented in the README.
    */
 
   var script_options = (function () {
@@ -156,13 +151,15 @@
    * Normalize the name of the rendering engine and its major version. We don't
    * want too many combinations of values, but we do want to know which engines
    * should be optimized for.
+   *
+   * This is now handled by the jquery.client plugin.
    */
 
-  var browser_version = ($.browser.msie    ? 'IE' :
-                         $.browser.mozilla ? 'FF' :
-                         $.browser.opera   ? 'Opera' : 'Webkit') +
-                        parseInt($.browser.version);
-
+  var browser_version  = $.client.browser + ' ' + $.client.version;
+  var operating_system = $.client.os;
+  var platform         = /iphone/i.test(operating_system) ||
+                         /android/i.test(operating_system) ? 'mobile' :
+                                                             'standard';
 
   /**
    * Referrer detection.
@@ -236,6 +233,8 @@
 
   var standard_event_properties = function () {
     return {browserVersion:   browser_version,
+            operatingSystem:  operating_system,
+            platform:         platform,
             totalVisits:      user_visits,
             totalInteraction: user_total_interactions,
             totalEngagement:  round_to(user_total_engagement + time_since_page_load(), 1000),
@@ -468,5 +467,45 @@
 
   if (script_options.pageEngagement === 'polling')
     setup_engagement_polling(1000);
+
+
+  /**
+   * Attention tracking.
+   * Track every mouse movement made by the user. This is very expensive, but
+   * potentially useful to discover where the user hovers on the page.
+   *
+   * To do this, each element is split into a 5x5 grid of logical tiles. When
+   * the mouse moves into a new tile (or new element), a new event is reported.
+   */
+
+  if (script_options.attention) {
+    var attention_last_element = null;
+    var attention_last_x       = 0;
+    var attention_last_y       = 0;
+
+    $('*').live('mousemove', function (e) {
+      if (this !== e.target) return;
+
+      // Identify the tile.
+      var element_position = $(this).offset();
+      var relative_x       = e.pageX - element_position.left;
+      var relative_y       = e.pageY - element_position.top;
+      var tile_x           = round_to(relative_x / $(this).width(),  0.2) * 5 >>> 0;
+      var tile_y           = round_to(relative_y / $(this).height(), 0.2) * 5 >>> 0;
+
+      if (tile_x === attention_last_x &&
+          tile_y === attention_last_y &&
+          this   === attention_last_element)
+        return;
+
+      attention_last_element = this;
+      attention_last_x       = tile_x;
+      attention_last_y       = tile_y;
+
+      track('attention', {element: identity_of($(this)),
+                          tileX:   tile_x,
+                          tileY:   tile_y});
+    });
+  }
 
 })(jQuery);
