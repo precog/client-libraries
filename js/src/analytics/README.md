@@ -55,6 +55,12 @@ Engagement tracking can be disabled by setting the option to `none`.
 If true, any click or enter-key press anywhere in the document will be
 reported. A short string identifying the element is sent with each event.
 
+* `attention`: `true` | `false` (default)
+
+If true, each element is broken into a 5x5 logical grid, and every time the
+user's mouse crosses a tile boundary a new `attention` event will be created.
+This can be useful for building heat-maps of user activity.
+
 * `scrolling`: `true` | `false` (default)
 
 If true, the user's vertical scrolling will be tracked. This involves breaking
@@ -80,9 +86,6 @@ The following features are implemented:
 12. Interaction tracking
 13. Engagement / interaction totaling
 14. Engagement tracking (polling)
-
-The following features are either unimplemented or are in progress:
-
-1. Attention tracking
-2. OS and platform platform tracking
-3. Bounce tracking (this may be covered by visits, unique visits, and referrers)
+15. Attention tracking
+16. OS and platform platform tracking
+17. Bounce tracking
