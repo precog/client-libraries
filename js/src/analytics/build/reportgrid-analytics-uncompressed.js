@@ -242,6 +242,7 @@
    * For repeat visitors (non-uniques), we also calculate the amount of time
    * that has elapsed since their last visit. We use this to put them into one
    * of a few categories: hourly, daily, weekly, or monthly visitors.
+   *
    */
 
   var mark_user_as_unique = function () {
@@ -376,7 +377,7 @@
 
 
   /**
-   * ReportGrid.customEvent(event_type, [properties = {}], [path])
+   * ReportGrid.customEvent(event_type, [properties = {}], [options = {}])
    * Automates event tracking for this page. Using this method will add several
    * standard properties to the event, and will automatically use the current
    * page path.
@@ -385,27 +386,34 @@
    * ReportGrid.customEvent('clickOnHeader');
    * ReportGrid.customEvent('click', {on: 'header'});
    *
-   * The page path can be overridden by specifying a third argument:
+   * The page path, timestamp, and count can all be customized using a third
+   * option:
    *
-   * ReportGrid.customEvent('foo', {bar: 'bif'}, '...');
+   * ReportGrid.customEvent('foo', {bar: 'bif'}, {path:      '...',
+   *                                              timestamp: new Date(),
+   *                                              count:     n});
    *
    * If you intend to use this, it may be useful to also use
    * ReportGrid.normalizePath() to keep the URL form standardized:
    *
-   * ReportGrid.customEvent('...', ReportGrid.normalizePath(url));
+   * ReportGrid.customEvent(..., {path: ReportGrid.normalizePath(url)});
    *
    * A '/' is automatically prepended to the path.
    *
-   * A fourth argument 'timestamp' can be specified to backdate an event.
-   * If provided, 'timestamp' should be a Date object.
+   * If provided, the timestamp should always be a Date object.
    */
 
-  var track = ReportGrid.customEvent = function (event_type, properties, path, timestamp) {
+  var track = ReportGrid.customEvent = function (event_type, properties, options) {
     var event_object = {};
+    var path         = options && options.path || null;
+
+    options && delete options.path;
+
     event_object[event_type] = $.extend({}, standard_event_properties(),
                                             properties || {});
-    return ReportGrid.track('/' + (path || page_path), {event:     event_object,
-                                                        timestamp: timestamp});
+
+    return ReportGrid.track('/' + (path || page_path),
+                            $.extend({}, options, {event: event_object}));
   };
 
 
@@ -431,6 +439,39 @@
     track('repeatVisited', {timeFrame: last_visit_interval});
 
   $(function () {track('loaded', {delay: round_to(time_since_page_load(), 50)})});
+
+
+  /**
+   * Bounce detection.
+   * The idea is that we send a new bounce event for each user who comes to the
+   * site from somewhere else. If we see the user again and they have a
+   * referrer from this site, then we retroactively unbounce them.
+   */
+
+  var current_host = from_regexp(/https?:\/\/([^\/]+)\//, document.referrer);
+
+  if (current_host === (document.location.host || document.location.hostname)) {
+    // Unbounce the user, since they have navigated to another page.
+    if (! +cookie('reportgrid_already_unbounced')) {
+      var bounce_time = +cookie('reportgrid_bounce_time');
+
+      // Remember that we unbounced the user so that we don't do it twice.
+      cookie('reportgrid_already_unbounced', 1);
+      track('bounce', {}, {path:      cookie('reportgrid_bounce_path'),
+                           count:     -1,
+                           timestamp: new Date(bounce_time)});
+    }
+  } else {
+    // The user is new, so create a bounce event and remember the fact that we
+    // did so.
+    cookie('reportgrid_already_unbounced', 0);
+
+    var bounce_time = +new Date();
+    cookie('reportgrid_bounce_path', page_path);
+    cookie('reportgrid_bounce_time', bounce_time);
+
+    track('bounce', {}, {timestamp: new Date(bounce_time)});
+  }
 
 
   /**
