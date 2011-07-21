@@ -50,6 +50,19 @@ page) at the cost of using more API calls.
 
 Engagement tracking can be disabled by setting the option to `none`.
 
+* `crossdomain`: `true` (default) | `false`
+
+If true, uses Flash to cookie a user across multiple domains that are logically
+grouped. This impacts unique/repeat visitor events. Sites are considered
+connected if they share the same `cookieNamespace` setting.
+
+* `cookieNamespace`: `<identifier>` (`all` by default)
+
+If crossdomain cookies are used, this setting impacts their scope. The owner of
+multiple sites should choose a namespace unique to their organization and reuse
+this namespace on each site. Sites sharing the same namespace will share visitor
+uniqueness information.
+
 * `interaction`: `true` (default) | `false`
 
 If true, any click or enter-key press anywhere in the document will be
@@ -57,9 +70,15 @@ reported. A short string identifying the element is sent with each event.
 
 * `attention`: `true` | `false` (default)
 
-If true, each element is broken into a 5x5 logical grid, and every time the
+If true, each element is broken into a 10x10 logical grid, and every time the
 user's mouse crosses a tile boundary a new `attention` event will be created.
 This can be useful for building heat-maps of user activity.
+
+* `attentionResolution`: `1`, `2`, ..., `10` (default), ...
+
+Customizes the number of grid cells used for attention tracking. Greater values
+result in more precision. So, for instance, setting this to 5 will result in a
+5x5 attention grid rather than the default 10x10.
 
 * `scrolling`: `true` | `false` (default)
 

@@ -35,10 +35,12 @@ composite() {
   wc -c < $name.js.gz
 }
 
-composite reportgrid-analytics ../jquery.client.js \
+composite reportgrid-analytics ../swfstore.js \
+                               ../jquery.client.js \
                                ../reportgrid-analytics.js
 
-composite reportgrid-analytics-onefile ../jquery.1.4-modified.js \
+composite reportgrid-analytics-onefile ../swfstore.js \
+                                       ../jquery.1.4-modified.js \
                                        ../jquery.client.js \
                                        ../../reportgrid-core.js \
                                        ../reportgrid-analytics.js

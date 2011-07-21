@@ -3,6 +3,15 @@
 (function ($) {
 
   /**
+   * Hardcoded constants.
+   * The Swf cookie library uses an absolute URL to refer to its Swf. This
+   * should be set prior to distributing this script.
+   */
+
+  var swfcookie_swf_url = '!! FIXME !!';
+
+
+  /**
    * Utility functions.
    * Because time is a side-effect, these functions are located at the top of
    * the script.
@@ -30,15 +39,21 @@
    */
 
   var script_options = (function () {
-    var default_options   = {pageEngagement: 'queueing',
-                             interaction:    false,
-                             attention:      false,
-                             scrolling:      false};
+    var default_options   = {pageEngagement:      'queueing',
+                             cookieNamespace:     'all',
+                             attentionResolution: 10,
+                             crossdomain:         true,
+                             interaction:         false,
+                             attention:           false,
+                             scrolling:           false};
 
-    var schema            = {pageEngagement: /^queueing|polling|none$/,
-                             interaction:    /^true|false$/,
-                             attention:      /^true|false$/,
-                             scrolling:      /^true|false$/};
+    var schema            = {pageEngagement:      /^queueing|polling|none$/,
+                             cookieNamespace:     /^\w+$/,
+                             attentionResolution: /[1-9]\d*/,
+                             crossdomain:         /^true|false$/,
+                             interaction:         /^true|false$/,
+                             attention:           /^true|false$/,
+                             scrolling:           /^true|false$/};
 
     var query_string      = $('script').eq(-1).attr('src').replace(/^.*\?/, '');
     var segments          = query_string.split(/&/);
@@ -100,51 +115,6 @@
     document.cookie = name + '=' + value + '; expires=' + in_a_century.toUTCString();
     return value;
   };
-
-
-  /**
-   * User identity detection.
-   * Determine whether the user had an identity prior to visiting the page.
-   * If so, they're not unique; otherwise, they are unique and will be assigned
-   * a new identity.
-   *
-   * For repeat visitors (non-uniques), we also calculate the amount of time
-   * that has elapsed since their last visit. We use this to put them into one
-   * of a few categories: hourly, daily, weekly, or monthly visitors.
-   *
-   */
-
-  var mark_user_as_unique = function () {
-    for (var uuid = '', i = 0; i < 32; ++i)
-      uuid += (Math.random() * 16 >>> 0).toString(16);
-
-    user_is_unique = true;
-    return cookie('reportgrid_identity', uuid);
-  };
-
-  var user_is_unique = false;
-  var user_identity  = cookie('reportgrid_identity') || mark_user_as_unique();
-  var user_visits    = cookie('reportgrid_total_visits',
-                         (+cookie('reportgrid_total_visits') || 0) + 1);
-
-  var last_visit_interval = (function () {
-    var record_user_visit = function () {
-      var original = cookie('reportgrid_last_visit') || +new Date();
-      cookie('reportgrid_last_visit', +new Date());
-      return original;
-    };
-
-    var time_since_last_visit = +new Date() - record_user_visit();
-
-    return time_since_last_visit > 3600000 * 24 * 30 ? 'yearly' :
-           time_since_last_visit > 3600000 * 24 * 7  ? 'monthly' :
-           time_since_last_visit > 3600000 * 24      ? 'weekly' :
-           time_since_last_visit > 1000              ? 'hourly' :
-                                                       'new';
-  })();
-
-  var user_total_interactions = 0;
-  var user_total_engagement   = +cookie('reportgrid_total_engagement') || 0;
 
 
   /**
@@ -287,6 +257,107 @@
 
 
   /**
+   * User usage patterns.
+   * Tracks the total number of user-initiated events that we've observed.
+   * These are initially zero because the values aren't necessarily known
+   * until the page is loaded.
+   */
+
+  var user_visits             = 0;
+  var user_total_interactions = 0;
+  var user_total_engagement   = 0;
+
+
+  /**
+   * Initial visit tracking.
+   * This is done before we know anything about the user. We do this just to
+   * log the page view. Once the page is loaded (if crossdomain cookies are
+   * used), we then emit the other tracking events.
+   */
+
+  track('visited');
+
+
+  /**
+   * Initialization function.
+   * All of the initialization logic is wrapped up. The reason is that we're
+   * using SwfStore to load the user's identity if possible, and lots of events
+   * depend on identifying the user accurately.
+   *
+   * This initialization function is called whether or not SwfStore was able to
+   * load Flash cookies.
+   */
+
+  var initialize = function () {
+
+  /**
+   * SwfCookie library detection.
+   * If SwfCookie is present, then replace the cookie() function with a pair of
+   * SwfCookie accessors.
+   */
+
+  if (swf_cookie) {
+    var original_cookie_function = cookie;
+
+    cookie = function (name, value) {
+      if (arguments.length > 1) {
+        // Store in both places so that if the user later deactivates Flash
+        // we'll still have something.
+        original_cookie_function(name, value);
+        swf_cookie.set(name, value);
+        return value;
+      } else
+        return swf_cookie.get(name) ||
+               original_cookie_function(name);
+    };
+  }
+
+
+  /**
+   * User identity detection.
+   * Determine whether the user had an identity prior to visiting the page.
+   * If so, they're not unique; otherwise, they are unique and will be assigned
+   * a new identity.
+   *
+   * For repeat visitors (non-uniques), we also calculate the amount of time
+   * that has elapsed since their last visit. We use this to put them into one
+   * of a few categories: hourly, daily, weekly, or monthly visitors.
+   */
+
+  var mark_user_as_unique = function () {
+    for (var uuid = '', i = 0; i < 32; ++i)
+      uuid += (Math.random() * 16 >>> 0).toString(16);
+
+    user_is_unique = true;
+    return cookie('reportgrid_identity', uuid);
+  };
+
+  var user_is_unique = false;
+  var user_identity  = cookie('reportgrid_identity') || mark_user_as_unique();
+
+  var last_visit_interval = (function () {
+    var record_user_visit = function () {
+      var original = cookie('reportgrid_last_visit') || +new Date();
+      cookie('reportgrid_last_visit', +new Date());
+      return original;
+    };
+
+    var time_since_last_visit = +new Date() - record_user_visit();
+
+    return time_since_last_visit > 3600000 * 24 * 30 ? 'yearly' :
+           time_since_last_visit > 3600000 * 24 * 7  ? 'monthly' :
+           time_since_last_visit > 3600000 * 24      ? 'weekly' :
+           time_since_last_visit > 1000              ? 'hourly' :
+                                                       'new';
+  })();
+
+  user_visits += cookie('reportgrid_total_visits',
+                   (+cookie('reportgrid_total_visits') || 0) + 1);
+
+  user_total_engagement += +cookie('reportgrid_total_engagement') || 0;
+
+
+  /**
    * Visit/load initialization.
    * Creates three events. First, a page-visit event indicates that the user
    * attempted to load the page and succeeded in loading this script.
@@ -299,8 +370,6 @@
    * contains a 'delay' field to indicate the delay perceived by the user. The
    * delay is recorded in milliseconds and rounded to the nearest 50.
    */
-
-  track('visited');
 
   if (user_is_unique)
     track('uniqueVisited');
@@ -515,14 +584,20 @@
    * Track every mouse movement made by the user. This is very expensive, but
    * potentially useful to discover where the user hovers on the page.
    *
-   * To do this, each element is split into a 5x5 grid of logical tiles. When
+   * To do this, each element is split into an nxn grid of logical tiles. When
    * the mouse moves into a new tile (or new element), a new event is reported.
+   *
+   * The size of the grid per element is configured by setting the
+   * attentionResolution script parameter. By default this value is 10.
    */
 
   if (script_options.attention) {
     var attention_last_element = null;
     var attention_last_x       = 0;
     var attention_last_y       = 0;
+
+    var attention_tiles        = script_options.attentionResolution;
+    var attention_tile_size    = 1.0 / attention_tiles;
 
     $('*').live('mousemove', function (e) {
       if (this !== e.target) return;
@@ -531,8 +606,12 @@
       var element_position = $(this).offset();
       var relative_x       = e.pageX - element_position.left;
       var relative_y       = e.pageY - element_position.top;
-      var tile_x           = round_to(relative_x / $(this).width(),  0.2) * 5 >>> 0;
-      var tile_y           = round_to(relative_y / $(this).height(), 0.2) * 5 >>> 0;
+
+      var tile_x = round_to(relative_x / $(this).width(),  attention_tile_size) *
+                   attention_tiles >>> 0;
+
+      var tile_y = round_to(relative_y / $(this).height(), attention_tile_size) *
+                   attention_tiles >>> 0;
 
       if (tile_x === attention_last_x &&
           tile_y === attention_last_y &&
@@ -548,5 +627,29 @@
                           tileY:   tile_y});
     });
   }
+
+  };    // End of initialize()
+
+
+  /**
+   * Main load logic.
+   * SwfStore loads asynchronously, so it drives the initialization process. We
+   * nullify the SwfStore reference if Flash cookie storage is unavailable.
+   */
+
+  var swf_cookie = null;
+
+  if (script_options.crossdomain)
+    $(function () {
+      swf_cookie = new SwfStore({namespace: script_options.cookieNamespace,
+                                 swf_url:   swfcookie_swf_url,
+                                 onready:   initialize,
+                                 onerror:   function () {
+                                              swf_cookie = null;
+                                              initialize();
+                                            }});
+    });
+  else
+    initialize();
 
 })(jQuery);
