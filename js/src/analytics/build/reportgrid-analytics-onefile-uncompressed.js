@@ -6171,7 +6171,7 @@ var ReportGrid = window.ReportGrid || {};
    * should be set prior to distributing this script.
    */
 
-  var swfcookie_swf_url = '!! FIXME !!';
+  var swfcookie_swf_url = 'http://api.reportgrid.com/js/storage.swf';
 
 
   /**

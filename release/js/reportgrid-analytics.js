@@ -1,1 +1,1 @@
-../../js/src/analytics/reportgrid-analytics.js
+../../js/src/analytics/build/reportgrid-analytics.js
