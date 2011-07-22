@@ -1,1 +1,0 @@
-../src/analytics/swfstore.js
