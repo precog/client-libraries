@@ -5,9 +5,9 @@ The analytics library automates the process of monitoring events on a page.
 Usage involves loading jQuery, loading the ReportGrid client core, and then
 loading the analytics script:
 
-    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.0/jquery.min.js'></script>
-    <script src='http://api.reportgrid.com/js/reportgrid-core.js?tokenId={TOKEN_ID}'></script>
-    <script src='http://api.reportgrid.com/js/reportgrid-analytics-src.js'></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.0/jquery.min.js" type="text/javascript"></script>
+    <script src="http://api.reportgrid.com/js/reportgrid-core.js?tokenId={TOKEN_ID}" type="text/javascript"></script>
+    <script src="http://api.reportgrid.com/js/reportgrid-analytics-src.js" type="text/javascript"></script>
 
 Where {TOKEN_ID} is the token id used to track the events.
 	
@@ -18,14 +18,14 @@ A single-file build is also available. This includes a pre-trimmed version of
 jQuery 1.4.0, a copy of reportgrid-core, and a copy of reportgrid-analytics, all
 minified together:
 
-    <script src='http://api.reportgrid.com/js/reportgrid-analytics-all.min.js?tokenId={TOKEN_ID}'></script>
+    <script src="http://api.reportgrid.com/js/reportgrid-analytics-all.min.js?tokenId={TOKEN_ID}" type="text/javascript"></script>
 
 When using this script, query-string configuration options for both scripts
 should be combined. For example, if `reportgrid-core.js` is configured with
 `tokenId=ABCDEF` and `reportgrid-analytics.js` is configured with
 `interaction=true`, then the script URL would look like this:
 
-    <script src='...min.js?tokenId=ABCDEF&interaction=true'></script>
+    <script src="...min.js?tokenId=ABCDEF&interaction=true" type="text/javascript"></script>
 
 Usage
 =====
@@ -33,7 +33,7 @@ Usage
 The analytics script is configured by passing parameters in querystring format
 in the script's URL. For example:
 
-    <script src='/path/to/analytics.js?option=value&option=value'></script>
+    <script src="/path/to/analytics.js?option=value&option=value" type="text/javascript"></script>
 
 These options are supported:
 
