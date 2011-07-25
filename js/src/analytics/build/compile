@@ -21,26 +21,26 @@ composite() {
   echo
 
   echo -n "1. assembling uncompressed file; size is "
-  cat "$@" > $name-uncompressed.js
-  wc -c < $name-uncompressed.js
+  cat "$@" > $name-src.js
+  wc -c < $name-src.js
 
   echo -n "2. minifying using closure compiler; size is "
   java -jar $closure_compiler --compilation_level SIMPLE_OPTIMIZATIONS \
-    --js $name-uncompressed.js \
-    --js_output_file $name.js
-  wc -c < $name.js
+    --js $name-src.js \
+    --js_output_file $name.min.js
+  wc -c < $name.min.js
 
   echo -n "3. gzipping result; size is "
-  gzip --best -c $name.js > $name.js.gz
-  wc -c < $name.js.gz
+  gzip --best -c $name.min.js > $name.min.js.gz
+  wc -c < $name.min.js.gz
 }
 
 composite reportgrid-analytics ../swfstore.js \
                                ../jquery.client.js \
                                ../reportgrid-analytics.js
 
-composite reportgrid-analytics-onefile ../swfstore.js \
-                                       ../jquery.1.4-modified.js \
-                                       ../jquery.client.js \
-                                       ../../reportgrid-core.js \
-                                       ../reportgrid-analytics.js
+composite reportgrid-analytics-all ../swfstore.js \
+                                   ../jquery.1.4-modified.js \
+                                   ../jquery.client.js \
+                                   ../../reportgrid-core.js \
+                                   ../reportgrid-analytics.js

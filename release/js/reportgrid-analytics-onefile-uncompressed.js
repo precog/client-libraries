@@ -1,1 +1,0 @@
-../../js/src/analytics/build/reportgrid-analytics-onefile-uncompressed.js
