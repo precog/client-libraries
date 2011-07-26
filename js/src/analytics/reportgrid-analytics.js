@@ -92,7 +92,7 @@
 
   var normalize_path = ReportGrid.normalizePath = function (path) {
     var path_parser = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)\/([^\?#]+)/i;
-    return path_parser.exec(path)[1];
+    return [].join.call([].slice.call(path_parser.exec(path), 2), '/');
   };
 
   var page_path = normalize_path(document.location.href);
