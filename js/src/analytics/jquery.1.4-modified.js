@@ -15,6 +15,10 @@
  */
 (function( window, undefined ) {
 
+function liveConvert( type, selector ) {
+	return (type && type !== "*" ? type + "." : "") + selector.replace(rperiod, "`").replace(rspace, "&");
+}
+
 // Use the correct document accordingly with window argument (sandbox)
 var document = window.document;
 var jQuery = (function() {
@@ -94,11 +98,7 @@ var jQuery = function( selector, context ) {
 	indexOf = Array.prototype.indexOf,
 	
 	// [[Class]] -> type pairs
-	class2type = {},
-	
-	liveConvert = function( type, selector ) {
-		return (type && type !== "*" ? type + "." : "") + selector.replace(rperiod, "`").replace(rspace, "&");
-	};
+	class2type = {};
 
 jQuery.fn = jQuery.prototype = {
 	init: function( selector, context ) {
