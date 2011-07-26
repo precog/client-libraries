@@ -94,11 +94,11 @@ var jQuery = function( selector, context ) {
 	indexOf = Array.prototype.indexOf,
 	
 	// [[Class]] -> type pairs
-	class2type = {};
-
-function liveConvert( type, selector ) {
-	return (type && type !== "*" ? type + "." : "") + selector.replace(rperiod, "`").replace(rspace, "&");
-}
+	class2type = {},
+	
+	liveConvert = function( type, selector ) {
+		return (type && type !== "*" ? type + "." : "") + selector.replace(rperiod, "`").replace(rspace, "&");
+	};
 
 jQuery.fn = jQuery.prototype = {
 	init: function( selector, context ) {
