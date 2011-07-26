@@ -508,7 +508,6 @@
   };
 
   var page_path = normalize_path(document.location.href);
-  console.log(page_path); // FP
 
 
   /**
@@ -663,7 +662,6 @@
 
     event_object[event_type] = $.extend({}, standard_event_properties(),
                                             properties || {});
-console.log("track: " + (path || page_path)); // FP
     return ReportGrid.track('/' + (path || page_path),
                             $.extend({}, options, {event: event_object}));
   };
