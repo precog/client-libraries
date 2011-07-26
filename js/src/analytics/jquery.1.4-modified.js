@@ -96,6 +96,10 @@ var jQuery = function( selector, context ) {
 	// [[Class]] -> type pairs
 	class2type = {};
 
+function liveConvert( type, selector ) {
+	return (type && type !== "*" ? type + "." : "") + selector.replace(rperiod, "`").replace(rspace, "&");
+}
+
 jQuery.fn = jQuery.prototype = {
 	init: function( selector, context ) {
 		var match, elem, ret, doc;
