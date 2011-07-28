@@ -503,8 +503,8 @@
    */
 
   var normalize_path = ReportGrid.normalizePath = function (path) {
-    var path_parser = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)\/([^\?#]+)/i;
-    return [].join.call([].slice.call(path_parser.exec(path), 2), '/');
+    var path_parser = /^(?:https?:\/\/)?(?:www\.)?([^\?#]+)/i;
+	return "/" + path_parser.exec(path)[1];
   };
 
   var page_path = normalize_path(document.location.href);
@@ -656,13 +656,16 @@
 
   var track = ReportGrid.customEvent = function (event_type, properties, options) {
     var event_object = {};
-    var path         = options && options.path || null;
+    var path         = options && options.path || page_path;
 
     options && delete options.path;
 
     event_object[event_type] = $.extend({}, standard_event_properties(),
                                             properties || {});
-    return ReportGrid.track('/' + (path || page_path),
+	// for debugging pursposes only
+	// console.log("path: " + path + ", event: " + JSON.stringify(event_object));
+	
+	return ReportGrid.track('/' + path,
                             $.extend({}, options, {event: event_object}));
   };
 
