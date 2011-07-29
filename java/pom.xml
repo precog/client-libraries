@@ -7,6 +7,12 @@
   <version>1.0-SNAPSHOT</version>
   <name>java-client</name>
   <url>http://maven.apache.org</url>
+  <distributionManagement>
+    <repository>
+      <id>ssh-repository</id>
+      <url>scpexe://mongodb03.reportgrid.com/root/reportgrid/apisite/release/java</url>
+    </repository>
+  </distributionManagement>
   <dependencies>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
@@ -21,4 +27,13 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <build>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+         <artifactId>wagon-ssh-external</artifactId>
+         <version>1.0-beta-6</version>
+      </extension>
+    </extensions>
+  </build>
 </project>
