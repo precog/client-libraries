@@ -15,6 +15,10 @@
  */
 (function( window, undefined ) {
 
+function liveConvert( type, selector ) {
+	return (type && type !== "*" ? type + "." : "") + selector.replace(rperiod, "`").replace(rspace, "&");
+}
+
 // Use the correct document accordingly with window argument (sandbox)
 var document = window.document;
 var jQuery = (function() {

@@ -5,25 +5,27 @@ The analytics library automates the process of monitoring events on a page.
 Usage involves loading jQuery, loading the ReportGrid client core, and then
 loading the analytics script:
 
-    <script src='/path/to/jquery.js'></script>
-    <script src='/path/to/reportgrid-core.js'></script>
-    <script src='/path/to/reportgrid-analytics.js'></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.0/jquery.min.js" type="text/javascript"></script>
+    <script src="http://api.reportgrid.com/js/reportgrid-core.js?tokenId={TOKEN_ID}" type="text/javascript"></script>
+    <script src="http://api.reportgrid.com/js/reportgrid-analytics-src.js" type="text/javascript"></script>
 
-Production builds of `reportgrid-analytics.js` are located in the `build/`
+Where {TOKEN_ID} is the token id used to track the events.
+	
+Production builds of `reportgrid-analytics*.js` are located in the `build/`
 directory.
 
 A single-file build is also available. This includes a pre-trimmed version of
 jQuery 1.4.0, a copy of reportgrid-core, and a copy of reportgrid-analytics, all
 minified together:
 
-    <script src='build/reportgrid-analytics-onefile.js'></script>
+    <script src="http://api.reportgrid.com/js/reportgrid-analytics-all.min.js?tokenId={TOKEN_ID}" type="text/javascript"></script>
 
 When using this script, query-string configuration options for both scripts
 should be combined. For example, if `reportgrid-core.js` is configured with
-`tokenId=10` and `reportgrid-analytics.js` is configured with
+`tokenId=ABCDEF` and `reportgrid-analytics.js` is configured with
 `interaction=true`, then the script URL would look like this:
 
-    <script src='...-onefile.js?tokenId=10&interaction=true'></script>
+    <script src="...min.js?tokenId=ABCDEF&interaction=true" type="text/javascript"></script>
 
 Usage
 =====
@@ -31,7 +33,7 @@ Usage
 The analytics script is configured by passing parameters in querystring format
 in the script's URL. For example:
 
-    <script src='/path/to/analytics.js?option=value&option=value'></script>
+    <script src="/path/to/analytics.js?option=value&option=value" type="text/javascript"></script>
 
 These options are supported:
 
@@ -52,9 +54,10 @@ Engagement tracking can be disabled by setting the option to `none`.
 
 * `crossdomain`: `true` (default) | `false`
 
-If true, uses Flash to cookie a user across multiple domains that are logically
-grouped. This impacts unique/repeat visitor events. Sites are considered
-connected if they share the same `cookieNamespace` setting.
+If true, uses Flash (on devices where Flash is available) to cookie a user
+across multiple domains that are logically grouped. This impacts unique/repeat 
+visitor events. Sites are considered connected if they share the same 
+`cookieNamespace` setting.
 
 * `cookieNamespace`: `<identifier>` (`all` by default)
 

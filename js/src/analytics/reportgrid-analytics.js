@@ -91,8 +91,8 @@
    */
 
   var normalize_path = ReportGrid.normalizePath = function (path) {
-    var path_parser = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)\/([^\?#]+)/i;
-    return [].join.call([].slice.call(path_parser.exec(path), 1), '/');
+    var path_parser = /^(?:https?:\/\/)?(?:www\.)?([^\?#]+)/i;
+	return "/" + path_parser.exec(path)[1];
   };
 
   var page_path = normalize_path(document.location.href);
@@ -244,15 +244,16 @@
 
   var track = ReportGrid.customEvent = function (event_type, properties, options) {
     var event_object = {};
-    var path         = options && options.path || null;
+    var path         = options && options.path || page_path;
 
     options && delete options.path;
 
     event_object[event_type] = $.extend({}, standard_event_properties(),
                                             properties || {});
-
-    return ReportGrid.track('/' + (path || page_path),
-                            $.extend({}, options, {event: event_object}));
+	// for debugging pursposes only
+	//console.log("path: " + path + ", event: " + JSON.stringify(event_object));
+	
+	return ReportGrid.track('/' + path, $.extend({}, options, {event: event_object}));
   };
 
 
@@ -541,7 +542,7 @@
       cookie('reportgrid_page_engagement_time') &&
       cookie('reportgrid_page_engagement_last_url'))
 
-    track('engagedQueueing', {time: round_to(+cookie('reportgrid_page_engagement_time'), 100)},
+    track('engagedQueueing', {time: round_to(+cookie('reportgrid_page_engagement_time'), 500)},
                              cookie('reportgrid_page_engagement_last_url'),
                              new Date(+cookie('reportgrid_page_last_engagement_start_time')));
 
@@ -552,7 +553,7 @@
     cookie('reportgrid_page_engagement_time', time_since_page_load());
     cookie('reportgrid_user_total_engagement',
            user_total_engagement + time_since_page_load());
-  }, 100);
+  }, 500);
 
 
   /**
