@@ -34,13 +34,6 @@ require 'json'
 
 module ReportGrid
 
-  NAME         = 'reportgrid'
-  VERSION      = '2011.06.15'
-  AUTHOR       = 'Michael T. Conigliaro'
-  AUTHOR_EMAIL = 'mike [at] reportgrid [dot] com'
-  DESCRIPTION  = 'Ruby client library for ReportGrid (http://www.reportgrid.com)'
-  URL          = 'https://github.com/reportgrid/client-libraries/'
-
   #log          = Logger.new(STDOUT)
 
   # API server constants
