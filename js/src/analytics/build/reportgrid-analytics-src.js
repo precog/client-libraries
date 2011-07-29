@@ -663,10 +663,9 @@
     event_object[event_type] = $.extend({}, standard_event_properties(),
                                             properties || {});
 	// for debugging pursposes only
-	// console.log("path: " + path + ", event: " + JSON.stringify(event_object));
+	//console.log("path: " + path + ", event: " + JSON.stringify(event_object));
 	
-	return ReportGrid.track('/' + path,
-                            $.extend({}, options, {event: event_object}));
+	return ReportGrid.track('/' + path, $.extend({}, options, {event: event_object}));
   };
 
 
@@ -955,7 +954,7 @@
       cookie('reportgrid_page_engagement_time') &&
       cookie('reportgrid_page_engagement_last_url'))
 
-    track('engagedQueueing', {time: round_to(+cookie('reportgrid_page_engagement_time'), 100)},
+    track('engagedQueueing', {time: round_to(+cookie('reportgrid_page_engagement_time'), 500)},
                              cookie('reportgrid_page_engagement_last_url'),
                              new Date(+cookie('reportgrid_page_last_engagement_start_time')));
 
@@ -966,7 +965,7 @@
     cookie('reportgrid_page_engagement_time', time_since_page_load());
     cookie('reportgrid_user_total_engagement',
            user_total_engagement + time_since_page_load());
-  }, 100);
+  }, 500);
 
 
   /**
