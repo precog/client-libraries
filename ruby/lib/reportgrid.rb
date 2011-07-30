@@ -55,7 +55,7 @@ module ReportGrid
   end
 
   # Time constants
-  module Time
+  module TimeConstants
     ZERO     = 0
     ETERNITY = 2147483647
   end
@@ -174,8 +174,8 @@ module ReportGrid
 
     # Track an event
     def track(path, name, properties, options={})
-      options[:rollup]    ||= False
-      options[:timestamp] ||= Time::ETERNITY
+      options[:rollup]    ||= false
+      options[:timestamp] ||= Time.now.to_i
       options[:count]     ||= 1
 
       # Sanitize path
@@ -269,8 +269,8 @@ module ReportGrid
     def search_series(path, options)
       options[:periodicity] ||= Periodicity::ETERNITY
       options[:where]       ||= {}
-      options[:start]       ||= Time::ZERO
-      options[:end]         ||= Time::ETERNITY
+      options[:start]       ||= TimeConstants::ZERO
+      options[:end]         ||= TimeConstants::ETERNITY
 
       @analytics.post(Path::Analytics::SEARCH, :body=>{
           :select => "series/#{options[:periodicity]}",
