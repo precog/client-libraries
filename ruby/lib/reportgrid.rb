@@ -137,7 +137,6 @@ module ReportGrid
       end
 
       message += " returned: #{response_data}"
-      #log.info(message)
 
       response_data
     end
@@ -186,7 +185,7 @@ module ReportGrid
 
       # Track event
       @analytics.post(path, :body=>{
-        :events    => { :name => properties },
+        :events    => { name => properties },
         :count     => options[:count],
         :timestamp => options[:timestamp]
       })
