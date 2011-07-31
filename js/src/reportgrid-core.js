@@ -649,15 +649,17 @@ var ReportGrid = window.ReportGrid || {};
     var path     = Util.sanitizePath(path_);
     var property = Util.sanitizeProperty(options.property);
     var peri     = options.periodicity || "eternity";
-
-    var headers = Util.rangeHeaderFromStartEnd(options);
+    var query    = { tokenId: $.Config.tokenId };
+    if(options.groupBy)
+        query.groupBy = options.groupBy;
+	var headers  = Util.rangeHeaderFromStartEnd(options);
 
     var description = 'Get series for property ' + path + property + ' (periodicity = ' + peri + ')';
 
     http.get(
       $.Config.analyticsServer + '/vfs' + (path + property) + '/series/' + peri,
       Util.createCallbacks(success, failure, description),
-      {tokenId: $.Config.tokenId },
+      query,
       headers
     );
   }
@@ -725,7 +727,9 @@ var ReportGrid = window.ReportGrid || {};
     var property = Util.sanitizeProperty(options.property);
     var value    = options.value;
     var peri     = options.periodicity || "eternity";
-
+    var query    = { tokenId: $.Config.tokenId };
+    if(options.groupBy)
+        query.groupBy = options.groupBy;
     var headers = Util.rangeHeaderFromStartEnd(options);
 
     var valueJson = JSON.stringify(value);
@@ -735,7 +739,7 @@ var ReportGrid = window.ReportGrid || {};
     http.get(
       $.Config.analyticsServer + '/vfs' + (path + property) + '/values/' + encodeURIComponent(valueJson) + '/series/' + peri,
       Util.createCallbacks(success, failure, description),
-      {tokenId: $.Config.tokenId },
+      query,
       headers
     );
   }
@@ -790,24 +794,26 @@ var ReportGrid = window.ReportGrid || {};
 
     var description = 'Select series/' + peri + ' from ' + path + ' where ' + JSON.stringify(options.where);
 
-    var ob = {
-      select: "series/" + peri,
-        from:   path,
-        where:  options.where
-    };
-	
+	var ob = {
+	  select: "series/" + peri,
+      from:   path,
+      where:  options.where
+	};
+	var query    = { tokenId: $.Config.tokenId };
+    if(options.groupBy)
+        query.groupBy = options.groupBy;
+
     var start = Util.normalizeTime(options, 'start');
     var end = Util.normalizeTime(options, 'end');
 	
-    if(start) ob.start = start;
-    if(end) ob.end = end;
-    if(options.groupBy) ob.groupBy = options.groupBy;
+	if(start) ob.start = start;
+	if(end) ob.end = end;
 	
     http.post(
       $.Config.analyticsServer + '/search',
       ob,
       Util.createCallbacks(success, failure, description),
-      {tokenId: $.Config.tokenId }
+      query
     );
   }
   
@@ -842,30 +848,31 @@ var ReportGrid = window.ReportGrid || {};
    *   }
    */
   ReportGrid.intersect = function(path_, options, success, failure) {
-    var path = Util.sanitizePath(path_);
-    var peri = options.periodicity || "eternity";
+	var path = Util.sanitizePath(path_);
+	var peri = options.periodicity || "eternity";
 
-    var description = 'Intersect series/' + peri + ' from ' + path + ' where ' + JSON.stringify(options.properties);
-    
-    var ob = {
-      select:     "series/" + peri,
-      from:       path,
-      properties: options.properties
-    };
-
+	var description = 'Intersect series/' + peri + ' from ' + path + ' where ' + JSON.stringify(options.properties);
+	
+	var ob = {
+	  select:     "series/" + peri,
+	  from:       path,
+	  properties: options.properties
+	};
+    var query    = { tokenId: $.Config.tokenId };
+    if(options.groupBy)
+        query.groupBy = options.groupBy;
     var start = Util.normalizeTime(options, 'start');
     var end = Util.normalizeTime(options, 'end');
 
-    if(start) ob.start = start;
-    if(end) ob.end = end;
-    if(options.groupBy) ob.groupBy = options.groupBy;
-    
-    http.post(
-      $.Config.analyticsServer + '/intersect',
-      ob,
-      Util.createCallbacks(success, failure, description),
-        {tokenId: $.Config.tokenId }
-    );
+	if(start) ob.start = start;
+	if(end) ob.end = end;
+	
+	http.post(
+	  $.Config.analyticsServer + '/intersect',
+	  ob,
+	  Util.createCallbacks(success, failure, description),
+      query
+	);
   }
 
   /** Lists all tokens.
