@@ -77,6 +77,12 @@ If true, each element is broken into a 10x10 logical grid, and every time the
 user's mouse crosses a tile boundary a new `attention` event will be created.
 This can be useful for building heat-maps of user activity.
 
+* `attentionSelector`: `<identifier>` (`body` by default)
+
+Changes the scope of the "attention" area (see above). By default all the page is
+considered sensitive, to restrict the selection to a specific area just pass a 
+selector like #containerid.
+
 * `attentionResolution`: `1`, `2`, ..., `10` (default), ...
 
 Customizes the number of grid cells used for attention tracking. Greater values
@@ -88,6 +94,14 @@ result in more precision. So, for instance, setting this to 5 will result in a
 If true, the user's vertical scrolling will be tracked. This involves breaking
 the document into ten evenly-sized strips and reporting when lower ones become
 visible to the user.
+
+* `rollup`: `true` (default) | `false`
+
+Rollups the events over to upper segments of the current path.
+
+* `rollupName`: `<identifier>` (`@all` by default)
+
+Change the final portion of the path for rollups.
 
 Implementation status
 =====================

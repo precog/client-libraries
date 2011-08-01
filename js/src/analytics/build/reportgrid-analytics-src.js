@@ -458,8 +458,9 @@
                              interaction:         false,
                              attention:           false,
                              scrolling:           false,
-							 rollup:              true,
-							 rollupName:          '@all'};
+                             rollup:              true,
+                             rollupName:          '@all',
+                             attentionSelector:   'body'};
 
     var schema            = {pageEngagement:      /^queueing|polling|none$/,
                              cookieNamespace:     /^\w+$/,
@@ -506,7 +507,7 @@
 
   var normalize_path = ReportGrid.normalizePath = function (path) {
     var path_parser = /^(?:(?:file|https?):\/\/)?(?:www\.)?([^\?#]+)/i;
-	return "/" + path_parser.exec(path)[1];
+    return "/" + path_parser.exec(path)[1];
   };
 
   var page_path = normalize_path(document.location.href);
@@ -664,26 +665,26 @@
 
     event_object[event_type] = $.extend({}, standard_event_properties(),
                                             properties || {});
-											
-	var paths = [path];
+                                            
+    var paths = [path];
     if(script_options.rollup)
     {
       var parts = path.split(/\//g);
       parts.pop();
-	  while(parts.length > 0)
-	  {
-	    paths.push("/" + parts.join("/") + "/" + script_options.rollupName);
-		parts.pop();
-	  }
-	  paths.push("/" + script_options.rollupName);
+      while(parts.length > 0)
+      {
+        paths.push("/" + parts.join("/") + "/" + script_options.rollupName);
+        parts.pop();
+      }
+      paths.push("/" + script_options.rollupName);
     }
-	
+    
     for(var i = 0; i < paths.length; i++)
     {
-	  path = paths[i];
-      // for debugging pursposes only
-      console.log("path: " + path + ", event: " + JSON.stringify(event_object));
-//	  return ReportGrid.track('/' + path, $.extend({}, options, {event: event_object}));
+      path = paths[i];
+//    for debugging pursposes only
+//      console.log("path: " + path + ", event: " + JSON.stringify(event_object));
+      return ReportGrid.track('/' + path, $.extend({}, options, {event: event_object}));
     }
   };
 
@@ -918,7 +919,7 @@
    * interaction tracking, then every page element will track interactions.
    */
 
-  $('*').live('click', function (e) {
+  $(script_options.attentionSelector + ' *').live('click', function (e) {
     if (e.target === this) {
       ++user_total_interactions;
 
@@ -928,7 +929,7 @@
     }
   });
 
-  $('*').live('keypress', function (e) {
+  $(script_options.attentionSelector + ' *').live('keypress', function (e) {
     if (e.target === this && e.which === 13) {
       ++user_total_interactions;
 
@@ -1031,7 +1032,7 @@
     var attention_tiles        = script_options.attentionResolution;
     var attention_tile_size    = 1.0 / attention_tiles;
 
-    $('*').live('mousemove', function (e) {
+    $(script_options.attentionSelector + ' *').live('mousemove', function (e) {
       if (this !== e.target) return;
 
       // Identify the tile.
