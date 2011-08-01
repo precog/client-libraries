@@ -45,7 +45,9 @@
                              crossdomain:         true,
                              interaction:         false,
                              attention:           false,
-                             scrolling:           false};
+                             scrolling:           false,
+							 rollup:              true,
+							 rollupName:          '@all'};
 
     var schema            = {pageEngagement:      /^queueing|polling|none$/,
                              cookieNamespace:     /^\w+$/,
@@ -91,7 +93,7 @@
    */
 
   var normalize_path = ReportGrid.normalizePath = function (path) {
-    var path_parser = /^(?:https?:\/\/)?(?:www\.)?([^\?#]+)/i;
+    var path_parser = /^(?:(?:file|https?):\/\/)?(?:www\.)?([^\?#]+)/i;
 	return "/" + path_parser.exec(path)[1];
   };
 
@@ -250,10 +252,27 @@
 
     event_object[event_type] = $.extend({}, standard_event_properties(),
                                             properties || {});
-	// for debugging pursposes only
-	//console.log("path: " + path + ", event: " + JSON.stringify(event_object));
+											
+	var paths = [path];
+    if(script_options.rollup)
+    {
+      var parts = path.split(/\//g);
+      parts.pop();
+	  while(parts.length > 0)
+	  {
+	    paths.push("/" + parts.join("/") + "/" + script_options.rollupName);
+		parts.pop();
+	  }
+	  paths.push("/" + script_options.rollupName);
+    }
 	
-	return ReportGrid.track('/' + path, $.extend({}, options, {event: event_object}));
+    for(var i = 0; i < paths.length; i++)
+    {
+	  path = paths[i];
+      // for debugging pursposes only
+      console.log("path: " + path + ", event: " + JSON.stringify(event_object));
+//	  return ReportGrid.track('/' + path, $.extend({}, options, {event: event_object}));
+    }
   };
 
 

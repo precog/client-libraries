@@ -518,7 +518,11 @@ var ReportGrid = window.ReportGrid || {};
    * });
    */
   ReportGrid.track = function(path_, options, success, failure) {
-    var path = Util.sanitizePath(path_);
+    if(typeof path_ == "string")
+	  path_ = [path_];
+	var paths = [];
+    for(var i = 0; i < path_.length; i++)
+      paths.push(Util.sanitizePath(path_[i]));
 
     // Handle "event" instead of "events":
     if (options.event != null) {
@@ -542,12 +546,16 @@ var ReportGrid = window.ReportGrid || {};
     }
 
     var description = 'Track event ' + firstEventName + ' (' + JSON.stringify(firstEventProperties) + ') @ ' + (options.timestamp || "current time");
-    http.post(
-      $.Config.analyticsServer + '/vfs' + path,
-      options,
-      Util.createCallbacks(success, failure, description),
-      {tokenId: $.Config.tokenId }
-    );
+    for(var i = 0; i < paths.length; i++)
+    {
+      path = paths[i];
+      http.post(
+        $.Config.analyticsServer + '/vfs' + path,
+        options,
+        Util.createCallbacks(success, failure, description),
+        {tokenId: $.Config.tokenId }
+      );
+    }
   }
 
   /**

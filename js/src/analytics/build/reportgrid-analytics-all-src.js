@@ -5776,7 +5776,11 @@ var ReportGrid = window.ReportGrid || {};
    * });
    */
   ReportGrid.track = function(path_, options, success, failure) {
-    var path = Util.sanitizePath(path_);
+    if(typeof path_ == "string")
+	  path_ = [path_];
+	var paths = [];
+    for(var i = 0; i < path_.length; i++)
+      paths.push(Util.sanitizePath(path_[i]));
 
     // Handle "event" instead of "events":
     if (options.event != null) {
@@ -5800,12 +5804,16 @@ var ReportGrid = window.ReportGrid || {};
     }
 
     var description = 'Track event ' + firstEventName + ' (' + JSON.stringify(firstEventProperties) + ') @ ' + (options.timestamp || "current time");
-    http.post(
-      $.Config.analyticsServer + '/vfs' + path,
-      options,
-      Util.createCallbacks(success, failure, description),
-      {tokenId: $.Config.tokenId }
-    );
+    for(var i = 0; i < paths.length; i++)
+    {
+      path = paths[i];
+      http.post(
+        $.Config.analyticsServer + '/vfs' + path,
+        options,
+        Util.createCallbacks(success, failure, description),
+        {tokenId: $.Config.tokenId }
+      );
+    }
   }
 
   /**
@@ -6234,7 +6242,9 @@ var ReportGrid = window.ReportGrid || {};
                              crossdomain:         true,
                              interaction:         false,
                              attention:           false,
-                             scrolling:           false};
+                             scrolling:           false,
+							 rollup:              true,
+							 rollupName:          '@all'};
 
     var schema            = {pageEngagement:      /^queueing|polling|none$/,
                              cookieNamespace:     /^\w+$/,
@@ -6280,7 +6290,7 @@ var ReportGrid = window.ReportGrid || {};
    */
 
   var normalize_path = ReportGrid.normalizePath = function (path) {
-    var path_parser = /^(?:https?:\/\/)?(?:www\.)?([^\?#]+)/i;
+    var path_parser = /^(?:(?:file|https?):\/\/)?(?:www\.)?([^\?#]+)/i;
 	return "/" + path_parser.exec(path)[1];
   };
 
@@ -6439,10 +6449,27 @@ var ReportGrid = window.ReportGrid || {};
 
     event_object[event_type] = $.extend({}, standard_event_properties(),
                                             properties || {});
-	// for debugging pursposes only
-	//console.log("path: " + path + ", event: " + JSON.stringify(event_object));
+											
+	var paths = [path];
+    if(script_options.rollup)
+    {
+      var parts = path.split(/\//g);
+      parts.pop();
+	  while(parts.length > 0)
+	  {
+	    paths.push("/" + parts.join("/") + "/" + script_options.rollupName);
+		parts.pop();
+	  }
+	  paths.push("/" + script_options.rollupName);
+    }
 	
-	return ReportGrid.track('/' + path, $.extend({}, options, {event: event_object}));
+    for(var i = 0; i < paths.length; i++)
+    {
+	  path = paths[i];
+      // for debugging pursposes only
+      console.log("path: " + path + ", event: " + JSON.stringify(event_object));
+//	  return ReportGrid.track('/' + path, $.extend({}, options, {event: event_object}));
+    }
   };
 
 
