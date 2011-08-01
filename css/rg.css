@@ -1,0 +1,524 @@
+/* COLORS */
+
+.rg .item-0
+{
+	border-color: #1f77b4;
+	stroke: #1f77b4;
+	fill: #1f77b4;
+}
+
+.rg .item-1
+{
+	border-color: #ff7f0e;
+	stroke: #ff7f0e;
+	fill: #ff7f0e;
+}
+
+
+.rg .item-2
+{
+	border-color: #2ca02c;
+	stroke: #2ca02c;
+	fill: #2ca02c;
+}
+
+.rg .item-3
+{
+	border-color: #d62728;
+	stroke: #d62728;
+	fill: #d62728;
+}
+
+.rg .item-4
+{
+	border-color: #9467bd;
+	stroke: #9467bd;
+	fill: #9467bd;
+}
+	
+.rg .item-5
+{
+	border-color: #8c564b;
+	stroke: #8c564b;
+	fill: #8c564b;
+}
+	
+.rg .item-6
+{
+	border-color: #e377c2;
+	stroke: #e377c2;
+	fill: #e377c2;
+}
+	
+.rg .item-7
+{
+	border-color: #7f7f7f;
+	stroke: #7f7f7f;
+	fill: #7f7f7f;
+}
+	
+.rg .item-8
+{
+	border-color: #bcbd22;
+	stroke: #bcbd22;
+	fill: #bcbd22;
+}
+	
+.rg .item-9
+{
+	border-color: #17becf;
+	stroke: #17becf;
+	fill: #17becf;
+}
+
+/* SVG */
+.rg 
+{
+	fill: none;
+	stroke: none;
+}
+
+.rg line, .rg path
+{
+	stroke-width: 1;
+}
+
+.rg text, .rg tspan
+{
+	font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;
+	color:#666;
+	font-size:11px;
+	line-height:14px;
+	fill:#666;
+	stroke-width: 0;
+	text-rendering: optimizelegibility;
+}
+
+.rg .title text
+{
+	font-weight: bold;
+	font-size: 24px;
+}
+
+.rg .stream-chart path
+{
+	
+}
+
+.rg .group, .rg .group path:hover
+{
+	-webkit-transition: all 0.25s ease-in-out;
+	-moz-transition: all 0.25s ease-in-out;
+	-o-transition: all 0.25s ease-in-out;
+	-ms-transition: all 0.25s ease-in-out;
+	transition: all 0.25s ease-in-out;
+}
+
+.rg .group path
+{
+/*	opacity: 0.6; */
+}
+
+.rg .group:hover path
+{
+	opacity: 1.0;
+}
+
+/* CHART DESIGN */
+.rg
+{
+	fill: none;
+	stroke: none;
+	
+	
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+}
+
+.rg g.group
+{
+	stroke-width: 5;
+	stroke-miterjoin: miter;
+	stroke-miterlimit: 1;
+}
+
+.rg line, .rg path
+{
+	stroke: #999;
+}
+
+.rg .pie-chart g.group, .rg .stream-chart g.group
+{
+	stroke-width: 3;
+	stroke-miterjoin:miter;
+	stroke-miterlimit:1;
+}
+
+.rg .pie-chart g.group path
+{
+	stroke: #333;
+	stroke-opacity: 0.4;
+}
+
+.rg .line-chart g.group path
+{
+	fill:none;
+	stroke-width: 3;
+}
+
+#tooltip
+{
+	text-align: center;
+	font-weight: bold;
+	background-color: #ffc;
+	border: 1px solid #cc6;
+	font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;
+	color:#333;
+	font-size:11px;
+	line-height:14px;
+	fill:#333;
+	padding: 3px 8px;
+	
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	
+	-moz-box-shadow: 2px 2px 3px #666;
+	-webkit-box-shadow: 2px 2px 3px #666;
+	box-shadow: 2px 2px 3px #666;
+}
+
+.rg g.linechart-highlighter line, line.rule
+{
+	stroke-width: 1;
+	shape-rendering: crispEdges;
+	stroke-dasharray: 1, 1; 
+	stroke: #000;
+}
+
+.rg g.linechart-highlighter rect
+{
+	fill: #fff;
+	stroke: #999;
+	stroke-width: 1px;
+}
+
+.rg line.rule
+{
+	stroke: #999;
+}
+
+.rg line.tick
+{
+	stroke-width: 1;
+	shape-rendering: crispEdges;
+	stroke: #666;
+}
+
+.rg rect.panel-frame
+{
+	fill: #fff;
+	fill-opacity: 0;
+}
+
+.rg .line-chart path.line
+{
+	stroke-width: 3;
+}
+
+.rg .line-chart path.line:hover
+{
+	stroke-width: 4.5;
+}
+
+.rg .dimension-0 text
+{
+	font-weight: bold;
+}
+
+.rg .line-chart.dimension-1 path.line
+{
+	stroke: #d62728 !important;
+}
+
+.rg .dimension-1 text
+{
+	fill: #d62728;
+	stroke-width: 0 !important;
+	font-weight: bold;
+}
+
+ul.leaderboard
+{
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+ul.leaderboard li
+{
+	padding: 0;
+	margin: 0;
+	
+	background-image: -webkit-gradient(
+		linear,
+		left top,
+		right top,
+		color-stop(0.0, rgb(250,250,250)),
+		color-stop(1, rgb(97,155,255))
+	);
+	background-image: -moz-linear-gradient(
+		left center,
+		rgb(250,250,250) 0%,
+		rgb(97,155,255) 100%
+	);
+	
+	background-repeat: repeat-y;
+	
+	border: 1px solid #ccc;
+	margin: 0 0 4px 0;
+	max-width: 200px;
+	padding: 4px 6px;
+	
+	font-weight: bold;
+	font-size: 85%;
+	
+	-webkit-text-shadow: 0 1px 0 white;
+	-moz-text-shadow: 0 1px 0 white;
+	text-shadow: 0 1px 0 white;
+
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	border-radius: 6px;
+	
+}
+
+/* PIVOT TABLE */
+.rg table.pivot-table
+{
+clear:left;
+border-spacing:0;
+font-family:Tahoma,Arial,Helvetica,sans-serif;
+font-size: 10pt;
+}
+
+.rg .pivot-table td
+{
+border-left: 1px solid #f0f0f0;
+border-right: 1px solid #CECECE;
+border-top: 1px solid #f0f0f0;
+border-bottom: 1px solid #CECECE;
+padding: 1px 6px 1px 3px;
+text-align: right;
+
+font-size: 11px;
+text-shadow: 1px 1px 1px #aaa;
+-moz-text-shadow: 0.5px 0.25px 1px #aaa;
+min-width: 40px;
+background-color: #fff;
+}
+
+.rg .pivot-table th
+{
+border-left: 1px solid #f0f0f0;
+border-top: 1px solid #f0f0f0;
+border-right: 1px solid #969696;
+border-bottom: 1px solid #969696;
+background-color: #e4e4e4;
+padding: 0 2px 0 3px;
+text-shadow: 1px 1px 0 #FFFFFF;
+-moz-text-shadow: 1px 1px 0 #FFFFFF;
+-webkit-text-shadow: 1px 1px 0 #FFFFFF;
+font-weight: normal;
+color: #000000;
+}
+
+.rg .pivot-table tfoot th.column.total, .rg .pivot-table tbody th.row.total, .rg .pivot-table tfoot th.table.total
+{
+font-weight: bold;
+font-size: 10px;
+text-align: right;
+padding-right: 4px;
+}
+
+.rg .pivot-table thead th.col-header, .rg .pivot-table thead th.row-header
+{
+font-weight: bold;
+padding: 0px 6px;
+font-size: 10px;
+background-color: #eee;
+color: #444;
+}
+
+.rg .pivot-table th.column.value, .rg .pivot-table th.row.value
+{
+font-weight: bold;
+padding: 2px 6px;
+font-size: 11px;
+}
+
+.rg .pivot-table thead th
+{
+	text-align: center;
+}
+
+.rg .pivot-table tbody th
+{
+	white-space: nowrap;
+	text-align: left;
+}
+
+.rg .pivot-table td:hover
+{
+	border: 1px solid #0026FF !important;
+}
+
+.rg.pivot-table .spacer
+{
+	background: none;
+	border: 0;
+}
+
+.rg .bar-chart rect
+{
+	shape-rendering: crispEdges;
+	stroke-width: 1;
+}
+
+.rg .stack-chart rect
+{
+	shape-rendering: crispEdges;
+	stroke-width: 0;
+}
+
+.rg .border
+{
+	stroke: #666;
+	shape-rendering: crispEdges;
+}
+
+.rg .label text
+{
+	font-family: sans-serif;
+	font-weight: bold;
+	font-size: 12px;
+	fill: #fff;
+	stroke: none;
+}
+
+.rg .label text.bg
+{
+	fill: #000;
+	stroke: #000;
+	stroke-width: 3px;
+	stroke-opacity: 0.8;
+}
+
+.rg .label text.shadow
+{
+	fill: #000000;
+	stroke-width: 4px;
+	stroke: #000000;
+	fill-opacity: 0.6;
+	stroke-opacity: 0.4;
+}
+/*
+.rg .bar-chart text, .rg .pie-chart text, .rg .stack-chart text, .rg .scatter-graph	 text
+{
+	font-family: Impact;
+	font-weight: bold; 
+	font-size: 12px;
+	fill: #eee;
+	text-rendering: optimizeLegibility; 
+	stroke-width: 0.5px;
+	stroke: #000000;
+	stroke-opacity: 0.5; 
+	stroke-linecap: butt; 
+}
+
+.rg .bar-chart text.shadow, .rg .pie-chart text.shadow, .rg .stack-chart text.shadow, .rg .scatter-graph text.shadow
+{
+	fill: #000000;
+	stroke-width: 3px;
+	stroke: #000000;
+	fill-opacity: 0.6;
+	stroke-opacity: 0.4;
+}
+*/
+.rg .scatter-graph text
+{
+	font-size: 6pt;
+}
+
+.rg .pie-chart path
+{
+	stroke-width: 1;
+}
+
+.rg ul.leaderboard li
+{
+	color: #000;
+	font-family:Tahoma,Arial,Helvetica,sans-serif;
+	font-size: 10pt;
+}
+
+.rg .symbol path
+{
+	fill: #fff;
+	stroke: #000;
+	stroke-width: 1px;
+}
+
+.rg .funnel-chart .funnel-outside
+{
+	stroke: none;
+}
+
+.rg .funnel-chart .arrow path
+{
+	stroke-width: 0px;
+	stroke: none;
+	fill: #fd3;
+}
+
+.rg .funnel-chart .arrow text
+{
+	fill: #000;
+	font-weight: bold;
+}
+
+.rg path.baloon-connector
+{
+	stroke: #666;
+	stroke-width: 1;
+	stroke-dasharray: 1, 1; 
+/*	shape-rendering: crispEdges; */
+}
+
+
+.rg .heat-grid rect
+{
+	shape-rendering: crispEdges;
+	stroke-width: 1;
+/*
+	stroke: #ccc;
+	stroke-width: 0;
+	stroke-opacity: 0.2;
+*/
+}
+
+/* DEBUG */
+/*
+.rg rect.panel-frame
+{
+	shape-rendering: crispEdges;
+	fill: #9f9;
+	fill-opacity: 0.4;
+	stroke: #393;
+	stroke-width: 0;
+	stroke-opacity: 0.4;
+}
+*/

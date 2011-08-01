@@ -1,0 +1,6 @@
+.rg .panel > rect
+{
+	fill: #ffcc00;
+	fill-opacity: 0.2;
+	stroke: none;
+}
