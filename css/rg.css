@@ -94,12 +94,6 @@
 	text-rendering: optimizelegibility;
 }
 
-.rg .title text
-{
-	font-weight: bold;
-	font-size: 24px;
-}
-
 .rg .stream-chart path
 {
 	
@@ -159,8 +153,7 @@
 
 .rg .pie-chart g.group path
 {
-	stroke: #333;
-	stroke-opacity: 0.4;
+	stroke:none;
 }
 
 .rg .line-chart g.group path
@@ -297,7 +290,7 @@ ul.leaderboard li
 }
 
 /* PIVOT TABLE */
-.rg table.pivot-table
+.rg.pivot-table table
 {
 clear:left;
 border-spacing:0;
@@ -305,7 +298,7 @@ font-family:Tahoma,Arial,Helvetica,sans-serif;
 font-size: 10pt;
 }
 
-.rg .pivot-table td
+.rg.pivot-table td
 {
 border-left: 1px solid #f0f0f0;
 border-right: 1px solid #CECECE;
@@ -321,7 +314,7 @@ min-width: 40px;
 background-color: #fff;
 }
 
-.rg .pivot-table th
+.rg.pivot-table th
 {
 border-left: 1px solid #f0f0f0;
 border-top: 1px solid #f0f0f0;
@@ -336,7 +329,7 @@ font-weight: normal;
 color: #000000;
 }
 
-.rg .pivot-table tfoot th.column.total, .rg .pivot-table tbody th.row.total, .rg .pivot-table tfoot th.table.total
+.rg.pivot-table tfoot th.column.total, .rg.pivot-table tbody th.row.total, .rg.pivot-table tfoot th.table.total
 {
 font-weight: bold;
 font-size: 10px;
@@ -344,7 +337,7 @@ text-align: right;
 padding-right: 4px;
 }
 
-.rg .pivot-table thead th.col-header, .rg .pivot-table thead th.row-header
+.rg.pivot-table thead th.col-header, .rg.pivot-table thead th.row-header
 {
 font-weight: bold;
 padding: 0px 6px;
@@ -353,25 +346,25 @@ background-color: #eee;
 color: #444;
 }
 
-.rg .pivot-table th.column.value, .rg .pivot-table th.row.value
+.rg.pivot-table th.column.value, .rg.pivot-table th.row.value
 {
 font-weight: bold;
 padding: 2px 6px;
 font-size: 11px;
 }
 
-.rg .pivot-table thead th
+.rg.pivot-table thead th
 {
 	text-align: center;
 }
 
-.rg .pivot-table tbody th
+.rg.pivot-table tbody th
 {
 	white-space: nowrap;
 	text-align: left;
 }
 
-.rg .pivot-table td:hover
+.rg.pivot-table td:hover
 {
 	border: 1px solid #0026FF !important;
 }
@@ -400,54 +393,12 @@ font-size: 11px;
 	shape-rendering: crispEdges;
 }
 
-.rg .label text
-{
-	font-family: sans-serif;
-	font-weight: bold;
-	font-size: 12px;
-	fill: #fff;
-	stroke: none;
-}
-
-.rg .label text.bg
-{
-	fill: #000;
-	stroke: #000;
-	stroke-width: 3px;
-	stroke-opacity: 0.8;
-}
-
-.rg .label text.shadow
-{
-	fill: #000000;
-	stroke-width: 4px;
-	stroke: #000000;
-	fill-opacity: 0.6;
-	stroke-opacity: 0.4;
-}
-/*
 .rg .bar-chart text, .rg .pie-chart text, .rg .stack-chart text, .rg .scatter-graph	 text
 {
-	font-family: Impact;
-	font-weight: bold; 
-	font-size: 12px;
-	fill: #eee;
-	text-rendering: optimizeLegibility; 
-	stroke-width: 0.5px;
-	stroke: #000000;
-	stroke-opacity: 0.5; 
-	stroke-linecap: butt; 
+	fill: #000;
+	font-weight: bold;
 }
 
-.rg .bar-chart text.shadow, .rg .pie-chart text.shadow, .rg .stack-chart text.shadow, .rg .scatter-graph text.shadow
-{
-	fill: #000000;
-	stroke-width: 3px;
-	stroke: #000000;
-	fill-opacity: 0.6;
-	stroke-opacity: 0.4;
-}
-*/
 .rg .scatter-graph text
 {
 	font-size: 6pt;
@@ -460,9 +411,7 @@ font-size: 11px;
 
 .rg ul.leaderboard li
 {
-	color: #000;
-	font-family:Tahoma,Arial,Helvetica,sans-serif;
-	font-size: 10pt;
+	color: #000;	
 }
 
 .rg .symbol path
