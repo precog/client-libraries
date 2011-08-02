@@ -1,5 +1,6 @@
 package com.reportgrid.api;
 
+import com.reportgrid.api.json.ToJson;
 import java.util.Date;
 
 /**
@@ -70,4 +71,16 @@ public class Event<T> {
 	public int getCount() {
 		return count;
 	}
+
+  public String buildRequestBody(ToJson<? super T> serializer) {
+    return new StringBuilder("{")
+      .append("\"timestamp\":").append(getTimestamp().getTime()).append(",")
+      .append("\"events\":{")
+        .append("\"").append(getEventName()).append("\":").append(serializer.serialize(getEventData()))
+      .append("},")
+      .append("\"count\":").append(getCount())
+      .append("}")
+      .toString();
+  }
+
 }

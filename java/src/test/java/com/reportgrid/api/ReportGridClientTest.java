@@ -4,6 +4,7 @@ import com.reportgrid.api.json.gson.GsonToJson;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import junit.framework.Assert.*;
 import com.google.gson.Gson;
 import com.reportgrid.api.json.ToJson;
 import java.io.IOException;
@@ -19,8 +20,15 @@ import java.util.logging.Logger;
 public class ReportGridClientTest extends TestCase {
 
 		private static class TestData {
-			private final int testInt = 42;	
-			private final String testStr = "Hello World";
+			public final int testInt;
+			public final String testStr;
+      public final GsonToJson.RawJson testRaw;
+
+      public TestData(int testInt, String testStr, GsonToJson.RawJson testRaw) {
+        this.testInt = testInt;
+        this.testStr = testStr;
+        this.testRaw = testRaw;
+      }
 		}
 
 		public static final Service Local = new Service() {
@@ -58,7 +66,33 @@ public class ReportGridClientTest extends TestCase {
 			ToJson<Object> toJson = new GsonToJson();
 			TrackingClient testClient = new TrackingClient(Local, TrackingClient.TEST_TOKEN);
 
-			Event<TestData> testEvent = new Event<TestData>(new Date(), "test", new TestData(), 1);
+      GsonToJson.RawJson testJson = new GsonToJson.RawJson("{\"test\":[{\"v\": 1}, {\"v\": 2}]}");
+			Event<TestData> testEvent = new Event<TestData>(new Date(), "test", new TestData(42, "Hello World", testJson), 1);
 			testClient.track(new Path("/test"), testEvent, false, toJson);
+    }
+
+    public void testUnescapedJSON() throws IOException {
+			ToJson<Object> toJson = new GsonToJson();
+
+      String testString = "{\"test\":[{\"v\":1},{\"v\":2}]}";
+      GsonToJson.RawJson testJson = new GsonToJson.RawJson(testString);
+      TestData testData = new TestData(42, "Hello World", testJson);
+
+			Event<TestData> testEvent = new Event<TestData>(new Date(), "test", testData, 1);
+
+      String expected = new StringBuilder("{")
+        .append("\"timestamp\":").append(testEvent.getTimestamp().getTime()).append(",")
+        .append("\"events\":{")
+          .append("\"").append(testEvent.getEventName()).append("\":{")
+            .append("\"testInt\":").append(42).append(",")
+            .append("\"testStr\":\"Hello World\",")
+            .append("\"testRaw\":").append(testString)
+          .append("}")
+        .append("},")
+        .append("\"count\":").append(testEvent.getCount())
+        .append("}")
+        .toString();
+
+      assertEquals(expected, testEvent.buildRequestBody(toJson));
     }
 }

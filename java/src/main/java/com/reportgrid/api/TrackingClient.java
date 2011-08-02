@@ -42,6 +42,7 @@ public class TrackingClient {
     return tokenId;
   } 
 
+
 	/**
 	 * Track the specified event.
 	 * 
@@ -72,15 +73,7 @@ public class TrackingClient {
       conn.setRequestMethod("POST");
       conn.setRequestProperty("Content-Type", "application/json");
 
-      String body = new StringBuilder("{")
-        .append("\"timestamp\":").append(event.getTimestamp().getTime()).append(",")
-        .append("\"events\":{")
-          .append("\"").append(event.getEventName()).append("\":").append(serializer.serialize(event.getEventData()))
-        .append("},")
-        .append("\"count\":").append(event.getCount())
-        .append("}")
-        .toString();
-
+      String body = event.buildRequestBody(serializer);
       System.out.println(body);
       
       conn.setRequestProperty("Content-Length", "" + body.length());
