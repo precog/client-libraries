@@ -40,22 +40,6 @@ public class QueryClient {
 
 	/**
 	 * Query for and return the properties that are children of the specified
-	 * path.
-	 * @param path The path to retrieve data for, such as /videos/1
-	 * @param fromJson The FromJson converter to use to deserialize the result. This
-	 * converter should be able to transform a JSON string into a 
-	 * {@link java.util.List<String>}
-	 * @return
-	 * @throws IOException 
-	 */
-	public List<Property> listChildProperties(Path path, FromJson<List<String>> fromJson) throws IOException {
-		return filterProperties(
-			Queries.list(path, null, new JsonStreamHandler<List<String>>(fromJson)).query(service, tokenId)
-		);			
-	}
-
-	/**
-	 * Query for and return the properties that are children of the specified
 	 * path and property.
 	 * @param path The path to retrieve data for, such as /videos/1
 	 * @param property The property to query for, such as .engagement.duration
@@ -71,8 +55,8 @@ public class QueryClient {
 		);			
 	}
 
-	public List<Property> listChildPaths(Path path, FromJson<List<String>> fromJson) throws IOException {
-		return filterProperties(
+	public List<Path> listChildPaths(Path path, FromJson<List<String>> fromJson) throws IOException {
+		return filterPaths(
 			Queries.list(path, null, new JsonStreamHandler<List<String>>(fromJson)).query(service, tokenId)
 		);			
 	}
@@ -90,7 +74,8 @@ public class QueryClient {
 	private static List<Path> filterPaths(List<String> stringResults) {
 		List<Path> results = new ArrayList<Path>();
 		for (String str : stringResults) {
-			if (str.endsWith("/")) results.add(new Path(str));
+			//if (str.endsWith("/")) 
+				results.add(new Path(str));
 		}
 		return results;
 	}

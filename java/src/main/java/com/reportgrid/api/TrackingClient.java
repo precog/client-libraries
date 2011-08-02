@@ -74,7 +74,6 @@ public class TrackingClient {
       conn.setRequestProperty("Content-Type", "application/json");
 
       String body = event.buildRequestBody(serializer);
-      System.out.println(body);
       
       conn.setRequestProperty("Content-Length", "" + body.length());
 

@@ -6,7 +6,7 @@ package com.reportgrid.api;
  *
  * @author knuttycombe
  */
-public class Path {
+public class PropertyPath {
 	protected final String path;
 
 	/**
@@ -15,7 +15,7 @@ public class Path {
 	 * by the "/" character.
 	 * @param path 
 	 */
-	public Path(String path) {
+	public PropertyPath(String path) {
 		this.path = ("/" + path).replaceAll("/+", "/");
 	}
 
@@ -28,15 +28,15 @@ public class Path {
 		return path;
 	}
 
-	public Path append(Path that) {
-		return new Path(path + "/" + that.path);
+	public PropertyPath append(PropertyPath that) {
+		return new PropertyPath(path + "/" + that.path);
 	}
 
-	public Path append(Property that) {
+	public PropertyPath append(Property that) {
 		if (that == null) {
 			return this;
 		} else {
-			return new Path(path + "/" + that.getValue());
+			return new PropertyPath(path + "/" + that.getValue());
 		}
 	}
 
@@ -44,12 +44,12 @@ public class Path {
    * Return the prefix of this path. May return null if the path is only
    * one element long.
    */
-  public Path getPrefix() {
+  public PropertyPath getPrefix() {
     String[] components = path.split("/");
     if (components.length > 1) {
       StringBuilder prefix = new StringBuilder();
       for (int i = 0; i < components.length - 1; i++) prefix.append(components[i]).append("/");
-      return new Path(prefix.toString());
+      return new PropertyPath(prefix.toString());
     } else {
       return null;
     }

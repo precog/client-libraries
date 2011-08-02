@@ -21,17 +21,6 @@ public class GsonToJson implements ToJson<Object> {
 		return gson.toJson(value);
 	}
 
-  public static class RawJson {
-    private final String json;
-    public RawJson(String json) {
-      this.json = json;
-    }
-
-    public String getJson() {
-      return this.json;
-    }
-  }
-
   private static class RawJsonSerializer implements JsonSerializer<RawJson> {
     public JsonElement serialize(RawJson src, Type typeOfSrc, JsonSerializationContext context) {
       return new JsonParser().parse(src.getJson());
