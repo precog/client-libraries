@@ -1,0 +1,7 @@
+-cp src
+-cp test
+-lib utest
+-swf bin/swfcookie.test.swf
+-swf-version 8
+-swf-header 800:600:30:FFFFFF
+-main TestSwfCookie

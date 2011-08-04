@@ -8,7 +8,7 @@
    * should be set prior to distributing this script.
    */
 
-  var swfcookie_swf_url = 'http://api.reportgrid.com/js/storage.swf';
+  var swfcookie_swf_url = 'http://api.reportgrid.com/js/swfcookie.swf';
 
 
   /**
@@ -654,15 +654,15 @@
 
   /**
    * Main load logic.
-   * SwfStore loads asynchronously, so it drives the initialization process. We
-   * nullify the SwfStore reference if Flash cookie storage is unavailable.
+   * SwfCookie loads asynchronously, so it drives the initialization process. We
+   * nullify the SwfCookie reference if Flash cookie storage is unavailable.
    */
 
   var swf_cookie = null;
 
   if (script_options.crossdomain)
     $(function () {
-      swf_cookie = new SwfStore({namespace: script_options.cookieNamespace,
+      swf_cookie = new SwfCookie({namespace: script_options.cookieNamespace,
                                  swf_url:   swfcookie_swf_url,
                                  onready:   initialize,
                                  onerror:   function () {

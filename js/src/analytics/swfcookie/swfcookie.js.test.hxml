@@ -1,0 +1,5 @@
+-cp js
+-cp test
+-lib utest
+-js bin/swfcookie.test.js
+-main TestSwfCookie

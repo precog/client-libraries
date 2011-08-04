@@ -1,0 +1,5 @@
+-cp js
+-cp stress
+-lib utest
+-js bin/swfcookie.stress.js
+-main Stress

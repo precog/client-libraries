@@ -1,0 +1,7 @@
+-cp src
+-swf bin/swfcookie.swf
+-swf-version 9
+-swf-header 800:600:120:FFFFFF
+--flash-strict
+-D network-sandbox
+-main SwfCookie

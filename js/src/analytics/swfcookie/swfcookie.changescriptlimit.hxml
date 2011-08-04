@@ -1,0 +1,4 @@
+-cp neko
+-lib format
+-neko bin/swfcookie.swf
+-main ScriptLimit

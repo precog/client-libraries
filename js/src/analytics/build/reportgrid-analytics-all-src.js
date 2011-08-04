@@ -1,31 +1,15 @@
 /**
+* SwfCookie adapted from:
+*
 * SwfStore - a JavaScript library for cross-domain flash cookies
 *
 * http://github.com/nfriedly/Javascript-Flash-Cookies
 *
 * Copyright (c) 2010 by Nathan Friedly - Http://nfriedly.com
-* 
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so, subject to the following conditions:
-* 
-* The above copyright notice and this permission notice shall be included in
-* all copies or substantial portions of the Software.
-* 
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-* THE SOFTWARE.
 */
 
 /*jslint browser: true, devel: true*/
-/*globals SwfStore */
+/*globals SwfCookie*/
 
 (function(){
 
@@ -36,29 +20,33 @@
 	var alpnum = /[^a-z0-9_]/ig; //a regex to find anything thats not letters and numbers
 
 	/**
-	* SwfStore constructor - creates a new SwfStore object and embeds the .swf into the web page.
+	* SwfCookie constructor - creates a new SwfCookie object and embeds the .swf into the web page.
 	*
 	* usage: 
-	* var mySwfStore = new SwfStore(config);
+	* var mySwfCookie = new SwfCookie(config);
 	*
 	* @param {object} config
-	* @param {string} [config.swf_url=storage.swf] - Url to storage.swf. Must be an absolute url (with http:// and all) to work cross-domain
-	* @param {functon} [config.onready] Callback function that is fired when the SwfStore is loaded. Recommended.
-	* @param {function} [config.onerror] Callback function that is fired if the SwfStore fails to load. Recommended.
-	* @param {string} [config.namespace="swfstore"] The namespace to use in both JS and the SWF. Allows a page to have more than one instance of SwfStore.
+	* @param {string} [config.swf_url=swfcookie.swf] - Url to swfcookie.swf. Must be an absolute url (with http:// and all) to work cross-domain
+	* @param {functon} [config.onready] Callback function that is fired when the SwfCookie is loaded. Recommended.
+	* @param {function} [config.onerror] Callback function that is fired if the SwfCookie fails to load. Recommended.
+	* @param {string} [config.namespace="swfcookie"] The namespace to use in both JS and the SWF. Allows a page to have more than one instance of SwfCookie.
 	* @param {integer} [config.timeout=10] The number of seconds to wait before assuming the user does not have flash.
-	* @param {boolean} [config.debug=false] Is debug mode enabled? If so, mesages will be logged to the console and the .swf will be rendered on the page (although it will be an empty white box unless it cannot communicate with JS. Then it will log errors to the .swf)
+	* @param {boolean} [config.debug=false] Is debug mode enabled? If so, mesages will be logged to the console and the .swf will be rendered on the page (although it will be an empty white box unless it cannot communicate with JS. Then it will log errors to the .swf). Works only if the swf is compiled in debug mode.
+	* @param {boolean} [config.batch_requests=true]
+	* @param {integer} [config.batch_delay=1000] time in ms
 	*/
-	window.SwfStore = function(config){
+	window.SwfCookie = function(config){
 		// make sure we have something of a configuration
 		config = config || {};
 		var defaults = {
-			swf_url: 'storage.swf',
-			namespace: 'swfstore',
+			swf_url: 'swfcookie.swf',
+			namespace: 'swfcookie',
 			debug: false,
 			timeout: 10,
 			onready: null,
-			onerror: null
+			onerror: null,
+			batch_requests : true,
+			batch_delay : 50
 		};
 		var key;
 		for(key in defaults){
@@ -70,15 +58,15 @@
 		}
 		config.namespace = config.namespace.replace(alpnum, '_');
 		
-		if(window.SwfStore[config.namespace]){
-			throw "There is already an instance of SwfStore using the '" + config.namespace + "' namespace. Use that instance or specify an alternate namespace in the config.";
+		if(window.SwfCookie[config.namespace]){
+			throw "There is already an instance of SwfCookie using the '" + config.namespace + "' namespace. Use that instance or specify an alternate namespace in the config.";
 		}
 		
 		this.config = config;
 		
 		// a couple of basic timesaver functions
 		function id(){
-			return "SwfStore_" + config.namespace + "_" +  (counter++);
+			return "SwfCookie_" + config.namespace + "_" +  (counter++);
 		}
 		
 		function div(visible){
@@ -108,11 +96,11 @@
 				};
 			}
 			this.log = function(type, source, msg){
-				source = (source === 'swfStore') ? 'swf' : source;
+				source = (source === 'swfCookie') ? 'swf' : source;
 				if(typeof(console[type]) !== "undefined"){
-					console[type]('SwfStore - ' + config.namespace + ' (' + source + '): ' + msg);
+					console[type]('SwfCookie - ' + config.namespace + ' (' + source + '): ' + msg);
 				} else {
-					console.log('SwfStore - ' + config.namespace + ": " + type + ' (' + source  + '): ' + msg);
+					console.log('SwfCookie - ' + config.namespace + ": " + type + ' (' + source  + '): ' + msg);
 				}
 			};
 		} else {
@@ -122,15 +110,15 @@
 		this.log('info','js','Initializing...');
 	
 		// the callback functions that javascript provides to flash must be globally accessible
-		SwfStore[config.namespace] = this;
+		SwfCookie[config.namespace] = this;
 	
 		var swfContainer = div(config.debug);
 		
 		var swfName = id();
 		
-		var flashvars = "logfn=SwfStore." + config.namespace + ".log&amp;" + 
-			"onload=SwfStore." + config.namespace + ".onload&amp;" +  // "onload" sets this.ready and then calls the "onready" config option
-			"onerror=SwfStore." + config.namespace + ".onerror&amp;" + 
+		var flashvars = "logfn=SwfCookie." + config.namespace + ".log&amp;" + 
+			"onload=SwfCookie." + config.namespace + ".onload&amp;" +  // "onload" sets this.ready and then calls the "onready" config option
+			"onerror=SwfCookie." + config.namespace + ".onerror&amp;" + 
 			"LSOName=" + config.namespace;
 			
 		swfContainer.innerHTML = '<object height="100" width="500" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab" id="' + 
@@ -143,10 +131,66 @@
 			'name="' + swfName + '" bgcolor="#ffffff" src="' + config.swf_url + '">' +
 			'</object>';
 		
-		this.swf = document[swfName] || window[swfName];
+		var swf = this.swf = document[swfName] || window[swfName];
 		
+		var cache = {}, collecting = false;
+		
+		function batchDelayedFlush()
+		{
+			if(collecting)
+				return;
+			collecting = true;
+			setTimeout(function() {
+				swf.setObject(cache);
+				collecting = false;
+				cache = {};
+			}, config.batch_delay);
+		}
+		
+		this.batchSet = function(key, value)
+		{
+			cache[key] = value;
+			batchDelayedFlush();
+		}
+		
+		this.batchSetObject = function(ob)
+		{
+			var key;
+			for(key in ob)
+				if(ob.hasOwnProperty(key))
+					cache[key] = ob[key];
+			batchDelayedFlush();
+		}
+		
+		this.batchGet = function(key)
+		{
+			if(cache.hasOwnProperty(key))
+				return cache[key];
+			else
+				return this.swf.get(key);
+		}
+		
+		this.batchGetAll = function(data)
+		{
+			var key;
+			for(key in cache)
+				if(cache.hasOwnProperty(key))
+					data[key] = cache[key];
+			return data;
+		}
+		
+		this.batchRemove = function(key)
+		{
+			delete cache[key];
+		}
+		
+		this.batchClear = function()
+		{
+			cache = {};
+		}
+
 		this._timeout = setTimeout(function(){
-			SwfStore[config.namespace].log('error','js','Timeout reached, assuming ' + config.swf_url + ' failed to load and firing the onerror callback.');
+			SwfCookie[config.namespace].log('error','js','Timeout reached, assuming ' + config.swf_url + ' failed to load and firing the onerror callback.');
 			if(config.onerror){
 				config.onerror();
 			}
@@ -154,18 +198,19 @@
 	};
 	
 	// we need to check everything we send to flash because it can't take functions as arguments
-	function checkData(data){
+	function checkData(data)
+	{
 		if(typeof data === "function"){
-			throw 'SwfStore Error: Functions cannot be used as keys or values.';
+			throw 'SwfCookie Error: Functions cannot be used as keys or values.';
 		}
 	}
 
-	SwfStore.prototype = {
+	SwfCookie.prototype = {
   
 		version: "1.5",
 		
 		/**
-		* This is an indicator of wether or not the SwfStore is initialized. 
+		* This is an indicator of wether or not the SwfCookie is initialized. 
 		* Use the onready and onerror config options rather than checking this variable.
 		*/
 		ready: false,
@@ -180,7 +225,24 @@
 			checkData(key);
 			checkData(value);
 			//this.log('debug', 'js', 'Setting ' + key + '=' + value);
-			this.swf.set(key, value);
+			if(this.config.batch_requests)
+				this.batchSet(key, value);
+			else
+				this.swf.set(key, value);
+		},
+		
+		/**
+		* Sets the given key/value pairs contained in the argument object in the swf
+		* @param {string} ob
+		*/
+		setObject: function(ob){
+			this._checkReady();
+			checkData(ob);
+			//this.log('debug', 'js', 'Setting ' + ob);
+			if(this.config.batch_requests)
+				this.batchSetObject(ob);
+			else
+				this.swf.setObject(ob);
 		},
 	
 		/**
@@ -192,6 +254,12 @@
 			this._checkReady();
 			checkData(key);
 			//this.log('debug', 'js', 'Reading ' + key);
+			if(this.config.batch_requests)
+			{
+				var value = this.batchGet(key);
+				if(null != value)
+					return value;
+			}
 			return this.swf.get(key);
 		},
 
@@ -204,10 +272,14 @@
 			//this.log('debug', 'js', 'Reading ' + key);
 			var data = this.swf.getAll();
 			// presumably the user wants to loop through their values, not including the internal __flashBugFix value
-			if(data.__flashBugFix){
+			if(data.__flashBugFix)
+			{
 				delete data.__flashBugFix;
 			}
-			return data;
+			if(this.config.batch_requests)
+				return this.batchGetAll(data);
+			else
+				return data;
 		},
     
 	    /**
@@ -215,10 +287,24 @@
 		*
 		* @param {string} key
 		*/
-		clear: function(key){
+		remove: function(key){
 			this._checkReady();
 			checkData(key);
-			this.swf.clear(key);
+			if(this.config.batch_requests)
+				this.batchRemove(key);
+			this.swf.remove(key);
+		},
+		
+		/**
+		* Delete the specified key from the swf
+		*
+		* @param {string} key
+		*/
+		clear: function(){
+			this._checkReady();
+			if(this.config.batch_requests)
+				this.batchClear();
+			this.swf.clear();
 		},
 		
 		/**
@@ -228,7 +314,7 @@
 		*/
 		_checkReady: function(){
 			if(!this.ready){
-				throw 'SwfStore is not yet finished initializing. Pass a config.onready callback or wait until this.ready is true before trying to use a SwfStore instance.';
+				throw 'SwfCookie is not yet finished initializing. Pass a config.onready callback or wait until this.ready is true before trying to use a SwfCookie instance.';
 			}
 		},
 		
@@ -6205,7 +6291,7 @@ var ReportGrid = window.ReportGrid || {};
    * should be set prior to distributing this script.
    */
 
-  var swfcookie_swf_url = 'http://api.reportgrid.com/js/storage.swf';
+  var swfcookie_swf_url = 'http://api.reportgrid.com/js/swfcookie.swf';
 
 
   /**
@@ -6851,15 +6937,15 @@ var ReportGrid = window.ReportGrid || {};
 
   /**
    * Main load logic.
-   * SwfStore loads asynchronously, so it drives the initialization process. We
-   * nullify the SwfStore reference if Flash cookie storage is unavailable.
+   * SwfCookie loads asynchronously, so it drives the initialization process. We
+   * nullify the SwfCookie reference if Flash cookie storage is unavailable.
    */
 
   var swf_cookie = null;
 
   if (script_options.crossdomain)
     $(function () {
-      swf_cookie = new SwfStore({namespace: script_options.cookieNamespace,
+      swf_cookie = new SwfCookie({namespace: script_options.cookieNamespace,
                                  swf_url:   swfcookie_swf_url,
                                  onready:   initialize,
                                  onerror:   function () {
