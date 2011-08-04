@@ -545,7 +545,7 @@
                              attention:           false,
                              scrolling:           false,
                              rollup:              true,
-                             rollupName:          '@all',
+                             rollupName:          '#all',
                              attentionSelector:   'body'};
 
     var schema            = {pageEngagement:      /^queueing|polling|none$/,
@@ -765,13 +765,10 @@
       paths.push("/" + script_options.rollupName);
     }
     
-    for(var i = 0; i < paths.length; i++)
-    {
-      path = paths[i];
-//    for debugging pursposes only
-//      console.log("path: " + path + ", event: " + JSON.stringify(event_object));
-      return ReportGrid.track('/' + path, $.extend({}, options, {event: event_object}));
-    }
+//  for debugging pursposes only
+//  console.log("paths: " + paths + ", event: " + JSON.stringify(event_object));
+    return ReportGrid.track(paths, $.extend({}, options, {event: event_object}));
+
   };
 
 
