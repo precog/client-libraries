@@ -10,7 +10,7 @@
   <distributionManagement>
     <repository>
       <id>ssh-repository</id>
-      <url>scpexe://mongodb03.reportgrid.com/root/reportgrid/apisite/release/java</url>
+      <url>scpexe://mongodb03.reportgrid.com/root/reportgrid/apisite/release/maven2</url>
     </repository>
   </distributionManagement>
   <dependencies>

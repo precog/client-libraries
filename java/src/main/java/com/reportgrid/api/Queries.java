@@ -151,7 +151,7 @@ public class Queries {
 	private static URL vfsUrl(Service service, Path path, String tokenId) throws IOException {
 		return new URL(
 						service.serviceUrl(), 
-						"vfs" + path.relativize() + "?tokenId=" + encode(tokenId, "UTF-8"));
+						"vfs/" + path.relativize() + "?tokenId=" + encode(tokenId, "UTF-8"));
 	}
 
 	/**
@@ -165,7 +165,9 @@ public class Queries {
 		return new Query<List<String>>() {
 			@Override
 			public List<String> query(Service service, String tokenId) throws IOException {
-				return _query(service, vfsUrl(service, path.append(property), tokenId), null, handler);
+				URL url = vfsUrl(service, path.append(property), tokenId);
+				System.out.println(url);
+				return _query(service, url, null, handler);
 			}
 		};
 	}

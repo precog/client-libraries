@@ -17,6 +17,10 @@ public class Property {
 		return this.value;
 	}
 
+	public String toString() {
+		return this.value;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {
