@@ -271,7 +271,7 @@ var ReportGrid = window.ReportGrid || {};
       var success  = options.success;
       var failure  = options.failure || function() {};
 
-      $.Log.info('HTTP ' + method + ' ' + path + ': headers(' + JSON.stringify(headers) + '), content('+ JSON.stringify(content)) + ')';
+      $.Log.info('HTTP ' + method + ' ' + path + ': headers(' + JSON.stringify(headers) + '), content('+ JSON.stringify(content) + ')');
 
       var createNewXmlHttpRequest = function() {
         if (window.XMLHttpRequest) {
@@ -327,7 +327,7 @@ var ReportGrid = window.ReportGrid || {};
       var success  = options.success;
       var failure  = options.failure || function() {};
 
-      $.Log.info('HTTP ' + method + ' ' + path + ': headers(' + JSON.stringify(headers) + '), content('+ JSON.stringify(content)) + ')';
+      $.Log.info('HTTP ' + method + ' ' + path + ': headers(' + JSON.stringify(headers) + '), content('+ JSON.stringify(content) + ')');
 
       var random   = Math.floor(Math.random() * 214748363);
       var funcName = 'ReportGridJsonpCallback' + random.toString();

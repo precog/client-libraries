@@ -1416,11 +1416,11 @@ jQuery.extend({
 		if ( name === "selected" && !jQuery.support.optSelected ) {
 			var parent = elem.parentNode;
 			if ( parent ) {
-				parent.selectedIndex;
+				var _ = parent.selectedIndex;
 
 				// Make sure that it also works with optgroups, see #5701
 				if ( parent.parentNode ) {
-					parent.parentNode.selectedIndex;
+					_ = parent.parentNode.selectedIndex;
 				}
 			}
 		}
@@ -3358,7 +3358,7 @@ var makeArray = function( array, results ) {
 // Also verifies that the returned array holds DOM nodes
 // (which is not the case in the Blackberry browser)
 try {
-	Array.prototype.slice.call( document.documentElement.childNodes, 0 )[0].nodeType;
+	var _ = Array.prototype.slice.call( document.documentElement.childNodes, 0 )[0].nodeType;
 
 // Provide a fallback method if it does not work
 } catch( e ) {

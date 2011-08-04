@@ -1783,11 +1783,11 @@ jQuery.extend({
 		if ( name === "selected" && !jQuery.support.optSelected ) {
 			var parent = elem.parentNode;
 			if ( parent ) {
-				parent.selectedIndex;
+				var _ = parent.selectedIndex;
 
 				// Make sure that it also works with optgroups, see #5701
 				if ( parent.parentNode ) {
-					parent.parentNode.selectedIndex;
+					_ = parent.parentNode.selectedIndex;
 				}
 			}
 		}
@@ -3725,7 +3725,7 @@ var makeArray = function( array, results ) {
 // Also verifies that the returned array holds DOM nodes
 // (which is not the case in the Blackberry browser)
 try {
-	Array.prototype.slice.call( document.documentElement.childNodes, 0 )[0].nodeType;
+	var _ = Array.prototype.slice.call( document.documentElement.childNodes, 0 )[0].nodeType;
 
 // Provide a fallback method if it does not work
 } catch( e ) {
@@ -5615,7 +5615,7 @@ var ReportGrid = window.ReportGrid || {};
       var success  = options.success;
       var failure  = options.failure || function() {};
 
-      $.Log.info('HTTP ' + method + ' ' + path + ': headers(' + JSON.stringify(headers) + '), content('+ JSON.stringify(content)) + ')';
+      $.Log.info('HTTP ' + method + ' ' + path + ': headers(' + JSON.stringify(headers) + '), content('+ JSON.stringify(content) + ')');
 
       var createNewXmlHttpRequest = function() {
         if (window.XMLHttpRequest) {
@@ -5671,7 +5671,7 @@ var ReportGrid = window.ReportGrid || {};
       var success  = options.success;
       var failure  = options.failure || function() {};
 
-      $.Log.info('HTTP ' + method + ' ' + path + ': headers(' + JSON.stringify(headers) + '), content('+ JSON.stringify(content)) + ')';
+      $.Log.info('HTTP ' + method + ' ' + path + ': headers(' + JSON.stringify(headers) + '), content('+ JSON.stringify(content) + ')');
 
       var random   = Math.floor(Math.random() * 214748363);
       var funcName = 'ReportGridJsonpCallback' + random.toString();
@@ -6844,7 +6844,7 @@ var ReportGrid = window.ReportGrid || {};
       cookie('reportgrid_page_engagement_time') &&
       cookie('reportgrid_page_engagement_last_url'))
 
-    track('engagedQueueing', {time: round_to(+cookie('reportgrid_page_engagement_time'), 1000)},
+    track('engagedQueueing', {time: round_to(+cookie('reportgrid_page_engagement_time'), 100)},
                              cookie('reportgrid_page_engagement_last_url'),
                              new Date(+cookie('reportgrid_page_last_engagement_start_time')));
 
@@ -6855,7 +6855,7 @@ var ReportGrid = window.ReportGrid || {};
     cookie('reportgrid_page_engagement_time', time_since_page_load());
     cookie('reportgrid_user_total_engagement',
            user_total_engagement + time_since_page_load());
-  }, 200);
+  }, 100);
 
 
   /**
@@ -6873,13 +6873,13 @@ var ReportGrid = window.ReportGrid || {};
 
   var setup_engagement_polling = function (interval) {
     setTimeout(function () {
-      track('engagedPolling', {time: round_to(time_since_page_load(), 200)});
+      track('engagedPolling', {time: round_to(time_since_page_load(), 1000)});
       setup_engagement_polling(interval * 2);
     }, interval);
   };
 
   if (script_options.pageEngagement === 'polling')
-    setup_engagement_polling(200);
+    setup_engagement_polling(1000);
 
 
   /**

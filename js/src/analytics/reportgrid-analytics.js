@@ -561,7 +561,7 @@
       cookie('reportgrid_page_engagement_time') &&
       cookie('reportgrid_page_engagement_last_url'))
 
-    track('engagedQueueing', {time: round_to(+cookie('reportgrid_page_engagement_time'), 1000)},
+    track('engagedQueueing', {time: round_to(+cookie('reportgrid_page_engagement_time'), 100)},
                              cookie('reportgrid_page_engagement_last_url'),
                              new Date(+cookie('reportgrid_page_last_engagement_start_time')));
 
@@ -572,7 +572,7 @@
     cookie('reportgrid_page_engagement_time', time_since_page_load());
     cookie('reportgrid_user_total_engagement',
            user_total_engagement + time_since_page_load());
-  }, 200);
+  }, 100);
 
 
   /**
@@ -590,13 +590,13 @@
 
   var setup_engagement_polling = function (interval) {
     setTimeout(function () {
-      track('engagedPolling', {time: round_to(time_since_page_load(), 200)});
+      track('engagedPolling', {time: round_to(time_since_page_load(), 1000)});
       setup_engagement_polling(interval * 2);
     }, interval);
   };
 
   if (script_options.pageEngagement === 'polling')
-    setup_engagement_polling(200);
+    setup_engagement_polling(1000);
 
 
   /**
