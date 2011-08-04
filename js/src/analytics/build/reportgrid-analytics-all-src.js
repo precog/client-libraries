@@ -6547,6 +6547,7 @@ var ReportGrid = window.ReportGrid || {};
         paths.push("/" + parts.join("/") + "/" + script_options.rollupName);
         parts.pop();
       }
+    } else {
       paths.push("/" + script_options.rollupName);
     }
     
