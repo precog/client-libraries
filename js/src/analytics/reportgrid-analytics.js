@@ -271,7 +271,6 @@
 //  for debugging pursposes only
 //  console.log("paths: " + paths + ", event: " + JSON.stringify(event_object));
     return ReportGrid.track(paths, $.extend({}, options, {event: event_object}));
-
   };
 
 
@@ -506,7 +505,9 @@
    */
 
   $('*').live('click', function (e) {
+	console.log("click");
     if (e.target === this) {
+		console.log("click-logged");
       ++user_total_interactions;
 
       if (script_options.interaction)
