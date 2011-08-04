@@ -6330,7 +6330,7 @@ var ReportGrid = window.ReportGrid || {};
                              attention:           false,
                              scrolling:           false,
                              rollup:              true,
-                             rollupName:          '#all',
+                             rollupName:          '__all',
                              attentionSelector:   'body'};
 
     var schema            = {pageEngagement:      /^queueing|polling|none$/,
