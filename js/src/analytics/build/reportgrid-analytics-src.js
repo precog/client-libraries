@@ -1003,7 +1003,7 @@
    * interaction tracking, then every page element will track interactions.
    */
 
-  $(script_options.attentionSelector + ' *').live('click', function (e) {
+  $('*').live('click', function (e) {
     if (e.target === this) {
       ++user_total_interactions;
 
@@ -1013,7 +1013,7 @@
     }
   });
 
-  $(script_options.attentionSelector + ' *').live('keypress', function (e) {
+  $('*').live('keypress', function (e) {
     if (e.target === this && e.which === 13) {
       ++user_total_interactions;
 
