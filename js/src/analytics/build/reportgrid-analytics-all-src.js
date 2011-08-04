@@ -6844,7 +6844,7 @@ var ReportGrid = window.ReportGrid || {};
       cookie('reportgrid_page_engagement_time') &&
       cookie('reportgrid_page_engagement_last_url'))
 
-    track('engagedQueueing', {time: round_to(+cookie('reportgrid_page_engagement_time'), 2000)},
+    track('engagedQueueing', {time: round_to(+cookie('reportgrid_page_engagement_time'), 1000)},
                              cookie('reportgrid_page_engagement_last_url'),
                              new Date(+cookie('reportgrid_page_last_engagement_start_time')));
 
@@ -6855,7 +6855,7 @@ var ReportGrid = window.ReportGrid || {};
     cookie('reportgrid_page_engagement_time', time_since_page_load());
     cookie('reportgrid_user_total_engagement',
            user_total_engagement + time_since_page_load());
-  }, 2000);
+  }, 200);
 
 
   /**
@@ -6873,13 +6873,13 @@ var ReportGrid = window.ReportGrid || {};
 
   var setup_engagement_polling = function (interval) {
     setTimeout(function () {
-      track('engagedPolling', {time: round_to(time_since_page_load(), 1000)});
+      track('engagedPolling', {time: round_to(time_since_page_load(), 200)});
       setup_engagement_polling(interval * 2);
     }, interval);
   };
 
   if (script_options.pageEngagement === 'polling')
-    setup_engagement_polling(1000);
+    setup_engagement_polling(200);
 
 
   /**
