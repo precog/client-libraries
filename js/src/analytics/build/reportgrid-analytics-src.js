@@ -46,7 +46,7 @@
 			onready: null,
 			onerror: null,
 			batch_requests : true,
-			batch_delay : 50
+			batch_delay : 500
 		};
 		var key;
 		for(key in defaults){
