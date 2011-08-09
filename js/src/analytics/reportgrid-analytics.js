@@ -503,9 +503,7 @@
    */
 
   $('*').live('click', function (e) {
-	console.log("click");
     if (e.target === this) {
-		console.log("click-logged");
       ++user_total_interactions;
 
       if (script_options.interaction)
