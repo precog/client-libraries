@@ -341,8 +341,11 @@ var ReportGrid = window.ReportGrid || {};
         }
 
         document.head.removeChild(document.getElementById(funcName));
-
-        delete window[funcName];
+		try{
+			delete window[funcName];
+		}catch(e){
+			window[funcName] = undefined;
+		}
       }
 
       var extraQuery = {};
