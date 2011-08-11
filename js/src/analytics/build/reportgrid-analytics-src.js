@@ -911,7 +911,7 @@
       cookie('reportgrid_already_unbounced', 1);
       track('bounce', {}, {path:      cookie('reportgrid_bounce_path'),
                            count:     -1,
-                           timestamp: new Date(bounce_time)});
+                           timestamp: bounce_time});
     }
   } else {
     // The user is new, so create a bounce event and remember the fact that we
@@ -922,7 +922,7 @@
     cookie('reportgrid_bounce_path', page_path);
     cookie('reportgrid_bounce_time', bounce_time);
 
-    track('bounce', {}, {timestamp: new Date(bounce_time)});
+    track('bounce', {}, {timestamp: bounce_time});
   }
 
 
@@ -1055,9 +1055,11 @@
       cookie('reportgrid_page_engagement_time') &&
       cookie('reportgrid_page_engagement_last_url'))
 
-    track('engagedQueueing', {time: round_to(+cookie('reportgrid_page_engagement_time'), 100)},
-                             cookie('reportgrid_page_engagement_last_url'),
-                             new Date(+cookie('reportgrid_page_last_engagement_start_time')));
+    track('engagedQueueing', {
+      time: round_to(+cookie('reportgrid_page_engagement_time'), 100),
+      url : cookie('reportgrid_page_engagement_last_url')
+    },
+    { timestamp : +cookie('reportgrid_page_last_engagement_start_time')});
 
   cookie('reportgrid_page_engagement_last_url', page_path);
   cookie('reportgrid_page_last_engagement_start_time', +new Date());
