@@ -5,7 +5,7 @@ import AltDependency._
 object ScalaClientBuild extends Build {
   val buildOrganization = "com.reportgrid"
   val buildVersion = "0.3.0"
-  val buildScalaVersion = "2.9.1.RC2"
+  val buildScalaVersion = "2.9.1.RC3"
   
   val blueeyes = GitAltDependency(_: java.io.File, file("../../blueeyes"),     RootProject(uri("git://github.com/jdegoes/blueeyes")))
   val rosetta =  GitAltDependency(_: java.io.File, file("../../rosetta-json"), RootProject(uri("git://github.com/jdegoes/RosettaJson"))) 
