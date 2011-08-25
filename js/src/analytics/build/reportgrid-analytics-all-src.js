@@ -6332,7 +6332,7 @@ var ReportGrid = window.ReportGrid || {};
                              interaction:         false,
                              attention:           false,
                              scrolling:           false,
-                             rollup:              true,
+                             rollup:              'domain',
                              rollupName:          '__all',
                              attentionSelector:   'body'};
 
@@ -6342,7 +6342,8 @@ var ReportGrid = window.ReportGrid || {};
                              crossdomain:         /^true|false$/,
                              interaction:         /^true|false$/,
                              attention:           /^true|false$/,
-                             scrolling:           /^true|false$/};
+                             scrolling:           /^true|false$/,
+							 rollup:              /^all|domain|global|domainglobal|false$/};
 
     var query_string      = $('script').eq(-1).attr('src').replace(/^.*\?/, '');
     var segments          = query_string.split(/&/);
@@ -6490,17 +6491,23 @@ var ReportGrid = window.ReportGrid || {};
    * ReportGrid.customEvent(), and they appear with all of the events tracked
    * by the analytics client.
    */
-
-  var standard_event_properties = function () {
-    return {browserVersion:   browser_version,
-            operatingSystem:  operating_system,
-            platform:         platform,
-            totalVisits:      user_visits,
-            totalInteraction: user_total_interactions,
-            totalEngagement:  round_to(user_total_engagement + time_since_page_load(), 1000),
-            referrer:         referrer,
-            timeOffset:       time_offset,
-            '~keywords':      search_keywords};
+// referrer and keywords are commented to avoid excess of data
+  var standard_event_properties = function (remove) {
+    var o = {
+      browserVersion:   browser_version,
+      operatingSystem:  operating_system,
+      platform:         platform,
+      totalVisits:      user_visits,
+      totalInteraction: user_total_interactions,
+      totalEngagement:  round_to(user_total_engagement + time_since_page_load(), 1000),
+ //     '~referrer':      referrer,
+      timeOffset:       time_offset
+ //     '~keywords':      search_keywords
+	};
+    remove = remove || [];
+    for(var i = 0; i < remove.length; i++)
+      delete o[remove[i]];
+    return o;
   };
 
 
@@ -6531,27 +6538,51 @@ var ReportGrid = window.ReportGrid || {};
    * If provided, the timestamp should always be a Date object.
    */
 
+  var grabdomain = function(path)
+  {
+    var found = path.match(/^\/+([^\/]+)\//);
+    if(found)
+      return found[1];
+    return null;
+  }
+   
   var track = ReportGrid.customEvent = function (event_type, properties, options) {
     var event_object = {};
     var path         = options && options.path || page_path;
 
     options && delete options.path;
 
-    event_object[event_type] = $.extend({}, standard_event_properties(),
+    event_object[event_type] = $.extend({}, standard_event_properties(options && options.remove),
                                             properties || {});
                                             
     var paths = [path];
     if(script_options.rollup)
     {
-      var parts = path.split(/\//g);
-      parts.pop();
-      while(parts.length > 0)
+      var domain;
+	  switch(script_options.rollup)
       {
-        paths.push("/" + parts.join("/") + "/" + script_options.rollupName);
-        parts.pop();
+        case "domain":
+          if(domain = grabdomain(path)) paths.push(domain + "/" + script_options.rollupName);
+          break;
+		case "global":
+          paths.push("/" + script_options.rollupName);
+          break;
+		case "domainglobal":
+          if(domain = grabdomain(path)) paths.push(domain + "/" + script_options.rollupName);
+          paths.push("/" + script_options.rollupName);
+          break;
+        case "all":
+          var parts = path.split(/\//g);
+          parts.pop();
+          while(parts.length > 0)
+          {
+            paths.push(parts.join("/") + "/" + script_options.rollupName);
+            parts.pop();
+          }
+          break;
       }
     }
-    
+
 //  for debugging pursposes only
 //  console.log("paths: " + paths + ", event: " + JSON.stringify(event_object));
     return ReportGrid.track(paths, $.extend({}, options, {event: event_object}));
@@ -6577,7 +6608,7 @@ var ReportGrid = window.ReportGrid || {};
    * used), we then emit the other tracking events.
    */
 
-  track('visited');
+  track('visited', null, { remove : ["totalInteraction"] });
 
 
   /**
@@ -6674,11 +6705,12 @@ var ReportGrid = window.ReportGrid || {};
    */
 
   if (user_is_unique)
-    track('uniqueVisited');
+    track('uniqueVisited', null, { remove : ["totalInteraction"] });
   else
-    track('repeatVisited', {timeFrame: last_visit_interval});
+    track('repeatVisited', {timeFrame: last_visit_interval}, { remove : ["totalInteraction"] });
 
-  $(function () {track('loaded', {delay: round_to(time_since_page_load(), 50)})});
+// commented out for perfomance reasons
+//  $(function () {track('loaded', {delay: round_to(time_since_page_load(), 50)}, { remove : ["totalInteraction", "totalEngagement"] })});
 
 
   /**
@@ -6842,12 +6874,12 @@ var ReportGrid = window.ReportGrid || {};
   if (script_options.pageEngagement === 'queueing' &&
       cookie('reportgrid_page_engagement_time') &&
       cookie('reportgrid_page_engagement_last_url'))
-
-    track('engagedQueueing', {
-      time: round_to(+cookie('reportgrid_page_engagement_time'), 100),
-      url : cookie('reportgrid_page_engagement_last_url')
-    },
-    { timestamp : +cookie('reportgrid_page_last_engagement_start_time')});
+// commented for performance reasons
+//    track('engagedQueueing', {
+//      time: round_to(+cookie('reportgrid_page_engagement_time'), 100),
+//      url : cookie('reportgrid_page_engagement_last_url')
+//    },
+//    { timestamp : +cookie('reportgrid_page_last_engagement_start_time')});
 
   cookie('reportgrid_page_engagement_last_url', page_path);
   cookie('reportgrid_page_last_engagement_start_time', +new Date());
