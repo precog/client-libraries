@@ -7,7 +7,7 @@ These client libraries are designed to make it very simple to perform basic oper
 For more information, please check out the following resources:
 
  * [ReportGrid](http://www.reportgrid.com)
- * [ReportGrid REST API](http://www.reportgrid.com/api.html)
+ * [ReportGrid REST API](https://github.com/reportgrid/client-libraries/blob/reportgrid_1.0.1/rest-api.v1.rst)
  * [ReportGrid @ Twitter](http://www.twitter.com/reportgrid)
 
 # Reporting Bugs
