@@ -70,8 +70,8 @@ You use the Virtual File System to organize data, for example, tracking events f
 folders. Most client libraries allow you to automatically roll-up data to higher-level folders in the file system, so 
 you can look at data at differing levels of granularity.
 
-Token
-=====
+Tokens
+======
 
 Tokens are how you control access to resources in ReportGrid.
 
@@ -113,11 +113,9 @@ and limits of the token.  A descendent token's permissions and limits cannot exc
 +--------------------+-------------------------------------------------------+
 | method             | POST                                                  |
 +--------------------+-------------------------------------------------------+
-| url pattern        | (API ROOT)/vfs/(path)"                                |
+| url pattern        | (API ROOT)/tokens"                                    |
 +--------------------+-------------------------------------------------------+
-| body               | A JSON object where each property represents an event |
-|                    | to be tracked. See the `Querying`_ section for an     |
-|                    | example.                                              |
+| body               | A JSON object describing the token. See below.        |
 +--------------------+---------+----------------------------------+----------+
 | request parameters | tokenId | (parent token id)                | required |
 +--------------------+---------+----------------------------------+----------+
@@ -129,13 +127,15 @@ and limits of the token.  A descendent token's permissions and limits cannot exc
     "permissions": {
       "read": true,
       "write": true,
-      "share": false
+      "share": false,
+      "explore": false
     },
     "expires": 9223372036854775807,
     "limits": {
       "order": 2,
       "limit": 2,
-      "depth": 2
+      "depth": 2,
+      "tags": 1
     }
   }
 
@@ -147,6 +147,7 @@ and limits of the token.  A descendent token's permissions and limits cannot exc
    "order",    "The maximum number of metadata properties accessible in an intersection query"
    "limit",    "The maximum number of metadata properties associated with an event"
    "depth",    "The maximum depth of the metadata object associated with an event"
+   "tags",     "The maximum number of tags (timestamp, geo, etc.) that can be attached to an event."
 
 Recording Data
 ==============
