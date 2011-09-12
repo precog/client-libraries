@@ -46,7 +46,7 @@ module ReportGrid
   module Path
 
     module Analytics
-      ROOT   = '/services/analytics/v0'
+      ROOT   = '/services/analytics/v1'
       TOKENS = '/tokens'
       VFS    = '/vfs'
       SEARCH = '/search'
@@ -72,7 +72,6 @@ module ReportGrid
 
   # Base exception for all ReportGrid errors
   class ReportGridError < StandardError
-
     def intialize(message)
       #log.error(message)
       super
@@ -98,9 +97,14 @@ module ReportGrid
     def method_missing(name, path, options={})
       options[:body]    ||= ''
       options[:headers] ||= {}
+      options[:parameters] ||= {}
 
       # Add token id to path and set headers
       path = "#{@path_prefix}#{path}?tokenId=#{@token_id}"
+      options[:parameters].each do |k, v|
+        path += "&#{k}=#{v}"
+      end
+
       options[:headers].merge!({'Content-Type' => 'application/json'})
 
       # Set up message
@@ -122,7 +126,7 @@ module ReportGrid
 
       # Check HTTP status code
       if response.code.to_i != 200
-        message += " returned non-200 status (#{response.code}): #{response.body}"
+        message += " returned non-200 status (#{response.code}): #{response.inspect}"
         raise HttpResponseError.new(message)
       end
 
@@ -147,13 +151,13 @@ module ReportGrid
   class ReportGrid
 
     # Initialize an API client
-    def initialize(token_id='')
-      @analytics = HttpClient.new(token_id, API::HOST, API::PORT, Path::Analytics::ROOT)
+    def initialize(token_id, host = API::HOST, port = API::PORT, service_path = Path::Analytics::ROOT)
+      @analytics = HttpClient.new(token_id, host, port, service_path)
     end
 
     # Create a new token
     def new_token(path)
-      @analytics.post("#{Path::Analytics::TOKENS}/", :body=>{:path => path})
+      @analytics.post("#{Path::Analytics::TOKENS}/", :body=> {:path => path})
     end
 
     # Return information about a token
@@ -184,11 +188,8 @@ module ReportGrid
       path = sanitize_path(path)
 
       # Track event
-      @analytics.post(path, :body=>{
-        :events    => { name => properties },
-        :count     => options[:count],
-        :timestamp => options[:timestamp]
-      })
+      parameters = options[:count] && options[:count] > 1 ? {:parameters => options[:count]} : {}
+      @analytics.post(path, :body => { name => properties.merge({'#timestamp' => options[:timestamp]}) }, :parameters => parameters)
 
       # Roll up to parents if necessary
       parent_path = sanitize_path("#{path}/../")
@@ -217,50 +218,51 @@ module ReportGrid
     end
 
     # Return count of the specified property
-    def property_count(path, property)
+    def property_count(path, property, options = {})
       property = sanitize_property(property)
       path = "#{Path::Analytics::VFS}/#{path}/#{property}/count"
-      @analytics.get(sanitize_path(path))
+      @analytics.get(sanitize_path(path), :parameters => options)
     end
 
     # Return time series counts for the specified property
-    def property_series(path, property, options={})
+    def property_series(path, property, options = {})
       options[:periodicity] ||= Periodicity::ETERNITY
 
       property = sanitize_property(property)
       path = "#{Path::Analytics::VFS}/#{path}/#{property}/series/#{options[:periodicity]}"
-      @analytics.get(sanitize_path(path))
+      @analytics.get(sanitize_path(path), :parameters => options.reject{|k, v| k == :periodicity})
     end
 
     # Return all values of the specified property
     def property_values(path, property)
       property = sanitize_property(property)
-      path = "#{Path::Analytics::VFS}/#{path}/#{property}/values/"
+      path = "#{Path::Analytics::VFS}/#{path}/#{property}/values"
       @analytics.get(sanitize_path(path))
     end
 
     # Return count of the specified value for the specified property
-    def property_value_count(path, property, value)
+    def property_value_count(path, property, value, options = {})
       property = sanitize_property(property)
       path = "#{Path::Analytics::VFS}/#{path}/#{property}/values/#{value}/count"
-      @analytics.get(sanitize_path(path))
+      @analytics.get(sanitize_path(path), :parameters => options)
     end
 
     # Return time series counts for the specified value for the specified property
     def property_value_series(path, property, value, options={})
       options[:periodicity] ||= Periodicity::ETERNITY
+      
 
       property = sanitize_property(property)
       path = "#{Path::Analytics::VFS}/#{path}/#{property}/values/#{value}/series/#{options[:periodicity]}"
-      @analytics.get(sanitize_path(path))
+      @analytics.get(sanitize_path(path), :parameters => options.reject{|k, v| k == :periodicity})
     end
 
     # Return a count by searching across a range of conditions
-    def search_count(path, where={})
+    def search_count(path, options={})
       @analytics.post(Path::Analytics::SEARCH, :body=>{
         :select => 'count',
         :from   => sanitize_path(path),
-        :where  => where
+        :where  => options[:where]
       })
     end
 

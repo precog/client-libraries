@@ -1,11 +1,5 @@
 target
-project-0.7.7/build/target
-project-0.7.7/boot
-project-0.7.7/plugins/project/
-project-0.7.7/plugins/src_managed/
-lib_managed
-nbproject
-build.xml
+tags
 .idea
 *.iml
 *.swp

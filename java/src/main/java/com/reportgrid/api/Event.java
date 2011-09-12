@@ -73,14 +73,11 @@ public class Event<T> {
 	}
 
   public String buildRequestBody(ToJson<? super T> serializer) {
-    return new StringBuilder("{")
-      .append("\"timestamp\":").append(getTimestamp().getTime()).append(",")
-      .append("\"events\":{")
-        .append("\"").append(getEventName()).append("\":").append(serializer.serialize(getEventData()))
-      .append("},")
-      .append("\"count\":").append(getCount())
-      .append("}")
-      .toString();
-  }
+    String eventJson = serializer.serialize(getEventData());
+    if (timestamp != null) {
+      eventJson = eventJson.replaceAll("}\\s*$", ",\"#timestamp\":"+getTimestamp().getTime()+"}");
+    }
 
+    return new StringBuilder("{").append("\"").append(getEventName()).append("\":").append(eventJson).append("}").toString();
+  }
 }

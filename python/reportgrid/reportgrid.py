@@ -181,12 +181,11 @@ class ReportGrid(object):
             path = '%s/%s' % (Path.Analytics.VFS, path)
         path = self.__sanitize_path(path)
 
+        # Add the timestamp to the properties dictionary
+        properties['#timestamp'] = timestamp
+        
         # Track event
-        self.analytics.post(path, {
-            'events'    : { name:properties },
-            'count'     : count,
-            'timestamp' : timestamp
-        })
+        self.analytics.post(path, { name: properties })
 
         # Roll up to parents if necessary
         parent_path = self.__sanitize_path('%s/../' % path)
