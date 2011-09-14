@@ -100,6 +100,9 @@ are denoted -(elem) and elements where a selection may be made are labeled as (o
 Token Manipulation
 ==================
 
+The two major things that tokens control are sets of permissions which contol access to data at paths in the  virtual
+filesystem, and limits on the kind of data that can be tracked at that path.
+
 ReportGrid's tokens API is located at:
 
 http://api.reportgrid.com/services/analytics/v0/tokens/?tokenId=(guid)
@@ -110,15 +113,16 @@ Token Creation
 Tokens can be created by POSTing to the ReportGrid tokens API with a JSON object that describes the path, permissions, 
 and limits of the token.  A descendent token's permissions and limits cannot exceed (but may equal) the parent's. 
 
-+--------------------+-------------------------------------------------------+
-| method             | POST                                                  |
-+--------------------+-------------------------------------------------------+
-| url pattern        | (API ROOT)/tokens"                                    |
-+--------------------+-------------------------------------------------------+
-| body               | A JSON object describing the token. See below.        |
-+--------------------+---------+----------------------------------+----------+
-| request parameters | tokenId | (parent token id)                | required |
-+--------------------+---------+----------------------------------+----------+
++--------------------+------------------------------------------------------------------------+
+| method             | POST                                                                   |
++--------------------+------------------------------------------------------------------------+
+| url pattern        | (API ROOT)/tokens                                                      |
++--------------------+------------------------------------------------------------------------+
+| body               | A JSON object describing the properties of the token.                  |
+|                    | See below for an example.                                              |
++--------------------+---------+---------------------------------------------------+----------+
+| request parameters | tokenId | The parent token to use in creating the new token | required |
++--------------------+---------+---------------------------------------------------+----------+
 
 ::
 
@@ -138,16 +142,56 @@ and limits of the token.  A descendent token's permissions and limits cannot exc
       "tags": 1
     }
   }
+ 
 
++--------------------+------------------------------------------------------------------------------------------+
+| path               | the path in the virtual filesystem that this token controls access to                    | 
++--------------------+---------+--------------------------------------------------------------------------------+
+| permissions        | read    | ability to query the token path                                                |
+|                    +---------+--------------------------------------------------------------------------------+
+|                    | write   | ability to track data at the token's path                                      |
+|                    +---------+--------------------------------------------------------------------------------+
+|                    | share   | whether this token can be used to create descendent tokens                     |
+|                    +---------+--------------------------------------------------------------------------------+
+|                    | explore | whether children of this token's path can be listed                            |
++--------------------+------------------------------------------------------------------------------------------+
+| expires            | timestamp when this token expires                                                        | 
++--------------------+---------+--------------------------------------------------------------------------------+
+| limits             | order   | the maximum number of metadata properties accessible in an intersection query  |
+|                    +---------+--------------------------------------------------------------------------------+
+|                    | limit   | the maximum number of metadata properties that can be stored with a data point |
+|                    +---------+--------------------------------------------------------------------------------+
+|                    | depth   | the maximum depth of a metadata object associated with a data point            |
+|                    +---------+--------------------------------------------------------------------------------+
+|                    | tags    | the maximum number of tags that can be applied to a data point                 |
++--------------------+---------+--------------------------------------------------------------------------------+
 
-.. csv-table:: Token API
+Querying Child Tokens
+---------------------
 
-   "rootPath", "The path, relative to the parent's path, that will be associated with this tokenId"
-   "expires",  "The expiration date of the token, measured in milliseconds from the start of the Unix Epoch, UTC time"
-   "order",    "The maximum number of metadata properties accessible in an intersection query"
-   "limit",    "The maximum number of metadata properties associated with an event"
-   "depth",    "The maximum depth of the metadata object associated with an event"
-   "tags",     "The maximum number of tags (timestamp, geo, etc.) that can be attached to an event."
+To find the child tokens of a given token, simply send a GET request to the tokens URL
+
++--------------------+------------------------------------------------------------------------+
+| method             | GET                                                                    |
++--------------------+------------------------------------------------------------------------+
+| url pattern        | (API ROOT)/tokens                                                      |
++--------------------+---------+---------------------------------------------------+----------+
+| request parameters | tokenId | the parent token for which to retrieve children   | required |
++--------------------+---------+---------------------------------------------------+----------+
+
+Querying Token Properties
+-------------------------
+
+To retrieve the properties of a token, simply send a GET request to the url of the token to be retrieved.
+
++--------------------+------------------------------------------------------------------------+
+| method             | GET                                                                    |
++--------------------+------------------------------------------------------------------------+
+| url pattern        | (API ROOT)/tokens                                                      |
++--------------------+---------+---------------------------------------------------+----------+
+| request parameters | tokenId | the parent token for which to retrieve children   | required |
++--------------------+---------+---------------------------------------------------+----------+
+ 
 
 Recording Data
 ==============
