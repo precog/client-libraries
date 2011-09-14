@@ -595,8 +595,8 @@ Count Example: ::
     "select": "count",
     "from": "/mysupportco/myclient1",
     "properties": [
-      {"variable": ".customer_support.type", "limit": 10, "order": "descending"},
-      {"variable": ".customer_support.resolution.type", "limit": 10, "order": "ascending"}
+      {"property": ".customer_support.type", "limit": 10, "order": "descending"},
+      {"property": ".customer_support.resolution.type", "limit": 10, "order": "ascending"}
     ],
     "start": 1315454900000,
     "end": 1315454910000,
