@@ -1,0 +1,31 @@
+/* Colors from www.ColorBrewer.org by Cynthia A. Brewer, Geography, Pennsylvania State University. */
+.rg .stroke-0, .rg .stroke-3, .rg .stroke-6, .rg .stroke-9, .rg .stroke-12, .rg .stroke-15, .rg .stroke-18, .rg .stroke-21, .rg .stroke-24, .rg .stroke-27, .rg .stroke-30
+{
+border-color: #2CA25F; stroke: #2CA25F;
+}
+
+.rg .fill-0, .rg .fill-3, .rg .fill-6, .rg .fill-9, .rg .fill-12, .rg .fill-15, .rg .fill-18, .rg .fill-21, .rg .fill-24, .rg .fill-27, .rg .fill-30
+{
+background-color: #2CA25F; fill: #2CA25F;
+}
+
+.rg .stroke-1, .rg .stroke-4, .rg .stroke-7, .rg .stroke-10, .rg .stroke-13, .rg .stroke-16, .rg .stroke-19, .rg .stroke-22, .rg .stroke-25, .rg .stroke-28, .rg .stroke-31
+{
+border-color: #99D8C9; stroke: #99D8C9;
+}
+
+.rg .fill-1, .rg .fill-4, .rg .fill-7, .rg .fill-10, .rg .fill-13, .rg .fill-16, .rg .fill-19, .rg .fill-22, .rg .fill-25, .rg .fill-28, .rg .fill-31
+{
+background-color: #99D8C9; fill: #99D8C9;
+}
+
+.rg .stroke-2, .rg .stroke-5, .rg .stroke-8, .rg .stroke-11, .rg .stroke-14, .rg .stroke-17, .rg .stroke-20, .rg .stroke-23, .rg .stroke-26, .rg .stroke-29
+{
+border-color: #E5F5F9; stroke: #E5F5F9;
+}
+
+.rg .fill-2, .rg .fill-5, .rg .fill-8, .rg .fill-11, .rg .fill-14, .rg .fill-17, .rg .fill-20, .rg .fill-23, .rg .fill-26, .rg .fill-29
+{
+background-color: #E5F5F9; fill: #E5F5F9;
+}
+
