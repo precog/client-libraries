@@ -40,7 +40,7 @@ public class ReportGridClientTest extends TestCase {
 		public static final Service Local = new Service() {
 			@Override public URL serviceUrl() {
 				try {
-					return new URL("http", "api.reportgrid.com", 80, "/services/analytics/v0/");
+					return new URL("http", "api.reportgrid.com", 80, "/services/analytics/v1/");
 				} catch (MalformedURLException ex) {
 					Logger.getLogger(Service.class.getName()).log(Level.SEVERE, "Invalid client URL", ex);
 				}
@@ -84,15 +84,12 @@ public class ReportGridClientTest extends TestCase {
 			Event<TestData> testEvent = new Event<TestData>(new Date(), "test", testData, 1);
 
       String expected = new StringBuilder("{")
-        .append("\"timestamp\":").append(testEvent.getTimestamp().getTime()).append(",")
-        .append("\"events\":{")
           .append("\"").append(testEvent.getEventName()).append("\":{")
             .append("\"testInt\":").append(42).append(",")
             .append("\"testStr\":\"Hello World\",")
-            .append("\"~raw\":").append(testString)
+            .append("\"~raw\":").append(testString).append(",")
+            .append("\"#timestamp\":").append(testEvent.getTimestamp().getTime())
           .append("}")
-        .append("},")
-        .append("\"count\":").append(testEvent.getCount())
         .append("}")
         .toString();
 

@@ -74,7 +74,7 @@ class TestExecute < Test::Unit::TestCase
   def test_property_series
     api = ReportGrid::ReportGrid.new(@test_token_id)
     response = api.property_series('/', 'test')
-    assert response.class == Hash
+    assert response.class == Array
     #assert response.include?(ReportGrid::Periodicity::ETERNITY)
     #assert response[ReportGrid::Periodicity::ETERNITY].class == Array
     #assert response[ReportGrid::Periodicity::ETERNITY].length > 0
@@ -98,7 +98,7 @@ class TestExecute < Test::Unit::TestCase
   def test_property_value_series
     api = ReportGrid::ReportGrid.new(@test_token_id)
     response = api.property_value_series('/', 'test.test', 123)
-    assert response.class == Hash
+    assert response.class == Array
     #assert response.include?(ReportGrid::Periodicity::ETERNITY)
     #assert response[ReportGrid::Periodicity::ETERNITY].class == Array
     #assert response[ReportGrid::Periodicity::ETERNITY].length > 0
@@ -106,7 +106,7 @@ class TestExecute < Test::Unit::TestCase
 
   def test_search_count
     api = ReportGrid::ReportGrid.new(@test_token_id)
-    response = api.search_count('/', :where=>{'test.test'=>123})
+    response = api.search_count('/', :where=>[{:variable => 'test.test', :value => 123}])
     #assert response.class == Fixnum
     assert response.class == String
     #assert response > 0
@@ -114,8 +114,8 @@ class TestExecute < Test::Unit::TestCase
 
   def test_search_series
     api = ReportGrid::ReportGrid.new(@test_token_id)
-    response = api.search_series('/', :where=>{'test.test'=>123})
-    assert response.class == Hash
+    response = api.search_series('/', :where=>[{:variable => 'test.test', :value => 123}])
+    assert response.class == Array
     #assert response.include?(ReportGrid::Periodicity::ETERNITY)
     #assert response[ReportGrid::Periodicity::ETERNITY].class == Array
     #assert response[ReportGrid::Periodicity::ETERNITY].length > 0

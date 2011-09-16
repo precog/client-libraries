@@ -30,18 +30,30 @@ import scala.annotation.tailrec
 import rosetta.json.JsonImplementation
 import rosetta.io._
 
-case class Trackable[Json: JsonImplementation](path: Path, name: String, properties: Json, rollup: Boolean = false, timestamp: Option[Date] = None, count: Option[Int] = None, headers: Map[String, String] = Map.empty)
+case class Trackable[Json: JsonImplementation](
+  path: Path, name: String, properties: Json, 
+  rollup: Boolean = false, 
+  tags: Set[Tag[Json]] = Set.empty[Tag[Json]], 
+  count: Option[Int] = None, 
+  headers: Map[String, String] = Map.empty)
 
 abstract class ReportGridTrackingClient[Json](jsonImplementation: JsonImplementation[Json]) {
-  def track(trackable: Trackable[Json]): Unit = track(trackable.path, trackable.name, trackable.properties, trackable.rollup, trackable.timestamp, trackable.count, trackable.headers)
-  def track(path: Path, name: String, properties: Json = jsonImplementation.EmptyObject, rollup: Boolean = false, timestamp: Option[Date] = None, count: Option[Int] = None, headers: Map[String, String] = Map.empty): Unit
-}
+  def track(trackable: Trackable[Json]): Unit = track(
+    trackable.path, trackable.name, trackable.properties, trackable.rollup, trackable.tags, trackable.count, trackable.headers)
 
+  def track(path: Path, name: String, 
+            properties: Json = jsonImplementation.EmptyObject, 
+            rollup: Boolean = false, 
+            tags: Set[Tag[Json]] = Set.empty[Tag[Json]], 
+            count: Option[Int] = None, 
+            headers: Map[String, String] = Map.empty): Unit
+}
 
 /** Creates a new ReportGrid API based on the specified token, and implicitly
  * the Json implementation and HTTP client.
  */
-class ReportGridClient[Json](conf: ReportGridConfig)(implicit val jsonImplementation: JsonImplementation[Json]) extends ReportGridTrackingClient[Json](jsonImplementation) {
+class ReportGridClient[Json](conf: ReportGridConfig)(implicit val jsonImplementation: JsonImplementation[Json]) 
+extends ReportGridTrackingClient[Json](jsonImplementation) with QueryTerms[Json] with Results[Json] {
   val serializer = new Serialization(jsonImplementation)
 
   import jsonImplementation._
@@ -50,6 +62,7 @@ class ReportGridClient[Json](conf: ReportGridConfig)(implicit val jsonImplementa
   lazy val AnalyticsServer: HttpClient[Json] =  conf.httpClient.url(conf.server.analyticsRootUrl).
                                                 query("tokenId", conf.tokenId).
                                                 contentType("application/json")
+
 
   /** Tracks the event with the specified name and properties.
    *
@@ -60,23 +73,22 @@ class ReportGridClient[Json](conf: ReportGridConfig)(implicit val jsonImplementa
    * @param timestamp   An optional timestamp denoting the time at which the event occurred.
    * @param count       An optional count of how many times the event occurred.
    */
-  def track(path: Path, name: String, properties: Json = EmptyObject, rollup: Boolean = false, timestamp: Option[Date] = None, count: Option[Int] = None, headers: Map[String, String] = Map.empty): Unit = {
-    val timestampM = timestamp.map { timestamp =>
-      "timestamp" -> timestamp.getTime.serialize[Json]
-    }
-
-    val countM = count.map { count =>
-      "count" -> count.serialize[Json]
-    }
-
+  def track(path: Path, name: String, properties: Json = EmptyObject, rollup: Boolean = false, tags: Set[Tag[Json]] = Set.empty, count: Option[Int] = None, headers: Map[String, String] = Map.empty): Unit = {
     val paths = if (rollup) path :: path.ancestors else path :: Nil
-
-    val data = JsonObject(
-      List[(String, Json)]("events" -> JsonObject(name -> properties)) ++ timestampM.toList ++ countM.toList
-    )
+    val data = JsonObject(name -> (JsonObject(tags.map(_.toJsonField)(collection.breakOut): _*) ++ properties))
 
     paths.foreach { path =>
       AnalyticsServer.post("vfs" + path.toString, data, headers)
+    }
+  }
+
+  /**
+   * Utility method for the "listX" variants.
+   */
+  private def list(path: Path, property: Option[Property] = None): List[Either[Path, Property]] = {
+    AnalyticsServer.get("vfs" + path.toString + property.map(_.value).getOrElse("")).deserialize[List[String]].collect {
+      case path: String if (path.endsWith("/"))   => Left(Path(path))
+      case prop: String if (prop.startsWith(".")) => Right(Property(prop))
     }
   }
 
@@ -118,71 +130,50 @@ class ReportGridClient[Json](conf: ReportGridConfig)(implicit val jsonImplementa
     }
   }
 
-  /** Selects a time series of either properties, or properties having certain
-   * values. Optionally, the range of the time series may be limited to a
-   * specified date range.
+  /** Selects either a count or  time series of either properties, or properties having certain
+   * values. 
    *
    * {{{
-   * select(Minute()).of(".subscription.features").from("/customers/jdoe/blogs/1")
+   * select(Minute(start, end)).of(".subscription.features").from("/customers/jdoe/blogs/1")
    *
    * select(Year(start, end)).from("/customers/jdoe/blogs/1").where {
    *   ".click.browser" === "Firefox".serialize[Json]
    * }
    * }}}
    */
-  def select(selection: Series) = new {
+  def select(selection: Selection) = new {
+    private def url(baseUrl: String) = selection match {
+      case Series(start, end) => baseUrl + "?start="+start.getTime+"&end="+end.getTime
+      case Count => baseUrl
+    }
+
     def of(property: Property) = new {
       def from(path: Path): SelectionResult = {
-        val url     = "vfs" + path.toString + property.value + "/" + selection.pathFragment
-        val headers = headersFrom(selection)
-        AnalyticsServer.get(url, headers).deserialize[SelectionResult]
+        val baseUrl = "vfs" + path.toString + property.value + "/" + selection.pathFragment
+        val result = AnalyticsServer.get(url(baseUrl))
+
+        selection match {
+          case Count => CountResult(result.deserialize[Long])
+          case _ => SeriesResult(result.deserialize[Seq[(Json, Long)]])
+        }
       }
     }
 
     def from(path: Path) = new {
-      def where(condition: Condition[Json]): SelectionResult = {
-        val url  = "search"
-        val data = JsonObject(
-          ("select" -> selection.pathFragment.serialize[Json]) ::
-          ("from"   -> path.toString.serialize[Json]) ::
-          ("where"  -> condition.serialize[Json]) ::
-          rangeProperties(selection)
-        )
-
-        AnalyticsServer.post(url, data).deserialize[SelectionResult]
-      }
-    }
-  }
-
-  /** Selects the count of either properties, or properties having certain
-   * values.
-   *
-   * {{{
-   * select(Count).of(".click").from("/customers/jdoe/blogs/1")
-   *
-   * select(Count).from("/customers/jdoe/blogs/1").where {
-   *   ".type" === "impression".serialize[Json]
-   * }
-   * }}}
-   */
-  def select(selection: Count.type) = new {
-    def of(property: Property) = new {
-      def from(path: Path): Long = {
-        val url     = "vfs" + path.toString + property.value + "/" + selection.name
-        AnalyticsServer.get(url).deserialize[Long]
-      }
-    }
-
-    def from(path: Path) = new {
-      def where(condition: Condition[Json]): Long = {
-        val url  = "search"
+      def where(condition: Condition): SelectionResult = {
+        val baseUrl  = "search"
         val data = JsonObject(
           ("select" -> selection.pathFragment.serialize[Json]) ::
           ("from"   -> path.toString.serialize[Json]) ::
           ("where"  -> condition.serialize[Json]) :: Nil
         )
 
-        AnalyticsServer.post(url, data).deserialize[Long]
+        val result = AnalyticsServer.post(url(baseUrl), data)
+
+        selection match {
+          case Count => CountResult(result.deserialize[Long])
+          case _ => SeriesResult(result.deserialize[Seq[(Json, Long)]])
+        }
       }
     }
   }
@@ -191,54 +182,6 @@ class ReportGridClient[Json](conf: ReportGridConfig)(implicit val jsonImplementa
    * intersect(Counts) of top(10)(".click")
    */
   def intersect(selection: Selection) = new DimensionBuilder(selection, Nil)
-
-  def tokens(): List[String] = AnalyticsServer.get("tokens/").deserialize[List[String]]
-
-  def newToken(newToken: Token): String = {
-    AnalyticsServer.post("tokens/", newToken.serialize[Json]).deserialize[String]
-  }
-
-  def token(tokenId: String): Token = {
-    AnalyticsServer.get("tokens/" + tokenId).deserialize[Token]
-  }
-
-  def deleteToken(tokenId: String): Unit = AnalyticsServer.delete("tokens/" + tokenId)
-
-  private def headersFrom(selection: Selection): Map[String, String] = Map(
-    selection.range.toList.map { case (start, end) => 
-      "Range" -> ("time=" + start.getTime.toString + "-" + end.getTime.toString)
-    }: _*
-  )
-  
-  private def rangeProperties(selection: Selection) = selection.range.toList.flatMap {
-    case (start, end) => 
-      ("start" -> start.serialize[Json]) ::
-      ("end"   -> end.serialize[Json])   :: Nil
-  }
-
-  private def list(path: Path, property: Option[Property] = None): List[Either[Path, Property]] = {
-    AnalyticsServer.get("vfs" + path.toString + property.map(_.value).getOrElse("")).deserialize[List[String]].collect {
-      case path: String if (path.endsWith("/"))   => Left(Path(path))
-      case prop: String if (prop.startsWith(".")) => Right(Property(prop))
-    }
-  }
-
-  sealed trait Bias
-  case object High extends Bias
-  case object Low extends Bias
-  object Bias {
-    implicit def serializer: JsonSerializer[Bias] = new JsonSerializer[Bias] {
-      def serialize(bias: Bias) = bias match {
-        case High => "descending".serialize[Json]
-        case Low  => "ascending".serialize[Json]
-      }
-
-      def deserialize(json: Json) = json.deserialize[String] match {
-        case "descending" => High
-        case "ascending"  => Low
-      }
-    }
-  }
 
   class DimensionBuilder(selection: Selection, dimensions: List[Dimension]) {
     def top(limit: Int) = new {
@@ -250,42 +193,33 @@ class ReportGridClient[Json](conf: ReportGridConfig)(implicit val jsonImplementa
     }
   }
 
-  case class Dimension(bias: Bias, limit: Int, property: Property)
-
-  object Dimension {
-    implicit def serializer : JsonSerializer[Dimension] = new JsonSerializer[Dimension] {
-      def serialize(dimension: Dimension): Json = {
-        JsonObject(
-          ("property",    dimension.property.toString.serialize[Json])   ::
-          ("limit",       dimension.limit.serialize[Json]) ::
-          ("order",       dimension.bias.serialize[Json])  :: Nil
-        )
-      }
-
-      def deserialize(json: Json): Dimension = json match {
-        case JsonObject(fields) => (for {
-          property <- fields.get("property").map(_.deserialize[String])
-          limit    <- fields.get("limit").map(_.deserialize[Int])
-          bias     <- fields.get("order").map(_.deserialize[Bias])
-        } yield {
-          Dimension(bias, limit, property)
-        }).get
-      }
-    }
-  }
-
   case class Dimensions(selection: Selection, dims: List[Dimension]) {
+    private def url(baseUrl: String) = selection match {
+      case Series(start, end) => baseUrl + "?start="+start.getTime+"&end="+end.getTime
+      case Count => baseUrl
+    }
+
     def and = new DimensionBuilder(selection, dims)
     def from(path: Path) = {
-      val url = "intersect"
+      val baseUrl = "intersect"
       val data = JsonObject(
         ("select" -> selection.pathFragment.serialize[Json]) ::
         ("from" -> path.toString.serialize[Json]) ::
-        ("properties" -> JsonArray(dims.map(_.serialize[Json]))) ::
-        rangeProperties(selection)
+        ("properties" -> JsonArray(dims.map(_.serialize[Json]))) :: Nil
       )
 
-      AnalyticsServer.post(url, data)
+      val results = AnalyticsServer.post(url(baseUrl), data)
+
+      selection match {
+        case Count => results.deserialize[(Seq[Json], CountResult)]
+        case _ => results.deserialize[(Seq[Json], SeriesResult)]
+      }
     }
   }
+
+  def tokens(): List[String] = AnalyticsServer.get("tokens/").deserialize[List[String]]
+  def token(tokenId: String): Token = AnalyticsServer.get("tokens/" + tokenId).deserialize[Token]
+
+  def newToken(newToken: Token): String = AnalyticsServer.post("tokens/", newToken.serialize[Json]).deserialize[String]
+  def deleteToken(tokenId: String): Unit = AnalyticsServer.delete("tokens/" + tokenId)
 }

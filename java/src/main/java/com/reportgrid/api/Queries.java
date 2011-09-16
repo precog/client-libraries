@@ -166,7 +166,6 @@ public class Queries {
 			@Override
 			public List<String> query(Service service, String tokenId) throws IOException {
 				URL url = vfsUrl(service, path.append(property), tokenId);
-				System.out.println(url);
 				return _query(service, url, null, handler);
 			}
 		};
