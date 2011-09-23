@@ -17,10 +17,10 @@ object ScalaClientBuild extends Build {
       scalaVersion := buildScalaVersion,
       scalacOptions ++= Seq("-deprecation", "-unchecked"),
       libraryDependencies ++= Seq(
-        "org.apache.httpcomponents" %  "httpclient"                 % "4.1.1",
-        "net.databinder"            % "dispatch-http-json_2.9.0-1"  % "0.8.3"   % "provided",
-        "net.liftweb"               % "lift-json_2.9.0-1"           % "2.4-M2"  % "provided" intransitive(),
-        "org.scala-tools.testing"   % "specs_2.9.0-1"               % "1.6.8"   % "test"
+        "org.apache.httpcomponents" %  "httpclient"          % "4.1.1",
+        "net.databinder"            %% "dispatch-http-json"  % "0.8.5"   % "provided",
+        "net.liftweb"               %% "lift-json"           % "2.4-M4"  % "provided" intransitive(),
+        "org.scala-tools.testing"   %% "specs"               % "1.6.9"   % "test"
       )
     ) dependsOnAlt(blueeyes(base)) dependsOnAlt(rosetta(base)) 
     
