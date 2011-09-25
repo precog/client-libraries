@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{reportgrid}
-  s.version = "0.3.1"
+  s.version = "1.0.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Michael T. Conigliaro", "Kris Nuttycombe"]
-  s.date = %q{2011-07-29}
+  s.authors = ["Kris Nuttycombe"]
+  s.date = %q{2011-09-23}
   s.description = %q{ReportGrid Ruby Client Library
 }
   s.email = ["kris [at] reportgrid [dot] com"]

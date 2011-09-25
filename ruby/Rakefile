@@ -3,8 +3,8 @@ require 'rake/gempackagetask'
 
 gemspec = Gem::Specification.new do |s|
   s.name              = 'reportgrid'
-  s.version           = '0.3.1'
-  s.authors           = ['Michael T. Conigliaro', 'Kris Nuttycombe']
+  s.version           = '1.0.3'
+  s.authors           = ['Kris Nuttycombe']
   s.email             = ['kris [at] reportgrid [dot] com']
   s.homepage          = 'http://api.reportgrid.com/ruby'
   s.rubyforge_project = 'reportgrid'
