@@ -2,7 +2,7 @@
 The ReportGrid JS Visualization API
 ===================================
 
-.. contents:: API Methods
+.. contents:: `Table of contents`
 
 ---------------
 Overview
@@ -91,6 +91,8 @@ effect : string ("noeffect", "gradient", "gradient-{value}")
 stacked : bool
 	xxx
 
+.. include:: visualization-api.common-options.v1.rst
+.. include:: visualization-api.layout-options.v1.rst
 CARTESIAN
 
 LAYOUT
@@ -139,6 +141,8 @@ startcolor : string
 endcolor : string
 	xxx
 
+.. include:: visualization-api.common-options.v1.rst
+.. include:: visualization-api.layout-options.v1.rst
 CARTESIAN
 
 LAYOUT
@@ -377,6 +381,11 @@ ReportGrid.date.range
 ---------------------
 
 ``ReportGrid.date.range(date start, date end, string periodicity) array of timestamps``
+
+ReportGrid.date.snap
+---------------------
+
+``ReportGrid.date.snap(float timestampe, string periodicity) float``
 
 
 ReportGrid.dump
