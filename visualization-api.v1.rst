@@ -141,8 +141,10 @@ startcolor : string
 endcolor : string
 	xxx
 
-.. include:: visualization-api.common-options.v1
-.. include:: visualization-api.layout-options.v1
+.. include:: visualization-api.common-options.v1.rst
+
+.. include:: visualization-api.layout-options.v1.rst
+
 CARTESIAN
 
 LAYOUT
