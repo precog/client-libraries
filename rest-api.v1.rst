@@ -242,7 +242,7 @@ information that needs to be treated specially by the system. For example, time 
   {"myEvent": {"#location": {"country": "usa", "state": "usa/colorado", "city": "usa/colorado/boulder"}}} 
 
 The "store" call is identical to the base tracking call specified above, with a couple of very minor differences. 
-First, the URL pattern is instead ``(API ROOT)/vfs/store(path)``; second, events sent to the store path are not 
+First, the URL pattern is instead ``(API ROOT)/store/vfs/(path)``; second, events sent to the store path are not 
 automatically timestamped if the #timestamp tag is absent.
 
 Querying
