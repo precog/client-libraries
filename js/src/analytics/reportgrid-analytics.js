@@ -299,7 +299,7 @@
 
 //  for debugging pursposes only
 //  console.log("paths: " + paths + ", event: " + JSON.stringify(event_object));
-    return ReportGrid.track(paths, $.extend({}, options, {event: event_object}));
+    return ReportGrid.track(paths, event_object);
   };
 
 

@@ -5882,7 +5882,6 @@ var ReportGrid = window.ReportGrid || {};
     for(var i = 0; i < path_.length; i++)
       paths.push(Util.sanitizePath(path_[i]));
 
-    // Handle "event" instead of "events":
     if (events == null) throw Error("argument 'events' cannot be null");
 
     for (var eventName in events) {
@@ -6588,7 +6587,7 @@ var ReportGrid = window.ReportGrid || {};
 
 //  for debugging pursposes only
 //  console.log("paths: " + paths + ", event: " + JSON.stringify(event_object));
-    return ReportGrid.track(paths, $.extend({}, options, {event: event_object}));
+    return ReportGrid.track(paths, event_object);
   };
 
 
