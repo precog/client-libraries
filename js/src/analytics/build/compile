@@ -42,5 +42,5 @@ composite reportgrid-analytics ../swfcookie.js \
 composite reportgrid-analytics-all ../swfcookie.js \
                                    ../jquery.1.4-modified.js \
                                    ../jquery.client.js \
-                                   ../../reportgrid-core.js \
+                                   ../../v1/reportgrid-core.js \
                                    ../reportgrid-analytics.js
