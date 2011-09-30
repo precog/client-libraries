@@ -186,10 +186,10 @@ var ReportGrid = window.ReportGrid || {};
       else if (property.substr(0, 1) == ".") return property;
       else return "." + property;
     },
-	
-	getBoundResults: function(o) {
-		return o.top ? '/top/' + o.top : (o.bottom ? '/bottom/' + o.bottom : '');
-	},
+    
+    getBoundResults: function(o) {
+      return o.top ? '/top/' + o.top : (o.bottom ? '/bottom/' + o.bottom : '');
+    },
 
     splitPathVar: function(pathVar) {
       if (pathVar.length == 0) return ["/", ""];
@@ -227,61 +227,51 @@ var ReportGrid = window.ReportGrid || {};
       return result;
     },
 
-    normalizeTime: function(o, name) {
-      if (name === undefined) {
-        if (o instanceof Date) {
-           return o.getUTCMilliseconds();
-        }
-        return o;
-      }
-      else {
-        var time = o[name];
-
-        if (time !== null) {
-          if(name == "timestamp" && (time === "none" || time === false))
-          {
-            o[name] = false;
-          }
-          else if (time instanceof Date) {
-            o[name] = time.getUTCMilliseconds();
-          }
-          else if (time instanceof String) {
-            o[name] = 0 + time
-          }
-        }
-
-        return o[name];
-      }
+    normalizeTime: function(o) {
+      if (o instanceof Date || o instanceof String)
+        return +o;
+      return o;
     },
-	
-	defaultQuery: function(o) {
-		var q = { tokenId : $.Config.tokenId },
-			start = Util.normalizeTime(o.start),
-			end = Util.normalizeTime(o.end);
-		if(start || end)
-		{
-			q.start = start || ReportGrid.Zero;
-			q.end = end || ReportGrid.Inf;
-		}
-		if(o.location)
-		{
-			q.location = o.location;
-		}
-		if(o.timeZone)
-		{
-			q.timeZone = o.timeZone;
-		}
-		return q;
-	},
-	
-	groupQuery: function(o) {
-		var q = Util.defaultQuery(o);
-		if(o.groupBy)
-			q.groupBy = o.groupBy;
-		if(o.groups)
-			q.groups = typeof o.groups == "string" ? o.groups : o.groups.join(",");
-		return q;
-	}
+
+    normalizeTimestamp: function(o) {
+      var time = o["timestamp"] || o["#timestamp"];
+      if(!time)
+        return;
+      delete o["timestamp"];
+      if(time === "none" || time === false)
+        o["#timestamp"] = false;
+      else
+        o["#timestamp"] = Util.normalizeTime(time);
+    },
+    
+    defaultQuery: function(o) {
+      var q = { tokenId : $.Config.tokenId },
+          start = Util.normalizeTime(o.start),
+          end = Util.normalizeTime(o.end);
+      if(start || end)
+      {
+        q.start = start || ReportGrid.Zero;
+        q.end = end || ReportGrid.Inf;
+      }
+      if(o.location)
+      {
+        q.location = o.location;
+      }
+      if(o.timeZone)
+      {
+        q.timeZone = o.timeZone;
+      }
+      return q;
+    },
+    
+    groupQuery: function(o) {
+      var q = Util.defaultQuery(o);
+      if(o.groupBy)
+          q.groupBy = o.groupBy;
+      if(o.groups)
+          q.groups = typeof o.groups == "string" ? o.groups : o.groups.join(",");
+      return q;
+    }
   }
 
   var Network = {
@@ -529,22 +519,19 @@ var ReportGrid = window.ReportGrid || {};
     Inf:   2147483647
   }
 
-  /** Tracks an event. If no timestamp is specified, the current time is used.
+  /** Tracks an event. If no #timestamp is specified, the current time is used.
    *
-   * The options.count and options.timestamp are optional, and default to 1 and
-   * the current time, respectively.
-   * The options.timestamp parameter can be set to "none" (or false) to not track time at all
+   * The #timestamp is optional, and to the current time.
+   * The #timestamp parameter can be set to "none" (or false) to not track time at all
    *
    * ReportGrid.track("/merchants/Starbucks/locations/USA_CO_Boulder/1/", {
-   *   "event": {
-   *     "purchase": {
-   *       "item": "Americano",
-   *       "size": "Grande"
-   *     }
+   *   "purchase": {
+   *     "item": "Americano",
+   *     "size": "Grande"
    *   }
    * });
    */
-  ReportGrid.track = function(path_, options, success, failure) {
+  ReportGrid.track = function(path_, events, success, failure) {
     if(typeof path_ == "string")
       path_ = [path_];
     var paths = [];
@@ -552,33 +539,30 @@ var ReportGrid = window.ReportGrid || {};
       paths.push(Util.sanitizePath(path_[i]));
 
     // Handle "event" instead of "events":
-    if (options.event != null) {
-      options.events = options.event;
+    if (events == null) throw Error("argument 'events' cannot be null");
 
-      delete options.event;
+    for (var eventName in events) {
+      // Allow user to specify Date for timestamp:
+      Util.normalizeTimestamp(events[eventName]);
     }
-    else if (options.events == null) throw Error("Options must contain 'event' property")
-
-    // Allow user to specify Date for timestamp:
-    Util.normalizeTime(options, 'timestamp');
 
     // Extract out first event for logging:
-    var firstEventName, firstEventProperties;
+    var firstEventName, firstEventProperties, firstEventTime;
 
-    for (var eventName in options.events) {
+    for (var eventName in events) {
       firstEventName       = eventName;
-      firstEventProperties = options.events[eventName];
-
+      firstEventProperties = events[eventName];
+      firstEventTime       = events[eventName]["#timestamp"];
       break;
     }
 
-    var description = 'Track event ' + firstEventName + ' (' + JSON.stringify(firstEventProperties) + ') @ ' + (options.timestamp || "current time");
+    var description = 'Track event ' + firstEventName + ' (' + JSON.stringify(firstEventProperties) + ') @ ' + (firstEventTime === false ? "no time tracked" : "current time");
     for(var i = 0; i < paths.length; i++)
     {
       path = paths[i];
       http.post(
         $.Config.analyticsServer + '/vfs' + path,
-        options,
+        events,
         Util.createCallbacks(success, failure, description),
         {tokenId: $.Config.tokenId }
       );
@@ -893,10 +877,10 @@ var ReportGrid = window.ReportGrid || {};
   
   ReportGrid.histogram = function(path_, options, success, failure) {
     var path = Util.sanitizePath(path_);
-	var property = Util.sanitizeProperty(options.property);
+    var property = Util.sanitizeProperty(options.property);
     var description = 'Histogram ' + path + property;
     var query = Util.defaultQuery(options);
-	var bounds = Util.getBoundResults(options);
+    var bounds = Util.getBoundResults(options);
 
     http.get(
       $.Config.analyticsServer + '/vfs' + path + property + '/histogram' + bounds,

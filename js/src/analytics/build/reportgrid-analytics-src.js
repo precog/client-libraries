@@ -941,9 +941,12 @@
 
       // Remember that we unbounced the user so that we don't do it twice.
       cookie('reportgrid_already_unbounced', 1);
-      track('bounce', {}, {path:      cookie('reportgrid_bounce_path'),
-                           count:     -1,
-                           timestamp: bounce_time});
+      track('bounce', {
+        count: -1,
+        timestamp: bounce_time
+      }, {
+        path: cookie('reportgrid_bounce_path')
+      });
     }
   } else {
     // The user is new, so create a bounce event and remember the fact that we
@@ -954,7 +957,7 @@
     cookie('reportgrid_bounce_path', page_path);
     cookie('reportgrid_bounce_time', bounce_time);
 
-    track('bounce', {}, {timestamp: bounce_time});
+    track('bounce', {timestamp: bounce_time}, {});
   }
 
 
@@ -1090,8 +1093,8 @@
 //    track('engagedQueueing', {
 //      time: round_to(+cookie('reportgrid_page_engagement_time'), 100),
 //      url : cookie('reportgrid_page_engagement_last_url')
-//    },
-//    { timestamp : +cookie('reportgrid_page_last_engagement_start_time')});
+//      timestamp : +cookie('reportgrid_page_last_engagement_start_time')
+//    });
 
   cookie('reportgrid_page_engagement_last_url', page_path);
   cookie('reportgrid_page_last_engagement_start_time', +new Date());
