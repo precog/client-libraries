@@ -201,6 +201,13 @@ radius : float || function(datapoint, stats) float
 	If the geometry contains Point geometries they are rendered as ``svg:circle`` elements whose radius can be a fixed value or calculated using a custom function.
 scale : float
 	A scale factor to reduce or enlarge the geographic visualization.
+template : string
+	To simplify geo consumption some premade templates and geographic files are made available by the ReportGrid API.
+	The available templates are:
+	 * ``"world"`` :
+	 * ``"usa-states"`` :
+	 * ``"usa-state-centroids"`` :
+	 * ``"usa-counties"`` :
 translate : array of float
 	Array of 2 values in pixel to pan the visualization from its center.
 type : string
