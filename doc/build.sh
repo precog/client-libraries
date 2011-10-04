@@ -31,7 +31,7 @@ error() {
 }
 
 
-require ack
+# require ack
 require rst2html
 check
 
@@ -56,11 +56,11 @@ for action in $ACTIONS; do
 					ERROR=true
 				fi
 				
-				ack '^<title>([^<]*)</title>$' --output '<title>ReportGrid API: $1</title>' --passthru $TARGET/$fname > /tmp/$fname
-				mv /tmp/$fname $TARGET/$fname
-				
-				ack '^<title>ReportGrid API: </title>$' --output '<title>ReportGrid API</title>' --passthru $TARGET/$fname > /tmp/$fname
-				mv /tmp/$fname $TARGET/$fname
+				# ack '^<title>([^<]*)</title>$' --output '<title>ReportGrid API: $1</title>' --passthru $TARGET/$fname > /tmp/$fname
+				# mv /tmp/$fname $TARGET/$fname
+				# 
+				# ack '^<title>ReportGrid API: </title>$' --output '<title>ReportGrid API</title>' --passthru $TARGET/$fname > /tmp/$fname
+				# mv /tmp/$fname $TARGET/$fname
 			done
 			
 			log 'Copying static files...'
