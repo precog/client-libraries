@@ -538,7 +538,6 @@ var ReportGrid = window.ReportGrid || {};
     for(var i = 0; i < path_.length; i++)
       paths.push(Util.sanitizePath(path_[i]));
 
-    // Handle "event" instead of "events":
     if (events == null) throw Error("argument 'events' cannot be null");
 
     for (var eventName in events) {
