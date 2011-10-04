@@ -55,23 +55,22 @@ var ReportGrid = window.ReportGrid || {};
 
 (function() {
   var Util = {
-    getConfiguration: function() {
-      var findThisScript = function() {
-        var scripts = document.getElementsByTagName('SCRIPT');
+	findScript: function(fragment) {
+      var scripts = document.getElementsByTagName('SCRIPT');
 
-        for (var i = 0; i < scripts.length; i++) {
-          var script = scripts[i];
-          var src = script.getAttribute('src');
+      for (var i = 0; i < scripts.length; i++) {
+        var script = scripts[i];
+        var src = script.getAttribute('src');
 
-          if (src && src.indexOf('reportgrid') != -1) {
-            return script;
-          }
+        if (src && src.indexOf(fragment) != -1) {
+          return script;
         }
+      }
 
-        return undefined;
-      };
-
-      return Util.parseQueryParameters(findThisScript().getAttribute('src'));
+      return undefined;
+    },
+    getConfiguration: function() {
+      return Util.parseQueryParameters(Util.findScript('reportgrid').getAttribute('src'));
     },
 
     parseQueryParameters: function(url) {
@@ -451,6 +450,8 @@ var ReportGrid = window.ReportGrid || {};
 
   var $ = ReportGrid.$;
 
+  $.Util = Util;
+  
   $.Config = Util.getConfiguration();
 
   $.Extend = function(object, extensions) {
