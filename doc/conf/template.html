@@ -1,17 +1,46 @@
 <html>
-	<head>
+    <head>
+<title>ReportGrid Documentation</title>
+        <!--[if IE]>
+        <link rel="stylesheet" type="text/css" href="ie.css" />
+        <![endif]-->
+
 		%(head)s
-		<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/>
-		
-		<link href='http://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'/>
-		<link href='http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'/>
-		
+		<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/>		
 		<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.3.0/build/cssfonts/fonts-min.css"/>
 		<link rel="stylesheet" type="text/css" href="apidoc.css"/>
-	</head>
-	<body>
-		%(body_pre_docinfo)s
-		%(docinfo)s
-		%(body)s
-	</body>
+		
+		<script type="text/javascript" src="http://include.reinvigorate.net/re_.js"></script>
+		<script type="text/javascript">
+		try {
+		reinvigorate.track("j780b-u1448cw0d9");
+		} catch(err) {}
+		</script>
+
+    </head>
+    
+ <body>
+      <div class="wrapper">
+        <div class="header">
+            <div>
+                <img src="images/logo.png" style="padding-top:127px">
+				
+				<div class="docTitle">%(body_pre_docinfo)s</div>
+            </div>    
+           </div>
+        <div class="mainContent">
+    		<div class="documentation">
+				<div class="docMenu">%(docinfo)s</div>
+				<div class="docBody">%(body)s</div>
+			</div>
+        </div>
+        <div class="footer">
+                   <div style="font-family: RexliaFree; width:330px; float:left; text-align:left">888.673.9958</div>
+                    <div style="font-family: RexliaFree; width:330px; float:left "><a href="mailto:contact@reportgrid.com">contact us</a> </div>
+                    <div style="font-family: Abel; width:330px; float:right; text-align:right"><a href="http://www.reportgrid.com">Home</a></div>
+         </div>
+
+      </div>
+
+    </body>
 </html>

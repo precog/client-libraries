@@ -2,30 +2,73 @@
 :Author: ReportGrid
 :Contact: ReportGrid.com
 :Copyright: ReportGrid
-
-/* Your customizations go here.  For example: */
+*/
 
 @import url(html4css1.css);
+
+@import url(http://fonts.googleapis.com/css?family=Abel);
+ 
+body {
+	background-color: #000;
+}
+
+.wrapper {
+margin:auto;
+  width: 1024px;
+}
+
+.docTitle {
+	font-family:'Abel',sans-serif;
+}
+
+.header {
+  text-align:center;
+  height: 421px;
+  background-image: url("images/header.png");
+}
+
+.mainContent {
+padding-top:2em;
+ text-align:left;
+ background-color:#1F2126;
+ }
+
+.footer {
+	padding:1.875em;
+	height:210px;
+	text-align:center;
+  background-image: url("images/footer.png");
+}
+
+
+.documentation{
+	padding:1.5em;
+	width:924px;
+	margin:auto;
+	font-family:Veranda, Arial, Helvetica, sans-serif;
+	color:#666;
+	background-color:#f9f9f9;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	
+}
 
 a {
 	color:#09F;
 	text-decoration:none;
 }
 
+
+
+
+
 ol.simple li, ul.simple li {
 	list-style-type:circle;
 }
 
-.document {
-	font-family:Arial, Helvetica, sans-serif;
-	font-size:12px;
-	color:#666;
-	margin:0px 20px;
-	width:800px;
-}
 
 table.docutils caption {
-	font-size:14px;
+	font-size:90%;
 	font-weight:bold;
 	color:#666;
 	
@@ -48,7 +91,7 @@ table.borderless td, table.borderless th {
   margin-bottom: 0 ! important;
   font-weight:normal;
 	color:#555;
-padding:0px 20px 5px 20px;
+padding:0px 1.25px 0.313 1.25em;
 }
 
 .hidden {
@@ -56,7 +99,7 @@ padding:0px 20px 5px 20px;
 
 a.toc-backref {
   text-decoration: none ;
-  font-size:16px;
+  font-size:85%;
   color:#666;
   }
 
@@ -134,8 +177,8 @@ div.sidebar {
   margin: 0 0 0.5em 1em ;
   border: medium outset ;
   padding: 1em ;
-  background-color: #ffffee ;
-  width: 40% ;
+  background-color:#1F2126 ;
+  width:25% ;
   float: right ;
   clear: right }
 
@@ -165,15 +208,11 @@ h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
 	  margin-top: 1em }
 
 .section {
-	margin:50px 50px 0px 50px;
-	border-radius:5px;
+margin:1.875em;
 }
+
 h1 {
-	margin-left:-50px;
-	background-color:#F6F6F6;
-	padding:5px 10px;
-	border-radius:5px;
-	border-bottom:solid 1px #CCC;	
+	padding:0.313 0.625em;
 }
 
 .contents-topic {
@@ -181,21 +220,15 @@ h1 {
 
 
 h1.title {
+padding:1.25em;
   text-align:center ;
-  border-bottom:solid 1px #CCC }
+  font-size:2.5em;
+  color:#FFF;	
+  }
   
-h2 {
-	padding:5px 10px;
-	background-color:#F6F6F6;
+h2,h3,h4 {
+	padding:0.313 0.625em;
 	border-bottom:solid 1px #CCC;
-	border-radius:inherit;
-}
-
-h3 {
-	padding:5px 10px;
-	background-color:#F6F6F6;
-	border-bottom:solid 1px #CCC;
-	border-radius:inherit;
 }
 
 h2.subtitle {
@@ -240,7 +273,7 @@ div.align-right {
 
 ol.simple, ul.simple {
   margin-bottom: 1em;
-  line-height:20px;
+  line-height:1.75em;
   color:#555;
   font-weight:bold;
 
@@ -291,7 +324,7 @@ p.sidebar-subtitle {
   font-weight: bold }
 
 p.topic-title {
-	font-size:16px;
+	font-size:100%;
   font-weight: bold;
   color:#666 }
 
@@ -301,11 +334,11 @@ pre.address {
   font: inherit }
 
 pre.literal-block, pre.doctest-block {
-font-size:12px;
-line-height:12px;
+font-size:93%;
+line-height:1em;
 color:#555;
-  padding:10px;
-  margin-left:40px;
+  padding:0.625em;
+  margin-left:1.25em;
   border-bottom:1px thin #ccc;
   border-top:1px thin #ccc;
   }
@@ -346,7 +379,7 @@ table.docinfo {
   margin: 2em 4em }
 
 table.docutils {
-  margin: 20px 0px ;
+  margin: 1.25em 0;
   border:solid 1px #aaa;
   border-collapse:collapse;
  }
@@ -357,9 +390,9 @@ table.footnote {
    }
 
 table.docutils td:first-child { 
-	color:#666;
+	color:#333;
 	font-weight:bold;
-	font-size:13px;
+	font-size:100%;
 	font-style:italic;
 		 }
 
@@ -368,22 +401,22 @@ table.docinfo td, table.docinfo th {
 color:#555;
   padding: 0.5em 0.5em ;
   vertical-align:middle;
- border-top:solid 1px #ccc;
- border-left:solid 1px #ccc;
-  background-color:#F8F8F8;
-  padding:5px;
-  border-radius:5px;
+ border-bottom:solid 1px #888;
+ border-right:solid 1px #888;
+  background-color:#F9F9F9;
+  padding:0.313em;
   }
 
 table.docutils th.field-name, table.docinfo th.docinfo-name {
 	font-weight:bold;
   text-align: left ;
   white-space: nowrap ;
-  color:#999;
+  color:#888;
   }
 
 h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
 h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
   font-size: 80%; 
   color:#666 }
+
 
