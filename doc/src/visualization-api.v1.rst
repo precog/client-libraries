@@ -532,31 +532,8 @@ src : source options OR array source options
 transform : function(array datapoint_, ...) array datapoint_
 	xxx
 
------------------------
-Axes
------------------------
-
-**options:**
-
-groupby : string
-	valid periodicity
-	xxx
-scalemode : string
-	"fit", "fill", "before", "after"
-	xxx
-type : string
-	xxx
-values : array any
-	xxx
-variable : string
-	"independent", "dependent"
-	xxx
-view : array any
-	xxx
-
------------------------
 Data
------------------------
+===============
 
 DATASOURCE
 
@@ -584,16 +561,60 @@ start : timestamp
 timezone : string
 	xxx
 
+-----------------------
+Axes
+-----------------------
+
+**options:**
+
+groupby : string
+	valid periodicity
+	xxx
+scalemode : string
+	A axis may or may not be mapped to a visible axis on the chart. Axis in that sense are used to distribute the values in the two dimensional space. This parameter controls where the ticks start and end.
+	 * ``"fit"`` :
+		The first and last tickmarks in the scale are set to leave a space before and after. This is particularly useful for bar charts that need some mmargin before and after the centers of the bars.
+	 * ``"fill"`` :
+		The fill mode puts the first value at the very beginning of the available space and the last one at the other edge. It is handy for line charts and other visualization that need to fill the available space from side to side. 
+	 * ``"before"`` :
+		The available space is divided equally into ``n`` segments where ``n`` is equal to the number of values in the scale and starting at the beginning of the available space. 
+	 * ``"after"`` :
+		Same as for before but the scale values are stacked on the opposite side.
+type : string
+	The name of the property that should match the axis in the datapoint. For example, a valid value for a time axis is ".#time:hour"; if the axis maps to the numbers of events occurred ad a certain time, the property will simply be "count". Properties that are part of the tracked event are prefixed with a dot ".", like in ".browser". Special properties like ".#time:day" or "#location" are prefixed with a hash "#" character and may contain a column symbol followed by a special parameter.
+values : array any
+	Passing values only make sense if the axis is of type ordinal like "male" and "female" or "firefox", "ie", "chrome" ... Values for numeric axis and time axis are always automatically generated. When the values for an ordinal axis are not explicitly declared they are derived from the values in the set of datapoints_. Declaring the values can be important to fix a specific order to the axis values and to be sure that every values has been taken into consideration even if the current resultset doesn't contain datapoints_ for that value.  
+variable : string
+	"independent", "dependent"
+	This parameter is only required when the data is not generated using a query to ReportGrid. 
+view : array any
+	The view parameter is used to set the min and max of the axis scale. If passed the array must contain exactly two values that are acceptable values for the current axis and must be ordered correctly (the lower value first).
+
 .. _`Datapoints`:
 
 -----------------------
 DataPoint
 -----------------------
 
+A datapoint is a single piece of information packed ad an anonymous object. The object can contain just one field or more conform the query that generated it. For time series queries you will have one field containing the time information in the format: ``{ ".#time:hour" : 1318001732325, ... }``
+A query on count will always have the property ``"count"``. A query over a property will add the value for that property for each datapoint. So, if you are querying ``.impression.browser`` the datapoint can be something like this: { count : 777, ".broswer" : "chrome", .#time:minute" : 1318001732325 } that basically means that at that minute in time time, the aggregated count over the property ``.browser`` with the value ``chrome`` was 777.
+
 -----------------------
 Stats
 -----------------------
 
+The stats object contains information about a dataset. The stats are always relative to a certain axis.
+
+min :
+	The smallest value in the data set.
+max :
+	The biggest value in the data set.
+tot : (only for numeric values)
+	The summatory of all the values in the dataset.
+count : 
+	The number of values in the data set.
+values : 
+	The unordered set of distinct values in the dataset.
 
 -----------------------
 ReportGrid Extra Fields
