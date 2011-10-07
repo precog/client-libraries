@@ -1,0 +1,15 @@
+height : float
+	xxx
+layout : string
+	xxx
+main : string
+	(experimental)
+	xxx
+padding : object padding options
+	xxx
+titleontop : bool
+	xxx
+yscaleposition : string
+	("alternating", "left", "right")
+width : float
+	xxx

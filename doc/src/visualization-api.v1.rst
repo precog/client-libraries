@@ -2,7 +2,7 @@
 The ReportGrid JS Visualization API
 ===================================
 
-.. contents:: `Table of contents`
+.. contents:: :depth: 2
 
 ---------------
 Overview
@@ -19,7 +19,7 @@ The files are reportgrid-core.js and reportgrid-viz.js. The first requires a par
 	  <head>
 	    <title>MySite.com</title>
 	    <script type="text/javascript"
-	     src="http://api.reportgrid.com/js/reportgrid-core.js?tokenId=[YOUR TOKEN ID]"></script>
+	     src="http://api.reportgrid.com/js/reportgrid-core.js?tokenId={YOUR_TOKEN_ID}"></script>
 	    <script type="text/javascript"
 	     src="http://api.reportgrid.com/js/reportgrid-viz.js"></script>
 	    <script type="text/javascript">
@@ -33,18 +33,21 @@ The files are reportgrid-core.js and reportgrid-viz.js. The first requires a par
 	  </body>
 	</html> 
 
-Note that by default, charts are unstyled and you will have to provide your color schemes and styles using a standard CSS file. If you want you can use our default stylesheet including the following line of code inside your <head> tag.
+The charts are unstyled and you will have to provide your color schemes and styles using a standard CSS file. If you want you can use our default stylesheet including the following line of code inside your <head> element.
+
+Note that in this document whenever you encounter a string enclosed in curly brackets ``{value}``, it means that the entire string must be replaced with a customer value (e.g. ``gradient-{value}`` means that ``gradient-0.75`` and ``gradient-1.25`` are both valid values). 
 
 ::
 	
 	<link rel="stylesheet" type="text/css" href="http://api.reportgrid.com/css/rg.css"/>
 
-You can change the color schemes of the visualization loading one of our optional `css palettes`_. All of the color palettes are contained into this location http://api.reportgrid.com/css/colors/
+You can change the color schemes of the visualization loading one of our optional `css palettes`_. The palettes CSS files are located here http://api.reportgrid.com/css/colors/
 
-Every visualization is a method of the object ReportGrid and every visualization takes an element placeholder as the first argument. That argument can be a DOM element or a CSS selector (string); usually a DIV element referenced by its ID is used for the effect. In the first sample the "#chart" selector refers to the <div id="chart"></div> node in the DOM.
+Every visualization is a method of the object ``ReportGrid`` and every visualization takes an element placeholder as the first argument. That argument can be a DOM element or a CSS selector (string); usually you will want to use the ID selector of an existing DIV in your page. In the example above the "#chart" selector refers to the <div id="chart"></div> node in the DOM.
 
-The second argument is always an object that contains all the info required to make the visualization pop-up.
-There are two way to configure that object, a simplified one and a complete one; they both share a common "option" field that works the same in both context.
+The second argument is always an object that contains all the info required to make the visualization render.
+
+There are two way to configure that object, a `Simplified Query Model`_ and a `Complete Query Model`_; they both share a common ``options`` field that works the same in both context.
 
 -----------------------
 Simplified Query Model
@@ -64,11 +67,11 @@ The queries can be restricted to a certains time span by specifying the ``start`
 
 For a better insight on how the data are queried and retrieved tak a look at the `Complete Query System`_
 
-options:
+**options:**
 
 event : string
 	The event name.
-events : string || array string
+events : string OR array string
 	One or more (array of values) event names.
 end : timestamp
 	end of the time span
@@ -92,90 +95,106 @@ Visualization Methods
 -----------------------
 
 ReportGrid.barChart
--------------------
+===================
 
 ``ReportGrid.barChart(selector el, parameters object) void``
 
 Conforming the queried data, for each tick in the X axis might exist one or more bar. The bars can belong to the same Y axis or to different ones. If they belong to the same Y axis the data can be segmented to produce several bars. The bars segmented on the same Y axis can be stacked or not.
 
-options:
+**options:**
 
-barpadding : float
+``barpadding`` : float
 	Padding distance in pixel between groups of bars for the same X tick.
-barpaddingaxis : float
+``barpaddingaxis`` : float
 	Padding distance in pixel between bars when grouped on different Y axis.
-barpaddingdatapoint : float
+``barpaddingdatapoint`` : float
 	Padding distance in pixel between bars when lined horizontally.
-effect : string ("noeffect", "gradient", "gradient-{value}")
+``effect`` : string ("noeffect", "gradient", "gradient-{value}")
 	The effect to apply to the bars.
-	 * ``noeffect`` simply uses a solid fill color
-	 * ``gradient`` applies a gradient
-	 * ``gradient-{value}`` applies a gradient from the color in the stylesheet darkened or lightned by the value. If the value is 1.0 there will be no gradient at all, use bigger or lower values to make the gradient lighter or darker.
-stacked : bool
+	 * ``noeffect`` :
+		simply uses a solid fill color
+	 * ``gradient`` :
+	 	applies a gradient
+	 * ``gradient-{value}`` :
+	 	applies a gradient from the color in the stylesheet darkened or lightned by the value. If the value is 1.0 there will be no gradient at all, use bigger or lower values to make the gradient lighter or darker.
+``stacked`` : bool
 	Determines if the bars are stacked on top of each other or lined horizontally.
 
-CARTESIAN
+.. include:: visualization-api-v1-options-cartesian.txt
+.. include:: visualization-api-v1-options-layout.txt
+.. include:: visualization-api-v1-options-padding.txt
 
-LAYOUT
-
+.. include:: visualization-api-v1-options-label.txt
+.. include:: visualization-api-v1-options-label-axis.txt
 
 ReportGrid.funnelChart
-----------------------
+======================
 
 ``ReportGrid.funnelChart(selector el, parameters object) void``
 
 The funnel chart is an extremely insightful visualization to quickly grasp ROI-like information. The funnel starts big for a certain variable and reduces for some subordinate value.
 
-options:
+**options:**
 
-arrowsize : float
+``arrowsize`` : float
 	The size of the funnel arrow side in pixels.
-click : function(object datapoint, object stats) void
-	A handler function that is executed when the user click or touches a datapoint.
-effect : string ("noeffect", "gradient", "gradient-{value}")
+``click`` : function(object datapoint_, object stats_) void
+	A handler function that is executed when the user click or touches a datapoint_.
+``effect`` : string ("noeffect", "gradient", "gradient-{value}")
 	The effect to apply to the funnel sections.
-	 * ``noeffect`` simply uses a solid fill color
-	 * ``gradient`` applies a gradient
-	 * ``gradient-{value}`` applies a gradient from the color in the stylesheet darkened or lightned by the value. If the value is 1.0 there will be no gradient at all, use bigger or lower values to make the gradient lighter or darker.
-flatness : float
+	* ``noeffect`` simply uses a solid fill color
+	* ``gradient`` applies a gradient
+	* ``gradient-{value}`` : applies a gradient from the color in the stylesheet darkened or lightned by the value. If the value is 1.0 there will be no gradient at all, use bigger or lower values to make the gradient lighter or darker.
+``flatness`` : float
 	A value to accentuate or reduce the 3D effect of the chart. The default value is 1. A value near to 0.0 will make the funnel appear almost completely flat.
-label : object funnel label options
-	Conveys information over labelling the funnel sections.
-segmentpadding : float
+``label`` : object labeloptions
+	Conveys information over `labelling the funnel sections`_.
+``segmentpadding`` : float
 	Distance in pixel (white space) between the sections of the funnel chart.
-sort : function(datapoint a, datapoint b) int
-	A custom function to order the datapoints before rendering them.
+``sort`` : function(object a, object b) int
+	A custom function to order the datapoints_ before rendering them.
 
-LAYOUT
+.. include:: visualization-api-v1-options-layout.txt
+.. include:: visualization-api-v1-options-padding.txt
 
-FUNNEL LABEL OPTIONS
+.. _`labelling the funnel sections`:
 
-extends LABEL
+.. include:: visualization-api-v1-options-label.txt
+
+``arrow`` : function(object datapoint_, object stats_) string
+	A function to generate a custom label to put over the section arrows. If the returned value is ``null`` the arrow will not be displayed.
+
+
+
 
 ReportGrid.geo
--------------------
+===================
 
 ``ReportGrid.geo(selector el, parameters object) void``
 
-The geo visualization can be used to produce choropleth charts or ???? charts. Each geo visualization can overlay more than one geographic layer associated or not to the datapoints retrieved by the query. This gives you the option to load geographic features to convey data information and/or to decorate the visualization.
-Note that the data contained in the geographic features (if any) is merged in the datapoint when the visualization is rendered. That metadata will be contained in the ``#data`` field. In the same way also the centroids in pixel of the geometries is injected in the datapoint in the ``#centroid`` field.
+The geo visualization can be used to produce choropleth charts or point/area diagrams. Each geo visualization can overlay more than one geographic layer associated or not to the datapoints retrieved by the query. This gives you the option to load geographic features to convey data information and/or to decorate the visualization.
+Note that the data contained in the geographic features (if any) is merged in the datapoint_ when the visualization is rendered. That metadata will be contained in the ``#data`` field. In the same way also the centroids in pixel of the geometries is injected in the datapoint_ in the ``#centroid`` field.
 
-options:
+**options:**
 
 label : object label options
 	Configuration object for text labels. The values passed to this object are used as defaults for the map object(s).
 map : object/array map options
-	A single map definition or an array of maps.
-MAP
+	A single map definition or an array of `Map Options`_.
 
-options:
+Map Options
+-----------
+
+**options:**
+
 classname : string
 	An optional class name to associate with the geometries container. The ``classname`` may be used for styling purposes.
-click : function(object datapoint, object stats) void
-color : string || function(datapoint, stats) string
+click : function(object datapoint_, object stats_) void
+	A handler function that is executed when the user click or touches a datapoint_.
+color : string OR function(datapoint_, stats_) string
 	This parameter determins how the geometries are colored. The default value is ``css`` but the field accept any of the following:
 	 * ``"css"`` or ``"css-{int}"`` :
-		It uses the colors in the stylesheet to colour the geometries. The colors in the css palette are automatically detected and the color scale is divided proportionally to associate the values in the axis with each color in the palette. You can reduce the number of values used by specifying an integer number after the dash: ``"css-5"`` will only use the first 5 colors in the associated CSS stylesheet.
+	 	It uses the colors in the stylesheet to colour the geometries. The colors in the css palette are automatically detected and the color scale is divided proportionally to associate the values in the axis with each color in the palette. You can reduce the number of values used by specifying an integer number after the dash: ``"css-5"`` will only use the first 5 colors in the associated CSS stylesheet.
 	 * ``function()`` :
 		a custom function whose return value must be a valid CSS color string.
 	 * ``"i-{color1},{color2},..."`` or ``"interpolated-{color1},{color2},..."`` :
@@ -184,7 +203,6 @@ color : string || function(datapoint, stats) string
 		You pass a list of colors and the color scale is built to match exactly the colors in the list.
 	 * ``"f-{color}"`` or ``"fixed-{color}"`` or ``"{color}"`` :
 		Use this option to colour all the geometries with the same color.
-	A handler function that is executed when the user click or touches a datapoint.
 label : object label options
 	Configuration object for text labels.
 mode : string
@@ -195,19 +213,19 @@ parallels : array of float
 	Redefines the parallels in the ``albers`` projection.
 projection : string
 	The kind of projection to use to render the geographic features. The available values are: ``mercator``, ``albers``, ``albersusa`` and ``azimuthal``
-property : null || string
-	The property field in the datapoint associated to the feature ID in the geometric layer. The default value is ``#location``. If the property is set to ``null`` the geographic layer will be rendered but not associated to the data.
-radius : float || function(datapoint, stats) float
+property : null OR string
+	The property field in the datapoint_ associated to the feature ID in the geometric layer. The default value is ``#location``. If the property is set to ``null`` the geographic layer will be rendered but not associated to the data.
+radius : float OR function(datapoint_, stats_) float
 	If the geometry contains Point geometries they are rendered as ``svg:circle`` elements whose radius can be a fixed value or calculated using a custom function.
 scale : float
 	A scale factor to reduce or enlarge the geographic visualization.
 template : string
 	To simplify geo consumption some premade templates and geographic files are made available by the ReportGrid API.
 	The available templates are:
-	 * ``"world"`` :
-	 * ``"usa-states"`` :
-	 * ``"usa-state-centroids"`` :
-	 * ``"usa-counties"`` :
+	* ``"world"`` :
+	* ``"usa-states"`` :
+	* ``"usa-state-centroids"`` :
+	* ``"usa-counties"`` :
 translate : array of float
 	Array of 2 values in pixel to pan the visualization from its center.
 type : string
@@ -215,18 +233,21 @@ type : string
 url : string
 	The url of the file containing the geometries to display.
 
-LAYOUT
+.. include:: visualization-api-v1-options-layout.txt
+.. include:: visualization-api-v1-options-padding.txt
+
+.. include:: visualization-api-v1-options-label.txt
 
 ReportGrid.heatGrid
--------------------
+===================
 
 ``ReportGrid.heatGrid(selector el, parameters object) void``
 
 The heatgrid visualization divides a two dimensional space into a grid whose columns and rows are associated to the first two axis in your query. Each cell of the grid is colored according to the third axis.
 
-options:
+**options:**
 
-color : string || function(datapoint, stats) string
+color : string OR function(datapoint_, stats_) string
 	This parameter determins how the geometries are colored. The default value is ``css`` but the field accept any of the following:
 	 * ``"css"`` or ``"css-{int}"`` :
 		It uses the colors in the stylesheet to colour the geometries. The colors in the css palette are automatically detected and the color scale is divided proportionally to associate the values in the axis with each color in the palette. You can reduce the number of values used by specifying an integer number after the dash: ``"css-5"`` will only use the first 5 colors in the associated CSS stylesheet.
@@ -239,45 +260,52 @@ color : string || function(datapoint, stats) string
 	 * ``"f-{color}"`` or ``"fixed-{color}"`` or ``"{color}"`` :
 		Use this option to colour all the geometries with the same color.
 
+.. include:: visualization-api-v1-options-cartesian.txt
+.. include:: visualization-api-v1-options-layout.txt
+.. include:: visualization-api-v1-options-padding.txt
 
-CARTESIAN
-LAYOUT
+.. include:: visualization-api-v1-options-label.txt
+.. include:: visualization-api-v1-options-label-axis.txt
 
 ReportGrid.leaderBoard
------------------------------------------------------------
+======================
 
 ``ReportGrid.leaderBoard(selector el, parameters object) void``
 
 This visualization renders a list of values associated to the datapoints produced by your query.
 
-options:
+**options:**
 
 animation : object animation options
-	Defines the animation behavior of the visualization.
-click : function(object datapoint, object stats) void
-	A handler function that is executed when the user click or touches a datapoint.
+	Defines the `animation behavior`_ of the visualization.
+click : function(object datapoint_, object stats_) void
+	A handler function that is executed when the user click or touches a datapoint_.
 effect : string
 	States the effect to apply to the list items in the leaderboard.
 	 * ``"noeffect"`` : 
 		No gradient is applied below the item.
 	 * ``"gradient"`` : 
-		Applies a gradient below the item that is proportional to the sum of the values in the datapoint set.
+		Applies a gradient below the item that is proportional to the sum of the values in the datapoint_ set.
 	 * ``"gradient-max"`` : 
-		Same as above but the gradient is proportional to the biggest value in the datapoint set.
+		Same as above but the gradient is proportional to the biggest value in the datapoint_ set.
 label : object label options
 	Configuration object for text labels.
-sort : function(object datapoint, object datapoint) int
+sort : function(object datapoint_, object datapoint_) int
 	Sort function to rearrange the orders of the items in the leaderboard list.
+
+.. _`animation behavior`:
+
+.. include:: visualization-api-v1-options-animation.txt
 	
 
 ReportGrid.lineChart
---------------------
+====================
 
 ``ReportGrid.lineChart(selector el, parameters object) void``
 
 The ``lineChart`` can be used to build standard line charts, area charts stacked or not.
 
-options:
+**options:**
 
 displayarea : bool
 	States if an area shape must be rendered below the line chart or not.
@@ -296,36 +324,43 @@ effect : string
 	 * "gradient-{lightness}" : 
 	 * "gradient-{lightness}-{levels}" : 
 		The ``lightness`` parameter is used to state how brigther (or darker) the end of the gradient will be and the ``levels`` parameterd states the number of steps that form the gradient.
-symbol : string || function(object datapoint, object stats) string
-	Each datapoint in the line charts can be associated to an optional symbol. The symbol can be described statically using a string or using a function. The symbol must be expressed in SVG PATH format. There is a practical function ``ReportGrid.symbol.get()`` to quickly build symbols.
-symbolstyle : function(object datapoint, object stats) string
+symbol : string OR function(object datapoint_, object stats_) string
+	Each datapoint_ in the line charts can be associated to an optional symbol. The symbol can be described statically using a string or using a function. The symbol must be expressed in SVG PATH format. There is a practical function ``ReportGrid.symbol.get()`` to quickly build symbols.
+symbolstyle : function(object datapoint_, object stats_) string
 	If symbols are added to the lines you can use ``symbolstyle`` to render a custom style for each of them. The style produced by the custom function must be a string in CSS format.
 y0property : string
-	This parameter is used to determine what value in the datapoint must be used to stack values.
+	This parameter is used to determine what value in the datapoint_ must be used to stack values.
 	Usually that value must be calculated transforming the datapoints from your query.
-
 interpolation : string
 	Linecharts are not interpolated by default (equivalent to "linear" interpolation) but can be smoothed or transformed using one of the following values: ``"basis"``, ``"basisopen"``, ``"basisclosed"``, ``"cardinal"``, ``"cardinal-{value}"``, ``"cardinalopen"``, ``"cardinalopen-{value}"``, ``"cardinalclosed"``, ``"cardinalclosed-{value}"``, ``"monotone"``, ``"stepafter"``, ``"stepbefore"``, ``"linear"``
 	The ``value`` parameter is an optinal ``float`` value for ``cardinal`` interpolations.
+``segment`` : object segmentoptions
+	An object that describes the options for segmenting the data (see below).
+``segmenton`` : string
+	A shortcut that is equivalent to : ``{ segment : { on : "propertyname" } }``
 
-CARTESIAN
+.. include:: visualization-api-v1-options-cartesian.txt
+.. include:: visualization-api-v1-options-layout.txt
+.. include:: visualization-api-v1-options-padding.txt
+.. include:: visualization-api-v1-options-segment.txt
 
-LAYOUT
+.. include:: visualization-api-v1-options-label.txt
+.. include:: visualization-api-v1-options-label-axis.txt
 
 ReportGrid.pieChart
---------------------------------------------------------
+===================
 
 ``ReportGrid.pieChart(selector el, parameters object) void``
 
 The ``pieChart`` is obviously used to render pie charts, but it can also be used to render donut charts.
 All of the ``radius`` parameters below should be expressed as a ``float`` value between 0 and 1 where 0 is at the center of the pie and 1 is at the edge of the available chart space.
 
-options:
+**options:**
 
 animation : object animation options
-	Defines the animation behavior of the visualization.
-click : function(object datapoint, object stats) void
-	A handler function that is executed when the user click or touches a datapoint.
+	Defines the `piechart animation behavior`_ of the visualization.
+click : function(object datapoint_, object stats_) void
+	A handler function that is executed when the user click or touches a datapoint_.
 dontfliplabel : bool
 	Determines if the labels on the datapoints should always be set so that even if they are inclined they never end flipped.
 effect : string
@@ -351,88 +386,122 @@ labelorientation : string
 	 * ``"align"`` or ``"aligned"`` : 
 		Labels have the same angle as their radius have.
 labelradius : float
-	States where the datapoint labels are positioned.
+	States where the datapoint_ labels are positioned.
 outerradius : float
-	The outer radius is useful when you want accentuated transitions (animations) that can bleach the border of the charts. Another use in combination with ``innerradius`` is to nest two or more donut charts in the same visualization and avoid overlappings.
+	The outer radius is useful when you want accentuated transitions (animations) that can bleed the border of the charts. Another use in combination with ``innerradius`` is to nest two or more donut charts in the same visualization and avoid overlappings.
 overradius : float
 	The over radius is used to control the slice size when animation is turned on.
 tooltipradius : float
 	Controls the position of the tooltip balloon when activated and the mouse is positioned over a slice.
-sort : function(object datapoint, object datapoint) int
+sort : function(object datapoint_, object datapoint_) int
 	Sort function to rearrange the orders of the slices in the pie chart.
 
-LAYOUT
+.. include:: visualization-api-v1-options-layout.txt
+
+.. include:: visualization-api-v1-options-padding.txt
+
+.. _`piechart animation behavior`:
+
+.. include:: visualization-api-v1-options-animation.txt
 
 ReportGrid.pivotTable
----------------------
+=====================
 
 ``ReportGrid.pivotTable(selector el, parameters object) void``
 
-options:
+**options:**
 
-click : function(object datapoint, object stats) void
-	A handler function that is executed when the user click or touches a datapoint.
+click : function(object datapoint_, object stats_) void
+	A handler function that is executed when the user click or touches a datapoint_.
 columnaxes : int
-	xxx
+	This parameter controls how many dimensions of the query are grouped as columns.
+	If you have three axis and you want to group just the first on the coloumns and the remaining two on the rows, the ``columnaxes`` value must set to ``1`` (default value). The same visualization can have 2axes on the columns and 1 axis on the rows, setting the value to 1.
 displaycolumntotal : bool
-	xxx
+	Whether or not to display the totals at the bottom of the columns.
 displayheatmap : bool
-	xxx
+	Whether or not to display a background color below each cell whose intensity in the color scale is based on the value of the cell itself.
 displayrowtotal : bool
-	xxx
+	Whether or not to display the totals at the right of the rows.
 endcolor : string
-	xxx
+	Color for the background cell of highest value in the table. This option is used only if ``displayheatmap`` is set to true.
 label : object pivottable label options
 	Configuration object for text labels.
 startcolor : string
-	xxx
+	Color for the background cell with a value of zero. This option is used only if ``displayheatmap`` is set to true.
 
-PIVOT TABLE LABEL OPTIONS
 
-extends LABEL AXIS
+.. include:: visualization-api-v1-options-label.txt
 
-total : function(float value, object stats) string
-	xxx
-totalover : function(float value, object stats) string
-	xxx
+axisvalue : function(any value, string type) string
+	The label to apply to the individual values of the grouped dimensions..
+total : function(float value, object stats_) string
+	Function to control the label in the total cell.
+totalover : function(float value, object stats_) string
+	Function to control the label when the mouse goes over a total cell.
+
+.. include:: visualization-api-v1-options-label-axis.txt
 
 ReportGrid.scatterGraph
------------------------
+=======================
 
 ``ReportGrid.scatterGraph(selector el, parameters object) void``
 
-options:
+**options:**
 
-symbol : string || function(object datapoint, object stats) : string
-	xxx
-symbolstyle : string || function(object datapoint, object stats) : string
-	xxx
+symbol : string OR function(object datapoint_, object stats_) : string
+	Each point in a scatter graph should be associated to a symbol. Each symbol can be rendered indivisually to have a distinct shape or not. The ``symbol`` can be a static string or a function that returns such string. The string represents a SVG path. You can easily create a SVG path using `ReportGrid.symbol.get`_.
+symbolstyle : string OR function(object datapoint_, object stats_) : string
+	As much as you can control the sy,bol shape, you can control its style returning a custom style string. The style must be expressed in the CSS format.
+``segment`` : object segmentoptions
+	An object that describes the options for segmenting the data (see below).
+``segmenton`` : string
+	A shortcut that is equivalent to : ``{ segment : { on : "propertyname" } }``
 
-CARTESIAN
+.. include:: visualization-api-v1-options-cartesian.txt
+.. include:: visualization-api-v1-options-layout.txt
+.. include:: visualization-api-v1-options-padding.txt
+.. include:: visualization-api-v1-options-segment.txt
 
-LAYOUT
+.. include:: visualization-api-v1-options-label.txt
+.. include:: visualization-api-v1-options-label-axis.txt
 
 ReportGrid.streamGraph
-----------------------
+======================
 
 ``ReportGrid.streamGraph(selector el, parameters object) void``
 
-options:
+**options:**
 
 effect : string
-	"noeffect", "gradient", "gradienth", "gradient-{lightness}", "gradienth-{lightness}"
-	xxx
+	The effect to apply to each slice in a pie or donut chart.
+	 * ``"noeffect"`` : 
+		No effect is applied to the stream bands and they are filled with a solid color.
+	 * ``"gradient"`` : 
+		A simple linear and vertical gradient that fills the stream band.
+	 * ``"gradient-{lightness}"`` : 
+		Same as above but with control over the lightness or darkness of the stop color in the gradient.
+	 * ``"gradienth"`` : 
+		The band are filled with a complex horizontal and linear gradient that enhance or reduce the color based on the values in the graph.
+	 * ``"gradienth-{lightness}"`` : 
+		Same as above but with control over the lightness or darkness of the stop color in the gradient.
 interpolation : string
-	"basis", "basisopen", "basisclosed", "cardinal", "cardinalopen", "cardinalclosed", "monotone", "stepafter", "stepbefore", "linear"
-	xxx
+	Controls how the lines in the stream graph are interoilated, the allowed values are: "basis", "basisopen", "basisclosed", "cardinal", "cardinalopen", "cardinalclosed", "cardinal-{value}", "cardinalopen-{value}", "cardinalclosed-{value}", "monotone", "stepafter", "stepbefore", "linear".
+	The ``{value}`` parameter for certain interpolation values should be replaced with a float value.
+``segment`` : object segmentoptions
+	An object that describes the options for segmenting the data (see below).
+``segmenton`` : string
+	A shortcut that is equivalent to : ``{ segment : { on : "propertyname" } }``
 
-CARTESIAN
+.. include:: visualization-api-v1-options-cartesian.txt
+.. include:: visualization-api-v1-options-layout.txt
+.. include:: visualization-api-v1-options-padding.txt
+.. include:: visualization-api-v1-options-segment.txt
 
-LAYOUT
-
+.. include:: visualization-api-v1-options-label.txt
+.. include:: visualization-api-v1-options-label-axis.txt
 
 ReportGrid.viz
---------------
+==============
 
 ``ReportGrid.viz(selector el, parameters object, string type) void``
 
@@ -446,26 +515,28 @@ The following two declarations are basically equivalent:
 	
 	ReportGrid.viz("#chart", { ...}, "linechart");
 
+.. _`Complete Query System`:
+
 -----------------------
 Complete Query Model
 -----------------------
 
-options:
+**options:**
 
 name : string
 	xxx
-scale : function(array datapoint) array datapoint
+scale : function(array datapoint_) array datapoint_
 	xxx
-src : source options || array source options
+src : source options OR array source options
 	xxx
-transform : function(array datapoint, ...) array datapoint
+transform : function(array datapoint_, ...) array datapoint_
 	xxx
 
 -----------------------
 Axes
 -----------------------
 
-options:
+**options:**
 
 groupby : string
 	valid periodicity
@@ -487,122 +558,9 @@ view : array any
 Data
 -----------------------
 
------------------------
-Generic Options
------------------------
-
------------------------
-ReportGrid Extra Fields
------------------------
-
-The reportgrid-viz.js file adds a lot of fields to the ReportGrid object; most of them are related to visualizations but some are generic utility functions and variables.
-
-
-ReportGrid.compare
-------------------
-
-``ReportGrid.compare(any a, any b) string``
-
-It takes two argument and returns an integer as the result of their comparison.
-
-examples:
-::
-	
-	console.log(ReportGrid.compare("b", "a"));
-	// outputs: 1
-	console.log(ReportGrid.compare(1, 2));
-	// outputs: -1
-
-ReportGrid.date.parse
----------------------
-
-``ReportGrid.date.parse(date start, date end, string periodicity) array of timestamps``
-
-
-ReportGrid.date.range
----------------------
-
-``ReportGrid.date.range(date start, date end, string periodicity) array of timestamps``
-
-ReportGrid.date.snap
----------------------
-
-``ReportGrid.date.snap(float timestampe, string periodicity) float``
-
-
-ReportGrid.dump
----------------
-
-``ReportGrid.dump(any value) string``
-
-It takes one argument of any type and returns a string out of it. It is very convenient to serialize and object in a readable string.
-
-examples:
-::
-	
-	console.log(ReportGrid.dump(123456.789));
-	// outputs: "123,456.78"
-	console.log(ReportGrid.dump(new Date("2011-09-23")));
-	// outputs: "Friday, September 23, 2011"
-	console.log(ReportGrid.dump({ a : 1, b : "c" }));
-	// outputs: "{a:1,b:c}"
-	console.log(ReportGrid.dump([1,2,3]));
-	// outputs: "1, 2, 3"
-	
-ReportGrid.humanize
--------------------
-
-``ReportGrid.humanize(any value) string``
-
-ReportGrid.info.viz.version
----------------------------
-
-``ReportGrid.info.viz.version string``
-
-Contains the version of the reportgrid-viz.js in use.
-
-examples:
-::
-	
-	console.log(ReportGrid.info.viz.version);
-	// outputs: "1.0.1.73" <-- this value obviously changes with new releases
-
-ReportGrid.math.random
-----------------------
-
-``ReportGrid.math.random() float``
-
-ReportGrid.symbol.get
----------------------
-
-``ReportGrid.symbol.get(string type, optional int size) string``
-
-It takes the type of symbol and its size (area in pixel) and returns its SVG Path representation.
-The symbols you can draw are: "triangleDown", "triangleUp", "square", "diamond", "cross", "circle", "arrowUp", "arrowDown", "arrowDownWide", "arrowRight", "arrowLeft", "star".
-If size is not specified 100 is the default value.
-
-example:
-::
-	
-	console.log(ReportGrid.symbol("star"));
-	// outputs: "M0,-8.97635689348711L2.1184202268629577,-2.917315990383311 ..."
-
-ANIMATION
-
-options:
-
-animated : bool
-	xxx
-duration : int
-	xxx
-delay : int
-	xxx
-ease : function(float v) float
-	xxx
-
 DATASOURCE
 
-options:
+**options:**
 
 data : array datapoints
 	xxx
@@ -626,125 +584,111 @@ start : timestamp
 timezone : string
 	xxx
 
-CARTESIAN
+.. _`Datapoints`:
 
-options:
+-----------------------
+DataPoint
+-----------------------
 
-animation : animation options
-	xxx
-click : function(object datapoint, object stats) void
-	A handler function that is executed when the user click or touches a datapoint.
-displayanchorlinerule : bool || function(string type ) bool
-	xxx
-displayanchorlinetick : bool || function(string type ) bool
-	xxx
-displayrules : bool || function(string type ) bool
-	xxx
-displayruleminor : bool || function(string type ) bool
-	xxx
-displayrulemajor : bool || function(string type ) bool
-	xxx
-displayticklabel : bool || function(string type ) bool
-	xxx
-displaytickmajor : bool || function(string type ) bool
-	xxx
-displaytickmarks : bool || function(string type ) bool
-	xxx
-displaytickminor : bool || function(string type ) bool
-	xxx
-label : object LABEL AXIS
-	Configuration object for text labels.
-labelanchor : string || function(string type) string
-	xxx
-labelangle : float || function(string type) float
-	xxx
-labelorientation : string || function(string type) string
-	xxx
-lengthtick : float
-	xxx
-lengthtickmajor : float
-	xxx
-lengthtickminor : float
-	xxx
-paddingtick : float
-	xxx
-paddingticklabel : float
-	xxx
-paddingtickmajor : float
-	xxx
-paddingtickminor : float
-	xxx
-segment : segment options
-	xxx
-segmenton : string
-	xxx
+-----------------------
+Stats
+-----------------------
 
-LABEL
 
-options:
+-----------------------
+ReportGrid Extra Fields
+-----------------------
 
-datapoint : function(object datapoint, object stats) string
-	xxx
-datapointover : function(object datapoint, object stats) string
-	xxx
-title : string || function(variable, array datapoints) string
-	xxx
+The reportgrid-viz.js file adds a lot of fields to the ReportGrid object; most of them are related to visualizations but some are generic utility functions and variables.
 
-LABEL AXIS
 
-extends LABEL
+ReportGrid.compare
+==================
 
-options:
+``ReportGrid.compare(any a, any b) string``
 
-axis : function(string type) string
-	xxx
-axisvalue : function(anu value, string type) string
-	xxx
-tickmark : function(any value, string type) string
-	xxx
+It takes two argument and returns an integer as the result of their comparison.
 
-SVG LAYOUT OPTIONS
+examples:
+::
+	
+	console.log(ReportGrid.compare("b", "a"));
+	// outputs: 1
+	console.log(ReportGrid.compare(1, 2));
+	// outputs: -1
 
-options:
+ReportGrid.date.parse
+=====================
 
-height : float
-	xxx
-layout : string
-	xxx
-main : string
-	(experimental)
-	xxx
-padding : object padding options
-	xxx
-titleontop : bool
-	xxx
-yscaleposition : string
-	("alternating", "left", "right")
-width : float
-	xxx
+``ReportGrid.date.parse(date start, date end, string periodicity) array of timestamps``
 
-PADDING OPTIONS
 
-options:
+ReportGrid.date.range
+=====================
 
-bottom : float
-	xxx
-left : float
-	xxx
-right : float
-	xxx
-top : float
-	xxx
+``ReportGrid.date.range(date start, date end, string periodicity) array of timestamps``
 
-SEGMENT OPTIONS
+ReportGrid.date.snap
+====================
 
-options:
+``ReportGrid.date.snap(float timestampe, string periodicity) float``
 
-on : string
-	xxx
-scale : function(array datapoints) array
-	xxx
-transform : function(array datapoints) array
-	xxx
+
+ReportGrid.dump
+===============
+
+``ReportGrid.dump(any value) string``
+
+It takes one argument of any type and returns a string out of it. It is very convenient to serialize and object in a readable string.
+
+examples:
+::
+	
+	console.log(ReportGrid.dump(123456.789));
+	// outputs: "123,456.78"
+	console.log(ReportGrid.dump(new Date("2011-09-23")));
+	// outputs: "Friday, September 23, 2011"
+	console.log(ReportGrid.dump({ a : 1, b : "c" }));
+	// outputs: "{a:1,b:c}"
+	console.log(ReportGrid.dump([1,2,3]));
+	// outputs: "1, 2, 3"
+	
+ReportGrid.humanize
+===================
+
+``ReportGrid.humanize(any value) string``
+
+ReportGrid.info.viz.version
+===========================
+
+``ReportGrid.info.viz.version string``
+
+Contains the version of the reportgrid-viz.js in use.
+
+examples:
+::
+	
+	console.log(ReportGrid.info.viz.version);
+	// outputs: "1.0.1.73" <-- this value obviously changes with new releases
+
+ReportGrid.math.random
+======================
+
+``ReportGrid.math.random() float``
+
+ReportGrid.symbol.get
+=====================
+
+``ReportGrid.symbol.get(string type, optional int size) string``
+
+It takes the type of symbol and its size (area in pixel) and returns its SVG Path representation.
+The symbols you can draw are: "triangleDown", "triangleUp", "square", "diamond", "cross", "circle", "arrowUp", "arrowDown", "arrowDownWide", "arrowRight", "arrowLeft", "star".
+If size is not specified 100 is the default value.
+
+example:
+::
+	
+	console.log(ReportGrid.symbol("star"));
+	// outputs: "M0,-8.97635689348711L2.1184202268629577,-2.917315990383311 ..."
 
 .. _css palettes: http://api.reportgrid.com/css/colors/
