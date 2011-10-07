@@ -64,7 +64,7 @@ for action in $ACTIONS; do
 			done
 			
 			log 'Copying static files...'
-			cp static/* $TARGET
+			cp -r static/* $TARGET
 			log 'Complete'
 		;;
 		
