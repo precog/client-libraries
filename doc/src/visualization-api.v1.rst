@@ -74,7 +74,7 @@ event : string
 events : string OR array string
 	One or more (array of values) event names.
 end : timestamp
-	end of the time span
+	The end of the time span
 	The ``start`` and ``end`` paramater must be specified as a timestamp (number), Date or a parsable date string.
 path : string
 	The path where the events are stored. The path must alwyas begin with a slash ``/``. The ending slash is optional.
@@ -87,7 +87,7 @@ periodicity : string
 property : string
 	The property name whose values you want to visualize.
 start : timestamp
-	beginning of the time span.
+	The beginning of the time span.
 	The ``start`` and ``end`` paramater must be specified as a timestamp (number), Date or a parsable date string.
 
 -----------------------
@@ -409,6 +409,8 @@ ReportGrid.pivotTable
 
 ``ReportGrid.pivotTable(selector el, parameters object) void``
 
+A pivot table is a data summarization table. It can be created on any number of dimensions (axis) where the dimensions are grouped on columns or rows.
+
 **options:**
 
 click : function(object datapoint_, object stats_) void
@@ -446,6 +448,8 @@ ReportGrid.scatterGraph
 
 ``ReportGrid.scatterGraph(selector el, parameters object) void``
 
+A scatter graph is a visualization to display data for two variables in a data set (more variables can be addressed using size and colors). The data is displayed is displayed as a collection of points or symbols.
+
 **options:**
 
 symbol : string OR function(object datapoint_, object stats_) : string
@@ -469,6 +473,8 @@ ReportGrid.streamGraph
 ======================
 
 ``ReportGrid.streamGraph(selector el, parameters object) void``
+
+A Streamgraph layout emphasizes legibility of individual layers, arranging the layers in a distinctively organic form.
 
 **options:**
 
@@ -521,55 +527,100 @@ The following two declarations are basically equivalent:
 Complete Query Model
 -----------------------
 
-**options:**
+Visualizations cannot be built without data. The data can be the result of a query to the ReportGrid REST API or some values provided by the user. The Complete Query Model provides a way to customize every aspect of the data collections.
 
-name : string
-	xxx
-scale : function(array datapoint_) array datapoint_
-	xxx
-src : source options OR array source options
-	xxx
-transform : function(array datapoint_, ...) array datapoint_
-	xxx
+The following example renders the same chart as in the first example of this document but using the Complete Query Model instead of the `Simplified Query Model`_:
+
+::
+
+	ReportGrid.lineChart("#test", {
+	  axes : [{
+	    type : ".#time:hour"	
+	  }, {
+	    type : "count"
+	  }],
+	  data : {
+	    src : [{
+	      path : "/acme/",
+	      event : "impression",
+	      query : ".browser * .#time:hour"
+	    }]
+	  }
+	});
 
 Data
 ===============
 
-DATASOURCE
+**options:**
+
+name : string
+	An optional indetifier to be able to reference the dataset by name.
+scale : function(array datapoint_) array datapoint_
+	Takes the entire datapoint_ dataset and return a transformed version of it. This function is generally used to trim datapoints, to enhance them or to map/reduce to a different dataset.
+src : source options OR array source options
+	The `Data Source`_ where the data are collected from.
+transform : function(array datapoint_, ...) array datapoint_
+	A function to transform multiple sets of datapoints_ into a uniquer set of datapoints_.
+
+Data Source
+===============
+
+The ReportGrid Visualization API provides two kinds of data source, the ReportGrid Data and the Custom Data. The first is a way to access the data stored in the ReportGrid Analytic Database, the latter is a way to use custom (as in user produced or loaded) data.
+
+ReportGrid Data
+---------------
+
+When accessing the ReportGrid Analytics Database using the Visualization API, query can be performed on events and properties. The ``query`` parameter can be used to cross properties and obtain richer datasets. Usually a query is a cross operation on one or more properties:
+
+* ``.#time:hour`` :
+	Produces a set of datapoint with the count value of each event (as stated in the ``event`` parameter) and splitted by hour
+* ``.browser * .#time:hour`` : 
+	Similar to before but each datapoint produced contains also a field ``.browser`` whose value will be the browser type tracked in the database.
+* ``.ageRange * .gender * .#time:day`` A three dimensional cross product over age range, gender and time.
 
 **options:**
 
-data : array datapoints
-	xxx
 end : timestamp
-	xxx
+	The end of the time span
+	The ``start`` and ``end`` paramater must be specified as a timestamp (number), Date or a parsable date string.
 event : string
-	xxx
+	The name of the event as it has been tracked on the ReportGrid Analytics Database. 
 groupby : string
-	xxx
-groupfilter : string
-	(experimental)
-	xxx
-name : string
-	xxx
+	A valid periodicity string to be used to create a set of grouped values over time.
 path : string
-	xxx
+	The path where the events are located.
 query : string
-	xxx
+	A query string that performs some selection and filter over the event properties.
 start : timestamp
-	xxx
+	The beginning of the time span.
+	The ``start`` and ``end`` paramater must be specified as a timestamp (number), Date or a parsable date string.
 timezone : string
-	xxx
+	UTC shift expressed as a time span in hours (e.g.: +1.5 or -7.0) or as a timezone (e.g.: ``"America/Los_Angeles"``).
+
+Custom Data
+---------------
+
+Sometimes you need to cross the data from ReportGrid with external sources. The Custom Data data source should be used with that intent. 
+
+**options:**
+
+data : array datapoint OR string
+	The data can be an array of objects that will be treated as datapoints_ or a name referencing an already available dataset from a previous query; if a name identifier is used, it must match a ``name`` in a data_ section.	
 
 -----------------------
 Axes
 -----------------------
 
+Each visualization has one or more axes. The axes describe the dimensions over which the dataset are broken apart.
+At least one axis in the axes set must refer to a dependendent variable, a variable that is calculated from the othe variables. By default, if that axis is omitted a default one based on counts is automatically inferred (equivalent to ``{ axes : [{ type : "count"}] }``.
+
+Axes are vitally important to a visualization and they usually are mapped to some visual axes on the chart. For example a time axis on a line chart is usually mapped to its X axis. This kind of mapping is made automatically.
+
 **options:**
 
 groupby : string
-	valid periodicity
-	xxx
+	A valid periodicity string to be used to create a set of grouped values over time. To obtain 24 values for the hours of the day you will set the ``groupby`` to ``day`` and the periodicity to ``hour``. Note that if you are querying the ReportGrid Analytics Database you will need to use the same ``groupby`` and ``periodicity`` values in the query itself.
+	The ``periodicity`` in the axis is expressed as part of the type (e.g. ``{ type : '.#time:hour' }``).
 scalemode : string
 	A axis may or may not be mapped to a visible axis on the chart. Axis in that sense are used to distribute the values in the two dimensional space. This parameter controls where the ticks start and end.
 	 * ``"fit"`` :
@@ -641,19 +692,30 @@ examples:
 ReportGrid.date.parse
 =====================
 
-``ReportGrid.date.parse(date start, date end, string periodicity) array of timestamps``
+``ReportGrid.date.parse(string date) Date``
+
+Returns a date from a string value. The string can contain a ISO format date or an expression like "2 days ago", "today", "now", "yesterday" ...
 
 
 ReportGrid.date.range
 =====================
 
-``ReportGrid.date.range(date start, date end, string periodicity) array of timestamps``
+``ReportGrid.date.range(date start, date end, string periodicity) array``
+
+Creates an array of timestamp values for the specified ``periodicity`` from ``start`` to ``end``.
 
 ReportGrid.date.snap
 ====================
 
-``ReportGrid.date.snap(float timestampe, string periodicity) float``
+``ReportGrid.date.snap(float timestamp, string periodicity, ?int mode) float``
 
+For the specified periodicity, it snaps the timestamp to the closest value and returns it in timestamp format. The mode parameter states if the snap always happen on the value before (mode < 0), to the value after (mode > 0) or to the closest one (mode = 0, default value).
+
+example:
+::
+
+	console.log(ReportGrid.date.snap(new Date("2011-08-01 05:46:00"), "day"))
+	// outputs the timestamp for "2011-08-01 00:00:00"
 
 ReportGrid.dump
 ===============
@@ -679,6 +741,13 @@ ReportGrid.humanize
 
 ``ReportGrid.humanize(any value) string``
 
+It applies a set of transformation to a string to make it more readable. The transformations made are:
+* splits the text into several words according to upper-case letters (e.g. ``CallMe`` becomes ``Call Me``).
+* replaces all the underscores in the string with  white spaces
+* capitalize each separate word in the text
+* formats integer and float values
+* formats integer and float values in range like texts (e.g. ``income_1000-10000`` becomes ``Income 1.000-10.0000``)
+
 ReportGrid.info.viz.version
 ===========================
 
@@ -696,6 +765,8 @@ ReportGrid.math.random
 ======================
 
 ``ReportGrid.math.random() float``
+
+Returns a random float number between 0 and 1. Note that the random number generator is actually a *pseudo* random number generator. That means that if the generator is used twice in two different contexts (for example reloading the HTML/JS page) it will generate the same sequence of numbers.
 
 ReportGrid.symbol.get
 =====================
