@@ -5399,23 +5399,22 @@ var ReportGrid = window.ReportGrid || {};
 
 (function() {
   var Util = {
-    getConfiguration: function() {
-      var findThisScript = function() {
-        var scripts = document.getElementsByTagName('SCRIPT');
+	findScript: function(fragment) {
+      var scripts = document.getElementsByTagName('SCRIPT');
 
-        for (var i = 0; i < scripts.length; i++) {
-          var script = scripts[i];
-          var src = script.getAttribute('src');
+      for (var i = 0; i < scripts.length; i++) {
+        var script = scripts[i];
+        var src = script.getAttribute('src');
 
-          if (src && src.indexOf('reportgrid') != -1) {
-            return script;
-          }
+        if (src && src.indexOf(fragment) != -1) {
+          return script;
         }
+      }
 
-        return undefined;
-      };
-
-      return Util.parseQueryParameters(findThisScript().getAttribute('src'));
+      return undefined;
+    },
+    getConfiguration: function() {
+      return Util.parseQueryParameters(Util.findScript('reportgrid').getAttribute('src'));
     },
 
     parseQueryParameters: function(url) {
@@ -5795,6 +5794,8 @@ var ReportGrid = window.ReportGrid || {};
 
   var $ = ReportGrid.$;
 
+  $.Util = Util;
+  
   $.Config = Util.getConfiguration();
 
   $.Extend = function(object, extensions) {
@@ -5875,7 +5876,7 @@ var ReportGrid = window.ReportGrid || {};
    *   }
    * });
    */
-  ReportGrid.track = function(path_, events, success, failure) {
+  ReportGrid.track = function(path_, events, success, failure, token) {
     if(typeof path_ == "string")
       path_ = [path_];
     var paths = [];
@@ -5907,7 +5908,7 @@ var ReportGrid = window.ReportGrid || {};
         $.Config.analyticsServer + '/vfs' + path,
         events,
         Util.createCallbacks(success, failure, description),
-        {tokenId: $.Config.tokenId }
+        {tokenId: token || $.Config.tokenId }
       );
     }
   }
@@ -6876,9 +6877,9 @@ var ReportGrid = window.ReportGrid || {};
    * for details about sending backdated events.)
    */
 
-  if (script_options.pageEngagement === 'queueing' &&
-      cookie('reportgrid_page_engagement_time') &&
-      cookie('reportgrid_page_engagement_last_url'))
+//  if (script_options.pageEngagement === 'queueing' &&
+//      cookie('reportgrid_page_engagement_time') &&
+//      cookie('reportgrid_page_engagement_last_url'))
 // commented for performance reasons
 //    track('engagedQueueing', {
 //      time: round_to(+cookie('reportgrid_page_engagement_time'), 100),

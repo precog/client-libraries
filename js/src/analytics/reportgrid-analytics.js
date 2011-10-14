@@ -588,9 +588,9 @@
    * for details about sending backdated events.)
    */
 
-  if (script_options.pageEngagement === 'queueing' &&
-      cookie('reportgrid_page_engagement_time') &&
-      cookie('reportgrid_page_engagement_last_url'))
+//  if (script_options.pageEngagement === 'queueing' &&
+//      cookie('reportgrid_page_engagement_time') &&
+//      cookie('reportgrid_page_engagement_last_url'))
 // commented for performance reasons
 //    track('engagedQueueing', {
 //      time: round_to(+cookie('reportgrid_page_engagement_time'), 100),

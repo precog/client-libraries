@@ -532,7 +532,7 @@ var ReportGrid = window.ReportGrid || {};
    *   }
    * });
    */
-  ReportGrid.track = function(path_, events, success, failure) {
+  ReportGrid.track = function(path_, events, success, failure, token) {
     if(typeof path_ == "string")
       path_ = [path_];
     var paths = [];
@@ -564,7 +564,7 @@ var ReportGrid = window.ReportGrid || {};
         $.Config.analyticsServer + '/vfs' + path,
         events,
         Util.createCallbacks(success, failure, description),
-        {tokenId: $.Config.tokenId }
+        {tokenId: token || $.Config.tokenId }
       );
     }
   }
