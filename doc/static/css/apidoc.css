@@ -7,6 +7,18 @@
 @import url(html4css1.css);
 
 @import url(http://fonts.googleapis.com/css?family=Abel);
+
+    @font-face {
+        font-family: 'RexliaFree';
+        src: url('fonts/rexlia_free-webfont.eot');
+        src: url('fonts/rexlia_free-webfont.eot?#iefix') format('embedded-opentype'),
+             url('fonts/rexlia_free-webfont.woff') format('woff'),
+             url('fonts/rexlia_free-webfont.ttf') format('truetype'),
+             url('fonts/rexlia_free-webfont.svg#RexliaFree') format('svg');
+        font-weight: normal;
+        font-style: normal;
+    
+    }
  
 body {
 	background-color: #000;
@@ -18,26 +30,33 @@ margin:auto;
 }
 
 .docTitle {
+	
+	text-align:center;
 	font-family:'Abel',sans-serif;
 }
 
 .header {
-  text-align:center;
-  height: 421px;
-  background-image: url("images/header.png");
+	padding-left:100px;
+	background-repeat:no-repeat;
+	background-image: url("../images/rg_100x1024_header.png");
+  	height:100px;
 }
 
+
 .mainContent {
-padding-top:2em;
+min-height:600px;
  text-align:left;
  background-color:#1F2126;
+ padding: 0px 50px
  }
 
 .footer {
-	padding:1.875em;
-	height:210px;
+	padding:1em 100px;
+	color:#FFF;
+	min-height:100px;
 	text-align:center;
-  background-image: url("images/footer.png");
+	background-repeat:no-repeat;
+	background-image: url("../images/rg_100x1024_footer.png");
 }
 
 
@@ -51,6 +70,47 @@ padding-top:2em;
 	-moz-border-radius: 10px;
 	border-radius: 10px;
 	
+}
+
+.contentWhiteBG {
+	background-color:#FFF;
+	border-radius:0.25em;
+	-moz-border-radius:0.25em;
+	padding:2em;
+	min-height:600px;
+	}
+
+.demos li
+{	
+	height:20px;
+	width: 74px;
+	overflow:hidden;
+	padding-top:1em;
+	float:left;
+	text-align:center;
+	margin-right:2px;
+	-moz-border-radius-bottomright:.25em;
+	-moz-border-radius-bottomleft:.25em;
+	border-bottom-right-radius:.25em;
+	border-bottom-left-radius:.25em;
+}
+
+.demos li a
+{
+	
+	height: 20px;
+	padding: 2px 10px 0 10px;
+	vertical-align: center;
+	color: #999;
+	font-size: 90%;
+	font-weight:bold;
+
+
+}
+
+.demos li a:hover
+{
+	color:#09F;
 }
 
 a {
