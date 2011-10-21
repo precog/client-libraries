@@ -47,7 +47,7 @@ class Path:
     """Path constants"""
 
     class Analytics:
-        Root   = '/services/analytics/v0'
+        Root   = '/services/analytics/v1'
         Tokens = '/tokens'
         VFS    = '/vfs'
         Search = '/search'
