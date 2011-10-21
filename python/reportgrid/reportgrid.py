@@ -40,14 +40,14 @@ __url__          = 'https://github.com/reportgrid/client-libraries/'
 class API:
     """API server constants"""
 
-    Host = 'appserver01.reportgrid.com'
-    Port = 30020
+    Host = 'api.reportgrid.com'
+    Port = 80
 
 class Path:
     """Path constants"""
 
     class Analytics:
-        Root   = ''
+        Root   = '/services/analytics/v1'
         Tokens = '/tokens'
         VFS    = '/vfs'
         Search = '/search'
@@ -245,7 +245,7 @@ class ReportGrid(object):
                                                  value, periodicity)
         return self.analytics.get(self.__sanitize_path(path))
 
-    def search_count(self, path, where={}):
+    def search_count(self, path, where=[]):
         """Return a count by searching across a range of conditions"""
 
         return self.analytics.post(Path.Analytics.Search, body={
@@ -254,7 +254,7 @@ class ReportGrid(object):
             'where' : where
         })
 
-    def search_series(self, path, periodicity=Periodicity.Eternity, where={},
+    def search_series(self, path, periodicity=Periodicity.Eternity, where=[],
                       start=Time.Zero, end=Time.Eternity):
         """Return time series counts by searching across a range of conditions"""
 
