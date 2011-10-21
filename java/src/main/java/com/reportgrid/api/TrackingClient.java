@@ -55,6 +55,13 @@ public class TrackingClient {
 	 * @throws IOException 
 	 */
   public <T> void track(Path path, Event<T> event, boolean rollup, ToJson<? super T> serializer) throws IOException {
+    track(path, event.buildRequestBody(serializer), rollup);
+  }
+
+  /**
+   * Call the tracking API with a raw JSON string. 
+   */
+  public void track(Path path, String eventBody, boolean rollup) throws IOException {
     List<Path> paths = new ArrayList<Path>();
     paths.add(path);
 
@@ -72,14 +79,11 @@ public class TrackingClient {
       conn.setDoOutput(true);
       conn.setRequestMethod("POST");
       conn.setRequestProperty("Content-Type", "application/json");
-
-      String body = event.buildRequestBody(serializer);
-      
-      conn.setRequestProperty("Content-Length", "" + body.length());
+      conn.setRequestProperty("Content-Length", "" + eventBody.length());
 
       DataOutputStream out = new DataOutputStream(conn.getOutputStream());
       try {
-        out.writeBytes(body);
+        out.writeBytes(eventBody);
       } finally {
         out.flush();
         out.close();
@@ -88,7 +92,8 @@ public class TrackingClient {
       if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
         throw new IOException(
                 "Unexpected response from server: " + conn.getResponseCode() + ": " + conn.getResponseMessage() + 
-                "; tracking url " + trackingUrl); 
+                "; tracking url " + trackingUrl +
+                "; event body " + eventBody); 
       }
     }
   }

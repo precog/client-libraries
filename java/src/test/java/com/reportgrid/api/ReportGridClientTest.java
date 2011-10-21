@@ -9,6 +9,7 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.reportgrid.api.json.FromJson;
 import com.reportgrid.api.json.ToJson;
+import com.reportgrid.api.json.RawStringToJson;
 import com.reportgrid.api.json.gson.GsonFromJson;
 import com.reportgrid.api.json.gson.RawJson;
 import java.io.IOException;
@@ -72,6 +73,21 @@ public class ReportGridClientTest extends TestCase {
       RawJson testJson = new RawJson("{\"test\":[{\"v\": 1}, {\"v\": 2}]}");
 			Event<TestData> testEvent = new Event<TestData>(new Date(), "test", new TestData(42, "Hello World", testJson), 1);
 			testClient.track(new Path("/test"), testEvent, false, toJson);
+    }
+
+    public void testTrackingStrToJson() throws IOException {
+			ToJson<String> toJson = new RawStringToJson();
+			TrackingClient testClient = new TrackingClient(Local, TrackingClient.TEST_TOKEN);
+
+			Event<String> testEvent = new Event<String>(new Date(), "test", "{\"test\":[{\"v\": 1}, {\"v\": 2}]}", 1);
+			testClient.track(new Path("/test"), testEvent, false, toJson);
+    }
+
+    public void testTrackingRawString() throws IOException {
+			TrackingClient testClient = new TrackingClient(Local, TrackingClient.TEST_TOKEN);
+
+			String rawJson = "{\"test\":[{\"v\": 1}, {\"v\": 2}]}";
+			testClient.track(new Path("/test"), rawJson, false);
     }
 
     public void testRawJson() throws IOException {
