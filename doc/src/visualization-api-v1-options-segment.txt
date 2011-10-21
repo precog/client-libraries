@@ -7,8 +7,8 @@ Both the ``scale`` and ``transform`` parameters are optionals.
 **options:**
 
 on : string
-	Defines the property used to split the datapoints. A new set of datapoints is created for each disting value for the selected property.
+	Defines the property used to split the datapoints. A new set of datapoints is created for each distinct value for the selected property.
 scale : function(array datapoint_) array
 	The scale function is used to transform each segmented data set of datapoints_ in a new data set.
 transform : function(array datapoint_) array
-	The trasnform function works on the data orthogonally.
+	The transform function works on the data orthogonally.
