@@ -31,7 +31,7 @@ case class Server(analyticsRootUrl: String)
 
 object Server {
   val Production = Server(
-    analyticsRootUrl = "http://api.reportgrid.com/services/analytics/v0/"
+    analyticsRootUrl = "http://api.reportgrid.com/services/analytics/v1/"
   )
 
   val Local = Server(
