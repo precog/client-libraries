@@ -1,39 +1,26 @@
+<!DOCTYPE html>
 <html>
     <head>
-<title>ReportGrid Documentation</title>
+<title>ReportGrid.Visualization.Demos</title>
         <!--[if IE]>
         <link rel="stylesheet" type="text/css" href="ie.css" />
         <![endif]-->
 
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.8.1: http://docutils.sourceforge.net/" />
-<title>The ReportGrid JS Visualization API</title>
 		<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/>		
 		<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.3.0/build/cssfonts/fonts-min.css"/>
-		<link rel="stylesheet" type="text/css" href="apidoc.css"/>
-		
-		<script type="text/javascript" src="http://include.reinvigorate.net/re_.js"></script>
-		<script type="text/javascript">
-		try {
-		reinvigorate.track("j780b-u1448cw0d9");
-		} catch(err) {}
-		</script>
+		<link rel="stylesheet" type="text/css" href="css/apidoc.css"/>
 
-    </head>
-    
+</head>
  <body>
       <div class="wrapper">
         <div class="header">
-            <div>
-                <img src="images/logo.png" style="padding-top:127px">
-				
+				 <img src="images/rg_27x200_logo.png" style="padding-top:26px">
 				<div class="docTitle"><h1 class="title">The ReportGrid JS Visualization API</h1></div>
-            </div>    
            </div>
-        <div class="mainContent">
-    		<div class="documentation">
-				<div class="docMenu"></div>
-				<div class="docBody"><div class="contents topic" id="contents">
+        		<div class="mainContent">
+					    <div class="contentWhiteBG">
+						<div class="docMenu"></div>
+						<div class="docBody"><div class="contents topic" id="contents">
 <p class="topic-title first">Contents</p>
 <ul class="simple">
 <li><a class="reference internal" href="#overview" id="id18">Overview</a></li>
@@ -52,21 +39,24 @@
 <li><a class="reference internal" href="#reportgrid-viz" id="id31">ReportGrid.viz</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#complete-query-model" id="id32">Complete Query Model</a></li>
-<li><a class="reference internal" href="#axes" id="id33">Axes</a></li>
-<li><a class="reference internal" href="#data" id="id34">Data</a></li>
-<li><a class="reference internal" href="#datapoint" id="id35">DataPoint</a></li>
-<li><a class="reference internal" href="#stats" id="id36">Stats</a></li>
-<li><a class="reference internal" href="#reportgrid-extra-fields" id="id37">ReportGrid Extra Fields</a><ul>
-<li><a class="reference internal" href="#reportgrid-compare" id="id38">ReportGrid.compare</a></li>
-<li><a class="reference internal" href="#reportgrid-date-parse" id="id39">ReportGrid.date.parse</a></li>
-<li><a class="reference internal" href="#reportgrid-date-range" id="id40">ReportGrid.date.range</a></li>
-<li><a class="reference internal" href="#reportgrid-date-snap" id="id41">ReportGrid.date.snap</a></li>
-<li><a class="reference internal" href="#reportgrid-dump" id="id42">ReportGrid.dump</a></li>
-<li><a class="reference internal" href="#reportgrid-humanize" id="id43">ReportGrid.humanize</a></li>
-<li><a class="reference internal" href="#reportgrid-info-viz-version" id="id44">ReportGrid.info.viz.version</a></li>
-<li><a class="reference internal" href="#reportgrid-math-random" id="id45">ReportGrid.math.random</a></li>
-<li><a class="reference internal" href="#reportgrid-symbol-get" id="id46">ReportGrid.symbol.get</a></li>
+<li><a class="reference internal" href="#complete-query-model" id="id32">Complete Query Model</a><ul>
+<li><a class="reference internal" href="#data" id="id33">Data</a></li>
+<li><a class="reference internal" href="#data-source" id="id34">Data Source</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#axes" id="id35">Axes</a></li>
+<li><a class="reference internal" href="#datapoint" id="id36">DataPoint</a></li>
+<li><a class="reference internal" href="#stats" id="id37">Stats</a></li>
+<li><a class="reference internal" href="#reportgrid-extra-fields" id="id38">ReportGrid Extra Fields</a><ul>
+<li><a class="reference internal" href="#reportgrid-compare" id="id39">ReportGrid.compare</a></li>
+<li><a class="reference internal" href="#reportgrid-date-parse" id="id40">ReportGrid.date.parse</a></li>
+<li><a class="reference internal" href="#reportgrid-date-range" id="id41">ReportGrid.date.range</a></li>
+<li><a class="reference internal" href="#reportgrid-date-snap" id="id42">ReportGrid.date.snap</a></li>
+<li><a class="reference internal" href="#reportgrid-dump" id="id43">ReportGrid.dump</a></li>
+<li><a class="reference internal" href="#reportgrid-humanize" id="id44">ReportGrid.humanize</a></li>
+<li><a class="reference internal" href="#reportgrid-info-viz-version" id="id45">ReportGrid.info.viz.version</a></li>
+<li><a class="reference internal" href="#reportgrid-math-random" id="id46">ReportGrid.math.random</a></li>
+<li><a class="reference internal" href="#reportgrid-symbol-get" id="id47">ReportGrid.symbol.get</a></li>
 </ul>
 </li>
 </ul>
@@ -127,7 +117,7 @@ You can have one of the following combinations of parameters:</p>
 <dt>events <span class="classifier-delimiter">:</span> <span class="classifier">string OR array string</span></dt>
 <dd>One or more (array of values) event names.</dd>
 <dt>end <span class="classifier-delimiter">:</span> <span class="classifier">timestamp</span></dt>
-<dd>end of the time span
+<dd>The end of the time span
 The <tt class="docutils literal">start</tt> and <tt class="docutils literal">end</tt> paramater must be specified as a timestamp (number), Date or a parsable date string.</dd>
 <dt>path <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
 <dd>The path where the events are stored. The path must alwyas begin with a slash <tt class="docutils literal">/</tt>. The ending slash is optional.
@@ -140,7 +130,7 @@ Note that if you pick a small granularity with an extended time span you can get
 <dt>property <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
 <dd>The property name whose values you want to visualize.</dd>
 <dt>start <span class="classifier-delimiter">:</span> <span class="classifier">timestamp</span></dt>
-<dd>beginning of the time span.
+<dd>The beginning of the time span.
 The <tt class="docutils literal">start</tt> and <tt class="docutils literal">end</tt> paramater must be specified as a timestamp (number), Date or a parsable date string.</dd>
 </dl>
 </div>
@@ -950,6 +940,7 @@ The available options are: <tt class="docutils literal">bottom</tt>, <tt class="
 <div class="section" id="reportgrid-pivottable">
 <h2><a class="toc-backref" href="#id28">ReportGrid.pivotTable</a></h2>
 <p><tt class="docutils literal">ReportGrid.pivotTable(selector el, parameters object) void</tt></p>
+<p>A pivot table is a data summarization table. It can be created on any number of dimensions (axis) where the dimensions are grouped on columns or rows.</p>
 <p><strong>options:</strong></p>
 <dl class="docutils">
 <dt>click <span class="classifier-delimiter">:</span> <span class="classifier">function(object <a class="reference internal" href="#datapoint">datapoint</a>, object <a class="reference internal" href="#stats">stats</a>) void</span></dt>
@@ -1000,6 +991,7 @@ Different visualizations have different options over to display or not some of t
 <div class="section" id="reportgrid-scattergraph">
 <h2><a class="toc-backref" href="#id29">ReportGrid.scatterGraph</a></h2>
 <p><tt class="docutils literal">ReportGrid.scatterGraph(selector el, parameters object) void</tt></p>
+<p>A scatter graph is a visualization to display data for two variables in a data set (more variables can be addressed using size and colors). The data is displayed is displayed as a collection of points or symbols.</p>
 <p><strong>options:</strong></p>
 <dl class="docutils">
 <dt>symbol <span class="classifier-delimiter">:</span> <span class="classifier">string OR function(object <a class="reference internal" href="#datapoint">datapoint</a>, object <a class="reference internal" href="#stats">stats</a>)</span> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
@@ -1116,6 +1108,7 @@ Different visualizations have different options over to display or not some of t
 <div class="section" id="reportgrid-streamgraph">
 <h2><a class="toc-backref" href="#id30">ReportGrid.streamGraph</a></h2>
 <p><tt class="docutils literal">ReportGrid.streamGraph(selector el, parameters object) void</tt></p>
+<p>A Streamgraph layout emphasizes legibility of individual layers, arranging the layers in a distinctively organic form.</p>
 <p><strong>options:</strong></p>
 <dl class="docutils">
 <dt>effect <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
@@ -1280,78 +1273,170 @@ ReportGrid.viz(&quot;#chart&quot;, { ...}, &quot;linechart&quot;);
 </div>
 <div class="section" id="complete-query-model">
 <span id="complete-query-system"></span><h1><a class="toc-backref" href="#id32">Complete Query Model</a></h1>
+<p>Visualizations cannot be built without data. The data can be the result of a query to the ReportGrid REST API or some values provided by the user. The Complete Query Model provides a way to customize every aspect of the data collections.</p>
+<p>The following example renders the same chart as in the first example of this document but using the Complete Query Model instead of the <a class="reference internal" href="#simplified-query-model">Simplified Query Model</a>:</p>
+<pre class="literal-block">
+ReportGrid.lineChart(&quot;#test&quot;, {
+  axes : [{
+    type : &quot;.#time:hour&quot;
+  }, {
+    type : &quot;count&quot;
+  }],
+  data : {
+    src : [{
+      path : &quot;/acme/&quot;,
+      event : &quot;impression&quot;,
+      query : &quot;.browser * .#time:hour&quot;
+    }]
+  }
+});
+</pre>
+<div class="section" id="data">
+<h2><a class="toc-backref" href="#id33">Data</a></h2>
 <p><strong>options:</strong></p>
 <dl class="docutils">
 <dt>name <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
-<dd>xxx</dd>
+<dd>An optional indetifier to be able to reference the dataset by name.</dd>
 <dt>scale <span class="classifier-delimiter">:</span> <span class="classifier">function(array <a class="reference internal" href="#datapoint">datapoint</a>) array <a class="reference internal" href="#datapoint">datapoint</a></span></dt>
-<dd>xxx</dd>
+<dd>Takes the entire <a class="reference internal" href="#datapoint">datapoint</a> dataset and return a transformed version of it. This function is generally used to trim datapoints, to enhance them or to map/reduce to a different dataset.</dd>
 <dt>src <span class="classifier-delimiter">:</span> <span class="classifier">source options OR array source options</span></dt>
-<dd>xxx</dd>
+<dd>The <a class="reference internal" href="#data-source">Data Source</a> where the data are collected from.</dd>
 <dt>transform <span class="classifier-delimiter">:</span> <span class="classifier">function(array <a class="reference internal" href="#datapoint">datapoint</a>, ...) array <a class="reference internal" href="#datapoint">datapoint</a></span></dt>
-<dd>xxx</dd>
+<dd>A function to transform multiple sets of <a class="reference internal" href="#datapoints">datapoints</a> into a uniquer set of <a class="reference internal" href="#datapoints">datapoints</a>.</dd>
 </dl>
+</div>
+<div class="section" id="data-source">
+<h2><a class="toc-backref" href="#id34">Data Source</a></h2>
+<p>The ReportGrid Visualization API provides two kinds of data source, the ReportGrid Data and the Custom Data. The first is a way to access the data stored in the ReportGrid Analytic Database, the latter is a way to use custom (as in user produced or loaded) data.</p>
+<div class="section" id="reportgrid-data">
+<h3>ReportGrid Data</h3>
+<p>When accessing the ReportGrid Analytics Database using the Visualization API, query can be performed on events and properties. The <tt class="docutils literal">query</tt> parameter can be used to cross properties and obtain richer datasets. Usually a query is a cross operation on one or more properties:</p>
+<ul>
+<li><dl class="first docutils">
+<dt><tt class="docutils literal">.#time:hour</tt> :</dt>
+<dd><p class="first last">Produces a set of datapoint with the count value of each event (as stated in the <tt class="docutils literal">event</tt> parameter) and splitted by hour</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><tt class="docutils literal">.browser * .#time:hour</tt> :</dt>
+<dd><p class="first last">Similar to before but each datapoint produced contains also a field <tt class="docutils literal">.browser</tt> whose value will be the browser type tracked in the database.</p>
+</dd>
+</dl>
+</li>
+<li><p class="first"><tt class="docutils literal">.ageRange * .gender * .#time:day</tt> A three dimensional cross product over age range, gender and time.</p>
+</li>
+</ul>
+<p><strong>options:</strong></p>
+<dl class="docutils">
+<dt>end <span class="classifier-delimiter">:</span> <span class="classifier">timestamp</span></dt>
+<dd>The end of the time span
+The <tt class="docutils literal">start</tt> and <tt class="docutils literal">end</tt> paramater must be specified as a timestamp (number), Date or a parsable date string.</dd>
+<dt>event <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>The name of the event as it has been tracked on the ReportGrid Analytics Database.</dd>
+<dt>groupby <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>A valid periodicity string to be used to create a set of grouped values over time.</dd>
+<dt>path <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>The path where the events are located.</dd>
+<dt>query <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>A query string that performs some selection and filter over the event properties.</dd>
+<dt>start <span class="classifier-delimiter">:</span> <span class="classifier">timestamp</span></dt>
+<dd>The beginning of the time span.
+The <tt class="docutils literal">start</tt> and <tt class="docutils literal">end</tt> paramater must be specified as a timestamp (number), Date or a parsable date string.</dd>
+<dt>timezone <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd>UTC shift expressed as a time span in hours (e.g.: +1.5 or -7.0) or as a timezone (e.g.: <tt class="docutils literal">&quot;America/Los_Angeles&quot;</tt>).</dd>
+</dl>
+</div>
+<div class="section" id="custom-data">
+<h3>Custom Data</h3>
+<p>Sometimes you need to cross the data from ReportGrid with external sources. The Custom Data data source should be used with that intent.</p>
+<p><strong>options:</strong></p>
+<dl class="docutils">
+<dt>data <span class="classifier-delimiter">:</span> <span class="classifier">array datapoint OR string</span></dt>
+<dd>The data can be an array of objects that will be treated as <a class="reference internal" href="#datapoints">datapoints</a> or a name referencing an already available dataset from a previous query; if a name identifier is used, it must match a <tt class="docutils literal">name</tt> in a <a class="reference internal" href="#data">data</a> section.</dd>
+</dl>
+</div>
+</div>
 </div>
 <div class="section" id="axes">
-<h1><a class="toc-backref" href="#id33">Axes</a></h1>
+<h1><a class="toc-backref" href="#id35">Axes</a></h1>
+<p>Each visualization has one or more axes. The axes describe the dimensions over which the dataset are broken apart.
+At least one axis in the axes set must refer to a dependendent variable, a variable that is calculated from the othe variables. By default, if that axis is omitted a default one based on counts is automatically inferred (equivalent to <tt class="docutils literal">{ axes : [{ type : <span class="pre">&quot;count&quot;}]</span> }</tt>.</p>
+<p>Axes are vitally important to a visualization and they usually are mapped to some visual axes on the chart. For example a time axis on a line chart is usually mapped to its X axis. This kind of mapping is made automatically.</p>
 <p><strong>options:</strong></p>
 <dl class="docutils">
 <dt>groupby <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
-<dd>valid periodicity
-xxx</dd>
+<dd>A valid periodicity string to be used to create a set of grouped values over time. To obtain 24 values for the hours of the day you will set the <tt class="docutils literal">groupby</tt> to <tt class="docutils literal">day</tt> and the periodicity to <tt class="docutils literal">hour</tt>. Note that if you are querying the ReportGrid Analytics Database you will need to use the same <tt class="docutils literal">groupby</tt> and <tt class="docutils literal">periodicity</tt> values in the query itself.
+The <tt class="docutils literal">periodicity</tt> in the axis is expressed as part of the type (e.g. <tt class="docutils literal">{ type : <span class="pre">'.#time:hour'</span> }</tt>).</dd>
 <dt>scalemode <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
-<dd>&quot;fit&quot;, &quot;fill&quot;, &quot;before&quot;, &quot;after&quot;
-xxx</dd>
+<dd><dl class="first last docutils">
+<dt>A axis may or may not be mapped to a visible axis on the chart. Axis in that sense are used to distribute the values in the two dimensional space. This parameter controls where the ticks start and end.</dt>
+<dd><ul class="first last">
+<li><dl class="first docutils">
+<dt><tt class="docutils literal">&quot;fit&quot;</tt> :</dt>
+<dd><p class="first last">The first and last tickmarks in the scale are set to leave a space before and after. This is particularly useful for bar charts that need some mmargin before and after the centers of the bars.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><tt class="docutils literal">&quot;fill&quot;</tt> :</dt>
+<dd><p class="first last">The fill mode puts the first value at the very beginning of the available space and the last one at the other edge. It is handy for line charts and other visualization that need to fill the available space from side to side.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><tt class="docutils literal">&quot;before&quot;</tt> :</dt>
+<dd><p class="first last">The available space is divided equally into <tt class="docutils literal">n</tt> segments where <tt class="docutils literal">n</tt> is equal to the number of values in the scale and starting at the beginning of the available space.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><tt class="docutils literal">&quot;after&quot;</tt> :</dt>
+<dd><p class="first last">Same as for before but the scale values are stacked on the opposite side.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
 <dt>type <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
-<dd>xxx</dd>
+<dd>The name of the property that should match the axis in the datapoint. For example, a valid value for a time axis is &quot;.#time:hour&quot;; if the axis maps to the numbers of events occurred ad a certain time, the property will simply be &quot;count&quot;. Properties that are part of the tracked event are prefixed with a dot &quot;.&quot;, like in &quot;.browser&quot;. Special properties like &quot;.#time:day&quot; or &quot;#location&quot; are prefixed with a hash &quot;#&quot; character and may contain a column symbol followed by a special parameter.</dd>
 <dt>values <span class="classifier-delimiter">:</span> <span class="classifier">array any</span></dt>
-<dd>xxx</dd>
+<dd>Passing values only make sense if the axis is of type ordinal like &quot;male&quot; and &quot;female&quot; or &quot;firefox&quot;, &quot;ie&quot;, &quot;chrome&quot; ... Values for numeric axis and time axis are always automatically generated. When the values for an ordinal axis are not explicitly declared they are derived from the values in the set of <a class="reference internal" href="#datapoints">datapoints</a>. Declaring the values can be important to fix a specific order to the axis values and to be sure that every values has been taken into consideration even if the current resultset doesn't contain <a class="reference internal" href="#datapoints">datapoints</a> for that value.</dd>
 <dt>variable <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
 <dd>&quot;independent&quot;, &quot;dependent&quot;
-xxx</dd>
+This parameter is only required when the data is not generated using a query to ReportGrid.</dd>
 <dt>view <span class="classifier-delimiter">:</span> <span class="classifier">array any</span></dt>
-<dd>xxx</dd>
-</dl>
-</div>
-<div class="section" id="data">
-<h1><a class="toc-backref" href="#id34">Data</a></h1>
-<p>DATASOURCE</p>
-<p><strong>options:</strong></p>
-<dl class="docutils">
-<dt>data <span class="classifier-delimiter">:</span> <span class="classifier">array datapoints</span></dt>
-<dd>xxx</dd>
-<dt>end <span class="classifier-delimiter">:</span> <span class="classifier">timestamp</span></dt>
-<dd>xxx</dd>
-<dt>event <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
-<dd>xxx</dd>
-<dt>groupby <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
-<dd>xxx</dd>
-<dt>groupfilter <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
-<dd>(experimental)
-xxx</dd>
-<dt>name <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
-<dd>xxx</dd>
-<dt>path <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
-<dd>xxx</dd>
-<dt>query <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
-<dd>xxx</dd>
-<dt>start <span class="classifier-delimiter">:</span> <span class="classifier">timestamp</span></dt>
-<dd>xxx</dd>
-<dt>timezone <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
-<dd>xxx</dd>
+<dd>The view parameter is used to set the min and max of the axis scale. If passed the array must contain exactly two values that are acceptable values for the current axis and must be ordered correctly (the lower value first).</dd>
 </dl>
 </div>
 <div class="section" id="datapoint">
-<span id="datapoints"></span><h1><a class="toc-backref" href="#id35">DataPoint</a></h1>
+<span id="datapoints"></span><h1><a class="toc-backref" href="#id36">DataPoint</a></h1>
+<p>A datapoint is a single piece of information packed ad an anonymous object. The object can contain just one field or more conform the query that generated it. For time series queries you will have one field containing the time information in the format: <tt class="docutils literal">{ <span class="pre">&quot;.#time:hour&quot;</span> : 1318001732325, ... }</tt>
+A query on count will always have the property <tt class="docutils literal">&quot;count&quot;</tt>. A query over a property will add the value for that property for each datapoint. So, if you are querying <tt class="docutils literal">.impression.browser</tt> the datapoint can be something like this: { count : 777, &quot;.broswer&quot; : &quot;chrome&quot;, .#time:minute&quot; : 1318001732325 } that basically means that at that minute in time time, the aggregated count over the property <tt class="docutils literal">.browser</tt> with the value <tt class="docutils literal">chrome</tt> was 777.</p>
 </div>
 <div class="section" id="stats">
-<h1><a class="toc-backref" href="#id36">Stats</a></h1>
+<h1><a class="toc-backref" href="#id37">Stats</a></h1>
+<p>The stats object contains information about a dataset. The stats are always relative to a certain axis.</p>
+<dl class="docutils">
+<dt>min :</dt>
+<dd>The smallest value in the data set.</dd>
+<dt>max :</dt>
+<dd>The biggest value in the data set.</dd>
+<dt>tot <span class="classifier-delimiter">:</span> <span class="classifier">(only for numeric values)</span></dt>
+<dd>The summatory of all the values in the dataset.</dd>
+<dt>count :</dt>
+<dd>The number of values in the data set.</dd>
+<dt>values :</dt>
+<dd>The unordered set of distinct values in the dataset.</dd>
+</dl>
 </div>
 <div class="section" id="reportgrid-extra-fields">
-<h1><a class="toc-backref" href="#id37">ReportGrid Extra Fields</a></h1>
+<h1><a class="toc-backref" href="#id38">ReportGrid Extra Fields</a></h1>
 <p>The reportgrid-viz.js file adds a lot of fields to the ReportGrid object; most of them are related to visualizations but some are generic utility functions and variables.</p>
 <div class="section" id="reportgrid-compare">
-<h2><a class="toc-backref" href="#id38">ReportGrid.compare</a></h2>
+<h2><a class="toc-backref" href="#id39">ReportGrid.compare</a></h2>
 <p><tt class="docutils literal">ReportGrid.compare(any a, any b) string</tt></p>
 <p>It takes two argument and returns an integer as the result of their comparison.</p>
 <p>examples:</p>
@@ -1363,19 +1448,27 @@ console.log(ReportGrid.compare(1, 2));
 </pre>
 </div>
 <div class="section" id="reportgrid-date-parse">
-<h2><a class="toc-backref" href="#id39">ReportGrid.date.parse</a></h2>
-<p><tt class="docutils literal">ReportGrid.date.parse(date start, date end, string periodicity) array of timestamps</tt></p>
+<h2><a class="toc-backref" href="#id40">ReportGrid.date.parse</a></h2>
+<p><tt class="docutils literal">ReportGrid.date.parse(string date) Date</tt></p>
+<p>Returns a date from a string value. The string can contain a ISO format date or an expression like &quot;2 days ago&quot;, &quot;today&quot;, &quot;now&quot;, &quot;yesterday&quot; ...</p>
 </div>
 <div class="section" id="reportgrid-date-range">
-<h2><a class="toc-backref" href="#id40">ReportGrid.date.range</a></h2>
-<p><tt class="docutils literal">ReportGrid.date.range(date start, date end, string periodicity) array of timestamps</tt></p>
+<h2><a class="toc-backref" href="#id41">ReportGrid.date.range</a></h2>
+<p><tt class="docutils literal">ReportGrid.date.range(date start, date end, string periodicity) array</tt></p>
+<p>Creates an array of timestamp values for the specified <tt class="docutils literal">periodicity</tt> from <tt class="docutils literal">start</tt> to <tt class="docutils literal">end</tt>.</p>
 </div>
 <div class="section" id="reportgrid-date-snap">
-<h2><a class="toc-backref" href="#id41">ReportGrid.date.snap</a></h2>
-<p><tt class="docutils literal">ReportGrid.date.snap(float timestampe, string periodicity) float</tt></p>
+<h2><a class="toc-backref" href="#id42">ReportGrid.date.snap</a></h2>
+<p><tt class="docutils literal">ReportGrid.date.snap(float timestamp, string periodicity, <span class="pre">?int</span> mode) float</tt></p>
+<p>For the specified periodicity, it snaps the timestamp to the closest value and returns it in timestamp format. The mode parameter states if the snap always happen on the value before (mode &lt; 0), to the value after (mode &gt; 0) or to the closest one (mode = 0, default value).</p>
+<p>example:</p>
+<pre class="literal-block">
+console.log(ReportGrid.date.snap(new Date(&quot;2011-08-01 05:46:00&quot;), &quot;day&quot;))
+// outputs the timestamp for &quot;2011-08-01 00:00:00&quot;
+</pre>
 </div>
 <div class="section" id="reportgrid-dump">
-<h2><a class="toc-backref" href="#id42">ReportGrid.dump</a></h2>
+<h2><a class="toc-backref" href="#id43">ReportGrid.dump</a></h2>
 <p><tt class="docutils literal">ReportGrid.dump(any value) string</tt></p>
 <p>It takes one argument of any type and returns a string out of it. It is very convenient to serialize and object in a readable string.</p>
 <p>examples:</p>
@@ -1391,11 +1484,17 @@ console.log(ReportGrid.dump([1,2,3]));
 </pre>
 </div>
 <div class="section" id="reportgrid-humanize">
-<h2><a class="toc-backref" href="#id43">ReportGrid.humanize</a></h2>
+<h2><a class="toc-backref" href="#id44">ReportGrid.humanize</a></h2>
 <p><tt class="docutils literal">ReportGrid.humanize(any value) string</tt></p>
+<p>It applies a set of transformation to a string to make it more readable. The transformations made are:
+* splits the text into several words according to upper-case letters (e.g. <tt class="docutils literal">CallMe</tt> becomes <tt class="docutils literal">Call Me</tt>).
+* replaces all the underscores in the string with  white spaces
+* capitalize each separate word in the text
+* formats integer and float values
+* formats integer and float values in range like texts (e.g. <tt class="docutils literal"><span class="pre">income_1000-10000</span></tt> becomes <tt class="docutils literal">Income <span class="pre">1.000-10.0000</span></tt>)</p>
 </div>
 <div class="section" id="reportgrid-info-viz-version">
-<h2><a class="toc-backref" href="#id44">ReportGrid.info.viz.version</a></h2>
+<h2><a class="toc-backref" href="#id45">ReportGrid.info.viz.version</a></h2>
 <p><tt class="docutils literal">ReportGrid.info.viz.version string</tt></p>
 <p>Contains the version of the reportgrid-viz.js in use.</p>
 <p>examples:</p>
@@ -1405,11 +1504,12 @@ console.log(ReportGrid.info.viz.version);
 </pre>
 </div>
 <div class="section" id="reportgrid-math-random">
-<h2><a class="toc-backref" href="#id45">ReportGrid.math.random</a></h2>
+<h2><a class="toc-backref" href="#id46">ReportGrid.math.random</a></h2>
 <p><tt class="docutils literal">ReportGrid.math.random() float</tt></p>
+<p>Returns a random float number between 0 and 1. Note that the random number generator is actually a <em>pseudo</em> random number generator. That means that if the generator is used twice in two different contexts (for example reloading the HTML/JS page) it will generate the same sequence of numbers.</p>
 </div>
 <div class="section" id="reportgrid-symbol-get">
-<h2><a class="toc-backref" href="#id46">ReportGrid.symbol.get</a></h2>
+<h2><a class="toc-backref" href="#id47">ReportGrid.symbol.get</a></h2>
 <p><tt class="docutils literal">ReportGrid.symbol.get(string type, optional int size) string</tt></p>
 <p>It takes the type of symbol and its size (area in pixel) and returns its SVG Path representation.
 The symbols you can draw are: &quot;triangleDown&quot;, &quot;triangleUp&quot;, &quot;square&quot;, &quot;diamond&quot;, &quot;cross&quot;, &quot;circle&quot;, &quot;arrowUp&quot;, &quot;arrowDown&quot;, &quot;arrowDownWide&quot;, &quot;arrowRight&quot;, &quot;arrowLeft&quot;, &quot;star&quot;.
@@ -1421,14 +1521,17 @@ console.log(ReportGrid.symbol(&quot;star&quot;));
 </pre>
 </div>
 </div></div>
-			</div>
-        </div>
-        <div class="footer">
-                   <div style="font-family: RexliaFree; width:330px; float:left; text-align:left">888.673.9958</div>
-                    <div style="font-family: RexliaFree; width:330px; float:left "><a href="mailto:contact@reportgrid.com">contact us</a> </div>
-                    <div style="font-family: Abel; width:330px; float:right; text-align:right"><a href="http://www.reportgrid.com">Home</a></div>
-         </div>
+						</div>
+				</div>
 
+        <div class="footer">
+                    <div style="float:right; font-family: RexliaFree;font-size:12px;"><a href="mailto:contact@reportgrid.com"><span style="color:#FFF">contact us</span></a></div>
+                    <div style="float:left; font-family: RexliaFree;font-size:12px;color:#FFF;">888.673.9958</div>
+                    <div style="text-align:center; font-family: AbelRegular;font-size:12px;color:#FFF;"><a href="http://www.reportgrid.com">Home</a></div>
+
+                
+               
+</div>
       </div>
 
     </body>

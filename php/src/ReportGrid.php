@@ -8,7 +8,7 @@
  * PUT LICENSE HERE
  */
 
-define ("API_VERSION", "v0");
+define ("API_VERSION", "v1");
 define ("MAX_TIME", "9223372036854775807");
 define ("BASE_URL", "http://api.reportgrid.com/services/analytics/");
 
