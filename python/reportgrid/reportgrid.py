@@ -40,14 +40,14 @@ __url__          = 'https://github.com/reportgrid/client-libraries/'
 class API:
     """API server constants"""
 
-    Host = 'api.reportgrid.com'
-    Port = 80
+    Host = 'appserver01.reportgrid.com'
+    Port = 30020
 
 class Path:
     """Path constants"""
 
     class Analytics:
-        Root   = '/services/analytics/v1'
+        Root   = ''
         Tokens = '/tokens'
         VFS    = '/vfs'
         Search = '/search'
@@ -122,8 +122,8 @@ class HttpClient(object):
 
             # Check HTTP status code
             if response.status != 200:
-                message += " returned non-200 status (%d): %s" % \
-                           (response.status, response_data)
+                message += " returned non-200 status (%d): %s [%s]" % \
+                           (response.status, response.reason, response_data)
                 raise HttpResponseError(message)
 
             # Try parsing JSON response
@@ -227,21 +227,21 @@ class ReportGrid(object):
         """Return all values of the specified property"""
 
         property = self.__sanitize_property(property)
-        path = '%s/%s/%s/values/' % (Path.Analytics.VFS, path, property)
+        path = '%s/%s/%s/values' % (Path.Analytics.VFS, path.lstrip('/ '), property)
         return self.analytics.get(self.__sanitize_path(path))
 
     def property_value_count(self, path, property, value):
         """Return count of the specified value for the specified property"""
 
         property = self.__sanitize_property(property)
-        path = '%s/%s/%s/values/%s/count' % (Path.Analytics.VFS, path, property, value)
+        path = '%s/%s/%s/values/%s/count' % (Path.Analytics.VFS, path.lstrip('/ '), property, value)
         return self.analytics.get(self.__sanitize_path(path))
 
     def property_value_series(self, path, property, value, periodicity=Periodicity.Eternity):
         """Return time series counts for the specified value for the specified property"""
 
         property = self.__sanitize_property(property)
-        path = '%s/%s/%s/values/%s/series/%s' % (Path.Analytics.VFS, path, property,
+        path = '%s/%s/%s/values/%s/series/%s' % (Path.Analytics.VFS, path.lstrip('/ '), property,
                                                  value, periodicity)
         return self.analytics.get(self.__sanitize_path(path))
 

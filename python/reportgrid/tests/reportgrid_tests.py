@@ -31,9 +31,7 @@ def test_track():
     api.track(
         path='/',
         name='test',
-        properties={
-            'test': 123
-        },
+        properties={'test': 123},
         rollup=True)
 
 def test_children():
@@ -69,7 +67,7 @@ def test_property_count():
 def test_property_series():
     api = reportgrid.ReportGrid(TEST_TOKEN_ID)
     response = api.property_series(path='/', property='test')
-    assert type(response) is dict
+    assert type(response) is list
     #assert reportgrid.Periodicity.Eternity in response
     #assert type(response[reportgrid.Periodicity.Eternity]) is list
     #assert len(response[reportgrid.Periodicity.Eternity]) > 0
@@ -89,22 +87,22 @@ def test_property_value_count():
 def test_property_value_series():
     api = reportgrid.ReportGrid(TEST_TOKEN_ID)
     response = api.property_value_series(path='/', property='test.test', value=123)
-    assert type(response) is dict
+    assert type(response) is list
     #assert reportgrid.Periodicity.Eternity in response
     #assert type(response[reportgrid.Periodicity.Eternity]) is list
     #assert len(response[reportgrid.Periodicity.Eternity]) > 0
 
 def test_search_count():
     api = reportgrid.ReportGrid(TEST_TOKEN_ID)
-    response = api.search_count(path='/', where={"test.test":123})
+    response = api.search_count(path='/', where=[{"variable":"test.test", "value":123}])
     assert type(response) is int
     #assert response > 0
 
 def test_search_series():
     api = reportgrid.ReportGrid(TEST_TOKEN_ID)
-    response = api.search_series(path='/', where={"test.test":123})
-    assert type(response) is dict
-    assert reportgrid.Periodicity.Eternity in response
+    response = api.search_series(path='/', where=[{"variable":"test.test", "value":123}])
+    assert type(response) is list
+    #assert reportgrid.Periodicity.Eternity in response
     #assert type(response[reportgrid.Periodicity.Eternity]) is list
     #assert len(response[reportgrid.Periodicity.Eternity]) > 0
 
