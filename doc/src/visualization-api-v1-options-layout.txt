@@ -1,10 +1,10 @@
 ``height`` : float
 	Height of the visualization. If not specified it is assumed from the HTML container.
 ``layout`` : string
-	This option is automatically set to the most convenient value based on the selected visualization. This field should be set only to assemble unusual and complex visualizations. The accepted values so far are ``"simple"``, ``"cartesian"`` and ``"x"``
+	This option is automatically set to the most convenient value based on the selected visualization. This field should be set only to assemble unusual and complex visualizations. The accepted values so far are ``"simple"``, ``"Cartesian"`` and ``"x"``
 ``main`` : string
 	(experimental)
-	The ``main`` field is used to identify in which panel of the selected layour the visualization should be rendered.
+	The ``main`` field is used to identify in which panel of the selected layout the visualization should be rendered.
 ``padding`` : object padding options
 	The padding object controls how the chart is spaced from its margins.
 ``titleontop`` : bool

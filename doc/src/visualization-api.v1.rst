@@ -33,7 +33,7 @@ The files are reportgrid-core.js and reportgrid-viz.js. The first requires a par
 	  </body>
 	</html> 
 
-The charts are unstyled and you will have to provide your color schemes and styles using a standard CSS file. If you want you can use our default stylesheet including the following line of code inside your <head> element.
+The charts are not styled by default and you will have to provide your color schemes and styles using a standard CSS file. If you want you can use our default stylesheet including the following line of code inside your <head> element.
 
 Note that in this document whenever you encounter a string enclosed in curly brackets ``{value}``, it means that the entire string must be replaced with a customer value (e.g. ``gradient-{value}`` means that ``gradient-0.75`` and ``gradient-1.25`` are both valid values). 
 
@@ -53,8 +53,8 @@ There are two way to configure that object, a `Simplified Query Model`_ and a `C
 Simplified Query Model
 -----------------------
 
-In the simplified query model you have the options to quickly build a big set of visualizations in a really easy fashion.
-The simplidied query model always tries to fill the blanks for you. 
+In the simplified query model you have the options to quickly build a big set of visualizations in a really easy way.
+The simplified query model always tries to fill the blanks for you. 
 You can have one of the following combinations of parameters:
 
  * path: the query will retrieve all the count of all of the events at the path
@@ -63,9 +63,9 @@ You can have one of the following combinations of parameters:
 
 If path is not specified the root path "/" is always assumed.
 
-The queries can be restricted to a certains time span by specifying the ``start`` and ``end`` parameters. Those parameters must always be specified in pair. When a time series is produced, the system will always fill those parameters automatically when they are not passed.
+The queries can be restricted to a certain time span by specifying the ``start`` and ``end`` parameters. Those parameters must always be specified in pair. When a time series is produced, the system will always fill those parameters automatically when they are not passed.
 
-For a better insight on how the data are queried and retrieved tak a look at the `Complete Query System`_
+For a better insight on how the data are queried and retrieved, take a look at the `Complete Query System`_
 
 **options:**
 
@@ -75,13 +75,13 @@ events : string OR array string
 	One or more (array of values) event names.
 end : timestamp
 	The end of the time span
-	The ``start`` and ``end`` paramater must be specified as a timestamp (number), Date or a parsable date string.
+	The ``start`` and ``end`` parameter must be specified as a timestamp (number), Date or a parsable date string.
 path : string
-	The path where the events are stored. The path must alwyas begin with a slash ``/``. The ending slash is optional.
+	The path where the events are stored. The path must always begin with a slash ``/``. The ending slash is optional.
 	Note that any path is a valid value even if no events are stored there. In case the path does not exist because there are no events stored yet, the server will response with an empty set of data.
 periodicity : string
 	Periodicity can be any of the following values: ``minute``, ``hour``, ``day``, ``week``, ``month``, ``year`` or ``eternity``
-	The granularity is choosen automatically based on the start/end range if not specified and based on the type of visualization.
+	The granularity is chosen automatically based on the start/end range if not specified and based on the type of visualization.
 	So if you pick a ``piechart`` the ``periodicity`` will be automatically set to ``eternity`` but not for a ``linechart``.
 	Note that if you pick a small granularity with an extended time span you can get a really huge amount of data back that besides slowing down your visualizations will probably not convey any meaningfull visualization.
 property : string
