@@ -6,132 +6,31 @@
 
 @import url(html4css1.css);
 
-@import url(http://fonts.googleapis.com/css?family=Abel);
-
-    @font-face {
-        font-family: 'RexliaFree';
-        src: url('fonts/rexlia_free-webfont.eot');
-        src: url('fonts/rexlia_free-webfont.eot?#iefix') format('embedded-opentype'),
-             url('fonts/rexlia_free-webfont.woff') format('woff'),
-             url('fonts/rexlia_free-webfont.ttf') format('truetype'),
-             url('fonts/rexlia_free-webfont.svg#RexliaFree') format('svg');
-        font-weight: normal;
-        font-style: normal;
-    
-    }
- 
-body {
-	background-color: #000;
-}
-
-.wrapper {
-margin:auto;
-  width: 1024px;
-}
-
-.docTitle {
-	
-	text-align:center;
-	font-family:'Abel',sans-serif;
-}
-
-.header {
-	padding-left:100px;
-	background-repeat:no-repeat;
-	background-image: url("../images/rg_100x1024_header.png");
-  	height:100px;
-}
-
-
-.mainContent {
-min-height:600px;
- text-align:left;
- background-color:#1F2126;
- padding: 0px 50px
- }
-
-.footer {
-	padding:1em 100px;
-	color:#FFF;
-	min-height:100px;
-	text-align:center;
-	background-repeat:no-repeat;
-	background-image: url("../images/rg_100x1024_footer.png");
-}
-
-
-.documentation{
-	padding:1.5em;
-	width:924px;
-	margin:auto;
-	font-family:Veranda, Arial, Helvetica, sans-serif;
-	color:#666;
-	background-color:#f9f9f9;
-	-moz-border-radius: 10px;
-	border-radius: 10px;
-	
-}
-
-.contentWhiteBG {
-	background-color:#FFF;
-	border-radius:0.25em;
-	-moz-border-radius:0.25em;
-	padding:2em;
-	min-height:600px;
-	}
-
-.demos li
-{	
-	height:20px;
-	width: 74px;
-	overflow:hidden;
-	padding-top:1em;
-	float:left;
-	text-align:center;
-	margin-right:2px;
-	-moz-border-radius-bottomright:.25em;
-	-moz-border-radius-bottomleft:.25em;
-	border-bottom-right-radius:.25em;
-	border-bottom-left-radius:.25em;
-}
-
-.demos li a
-{
-	
-	height: 20px;
-	padding: 2px 10px 0 10px;
-	vertical-align: center;
-	color: #999;
-	font-size: 90%;
-	font-weight:bold;
-
-
-}
-
-.demos li a:hover
-{
-	color:#09F;
-}
-
-a {
-	color:#09F;
-	text-decoration:none;
-}
-
-
-
-
-
 ol.simple li, ul.simple li {
-	list-style-type:circle;
+	font-size: 100%;
 }
 
+ ul.simple li {
+	font-weight: normal;
+	margin: 0 0 0 3em;
+	list-style-type: square;
+}
 
 table.docutils caption {
-	font-size:90%;
-	font-weight:bold;
-	color:#666;
-	
+	font-size:100%;	
+}
+
+contents.topic ul.simple li {
+list-style-type: none;
+}
+
+ul.simple li ul li  {
+	font-family: abel;
+	font-size: 80%;
+	list-style-type: none;
+	font-weight: normal;
+	color:#b7bfe4;
+	margin: 0 0 0 3em;
 }
 
 /* used to remove borders from tables and images */
@@ -148,29 +47,42 @@ table.borderless td, table.borderless th {
   margin-top: 0 ! important }
 
 .last, .with-subtitle {
+font-size: 100%;
   margin-bottom: 0 ! important;
-  font-weight:normal;
-	color:#555;
-padding:0px 1.25px 0.313 1.25em;
+}
+
+
+p em{
+font-size: 105%;
+color: #fff;
 }
 
 .hidden {
   display: none }
 
+a:hover {
+	color: #FC3;
+}
+
 a.toc-backref {
   text-decoration: none ;
-  font-size:85%;
-  color:#666;
+  font-size: 100%;
+
   }
 
 blockquote.epigraph {
   margin: 2em 5em ; }
 
 dl.docutils dd {
-  margin-bottom: 0.5em }
+  color:#8A8FA8;
+  margin-bottom: 0.5em;
+  font-family: abel;
+  font-size: 80%;}
 
- Uncomment (and remove this text!) to get bold-faced definition list terms
 dl.docutils dt {
+  color:#fff;
+  font-size: 80%;
+  font-family: abel;
   font-weight: bold }
 
 div.abstract {
@@ -272,31 +184,57 @@ margin:1.875em;
 }
 
 h1 {
-	padding:0.313 0.625em;
+font-size: 100%;
 }
 
-.contents-topic {
+strong {
+font-family: abel;
+font-size: 90%;
+color:fff;
+font-weight:normal;
+
 }
 
+contents-topic {
+	list-style-type: none;
+}
+
+.external{
+	font-family: abel;
+	font-size: 90%;	
+	font-weight: bold;
+	color: 
+}
+.internal {
+	font-size: 100%;
+	color: #3E3E47;
+}
+
+.apiMiddleCol{
+padding:0 56px 56px 56px;
+ }
 
 h1.title {
-padding:1.25em;
-  text-align:center ;
-  font-size:2.5em;
-  color:#FFF;	
+  font-size:100%;
+  font-family: Abel;
+  color:#fff; 
+  float: left;	
   }
   
 h2,h3,h4 {
-	padding:0.313 0.625em;
-	border-bottom:solid 1px #CCC;
+	font-size:95%;
+	font-family: Abel;
+	margin:0.65em 0.625em;
+	border-bottom:2px solid #545766;
 }
 
 h2.subtitle {
+font-size: 90%;
   text-align: left;
    }
 
 hr.docutils {
-  width: 75% }
+  width: 90% }
 
 img.align-left, .figure.align-left, object.align-left {
   clear: left ;
@@ -332,9 +270,9 @@ div.align-right {
 /*   text-align: left } */
 
 ol.simple, ul.simple {
+font-size: 80%;
   margin-bottom: 1em;
-  line-height:1.75em;
-  color:#555;
+  line-height:1.25em;
   font-weight:bold;
 
    }
@@ -384,9 +322,8 @@ p.sidebar-subtitle {
   font-weight: bold }
 
 p.topic-title {
-	font-size:100%;
-  font-weight: bold;
-  color:#666 }
+	font-size:110%;
+  font-weight: bold;}
 
 pre.address {
   margin-bottom: 0 ;
@@ -394,21 +331,24 @@ pre.address {
   font: inherit }
 
 pre.literal-block, pre.doctest-block {
-font-size:93%;
-line-height:1em;
-color:#555;
-  padding:0.625em;
-  margin-left:1.25em;
+font-size:70%;
+line-height:1.25em;
+color:#aaa;
+background-color: #25252b;
+  padding:1em;
+  margin:1.25em;
   border-bottom:1px thin #ccc;
   border-top:1px thin #ccc;
   }
   
 
 span.classifier {
+font-size: 100%;
   font-family: sans-serif ;
   font-style: oblique }
 
 span.classifier-delimiter {
+font-size: 100%;
   font-family: sans-serif ;
   font-weight: bold }
 
@@ -420,7 +360,8 @@ span.option {
 
 span.pre {
 	
-  white-space: pre }
+  white-space: pre; 
+  font-size: 100%;}
 
 span.problematic {
   color: red }
@@ -428,7 +369,7 @@ span.problematic {
 span.section-subtitle {
   /* font-size relative to parent (
   ..h6 element) */
-  font-size:80%;
+  font-size:90%;
    }
 
 table.citation {
@@ -440,7 +381,7 @@ table.docinfo {
 
 table.docutils {
   margin: 1.25em 0;
-  border:solid 1px #aaa;
+  border:solid 1px #545766;
   border-collapse:collapse;
  }
 
@@ -449,22 +390,23 @@ table.footnote {
   margin-left: 1px;
    }
 
-table.docutils td:first-child { 
-	color:#333;
+table.docutils td:
+-child { 
 	font-weight:bold;
-	font-size:100%;
+	font-size:90%;
 	font-style:italic;
 		 }
 
 table.docutils td, table.docutils th,
 table.docinfo td, table.docinfo th {
-color:#555;
-  padding: 0.5em 0.5em ;
+font-size: 80%;
+	color:#aaa;
+  padding: 0.75em 0.75em ;
   vertical-align:middle;
- border-bottom:solid 1px #888;
- border-right:solid 1px #888;
-  background-color:#F9F9F9;
-  padding:0.313em;
+ border-bottom:solid 1px #8A8FA8;
+ border-right:solid 1px #8A8FA8;
+  background-color: #141417;
+  padding:0.413em;
   }
 
 table.docutils th.field-name, table.docinfo th.docinfo-name {
@@ -476,7 +418,13 @@ table.docutils th.field-name, table.docinfo th.docinfo-name {
 
 h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
 h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
-  font-size: 80%; 
-  color:#666 }
+  font-size: 90%; 
+  color:#fff }
 
+tt.literal{
+font-size: 90%;
 
+}
+
+p{
+}
