@@ -155,7 +155,7 @@ class ReportGrid(object):
     def new_token(self, path):
         """Create a new token"""
 
-        return self.analytics.post('%s/' % Path.Analytics.Tokens, {'path':path})
+        return self.analytics.post('%s' % Path.Analytics.Tokens, {'path':path})
 
     def token(self, token_id):
         """Return information about a token"""
@@ -165,7 +165,7 @@ class ReportGrid(object):
     def tokens(self):
         """Return all child tokens"""
 
-        return self.analytics.get('%s/' % Path.Analytics.Tokens)
+        return self.analytics.get('%s' % Path.Analytics.Tokens)
 
     def delete_token(self, token_id):
         """Delete a token"""
