@@ -27,14 +27,15 @@ import json
 import logging
 import posixpath
 import time
+import datetime
 
 
 __app_name__     = 'reportgrid'
-__version__      = '2011.06.15'
-__author__       = 'Michael T. Conigliaro'
-__author_email__ = 'mike [at] reportgrid [dot] com'
+__version__      = '2011.10.27'
+__author__       = 'Kris Nuttycombe'
+__author_email__ = 'kris [at] reportgrid [dot] com'
 __description__  = 'Python client library for ReportGrid (http://www.reportgrid.com)'
-__url__          = 'https://github.com/reportgrid/client-libraries/'
+__url__          = 'https://github.com/reportgrid/client-libraries/python'
 
 
 class API:
@@ -98,10 +99,13 @@ class HttpClient(object):
 
         name = name.upper()
 
-        def do(self, path='', body='', headers={}):
+        def do(self, path='', body='', parameters = {}, headers = {}):
 
             # Add token id to path and set headers
             path = "%s%s?tokenId=%s" % (self.path_prefix, path, self.token_id)
+            for key, value in parameters.items():
+              path = "%s&%s=%s" % (path, key, value)
+
             headers.update({'Content-Type': 'application/json'})
 
             # Set up message
@@ -145,43 +149,49 @@ class HttpClient(object):
 class ReportGrid(object):
     """ReportGrid base class"""
 
-    def __init__(self, token_id=''):
+    def __init__(self, token_id='', host = API.Host, port = API.Port, path_prefix = Path.Analytics.Root):
         """Initialize an API client"""
 
-        self.analytics = HttpClient(token_id=token_id,
-                                    host=API.Host, port=API.Port,
-                                    path_prefix=Path.Analytics.Root)
+        self.analytics = HttpClient(token_id = token_id, host = host, port = port, path_prefix = path_prefix)
+
 
     def new_token(self, path):
         """Create a new token"""
 
-        return self.analytics.post('%s' % Path.Analytics.Tokens, {'path':path})
+        return self.analytics.post(Path.Analytics.Tokens, body = {'path': path})
+
 
     def token(self, token_id):
         """Return information about a token"""
 
         return self.analytics.get('%s/%s' % (Path.Analytics.Tokens, token_id))
 
+
     def tokens(self):
         """Return all child tokens"""
 
-        return self.analytics.get('%s' % Path.Analytics.Tokens)
+        return self.analytics.get(Path.Analytics.Tokens)
+
 
     def delete_token(self, token_id):
         """Delete a token"""
 
         return self.analytics.delete('%s/%s' % (Path.Analytics.Tokens, token_id))
 
-    def track(self, path, name, properties, rollup=False,
-              timestamp=time.time(), count=1):
+
+    def track(self, path, name, properties, rollup=False, timestamp=None, count=1):
         """Track an event"""
 
         # Sanitize path
         if not path.startswith(Path.Analytics.VFS):
             path = '%s/%s' % (Path.Analytics.VFS, path)
+
         path = self.__sanitize_path(path)
 
         # Add the timestamp to the properties dictionary
+        if not timestamp:
+            timestamp = int(time.time() * 1000.0)
+
         properties['#timestamp'] = timestamp
         
         # Track event
@@ -189,39 +199,45 @@ class ReportGrid(object):
 
         # Roll up to parents if necessary
         parent_path = self.__sanitize_path('%s/../' % path)
-        if rollup and parent_path.startswith(Path.Analytics.VFS) and \
-           parent_path != Path.Analytics.VFS:
+        if rollup and parent_path.startswith(Path.Analytics.VFS) and parent_path != Path.Analytics.VFS:
             self.track(parent_path, name, properties, rollup, timestamp, count)
 
-    def children(self, path, property='', type='all'):
+
+    def children(self, path, property=None, type='all'):
         """Return children of the specified path"""
 
-        property = self.__sanitize_property(property)
-        path = '%s/%s/%s' % (Path.Analytics.VFS, path, property)
+        path = '%s/%s' % (Path.Analytics.VFS, path)
+        if property:
+            path = '%s/%s' % (path, self.__sanitize_property(property))
 
         children = self.analytics.get(self.__sanitize_path(path))
         if type == 'path':
-            children = filter(lambda x: x.endswith('/'), children)
+            return [x for x in children if not x.startswith('.')]
         elif type == 'property':
-            children = filter(lambda x: x.startswith('.'), children)
-        elif property:
-            children = filter(lambda x: x == property, children)
+            return [x for x in children if x.startswith('.')]
+        else:
+            return children
 
-        return children
 
-    def property_count(self, path, property):
+    def property_count(self, path, property, start = None, end = None):
         """Return count of the specified property"""
+
+        parameters = {}
+        if start and end:
+            parameters = self.__time_parameters(start, end)
 
         property = self.__sanitize_property(property)
         path = '%s/%s/%s/count' % (Path.Analytics.VFS, path, property)
-        return self.analytics.get(self.__sanitize_path(path))
+        return self.analytics.get(self.__sanitize_path(path), parameters = parameters)
 
-    def property_series(self, path, property, periodicity=Periodicity.Eternity):
+
+    def property_series(self, path, property, start = None, end = None, periodicity=Periodicity.Year):
         """Return time series counts for the specified property"""
 
         property = self.__sanitize_property(property)
         path = '%s/%s/%s/series/%s' % (Path.Analytics.VFS, path, property, periodicity)
-        return self.analytics.get(self.__sanitize_path(path))
+        return self.analytics.get(self.__sanitize_path(path), parameters = self.__time_parameters(start, end))
+
 
     def property_values(self, path, property):
         """Return all values of the specified property"""
@@ -230,41 +246,70 @@ class ReportGrid(object):
         path = '%s/%s/%s/values' % (Path.Analytics.VFS, path.lstrip('/ '), property)
         return self.analytics.get(self.__sanitize_path(path))
 
-    def property_value_count(self, path, property, value):
+
+    def property_value_count(self, path, property, value, start = None, end = None):
         """Return count of the specified value for the specified property"""
+
+        parameters = {}
+        if start and end:
+            parameters = self.__time_parameters(start, end)
 
         property = self.__sanitize_property(property)
         path = '%s/%s/%s/values/%s/count' % (Path.Analytics.VFS, path.lstrip('/ '), property, value)
-        return self.analytics.get(self.__sanitize_path(path))
+        return self.analytics.get(self.__sanitize_path(path), parameters = parameters)
 
-    def property_value_series(self, path, property, value, periodicity=Periodicity.Eternity):
+
+    def property_value_series(self, path, property, value, start = None, end = None, periodicity = Periodicity.Year):
         """Return time series counts for the specified value for the specified property"""
 
         property = self.__sanitize_property(property)
-        path = '%s/%s/%s/values/%s/series/%s' % (Path.Analytics.VFS, path.lstrip('/ '), property,
-                                                 value, periodicity)
-        return self.analytics.get(self.__sanitize_path(path))
+        path = '%s/%s/%s/values/%s/series/%s' % (Path.Analytics.VFS, path.lstrip('/ '), property, value, periodicity)
+        return self.analytics.get(self.__sanitize_path(path), parameters = self.__time_parameters(start, end))
 
-    def search_count(self, path, where=[]):
+
+    def search_count(self, path, where=[], start = None, end = None):
         """Return a count by searching across a range of conditions"""
 
-        return self.analytics.post(Path.Analytics.Search, body={
-            'select': 'count',
-            'from'  : self.__sanitize_path(path),
-            'where' : where
-        })
+        parameters = {}
+        if start and end:
+            parameters = self.__time_parameters(start, end)
 
-    def search_series(self, path, periodicity=Periodicity.Eternity, where=[],
-                      start=Time.Zero, end=Time.Eternity):
+        body = {
+          'select': 'count',
+          'from'  : self.__sanitize_path(path),
+          'where' : where
+        }
+
+        body.update(parameters)
+
+        return self.analytics.post(Path.Analytics.Search, body = body)
+
+
+    def search_series(self, path, where=[], start = None, end = None, periodicity=Periodicity.Year):
         """Return time series counts by searching across a range of conditions"""
 
-        return self.analytics.post(Path.Analytics.Search, body={
-            'select': 'series/%s' % periodicity,
-            'from'  : self.__sanitize_path(path),
-            'where' : where,
-            'start' : start,
-            'end'   : end
-        })
+        body = {
+          'select': 'series/%s' % periodicity,
+          'from'  : self.__sanitize_path(path),
+          'where' : where
+        }
+
+        body.update(self.__time_parameters(start, end))
+
+        return self.analytics.post(Path.Analytics.Search, body = body)
+
+
+    def __time_parameters(self, start, end):
+        parameters = {}
+        if start and end:
+            return {'start': start, 'end': end}
+        else:
+            now = datetime.datetime.utcnow()
+            return {
+              'start': int(time.mktime(now.replace(year = now.year - 1).timetuple()) * 1000.0),
+              'end': int(time.mktime(now.replace(year = now.year + 1).timetuple()) * 1000.0)
+            }
+
 
     def __sanitize_path(self, path):
         """Sanitize a URL path"""
