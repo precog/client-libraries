@@ -1,102 +1,132 @@
 require 'test/unit'
 
+class ReportGridClientTest < Test::Unit::TestCase
+  class << self
+    attr_reader :root_token_id, :test_token_id, :test_host, :test_port, :test_path
+    def suite
+      mysuite = super
+      def mysuite.run(*args)
+        ReportGridClientTest.startup()
+        super
+        ReportGridClientTest.shutdown()
+      end
+      mysuite
+    end
 
-class TestExecute < Test::Unit::TestCase
+    def startup
+      require 'reportgrid'
+      @root_token_id = 'A3BC1539-E8A9-4207-BB41-3036EC2C6E6D'
+      @test_token_id = nil
+      @test_host = 'api.reportgrid.com'
+      @test_port = 80
+      @test_path = ReportGrid::Path::Analytics::ROOT
 
-  def setup
-    require 'reportgrid'
+      api = build_root_client
+      response = api.new_token('/ruby_test')
+      raise "Did not obtain a new test token." unless response.length == @root_token_id.length
 
-    @root_token_id = 'A3BC1539-E8A9-4207-BB41-3036EC2C6E6D'
-    @test_token_id = nil
+      @test_token_id = response
 
-    api = ReportGrid::ReportGrid.new(@root_token_id)
-    response = api.new_token('/ruby_test')
-    assert response.length == @root_token_id.length
+      api = build_test_client
+      api.track('/', 'test', {'test' => 123}, :rollup => true)
+      api.track('/testpath', 'test', {'test' => 456}, :rollup => true)
+      sleep(20)
+    end
 
-    @test_token_id = response
+    def shutdown
+      api = ReportGrid::ReportGrid.new(@root_token_id, @test_host, @test_port, @test_path)
+      api.delete_token(@test_token_id)
+      raise "Token failed to delete correctly." unless !api.tokens.include?(@test_token_id)
+    end
+
+    def build_root_client
+      ReportGrid::ReportGrid.new(@root_token_id, @test_host, @test_port, @test_path)  
+    end
+
+    def build_test_client
+      ReportGrid::ReportGrid.new(@test_token_id, @test_host, @test_port, @test_path)  
+    end
+  end
+
+  def assert_include(collection, value)
+    assert collection.include?(value), "#{collection.inspect} does not include the value #{value.inspect}"
   end
 
   def test_token
-    api = ReportGrid::ReportGrid.new(@root_token_id)
-    response = api.token(@test_token_id)
-    assert response.class == Hash
-    assert response.include?('tokenId')
-    assert response['tokenId'] == @test_token_id
+    api = ReportGridClientTest.build_root_client
+    response = api.token(ReportGridClientTest.test_token_id)
+    assert_equal response.class, Hash
+    assert_include response, 'tokenId'
+    assert_equal response['tokenId'], ReportGridClientTest.test_token_id
   end
 
   def test_tokens
-    api = ReportGrid::ReportGrid.new(@root_token_id)
+    api = ReportGridClientTest.build_root_client
     response = api.tokens
-    assert response.class == Array
-    assert response.include?(@test_token_id)
-  end
-
-  def test_track
-    api = ReportGrid::ReportGrid.new(@test_token_id)
-    api.track('/', 'test', {'test'=>123}, :rollup=>true)
+    assert_equal response.class, Array
+    assert_include response, ReportGridClientTest.test_token_id
   end
 
   def test_children
-    api = ReportGrid::ReportGrid.new(@test_token_id)
+    api = ReportGridClientTest.build_test_client
     response = api.children('/')
-    assert response.class == Array
-    #assert response.length > 0
+    assert_equal response.class, Array
+    assert_include response, '.test'
   end
 
   def test_children_with_type_path
-    api = ReportGrid::ReportGrid.new(@test_token_id)
-    response = api.children('/', :type=>'path')
-    assert response.class == Array
-    assert response == response.select { |obj| obj.end_with?('/') }
+    api = ReportGridClientTest.build_test_client
+    response = api.children('/', :type => :path)
+    assert_equal response.class, Array
+    assert_include response, 'testpath'
   end
 
   def test_children_with_type_property
-    api = ReportGrid::ReportGrid.new(@test_token_id)
-    response = api.children('/', :type=>'property')
-    assert response.class == Array
-    assert response == response.select { |obj| obj.start_with?('.') }
+    api = ReportGridClientTest.build_test_client
+    response = api.children('/', :type => :property)
+    assert_equal response.class, Array
+    assert_include response, '.test'
   end
 
   def test_children_with_property
-    api = ReportGrid::ReportGrid.new(@test_token_id)
-    response = api.children('/', :property=>'test')
-    assert response.class == Array
-    #assert response.length > 0
+    api = ReportGridClientTest.build_test_client
+    response = api.children('/', :property => 'test')
+    assert_equal response.class, Array
+    assert_include response, '.test'
   end
 
   def test_property_count
-    api = ReportGrid::ReportGrid.new(@test_token_id)
+    api = ReportGridClientTest.build_test_client
     response = api.property_count('/', 'test')
-    #assert response.class == Fixnum
-    assert response.class == String
+    assert_equal response.class, String
+    assert_operator response.to_i, :>, 0
   end
 
   def test_property_series
-    api = ReportGrid::ReportGrid.new(@test_token_id)
+    api = ReportGridClientTest.build_test_client
     response = api.property_series('/', 'test')
-    assert response.class == Array
+    assert_equal response.class, Array
     #assert response.include?(ReportGrid::Periodicity::ETERNITY)
     #assert response[ReportGrid::Periodicity::ETERNITY].class == Array
     #assert response[ReportGrid::Periodicity::ETERNITY].length > 0
   end
 
   def test_property_values
-    api = ReportGrid::ReportGrid.new(@test_token_id)
+    api = ReportGridClientTest.build_test_client
     response = api.property_values('/', 'test.test')
-    assert response.class == Array
-    #assert response.include?(123)
+    assert_equal response.class, Array
+    assert_include response, 123
   end
 
   def test_property_value_count
-    api = ReportGrid::ReportGrid.new(@test_token_id)
+    api = ReportGridClientTest.build_test_client
     response = api.property_value_count('/', 'test.test', 123)
-    #assert response.class == Fixnum
-    assert response.class == String
-    #assert response > 0
+    assert_equal response.class, String
+    assert_operator response.to_i, :>, 0
   end
 
   def test_property_value_series
-    api = ReportGrid::ReportGrid.new(@test_token_id)
+    api = ReportGridClientTest.build_test_client
     response = api.property_value_series('/', 'test.test', 123)
     assert response.class == Array
     #assert response.include?(ReportGrid::Periodicity::ETERNITY)
@@ -105,26 +135,18 @@ class TestExecute < Test::Unit::TestCase
   end
 
   def test_search_count
-    api = ReportGrid::ReportGrid.new(@test_token_id)
+    api = ReportGridClientTest.build_test_client
     response = api.search_count('/', :where=>[{:variable => 'test.test', :value => 123}])
-    #assert response.class == Fixnum
-    assert response.class == String
-    #assert response > 0
+    assert_equal response.class, String
+    assert_operator response.to_i, :>, 0
   end
 
   def test_search_series
-    api = ReportGrid::ReportGrid.new(@test_token_id)
+    api = ReportGridClientTest.build_test_client
     response = api.search_series('/', :where=>[{:variable => 'test.test', :value => 123}])
-    assert response.class == Array
+    assert_equal response.class, Array
     #assert response.include?(ReportGrid::Periodicity::ETERNITY)
     #assert response[ReportGrid::Periodicity::ETERNITY].class == Array
     #assert response[ReportGrid::Periodicity::ETERNITY].length > 0
   end
-
-  def teardown
-    api = ReportGrid::ReportGrid.new(@root_token_id)
-    api.delete_token(@test_token_id)
-    assert !api.tokens.include?(@test_token_id)
-  end
-
 end

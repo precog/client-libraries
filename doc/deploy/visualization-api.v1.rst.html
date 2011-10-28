@@ -1,26 +1,109 @@
-<!DOCTYPE html>
 <html>
     <head>
-<title>ReportGrid.Visualization.Demos</title>
+        <title>API Documentation</title>
+        <link rel="stylesheet" type="text/css" href="css/innerpage.css">
+        <link rel="stylesheet" type="text/css" href="css/apidoc.css">
         <!--[if IE]>
-        <link rel="stylesheet" type="text/css" href="ie.css" />
+        <link rel="stylesheet" type="text/css" href="css/ieinterpage.css">
         <![endif]-->
-
-		<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/>		
-		<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.3.0/build/cssfonts/fonts-min.css"/>
-		<link rel="stylesheet" type="text/css" href="css/apidoc.css"/>
-
-</head>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+        <script type="text/javascript" src="js/default.js"></script>
+    <script type="text/javascript" src="http://include.reinvigorate.net/re_.js"></script>
+    <script type="text/javascript">
+    try {
+    reinvigorate.track("j780b-u1448cw0d9");
+    } catch(err) {}
+    </script>
+    </head>
  <body>
-      <div class="wrapper">
+      <div id="wrapper">
         <div class="header">
-				 <img src="images/rg_27x200_logo.png" style="padding-top:26px">
-				<div class="docTitle"><h1 class="title">The ReportGrid JS Visualization API</h1></div>
-           </div>
-        		<div class="mainContent">
-					    <div class="contentWhiteBG">
-						<div class="docMenu"></div>
-						<div class="docBody"><div class="contents topic" id="contents">
+            <div id="headerlogo">
+                <a href="http://www.reportgrid.com/"><img src="images/logo1.png"></a>
+            </div>
+            <div id="loginbutton">
+                <a href="#"><img src="images/loginbutton.png"></a>
+            </div>
+            <div id="navcontainer">
+                <ul id="navlist">
+                    <li><a href="http://www.reportgrid.com/">home</a></li>
+                    </li>
+                    <li class="active"><a href="http://www.reportgrid.com/solution.html" class="current">solutions</a>
+                    <ul id="subnavlist">
+                        <li class="subactive"><a href="http://www.reportgrid.com/analytics-database.html" class="subcurrent">analytics database</a></li>
+                        <li><a href="http://www.reportgrid.com/visualization-engine.html">visualization engine</a></li>
+                        <li><a href="http://www.reportgrid.com/professional-services.html">professional services</a></li>
+                    </ul>
+                    </li>
+                    <li class="active"><a href="http://www.reportgrid.com/use-cases.html" class="current">use cases</a>
+                    <ul id="subnavlist">
+                        <li class="subactive"><a href="http://www.reportgrid.com/embeddable-analytics.html" class="subcurrent">embeddable analytics</a></li>
+                        <li><a href="http://www.reportgrid.com/internal-analytics.html">internal analytics</a></li>
+                        <li><a href="http://www.reportgrid.com/business-intelligence.html">business intelligence</a></li>
+                    </ul>
+                    </li>
+                    <li class="active"><a href="http://www.reportgrid.com/pricing.html" class="current">pricing</a>
+                    <ul id="subnavlist">
+                        <li class="subactive"><a href="http://www.reportgrid.com/developer-credit.html" class="subcurrent">developer credit</a></li>
+                        <li><a href="sign-up.html">signup</a></li>
+                    </ul>
+                    </li>
+                    <li class="active"><a href="http://www.reportgrid.com/developer.html" class="current">developer</a>
+                    <ul id="subnavlist">
+                        <li class="subactive"><a href="http://www.reportgrid.com/api-documentation.html" class="subcurrent">api documentation</a></li>
+                        <li><a href="http://www.reportgrid.com/console.html">console</a></li>
+                        <li><a href="http://github.com/reportgrid/client-libraries">client libraries</a></li>
+                    </ul>
+                    </li>
+                    <li class="active"><a href="http://www.reportgrid.com/support.html" class="current">support</a>
+                    <ul id="subnavlist">
+                        <li class="subactive"><a href="http://reportgrid.freshdesk.com/" class="subcurrent">help desk</a></li>
+                        <li><a href="http://www.reportgrid.com/white-papers.html">white papers</a></li>
+                        <li><a href="http://www.reportgrid.com/control-panel.html">control panel</a></li>
+                    </ul>
+                    </li>
+                    <li class="active"><a href="http://www.reportgrid.com/about.html" class="current">about</a>
+                    <ul id="subnavlist">
+                        <li class="subactive"><a href="http://www.reportgrid.com/news.html" class="subcurrent">news</a></li>
+                        <li><a href="http://www.reportgrid.com/team.html">team</a></li>
+                        <li><a href="http://www.reportgrid.com/contact-us.html">contact</a></li>
+                    </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="middle">
+                    <div id="loginoverlay">
+                        </div>
+                        <div id="loginmenu">
+                                <div style="top:34px;left:48px">
+                                    <form id="loginform">
+                                        <p class="normal">e-mail</p>
+                                        <div class="logingroup"><input style="color: #000000;" type="text" name="email" placeholder="  your e-mail" /></div>
+                                        <p class="normal">password</p>
+                                        <div class="logingroup"><input style="color: #000000;" type="password" name="password" placeholder="  your password"/></div>
+                                        <input id="loginpopupbutton" type="submit" value="">
+                                    </form>
+                                </div>
+                        </div>
+            <div id="leftpanel">
+                <div id="pagetitle">
+                    <p class="pageheader">API DOCS</p>
+                </div>
+                <div id="leftmenucontainer">
+                     <ul id="leftmenulist">
+                     <li class="active"><a href="http://www.reportgrid.com/developer.html">overview</a>
+                     <li><a href="http://api.reportgrid.com/doc/rest-api.v1.rst.html">api documentation</a></li>
+                     <li><a href="http://api.reportgrid.com/doc/visualization-api.v1.rst.html">console</a></li>
+                     <li><a href="http://github.com/reportgrid/client-libraries">client libraries</a></li>
+                     </ul>
+                </div>
+            </div>
+            <div id="middlecontent">
+           	    <div id="apiDoc" class="apiDoc">
+                	<h1 class="title">The ReportGrid JS Visualization API</h1>
+                		
+                	<div class="contents topic" id="contents">
 <p class="topic-title first">Contents</p>
 <ul class="simple">
 <li><a class="reference internal" href="#overview" id="id18">Overview</a></li>
@@ -226,10 +309,10 @@ By default the anchor will depend on the position of the axis.</dd>
 <dt><tt class="docutils literal">height</tt> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
 <dd>Height of the visualization. If not specified it is assumed from the HTML container.</dd>
 <dt><tt class="docutils literal">layout</tt> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
-<dd>This option is automatically set to the most convenient value based on the selected visualization. This field should be set only to assemble unusual and complex visualizations. The accepted values so far are <tt class="docutils literal">&quot;simple&quot;</tt>, <tt class="docutils literal">&quot;cartesian&quot;</tt> and <tt class="docutils literal">&quot;x&quot;</tt></dd>
+<dd>This option is automatically set to the most convenient value based on the selected visualization. This field should be set only to assemble unusual and complex visualizations. The accepted values so far are <tt class="docutils literal">&quot;simple&quot;</tt>, <tt class="docutils literal">&quot;Cartesian&quot;</tt> and <tt class="docutils literal">&quot;x&quot;</tt></dd>
 <dt><tt class="docutils literal">main</tt> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
 <dd>(experimental)
-The <tt class="docutils literal">main</tt> field is used to identify in which panel of the selected layour the visualization should be rendered.</dd>
+The <tt class="docutils literal">main</tt> field is used to identify in which panel of the selected layout the visualization should be rendered.</dd>
 <dt><tt class="docutils literal">padding</tt> <span class="classifier-delimiter">:</span> <span class="classifier">object padding options</span></dt>
 <dd>The padding object controls how the chart is spaced from its margins.</dd>
 <dt><tt class="docutils literal">titleontop</tt> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
@@ -261,7 +344,7 @@ Different visualizations have different options over to display or not some of t
 <dt>axis <span class="classifier-delimiter">:</span> <span class="classifier">function(string type) string</span></dt>
 <dd>The label to apply as a legend for the axis.</dd>
 <dt>tickmark <span class="classifier-delimiter">:</span> <span class="classifier">function(any value, string type) string</span></dt>
-<dd>The label to apply to the individual tickmarks of the scales. The <tt class="docutils literal">value</tt> argument is the scaled value for that tickmark and <tt class="docutils literal">type</tt> is the name of the axis.</dd>
+<dd>The label to apply to the individual tick-marks of the scales. The <tt class="docutils literal">value</tt> argument is the scaled value for that tick-mark and <tt class="docutils literal">type</tt> is the name of the axis.</dd>
 </dl>
 </div>
 </div>
@@ -293,10 +376,10 @@ Different visualizations have different options over to display or not some of t
 <dt><tt class="docutils literal">height</tt> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
 <dd>Height of the visualization. If not specified it is assumed from the HTML container.</dd>
 <dt><tt class="docutils literal">layout</tt> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
-<dd>This option is automatically set to the most convenient value based on the selected visualization. This field should be set only to assemble unusual and complex visualizations. The accepted values so far are <tt class="docutils literal">&quot;simple&quot;</tt>, <tt class="docutils literal">&quot;cartesian&quot;</tt> and <tt class="docutils literal">&quot;x&quot;</tt></dd>
+<dd>This option is automatically set to the most convenient value based on the selected visualization. This field should be set only to assemble unusual and complex visualizations. The accepted values so far are <tt class="docutils literal">&quot;simple&quot;</tt>, <tt class="docutils literal">&quot;Cartesian&quot;</tt> and <tt class="docutils literal">&quot;x&quot;</tt></dd>
 <dt><tt class="docutils literal">main</tt> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
 <dd>(experimental)
-The <tt class="docutils literal">main</tt> field is used to identify in which panel of the selected layour the visualization should be rendered.</dd>
+The <tt class="docutils literal">main</tt> field is used to identify in which panel of the selected layout the visualization should be rendered.</dd>
 <dt><tt class="docutils literal">padding</tt> <span class="classifier-delimiter">:</span> <span class="classifier">object padding options</span></dt>
 <dd>The padding object controls how the chart is spaced from its margins.</dd>
 <dt><tt class="docutils literal">titleontop</tt> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
@@ -420,10 +503,10 @@ The available templates are:
 <dt><tt class="docutils literal">height</tt> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
 <dd>Height of the visualization. If not specified it is assumed from the HTML container.</dd>
 <dt><tt class="docutils literal">layout</tt> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
-<dd>This option is automatically set to the most convenient value based on the selected visualization. This field should be set only to assemble unusual and complex visualizations. The accepted values so far are <tt class="docutils literal">&quot;simple&quot;</tt>, <tt class="docutils literal">&quot;cartesian&quot;</tt> and <tt class="docutils literal">&quot;x&quot;</tt></dd>
+<dd>This option is automatically set to the most convenient value based on the selected visualization. This field should be set only to assemble unusual and complex visualizations. The accepted values so far are <tt class="docutils literal">&quot;simple&quot;</tt>, <tt class="docutils literal">&quot;Cartesian&quot;</tt> and <tt class="docutils literal">&quot;x&quot;</tt></dd>
 <dt><tt class="docutils literal">main</tt> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
 <dd>(experimental)
-The <tt class="docutils literal">main</tt> field is used to identify in which panel of the selected layour the visualization should be rendered.</dd>
+The <tt class="docutils literal">main</tt> field is used to identify in which panel of the selected layout the visualization should be rendered.</dd>
 <dt><tt class="docutils literal">padding</tt> <span class="classifier-delimiter">:</span> <span class="classifier">object padding options</span></dt>
 <dd>The padding object controls how the chart is spaced from its margins.</dd>
 <dt><tt class="docutils literal">titleontop</tt> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
@@ -548,10 +631,10 @@ By default the anchor will depend on the position of the axis.</dd>
 <dt><tt class="docutils literal">height</tt> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
 <dd>Height of the visualization. If not specified it is assumed from the HTML container.</dd>
 <dt><tt class="docutils literal">layout</tt> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
-<dd>This option is automatically set to the most convenient value based on the selected visualization. This field should be set only to assemble unusual and complex visualizations. The accepted values so far are <tt class="docutils literal">&quot;simple&quot;</tt>, <tt class="docutils literal">&quot;cartesian&quot;</tt> and <tt class="docutils literal">&quot;x&quot;</tt></dd>
+<dd>This option is automatically set to the most convenient value based on the selected visualization. This field should be set only to assemble unusual and complex visualizations. The accepted values so far are <tt class="docutils literal">&quot;simple&quot;</tt>, <tt class="docutils literal">&quot;Cartesian&quot;</tt> and <tt class="docutils literal">&quot;x&quot;</tt></dd>
 <dt><tt class="docutils literal">main</tt> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
 <dd>(experimental)
-The <tt class="docutils literal">main</tt> field is used to identify in which panel of the selected layour the visualization should be rendered.</dd>
+The <tt class="docutils literal">main</tt> field is used to identify in which panel of the selected layout the visualization should be rendered.</dd>
 <dt><tt class="docutils literal">padding</tt> <span class="classifier-delimiter">:</span> <span class="classifier">object padding options</span></dt>
 <dd>The padding object controls how the chart is spaced from its margins.</dd>
 <dt><tt class="docutils literal">titleontop</tt> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
@@ -583,7 +666,7 @@ Different visualizations have different options over to display or not some of t
 <dt>axis <span class="classifier-delimiter">:</span> <span class="classifier">function(string type) string</span></dt>
 <dd>The label to apply as a legend for the axis.</dd>
 <dt>tickmark <span class="classifier-delimiter">:</span> <span class="classifier">function(any value, string type) string</span></dt>
-<dd>The label to apply to the individual tickmarks of the scales. The <tt class="docutils literal">value</tt> argument is the scaled value for that tickmark and <tt class="docutils literal">type</tt> is the name of the axis.</dd>
+<dd>The label to apply to the individual tick-marks of the scales. The <tt class="docutils literal">value</tt> argument is the scaled value for that tick-mark and <tt class="docutils literal">type</tt> is the name of the axis.</dd>
 </dl>
 </div>
 </div>
@@ -760,10 +843,10 @@ By default the anchor will depend on the position of the axis.</dd>
 <dt><tt class="docutils literal">height</tt> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
 <dd>Height of the visualization. If not specified it is assumed from the HTML container.</dd>
 <dt><tt class="docutils literal">layout</tt> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
-<dd>This option is automatically set to the most convenient value based on the selected visualization. This field should be set only to assemble unusual and complex visualizations. The accepted values so far are <tt class="docutils literal">&quot;simple&quot;</tt>, <tt class="docutils literal">&quot;cartesian&quot;</tt> and <tt class="docutils literal">&quot;x&quot;</tt></dd>
+<dd>This option is automatically set to the most convenient value based on the selected visualization. This field should be set only to assemble unusual and complex visualizations. The accepted values so far are <tt class="docutils literal">&quot;simple&quot;</tt>, <tt class="docutils literal">&quot;Cartesian&quot;</tt> and <tt class="docutils literal">&quot;x&quot;</tt></dd>
 <dt><tt class="docutils literal">main</tt> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
 <dd>(experimental)
-The <tt class="docutils literal">main</tt> field is used to identify in which panel of the selected layour the visualization should be rendered.</dd>
+The <tt class="docutils literal">main</tt> field is used to identify in which panel of the selected layout the visualization should be rendered.</dd>
 <dt><tt class="docutils literal">padding</tt> <span class="classifier-delimiter">:</span> <span class="classifier">object padding options</span></dt>
 <dd>The padding object controls how the chart is spaced from its margins.</dd>
 <dt><tt class="docutils literal">titleontop</tt> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
@@ -785,11 +868,11 @@ Both the <tt class="docutils literal">scale</tt> and <tt class="docutils literal
 <p><strong>options:</strong></p>
 <dl class="docutils">
 <dt>on <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
-<dd>Defines the property used to split the datapoints. A new set of datapoints is created for each disting value for the selected property.</dd>
+<dd>Defines the property used to split the datapoints. A new set of datapoints is created for each distinct value for the selected property.</dd>
 <dt>scale <span class="classifier-delimiter">:</span> <span class="classifier">function(array <a class="reference internal" href="#datapoint">datapoint</a>) array</span></dt>
 <dd>The scale function is used to transform each segmented data set of <a class="reference internal" href="#datapoints">datapoints</a> in a new data set.</dd>
 <dt>transform <span class="classifier-delimiter">:</span> <span class="classifier">function(array <a class="reference internal" href="#datapoint">datapoint</a>) array</span></dt>
-<dd>The trasnform function works on the data orthogonally.</dd>
+<dd>The transform function works on the data orthogonally.</dd>
 </dl>
 </div>
 <div class="section" id="id8">
@@ -809,7 +892,7 @@ Different visualizations have different options over to display or not some of t
 <dt>axis <span class="classifier-delimiter">:</span> <span class="classifier">function(string type) string</span></dt>
 <dd>The label to apply as a legend for the axis.</dd>
 <dt>tickmark <span class="classifier-delimiter">:</span> <span class="classifier">function(any value, string type) string</span></dt>
-<dd>The label to apply to the individual tickmarks of the scales. The <tt class="docutils literal">value</tt> argument is the scaled value for that tickmark and <tt class="docutils literal">type</tt> is the name of the axis.</dd>
+<dd>The label to apply to the individual tick-marks of the scales. The <tt class="docutils literal">value</tt> argument is the scaled value for that tick-mark and <tt class="docutils literal">type</tt> is the name of the axis.</dd>
 </dl>
 </div>
 </div>
@@ -903,10 +986,10 @@ All of the <tt class="docutils literal">radius</tt> parameters below should be e
 <dt><tt class="docutils literal">height</tt> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
 <dd>Height of the visualization. If not specified it is assumed from the HTML container.</dd>
 <dt><tt class="docutils literal">layout</tt> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
-<dd>This option is automatically set to the most convenient value based on the selected visualization. This field should be set only to assemble unusual and complex visualizations. The accepted values so far are <tt class="docutils literal">&quot;simple&quot;</tt>, <tt class="docutils literal">&quot;cartesian&quot;</tt> and <tt class="docutils literal">&quot;x&quot;</tt></dd>
+<dd>This option is automatically set to the most convenient value based on the selected visualization. This field should be set only to assemble unusual and complex visualizations. The accepted values so far are <tt class="docutils literal">&quot;simple&quot;</tt>, <tt class="docutils literal">&quot;Cartesian&quot;</tt> and <tt class="docutils literal">&quot;x&quot;</tt></dd>
 <dt><tt class="docutils literal">main</tt> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
 <dd>(experimental)
-The <tt class="docutils literal">main</tt> field is used to identify in which panel of the selected layour the visualization should be rendered.</dd>
+The <tt class="docutils literal">main</tt> field is used to identify in which panel of the selected layout the visualization should be rendered.</dd>
 <dt><tt class="docutils literal">padding</tt> <span class="classifier-delimiter">:</span> <span class="classifier">object padding options</span></dt>
 <dd>The padding object controls how the chart is spaced from its margins.</dd>
 <dt><tt class="docutils literal">titleontop</tt> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
@@ -984,7 +1067,7 @@ Different visualizations have different options over to display or not some of t
 <dt>axis <span class="classifier-delimiter">:</span> <span class="classifier">function(string type) string</span></dt>
 <dd>The label to apply as a legend for the axis.</dd>
 <dt>tickmark <span class="classifier-delimiter">:</span> <span class="classifier">function(any value, string type) string</span></dt>
-<dd>The label to apply to the individual tickmarks of the scales. The <tt class="docutils literal">value</tt> argument is the scaled value for that tickmark and <tt class="docutils literal">type</tt> is the name of the axis.</dd>
+<dd>The label to apply to the individual tick-marks of the scales. The <tt class="docutils literal">value</tt> argument is the scaled value for that tick-mark and <tt class="docutils literal">type</tt> is the name of the axis.</dd>
 </dl>
 </div>
 </div>
@@ -1052,10 +1135,10 @@ By default the anchor will depend on the position of the axis.</dd>
 <dt><tt class="docutils literal">height</tt> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
 <dd>Height of the visualization. If not specified it is assumed from the HTML container.</dd>
 <dt><tt class="docutils literal">layout</tt> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
-<dd>This option is automatically set to the most convenient value based on the selected visualization. This field should be set only to assemble unusual and complex visualizations. The accepted values so far are <tt class="docutils literal">&quot;simple&quot;</tt>, <tt class="docutils literal">&quot;cartesian&quot;</tt> and <tt class="docutils literal">&quot;x&quot;</tt></dd>
+<dd>This option is automatically set to the most convenient value based on the selected visualization. This field should be set only to assemble unusual and complex visualizations. The accepted values so far are <tt class="docutils literal">&quot;simple&quot;</tt>, <tt class="docutils literal">&quot;Cartesian&quot;</tt> and <tt class="docutils literal">&quot;x&quot;</tt></dd>
 <dt><tt class="docutils literal">main</tt> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
 <dd>(experimental)
-The <tt class="docutils literal">main</tt> field is used to identify in which panel of the selected layour the visualization should be rendered.</dd>
+The <tt class="docutils literal">main</tt> field is used to identify in which panel of the selected layout the visualization should be rendered.</dd>
 <dt><tt class="docutils literal">padding</tt> <span class="classifier-delimiter">:</span> <span class="classifier">object padding options</span></dt>
 <dd>The padding object controls how the chart is spaced from its margins.</dd>
 <dt><tt class="docutils literal">titleontop</tt> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
@@ -1077,11 +1160,11 @@ Both the <tt class="docutils literal">scale</tt> and <tt class="docutils literal
 <p><strong>options:</strong></p>
 <dl class="docutils">
 <dt>on <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
-<dd>Defines the property used to split the datapoints. A new set of datapoints is created for each disting value for the selected property.</dd>
+<dd>Defines the property used to split the datapoints. A new set of datapoints is created for each distinct value for the selected property.</dd>
 <dt>scale <span class="classifier-delimiter">:</span> <span class="classifier">function(array <a class="reference internal" href="#datapoint">datapoint</a>) array</span></dt>
 <dd>The scale function is used to transform each segmented data set of <a class="reference internal" href="#datapoints">datapoints</a> in a new data set.</dd>
 <dt>transform <span class="classifier-delimiter">:</span> <span class="classifier">function(array <a class="reference internal" href="#datapoint">datapoint</a>) array</span></dt>
-<dd>The trasnform function works on the data orthogonally.</dd>
+<dd>The transform function works on the data orthogonally.</dd>
 </dl>
 </div>
 <div class="section" id="id14">
@@ -1101,7 +1184,7 @@ Different visualizations have different options over to display or not some of t
 <dt>axis <span class="classifier-delimiter">:</span> <span class="classifier">function(string type) string</span></dt>
 <dd>The label to apply as a legend for the axis.</dd>
 <dt>tickmark <span class="classifier-delimiter">:</span> <span class="classifier">function(any value, string type) string</span></dt>
-<dd>The label to apply to the individual tickmarks of the scales. The <tt class="docutils literal">value</tt> argument is the scaled value for that tickmark and <tt class="docutils literal">type</tt> is the name of the axis.</dd>
+<dd>The label to apply to the individual tick-marks of the scales. The <tt class="docutils literal">value</tt> argument is the scaled value for that tick-mark and <tt class="docutils literal">type</tt> is the name of the axis.</dd>
 </dl>
 </div>
 </div>
@@ -1206,10 +1289,10 @@ By default the anchor will depend on the position of the axis.</dd>
 <dt><tt class="docutils literal">height</tt> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
 <dd>Height of the visualization. If not specified it is assumed from the HTML container.</dd>
 <dt><tt class="docutils literal">layout</tt> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
-<dd>This option is automatically set to the most convenient value based on the selected visualization. This field should be set only to assemble unusual and complex visualizations. The accepted values so far are <tt class="docutils literal">&quot;simple&quot;</tt>, <tt class="docutils literal">&quot;cartesian&quot;</tt> and <tt class="docutils literal">&quot;x&quot;</tt></dd>
+<dd>This option is automatically set to the most convenient value based on the selected visualization. This field should be set only to assemble unusual and complex visualizations. The accepted values so far are <tt class="docutils literal">&quot;simple&quot;</tt>, <tt class="docutils literal">&quot;Cartesian&quot;</tt> and <tt class="docutils literal">&quot;x&quot;</tt></dd>
 <dt><tt class="docutils literal">main</tt> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
 <dd>(experimental)
-The <tt class="docutils literal">main</tt> field is used to identify in which panel of the selected layour the visualization should be rendered.</dd>
+The <tt class="docutils literal">main</tt> field is used to identify in which panel of the selected layout the visualization should be rendered.</dd>
 <dt><tt class="docutils literal">padding</tt> <span class="classifier-delimiter">:</span> <span class="classifier">object padding options</span></dt>
 <dd>The padding object controls how the chart is spaced from its margins.</dd>
 <dt><tt class="docutils literal">titleontop</tt> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
@@ -1231,11 +1314,11 @@ Both the <tt class="docutils literal">scale</tt> and <tt class="docutils literal
 <p><strong>options:</strong></p>
 <dl class="docutils">
 <dt>on <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
-<dd>Defines the property used to split the datapoints. A new set of datapoints is created for each disting value for the selected property.</dd>
+<dd>Defines the property used to split the datapoints. A new set of datapoints is created for each distinct value for the selected property.</dd>
 <dt>scale <span class="classifier-delimiter">:</span> <span class="classifier">function(array <a class="reference internal" href="#datapoint">datapoint</a>) array</span></dt>
 <dd>The scale function is used to transform each segmented data set of <a class="reference internal" href="#datapoints">datapoints</a> in a new data set.</dd>
 <dt>transform <span class="classifier-delimiter">:</span> <span class="classifier">function(array <a class="reference internal" href="#datapoint">datapoint</a>) array</span></dt>
-<dd>The trasnform function works on the data orthogonally.</dd>
+<dd>The transform function works on the data orthogonally.</dd>
 </dl>
 </div>
 <div class="section" id="id17">
@@ -1255,7 +1338,7 @@ Different visualizations have different options over to display or not some of t
 <dt>axis <span class="classifier-delimiter">:</span> <span class="classifier">function(string type) string</span></dt>
 <dd>The label to apply as a legend for the axis.</dd>
 <dt>tickmark <span class="classifier-delimiter">:</span> <span class="classifier">function(any value, string type) string</span></dt>
-<dd>The label to apply to the individual tickmarks of the scales. The <tt class="docutils literal">value</tt> argument is the scaled value for that tickmark and <tt class="docutils literal">type</tt> is the name of the axis.</dd>
+<dd>The label to apply to the individual tick-marks of the scales. The <tt class="docutils literal">value</tt> argument is the scaled value for that tick-mark and <tt class="docutils literal">type</tt> is the name of the axis.</dd>
 </dl>
 </div>
 </div>
@@ -1520,19 +1603,70 @@ console.log(ReportGrid.symbol(&quot;star&quot;));
 // outputs: &quot;M0,-8.97635689348711L2.1184202268629577,-2.917315990383311 ...&quot;
 </pre>
 </div>
-</div></div>
-						</div>
-				</div>
-
-        <div class="footer">
-                    <div style="float:right; font-family: RexliaFree;font-size:12px;"><a href="mailto:contact@reportgrid.com"><span style="color:#FFF">contact us</span></a></div>
-                    <div style="float:left; font-family: RexliaFree;font-size:12px;color:#FFF;">888.673.9958</div>
-                    <div style="text-align:center; font-family: AbelRegular;font-size:12px;color:#FFF;"><a href="http://www.reportgrid.com">Home</a></div>
-
-                
-               
 </div>
+                </div>
+           	</div>
+            <div id="rightpanel">
+                <div id="rightsidepanel">
+                    <div id="rpaneltext">
+                        <p class="rightpaneltext">If you're a developer, you automatically qualify for $100 credit on our platform. Just choose your plan and be up and running in minutes!</p>
+                    </div>
+                </div>
+            </div>
+        <div class="footer">
+            <div class="table">
+                <ul>
+                    <li><a href="http://www.reportgrid.com/solution.html">solutions</a></li>
+                    <li><a href="http://www.reportgrid.com/analytics-database.html" class="subcurrent">analytics database</a></li>
+                    <li><a href="http://www.reportgrid.com/visualization-engine.html">visualization engine</a></li>
+                    <li><a href="http://www.reportgrid.com/professional-services.html">professional services</a></li>
+                </ul>
+                <ul>
+                    <li><a href="http://www.reportgrid.com/use-cases.html">use cases</a></li>
+                    <li><a href="http://www.reportgrid.com/embeddable-analytics.html">embeddable analytics</a></li>
+                    <li><a href="http://www.reportgrid.com/internal-analytics.html">internal analytics</a></li>
+                    <li><a href="http://www.reportgrid.com/business-intelligence.html">business intelligence</a></li>
+                </ul>
+                <ul>
+                    <li><a href="http://www.reportgrid.com/pricing.html">pricing</a></li>
+                    <li><a href="http://www.reportgrid.com/developer-credit.html">developer credit</a></li>
+                    <li><a href="http://www.reportgrid.com/sign-up.html">signup</a></li>
+                </ul>
+                <ul>
+                    <li><a href="http://www.reportgrid.com/developer.html">developer</a></li>
+                    <li><a href="http://www.reportgrid.com/api-documentation.html">api documentation</a></li>
+                    <li><a href="http://www.reportgrid.com/console.html">console</a></li>
+                    <li><a href="http://github.com/reportgrid/client-libraries">client libraries</a></li>
+                </ul>
+                <ul>
+                    <li><a href="http://www.reportgrid.com/support.html">support</a></li>
+                    <li><a href="http://www.reportgrid.com/http://reportgrid.freshdesk.com/">help desk</a></li>
+                    <li><a href="http://www.reportgrid.com/white-papers.html">white papers</a></li>
+                    <li><a href="http://www.reportgrid.com/control-panel.html">control panel</a></li>
+                </ul>
+                <ul>
+                    <li><a href="http://www.reportgrid.com/about.html">about</a></li>
+                    <li><a href="http://www.reportgrid.com/news.html">news</a></li>
+                    <li><a href="http://www.reportgrid.com/team.html">team</a></li>
+                    <li><a href="http://www.reportgrid.com/contact-us.html">contact</a></li>
+                </ul>
+            </div>
+            <div id="phonefooter">
+                <p class="phonelarge">(888) 673-9958</p>
+            </div>
+            <div id="termsprivacy">
+                <p class="micro"><a href="http://www.reportgrid.com/privacy.html">privacy</a> : <a href="http://www.reportgrid.com/termsofuse.html">terms of use</a> <br>&copy; 2010-2011 ReportGrid Inc. <p>
+            </div>
+            <div id=contactus>
+                <a href="http://www.reportgrid.com/contact-us.html" target="_blank"> <img src="images/contactusicon.png"> </a>
+            </div>
+            <div id=facebook>
+                <a href="http://www.facebook.com/ReportGrid?v=wall" target="_blank"> <img src="images/facebookicon.png"> </a>
+            </div>
+            <div id=twitter>
+                <a href="http://twitter.com/#!/ReportGrid" target="_blank"> <img src="images/twittericon.png"> </a>
+            </div>
+        </div>
       </div>
-
     </body>
 </html>

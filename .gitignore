@@ -1,3 +1,5 @@
 *.pyc
 tags
 target
+.DS_Store
+doc/deploy/

@@ -33,7 +33,7 @@ The files are reportgrid-core.js and reportgrid-viz.js. The first requires a par
 	  </body>
 	</html> 
 
-The charts are not styled by default and you will have to provide your color schemes and styles using a standard CSS file. If you want you can use our default stylesheet including the following line of code inside your <head> element.
+The charts are unstyled and you will have to provide your color schemes and styles using a standard CSS file. If you want you can use our default stylesheet including the following line of code inside your <head> element.
 
 Note that in this document whenever you encounter a string enclosed in curly brackets ``{value}``, it means that the entire string must be replaced with a customer value (e.g. ``gradient-{value}`` means that ``gradient-0.75`` and ``gradient-1.25`` are both valid values). 
 
@@ -41,142 +41,54 @@ Note that in this document whenever you encounter a string enclosed in curly bra
 	
 	<link rel="stylesheet" type="text/css" href="http://api.reportgrid.com/css/rg.css"/>
 
-You can change the color schemes of the visualization by loading one of our optional `css palettes`_. The palettes CSS files are located here http://api.reportgrid.com/css/colors/
+You can change the color schemes of the visualization loading one of our optional `css palettes`_. The palettes CSS files are located here http://api.reportgrid.com/css/colors/
 
-Every visualization is a method of the object ``ReportGrid`` and every visualization takes an element placeholder as the first argument. That argument can be a DOM element or a CSS selector (string); usually you will want to use the ID selector of an existing DIV in your page. The general struture has the following format: ::
+Every visualization is a method of the object ``ReportGrid`` and every visualization takes an element placeholder as the first argument. That argument can be a DOM element or a CSS selector (string); usually you will want to use the ID selector of an existing DIV in your page. In the example above the "#chart" selector refers to the <div id="chart"></div> node in the DOM.
 
-  ReportGrid.[visualization name]([css selector], [configuration object])
+The second argument is always an object that contains all the info required to make the visualization render.
 
-In the example above, we see that the "#chart" selector is being used for the [css selector] parameter, to refer to the <div id="chart"></div> node in the DOM. 
-
-The second argument is always a JavaScript object that contains all the info required to make the visualization render.  
-There are two forms available for the configuration object, a `Simplified Query Model`_ and a `Complete Query Model`_.
-
-------------
-Example Data
-------------
-
-In the examples below, we will refer to two different events representative of the kinds of events that might come from a customer support system. 
-Here are some samples of the data being tracked: ::
-
-  {
-    "customer_support" : {
-      "type": "call",
-      "duration": 147,
-      "representative": "Alice Brewer",
-      "resolution": {
-        "type": "escalated",
-        "to":   "Candice Deming"
-      },
-      "#timestamp": (see below),
-      "#location": (see below)
-    }
-  }
-
-  {
-    "widget_impression" : {
-      "source_id": 123456,
-      "widget_type": "minimal",
-      "page_position": "sidebar"
-    }
-  }
+There are two way to configure that object, a `Simplified Query Model`_ and a `Complete Query Model`_; they both share a common ``options`` field that works the same in both context.
 
 -----------------------
 Simplified Query Model
 -----------------------
 
-The ReportGrid simplified query model gives you the ability to quickly build visualizations using a very concise set of configuration object fields.
-In the case that some configuration object field is omitted, the visualization engine will attempt to choose an appropriate default value for that field.
-In general, the simplified query model is used to render visualizations where the essential information to be conveyed is the count of events, event properties,
-or event property values that satisfy some constraints.
+In the simplified query model you have the options to quickly build a big set of visualizations in a really easy fashion.
+The simplidied query model always tries to fill the blanks for you. 
+You can have one of the following combinations of parameters:
 
-The basic structure of the configuration object for the simplified query model is as follows. All fields are optional. The simplest configuration is the empty object: ::
+ * path: the query will retrieve all the count of all of the events at the path
+ * path + event/events: the query will retrieve the count of all the events at the path
+ * path + event + property: the query will retrieve the count of all the values for the specified property
 
-  ReportGrid.[visualization name]("#chart", {})
+If path is not specified the root path "/" is always assumed.
 
-The empty configuration will simply cause the count of all events at the root path for your token to be used as input data for the visualization.
-The exact results of this query will depend upon the visualization; for some visualizations such as a line chart, the dimension of the x axis will be assumed to be time
-and a default time range will be chosen for data to be rendered.
+The queries can be restricted to a certains time span by specifying the ``start`` and ``end`` parameters. Those parameters must always be specified in pair. When a time series is produced, the system will always fill those parameters automatically when they are not passed.
 
-The simplest field that can be added to the configuration object is the path in the virtual filesystem from which you wish to retrieve data: ::
+For a better insight on how the data are queried and retrieved tak a look at the `Complete Query System`_
 
-  ReportGrid.[visualization name]("#chart", {
-    path: "/customer1"
-  })
-
-In the absence of additional information, this visualization will use the count of all events tracked at that path, as above. Here, only events for customer1 will
-be shown.
-
-To a select a subset of events, you may add the "event" (or optionally "events") field. ::
-
-  ReportGrid.[visualization name]("#chart", {
-    path: "/customer1",
-    event: ".widget_impression" 
-  })
-
-or ::
-
-  ReportGrid.[visualization name]("#chart", {
-    path: "/customer1",
-    events: [".widget_impression", ".customer_support"]
-  })
-
-In these cases, only counts for the types of events that you have specified will be displayed. In the second example, the visualization will display both
-counts of widget impressions and counts of customer support events in relation to one another; this might be a pie chart with two colors, or a line chart
-with two lines where the x-axis defaults to the hours when the events were observed.
-
-Finally, you can also specify a property of the event object: ::
-
-  ReportGrid.[visualization name]("#chart", {
-    path: "/customer1",
-    event: ".widget_impression",
-    property: ".page_position"
-  })
-
-In this case, the chart will display count data for each value of the property "page position" - for example, counts of sidebar widgets, header widgets, etc.
-
-Visualizations can be restricted to only render data for a certain time span by specifying values for the ``start`` and ``end`` fields. 
-These fields must always be specified as a pair, and if a time series visualization is requested without values for the start and end being
-provided, the system will choose default values for these fields which may or may not give the results you are hoping for.
-
-Below is the complete list of fields that can be used in configuration of the simplified query model.
-
-**Complete list of configuration fields:**
-
-path : string
-	The path where the events are stored. The path must always begin with a slash ``/``; an ending slash is optional.
-	Note that any path may be a valid value even if no event data is stored there. In case that
-  there are no events yet stored at the specified path, the server will respond with an empty dataset.
+**options:**
 
 event : string
-	The name of the event.
-
+	The event name.
 events : string OR array string
-	One or more (array of values) event names. If you use the "events" field then you may not specify a value for the "property" field; in order to display property
-  values for multiple events, plese see the documentation for the `Complete Query System`_ below.
-
+	One or more (array of values) event names.
+end : timestamp
+	The end of the time span
+	The ``start`` and ``end`` paramater must be specified as a timestamp (number), Date or a parsable date string.
+path : string
+	The path where the events are stored. The path must alwyas begin with a slash ``/``. The ending slash is optional.
+	Note that any path is a valid value even if no events are stored there. In case the path does not exist because there are no events stored yet, the server will response with an empty set of data.
+periodicity : string
+	Periodicity can be any of the following values: ``minute``, ``hour``, ``day``, ``week``, ``month``, ``year`` or ``eternity``
+	The granularity is choosen automatically based on the start/end range if not specified and based on the type of visualization.
+	So if you pick a ``piechart`` the ``periodicity`` will be automatically set to ``eternity`` but not for a ``linechart``.
+	Note that if you pick a small granularity with an extended time span you can get a really huge amount of data back that besides slowing down your visualizations will probably not convey any meaningfull visualization.
 property : string
-	The name of the event property 
-
+	The property name whose values you want to visualize.
 start : timestamp
 	The beginning of the time span.
 	The ``start`` and ``end`` paramater must be specified as a timestamp (number), Date or a parsable date string.
-
-end : timestamp
-	The end of the time span
-
-periodicity : string
-	Periodicity can be any of the following values: ``minute``, ``hour``, ``day``, ``week``, ``month``, ``year`` or ``eternity``
-	The periodicity is chosen automatically based on the start/end range if not specified, with the value chosen depending
-  upon the type of visualization. For example, if you pick a ``piechart`` the ``periodicity`` will be automatically set to ``eternity`` 
-  if not specified.  Note that if you pick a small peridicity with an extended time span you may end up retrieving get a very large amount 
-  of data back that can slow down the rendering of your visualization, and may cause the content of the visualization to be less meaningful.
-
-options : object
-  A set of configuration options that is specific to the visualization method being applied. The specific options available to each visualization
-  are described in the `Visualization Methods_` section below.
-
-For a better insight into how the data used for rendering the visualizations are queried and retrieved, please see the `Complete Query System`_ section.
 
 -----------------------
 Visualization Methods

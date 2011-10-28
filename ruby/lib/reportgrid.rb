@@ -157,7 +157,7 @@ module ReportGrid
 
     # Create a new token
     def new_token(path)
-      @analytics.post("#{Path::Analytics::TOKENS}/", :body=> {:path => path})
+      @analytics.post("#{Path::Analytics::TOKENS}", :body=> {:path => path})
     end
 
     # Return information about a token
@@ -167,7 +167,7 @@ module ReportGrid
 
     # Return all child tokens
     def tokens
-      @analytics.get("#{Path::Analytics::TOKENS}/")
+      @analytics.get("#{Path::Analytics::TOKENS}")
     end
 
     # Delete a token
@@ -178,7 +178,7 @@ module ReportGrid
     # Track an event
     def track(path, name, properties, options={})
       options[:rollup]    ||= false
-      options[:timestamp] ||= Time.now.to_i
+      options[:timestamp] ||= (Time.now.to_f * 1000.0).to_i
       options[:count]     ||= 1
 
       # Sanitize path
@@ -189,31 +189,34 @@ module ReportGrid
 
       # Track event
       parameters = options[:count] && options[:count] > 1 ? {:parameters => options[:count]} : {}
-      @analytics.post(path, :body => { name => properties.merge({'#timestamp' => options[:timestamp]}) }, :parameters => parameters)
+      response = @analytics.post(path, :body => { name => properties.merge({'#timestamp' => options[:timestamp]}) }, :parameters => parameters)
 
       # Roll up to parents if necessary
-      parent_path = sanitize_path("#{path}/../")
+      parent_path = sanitize_path(path.gsub(/\/[^\/]*/, ""))
       if options[:rollup] && parent_path.start_with?(Path::Analytics::VFS) &&
         parent_path != Path::Analytics::VFS
           track(parent_path, name, properties, options)
       end
+
+      response
     end
 
     # Return children of the specified path
     def children(path, options={})
-      options[:property] ||= ''
-      options[:type]     ||= 'all'
+      options[:type]     ||= :all
 
       options[:property] = sanitize_property(options[:property])
-      path = "#{Path::Analytics::VFS}/#{path}/#{options[:property]}"
+      path = "#{Path::Analytics::VFS}/#{path}#{options[:property].nil? ? '' : "/#{options[:property]}"}"
 
       children = @analytics.get(sanitize_path(path))
-      if options[:type] == 'path'
-        children.select {|obj| obj.end_with?('/')}
-      elsif options[:type] == 'property'
-        children.select {|obj| obj.start_with?('.')}
-      elsif options[:property].length > 0
-          children.reject {|obj| obj == options[:property]}
+
+      case  options[:type]
+        when :path
+          children.reject {|obj| obj.start_with?('.')}
+        when :property
+          children.select {|obj| obj.start_with?('.')}
+        else
+          children
       end
     end
 
@@ -251,7 +254,6 @@ module ReportGrid
     def property_value_series(path, property, value, options={})
       options[:periodicity] ||= Periodicity::ETERNITY
       
-
       property = sanitize_property(property)
       path = "#{Path::Analytics::VFS}/#{path}/#{property}/values/#{value}/series/#{options[:periodicity]}"
       @analytics.get(sanitize_path(path), :parameters => options.reject{|k, v| k == :periodicity})
