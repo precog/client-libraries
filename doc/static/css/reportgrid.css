@@ -1,0 +1,393 @@
+
+
+* {
+  margin:           0px;
+  padding:          0px;
+  border:           0px;
+  list-style-type:  none;
+  text-decoration:  none;
+  position:         relative;
+  color: white;
+  font-family: arial;
+}
+
+body {
+  background-color: #0E0F12;
+  font-size:1em;
+}
+
+@import url(http://fonts.googleapis.com/css?family=Abel);
+
+@import url(http://fonts.googleapis.com/css?family=Questrial);
+
+@import url(http://fonts.googleapis.com/css?family=Antic);
+
+a:link{color:#A8AECC;text-decoration:none}
+
+a:visited{color:#A8AECC;text-decoration:none}
+
+p {
+  font-size:11px;
+  font-family:Abel;
+  margin-bottom: 15px;
+  color:#8A8FA8;
+}
+
+p4 {
+  font-size:16px;
+  padding-bottom: 15px;
+  font-family:Abel;
+  color:#8A8FA8;  
+}
+
+.pageTitle {
+  font-size:143%;
+  font-family:abel;
+  color:#8A8FA8;
+  text-align: right;
+  padding:30px 20px 25px 0; 
+}
+
+.wrapper {
+  margin:auto;
+  width: 1070px;
+  background: 999999;
+  border: 0px;
+  min-height: 510px;
+}
+
+.header {
+  height: 110px;
+  background-color: #292930;    
+}
+
+.mainBody {
+	background-color: #1A1B20;
+}
+
+.footer { 
+	padding:34px 56px 0 56px;
+	height: 110px;
+  	background-color: #141417;    
+}
+ 
+/*header*/ 
+    .navcontainer {
+        position: absolute;
+        top:50px;
+        left:328px;
+        font-size: 10pt;
+        font-family:Antic;
+    }
+    
+.navlist ul {
+    font-family:Antic;
+    color: #ffffff;
+    padding: 10px;
+    }
+    
+    ul.navlist a
+    {
+    text-decoration: none;
+    font-family:Questrial;
+    }
+    
+    ul.navlist, ul.navlist ul, ul.navlist li
+    {
+    margin:0 0 -1px 0;
+    padding: 0;
+    list-style-type: none;
+    }
+    
+    ul.navlist li {
+     float: left;
+    }
+    
+    ul.navlist li a
+    {
+    color: #ffffff;
+    padding: 10px;
+    }
+    
+    ul.navlist li a:hover 
+    {
+    color: #ffcc33;
+    background-color: #3E3E47;
+    opacity: 0.9;
+    display: block;
+    }
+    
+    .navlist li a:active
+    {
+  	 background-color: #3E3E47;
+    }
+    
+   .subnavlist {
+   		display: none;
+   		z-index: 100;
+   		}
+   
+   .subnavlist li {
+   	padding:10px 0 0 13px;
+    color: #9FA5C2;
+    font-size: 11px;
+    line-height: 1.5em; }
+    
+    .subnavlist li ul li a:hover .navlist li{
+    background-color: #3E3E47;
+        }
+    
+   .navlist li:hover > a {
+	background-color: #3E3E47;
+	}
+
+    
+   .subnavlist li a
+    {
+    color: ACB5D4;
+    background-color: #3E3E47;
+    }
+    
+    .navlist li:hover ul.subnavlist
+    {
+    display: block;
+    position: absolute;
+    font-size: 9pt;
+    padding-top: 10px;
+    }
+    
+  .navlist li:hover ul.subnavlist li a
+    {
+    display: block;
+    width: 10em;
+    border: none;
+    padding: 10px;
+    opacity: 0.9;
+    }
+    
+    .navlist li:hover ul.subnavlist li a:before { content: ""; }
+    
+    .header .logo {
+    	top:40px;
+    	left:46px
+    }
+/*headernavmenuend */    
+.mainBody {
+	min-height: 510px;
+	background-color: #1A1B20;
+}
+
+
+.middlecol .singlecol{
+	margin-bottom: 15px;
+}
+
+.middlecol .twocol{
+	-moz-column-count: 2;
+	-moz-column-gap: 32px;
+	-webkit-column-count: 2;
+	-webkit-column-gap: 32px;
+	column-count: 2;
+	column-gap: 32px;
+	margin-bottom: 15px;
+}
+
+.middlecol .threecol{
+	-moz-column-count: 3;
+	-moz-column-gap: 32px;
+	-webkit-column-count: 3;
+	-webkit-column-gap: 32px;
+	column-count: 3;
+	column-gap: 32px;
+	margin-bottom: 15px;
+
+}
+
+.rightcol {
+	padding: 80px 0 0 0;
+	width: 202px;
+	float: right;
+	height: auto;
+}
+    
+.rightcolpannel{
+float: right;
+background-color: #25252B;
+width:202px;
+height: 300px;
+}
+
+.rpaneltext {
+	padding: 12px 15px 0 30px;
+	text-align: left;
+    }
+
+
+.rightcol li {
+	margin:10px 0 0 13px;
+    list-style-type: square;
+    color: #9FA5C2;
+    font-size: 11px;
+    line-height: 1.5em;
+    }
+
+/*Left Column*/
+	
+
+.mainBody .leftcol{
+	min-height: 510px;
+	height: 100%;
+    width: 215px;
+    float: left;
+    }
+    
+.mainBody .leftcol ul
+    {
+    list-style-type: none;
+    }
+    
+.mainBody .leftcol li {
+    margin: 0 0 1px 0;
+    }
+    
+.mainBody .leftcol a
+    {
+    background-image: url(../images/lsnavbuttonlg.png);
+    width: 141px;
+    margin-top: 3px;
+    display: block;
+    padding: 13px 28px;
+    color: #C7CEF2;
+    text-decoration: none;
+    font-family:Abel;
+    }
+    
+.mainBody .leftcol a:hover
+    {
+    color: #ffcc33;
+    text-decoration: none;
+    opacity: 0.7;
+    }
+    
+.mainBody .leftcol ul ul li {
+    margin-top: 2px;
+    font-size: 10pt;
+    }
+    
+.mainBody .leftcol ul ul a
+    {
+    display: block;
+    padding: 2px 5px 2px 30px;
+    width: 162px;
+    background-image: url('../images/lsnavbuttonsm.png');
+    }
+    
+.mainBody .leftcol ul ul a:hover
+    {
+    text-decoration: none;
+    opacity: 0.7;
+    }
+
+/*Middle Column */
+    .middlecol{
+    height: 100%;
+    width: 600px;
+    padding: 33px 20px 0 20px;
+    float: left;
+    }
+    
+/*footernavmenubegin */
+
+.sitelist
+    {
+    width: 690px;
+    list-style-type: none;
+    float: left;
+    }
+
+
+.footer .row{
+	height: 110px;
+	width:115px;
+	float: left;
+}    
+
+
+.footer .sitelist li {
+        
+        }
+    
+.footer .sitelist li a 
+    {
+    font-family:Questrial; font-size: 9px;
+    color: #545766;
+    line-height: 18px;
+    }
+    
+.footer .sitelist li a:hover
+    {       
+    color: #FFCD36;
+    }
+    
+.footer .sitelist li a
+    {
+    color: #707487;
+    font-size: 7.5pt;
+    }
+    
+    /*subsitelist */
+
+.footer .sitelist .subsitelist li
+    {
+    
+    }
+    
+    .footer .sitelist ul
+    {
+    
+    }
+    
+/*footernavmenuend */
+.footerrightcol{
+margin: -10px 0 0 0;
+	float: right;
+	width: 230px;
+	height: 111px
+	letter-spacing:5px;
+}
+
+.footer .phoneNumber{
+	width: 231px;
+	float: right;
+	letter-spacing:5px;
+	font-size:26px;
+  	margin-bottom: 33px;
+  	color:#8A8FA8;
+  	font-family:Abel;	
+}
+.footer .privacyTerms {
+	padding: 0 35px 0 0;
+	text-align: left;
+	letter-spacing: normal;
+	float:left;
+  	font-size:9px;
+  	font-family:Questrial;
+  	color:#8A8FA8;
+}
+
+.footer .socialIcons{
+float: right;
+}
+.footer .socialIcons img {
+    opacity: 0.7;
+}
+
+.fotter .socialIcons img last{
+	padding: 0 10px 0 0;
+}
+.email {
+    position: absolute;
+    top: 86px;
+    left: 932px;
+}
+
