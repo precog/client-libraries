@@ -6,38 +6,30 @@
 
 @import url(html4css1.css);
 
-ol.simple li, ul.simple li {
-	font-size: 100%;
+
+ol.simple li,ul.simple li {
+	list-style-position: inside ! important;
 }
 
- ul.simple li {
-	font-weight: normal;
-	margin: 0 0 0 3em;
-	list-style-type: square;
-}
+
 
 table.docutils caption {
-	font-size:100%;	
 }
 
-contents.topic ul.simple li {
+.api Doccontents.topic ul.simple li {
 list-style-type: none;
 }
 
 ul.simple li ul li  {
-	font-family: abel;
-	font-size: 80%;
-	list-style-type: none;
-	font-weight: normal;
-	color:#b7bfe4;
-	margin: 0 0 0 3em;
+list-style-type: none;
+	
 }
 
 /* used to remove borders from tables and images */
-.borderless, table.borderless td, table.borderless th {
+.borderless,.table.borderless td,table.borderless th {
   border: none }
 
-table.borderless td, table.borderless th {
+table.borderless td,table.borderless th {
   /* Override padding for "table.docutils td" with "! important".
      The right padding separates the table cells. */
   padding: 0 0.5em 0 0 ! important }
@@ -46,42 +38,34 @@ table.borderless td, table.borderless th {
   /* Override more specific margin styles with "! important". */
   margin-top: 0 ! important }
 
-.last, .with-subtitle {
-font-size: 100%;
-  margin-bottom: 0 ! important;
-}
 
 
 p em{
-font-size: 105%;
-color: #fff;
+font-size: 1.05em;
+color: #AAA;
 }
 
 .hidden {
   display: none }
 
-a:hover {
-	color: #FC3;
-}
 
 a.toc-backref {
-  text-decoration: none ;
-  font-size: 100%;
+	font-weight: bold;
+	color: #AAA;
 
   }
 
-blockquote.epigraph {
-  margin: 2em 5em ; }
+blockquote.epigraph { }
 
 dl.docutils dd {
   color:#8A8FA8;
-  margin-bottom: 0.5em;
+  margin-bottom: 0.75em;
   font-family: abel;
-  font-size: 80%;}
+  font-size: .875em;}
 
 dl.docutils dt {
-  color:#fff;
-  font-size: 80%;
+  color:#AAA;
+  font-size: .875em;
   font-family: abel;
   font-weight: bold }
 
@@ -92,29 +76,29 @@ div.abstract p.topic-title {
   font-weight: bold ;
   text-align: center }
 
-div.admonition, div.attention, div.caution, div.danger, div.error,
-div.hint, div.important, div.note, div.tip, div.warning {
+div.admonition,div.attention,div.caution,div.danger,div.error,
+div.hint,div.important,div.note,div.tip,div.warning {
   margin: 2em ;
   border: medium outset ;
   padding: 1em }
 
-div.admonition p.admonition-title, div.hint p.admonition-title,
-div.important p.admonition-title, div.note p.admonition-title,
+div.admonition p.admonition-title,div.hint p.admonition-title,
+div.important p.admonition-title,div.note p.admonition-title,
 div.tip p.admonition-title {
   font-weight: bold ;
   font-family: sans-serif }
 
-div.attention p.admonition-title, div.caution p.admonition-title,
-div.danger p.admonition-title, div.error p.admonition-title,
+div.attention p.admonition-title,div.caution p.admonition-title,
+div.danger p.admonition-title,div.error p.admonition-title,
 div.warning p.admonition-title {
   color: red ;
   font-weight: bold ;
   font-family: sans-serif }
 
-div.compound .compound-first, div.compound .compound-middle {
+div.compound .compound-first,div.compound .compound-middle {
   margin-bottom: 0.5em }
 
-div.compound .compound-last, div.compound .compound-middle {
+div.compound .compound-last,div.compound .compound-middle {
   margin-top: 0.5em }
 
 
@@ -131,9 +115,6 @@ div.figure {
   margin-left: 2em ;
   margin-right: 2em }
 
-div.footer, div.header {
-  clear: both;
-  font-size: smaller }
 
 div.line-block {
   display: block ;
@@ -175,78 +156,58 @@ div.system-message p.system-message-title {
 div.topic {
   margin: 2em }
 
-h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
-h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
-	  margin-top: 1em }
+h1.section-subtitle,h2.section-subtitle,h3.section-subtitle,
+h4.section-subtitle,h5.section-subtitle,h6.section-subtitle {
+	  margin-top: 1em 
+}
 
 .section {
-margin:1.875em;
-}
-
-h1 {
-font-size: 100%;
-}
-
-strong {
-font-family: abel;
-font-size: 90%;
-color:fff;
-font-weight:normal;
-
+padding: 0 1em;
 }
 
 contents-topic {
 	list-style-type: none;
+	
 }
 
-.external{
-	font-family: abel;
-	font-size: 90%;	
-	font-weight: bold;
-	color: 
-}
-.internal {
-	font-size: 100%;
-	color: #3E3E47;
+h1{
+    font-size:1em;
+    font-family:Abel;
+    font-weight:normal;
+    color:#8A8FA8;
+    list-style-type:  none;
+    text-decoration:  none;
+    padding-top: 30px;
+    padding-bottom: 24px;
+    padding: 30px 0 24px
 }
 
-.apiMiddleCol{
-padding:0 56px 56px 56px;
- }
-
-h1.title {
-  font-size:100%;
-  font-family: Abel;
-  color:#fff; 
-  float: left;	
+h1,h2,h3,h4 {
+padding-bottom: .10em;
+margin-bottom: .55em;
+border-bottom: 2px solid #3E3E47;
   }
   
-h2,h3,h4 {
-	font-size:95%;
-	font-family: Abel;
-	margin:0.65em 0.625em;
-	border-bottom:2px solid #545766;
-}
 
 h2.subtitle {
-font-size: 90%;
+font-size: .875em;
   text-align: left;
    }
 
 hr.docutils {
   width: 90% }
 
-img.align-left, .figure.align-left, object.align-left {
+img.align-left,.figure.align-left,object.align-left {
   clear: left ;
   float: left ;
   margin-right: 1em }
 
-img.align-right, .figure.align-right, object.align-right {
+img.align-right,.figure.align-right,object.align-right {
   clear: right ;
   float: right ;
   margin-left: 1em }
 
-img.align-center, .figure.align-center, object.align-center {
+img.align-center,.figure.align-center,object.align-center {
   display: block;
   margin-left: auto;
   margin-right: auto;
@@ -269,11 +230,10 @@ div.align-right {
 /* div.align-center * { */
 /*   text-align: left } */
 
-ol.simple, ul.simple {
-font-size: 80%;
-  margin-bottom: 1em;
-  line-height:1.25em;
-  font-weight:bold;
+ol.simple,ul.simple {
+	list-style-type: square ! important;
+	color: #8A8FA8;
+	font-size: .8em;
 
    }
   
@@ -322,7 +282,7 @@ p.sidebar-subtitle {
   font-weight: bold }
 
 p.topic-title {
-	font-size:110%;
+	font-size:1.1em;
   font-weight: bold;}
 
 pre.address {
@@ -330,25 +290,22 @@ pre.address {
   margin-top: 0 ;
   font: inherit }
 
-pre.literal-block, pre.doctest-block {
-font-size:70%;
+pre.literal-block,pre.doctest-block {
+font-size:.875em;
 line-height:1.25em;
 color:#aaa;
 background-color: #25252b;
-  padding:1em;
-  margin:1.25em;
-  border-bottom:1px thin #ccc;
-  border-top:1px thin #ccc;
+padding: 1em
   }
   
 
 span.classifier {
-font-size: 100%;
+font-size: .875em;
   font-family: sans-serif ;
   font-style: oblique }
 
 span.classifier-delimiter {
-font-size: 100%;
+font-size:.875em;
   font-family: sans-serif ;
   font-weight: bold }
 
@@ -361,7 +318,7 @@ span.option {
 span.pre {
 	
   white-space: pre; 
-  font-size: 100%;}
+  font-size: .875em;}
 
 span.problematic {
   color: red }
@@ -369,7 +326,7 @@ span.problematic {
 span.section-subtitle {
   /* font-size relative to parent (
   ..h6 element) */
-  font-size:90%;
+  font-size:.875em;
    }
 
 table.citation {
@@ -390,41 +347,31 @@ table.footnote {
   margin-left: 1px;
    }
 
-table.docutils td:
--child { 
-	font-weight:bold;
-	font-size:90%;
-	font-style:italic;
+table.docutils td: { 
+
 		 }
 
-table.docutils td, table.docutils th,
-table.docinfo td, table.docinfo th {
-font-size: 80%;
-	color:#aaa;
-  padding: 0.75em 0.75em ;
-  vertical-align:middle;
- border-bottom:solid 1px #8A8FA8;
- border-right:solid 1px #8A8FA8;
-  background-color: #141417;
-  padding:0.413em;
-  }
+table.docutils td,table.docutils th,
+table.docinfo td,table.docinfo th {
+font-size:.8em;
+color:#AAA;
+padding: 0.75em ;
+vertical-align:middle;
+border-bottom:solid 1px #334;
+border-right:solid 1px #334;
+background-color: #141417;
+padding:0.413em;
+}
 
-table.docutils th.field-name, table.docinfo th.docinfo-name {
-	font-weight:bold;
+table.docutils th.field-name,table.docinfo th.docinfo-name {
+  font-weight:bold;
   text-align: left ;
   white-space: nowrap ;
   color:#888;
   }
 
-h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
-h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
-  font-size: 90%; 
-  color:#fff }
+h1 tt.docutils,h2 tt.docutils,h3 tt.docutils,h4 tt.docutils,h5 tt.docutils,h6 tt.docutils {  }
 
 tt.literal{
-font-size: 90%;
-
-}
-
-p{
+font-size: .875em;
 }

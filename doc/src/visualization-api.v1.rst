@@ -119,7 +119,7 @@ To a select a subset of events, you may add the "event" (or optionally "events")
   })
 
 or ::
-
+-
   ReportGrid.[visualization name]("#chart", {
     path: "/customer1",
     events: [".widget_impression", ".customer_support"]

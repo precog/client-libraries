@@ -1,156 +1,165 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
     <head>
-        <title>%(body_pre_docinfo)s</title>
+        <title>Visualization Engine</title>
         <!--[if IE]>
         <link rel="stylesheet" type="text/css" href="ie.css" />
         <![endif]-->
-        <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.3.0/build/cssfonts/fonts-min.css"/>
-		<link rel="stylesheet" type="text/css" href="css/reportgrid.css"/>
-		<link rel="stylesheet" type="text/css" href="css/apidoc.css"/>
-		
-
+        <link rel="stylesheet" type="text/css" href="css/innerpage.css" />
+                
     </head>
-    
+
  <body>
-    <div class="wrapper">
-       <div class="header">
-                <img class="logo" src="images/logo1.png">      
-            <div class="navcontainer">
-                <ul class="navlist">
-                    <li><a href="index.html">home</a></li>
-                    <li><a href="solutions.html">solutions</a>
-                    <ul class="subnavlist">
-                        <li><a href="underconstruction.html">analytics database</a></li>
-                        <li><a href="underconstruction.html">visualization engine</a></li>
-                        <li><a href="underconstruction.html">professional services</a></li>                        
+      <div id="wrapper">
+        <div class="header">
+            <div id="headerlogo">
+                <a href="./index.html"><img src="images/logo1.png"></a>
+            </div>
+            <div id="loginbutton">
+                <a href="#"><img src="images/loginbutton.png"></a>
+            </div>
+            <div id="navcontainer">
+                <ul id="navlist">
+                    <li><a href="./index.html">home</a></li>
+                    <li class="active"><a href="solution.html" class="current">solutions</a>
+                    <ul id="subnavlist">
+                        <li class="subactive"><a href="analytics-database.html" id="subcurrent">analytics database</a></li>
+                        <li><a href="visualization-engine.html">visualization engine</a></li>
+                        <li><a href="professional-services.html">professional services</a></li>                        
                     </ul>
                     </li>
-                    <li ><a href="usecases.html">use cases</a>
-                    <ul class="subnavlist">
-                        <li ><a href="underconstruction.html">embeddable analytics</a></li>
-                        <li><a href="underconstruction.html">internal analytics</a></li>
-                        <li><a href="underconstruction.html">business intelligence</a></li>
+                    <li class="active"><a href="use-cases.html" class="current">use cases</a>
+                    <ul id="subnavlist">
+                        <li class="subactive"><a href="embeddable-analytics.html" id="subcurrent">embeddable analytics</a></li>
+                        <li><a href="internal-analytics.html">internal analytics</a></li>
+                        <li><a href="business-intelligence.html">business intelligence</a></li>
                     </ul>
                     </li>
-                    <li ><a href="pricing.html">pricing</a>
-                    <ul class="subnavlist">
-                        <li ><a href="underconstruction.html">cost calculator</a></li>
-                        <li><a href="signup.html">signup</a></li>
-                    </ul>
-                   
-                    <li ><a href="developer.html">developer</a>
-                    <ul class="subnavlist">
-                        <li ><a href="http://api.reportgrid.com/doc/rest-api.v1.rst.html">api documentation</a></li>
-                        <li><a href="underconstruction.html">console</a></li>
-                        <li><a href="underconstruction.html">client libraries</a></li>
+                    <li class="active"><a href="pricing.html" class="current">pricing</a>
+                    <ul id="subnavlist">
+                        <li class="subactive"><a href="developer-credit.html" id="subcurrent">developer credit</a></li>
+                        <li><a href="sign-up.html">signup</a></li>
                     </ul>
                     </li>
-                    <li ><a href="support.html">support</a>
-                    <ul class="subnavlist">
-                        <li ><a href="http://reportgrid.freshdesk.com/">help desk</a></li>
-                        <li><a href="underconstruction.html">white papers</a></li>
+                    <li class="active"><a href="developer.html" class="current">developer</a>
+                    <ul id="subnavlist">
+                        <li class="subactive"><a href="api-documentation.html" id="subcurrent">api documentation</a></li>
+                        <li><a href="console.html">console</a></li>
+                        <li><a href="http://github.com/reportgrid/client-libraries">client libraries</a></li>
                     </ul>
                     </li>
-                    <li ><a href="about.html">about</a>
-                    <ul class="subnavlist">
-                        <li ><a href="underconstruction.html">news</a></li>
-                        <li><a href="underconstruction.html">team</a></li>
-                        <li><a href="contactus.html">contact</a></li>
+                    <li class="active"><a href="support.html" class="current">support</a>
+                    <ul id="subnavlist">
+                        <li class="subactive"><a href="http://reportgrid.freshdesk.com/" id="subcurrent">help desk</a></li>
+                        <li><a href="white-papers.html">white papers</a></li>
+                        <li><a href="control-panel.html">control panel</a></li>
+                    </ul>
+                    </li>
+                    <li class="active"><a href="about.html" class="current">about</a>
+                    <ul id="subnavlist">
+                        <li class="subactive"><a href="news.html" id="subcurrent">news</a></li>
+                        <li><a href="team.html">team</a></li>
+                        <li><a href="contact-us.html">contact</a></li>
                     </ul>
                     </li>
                 </ul>
             </div>
         </div>
-  
-            <div class="mainBody">
-              	<div class="apiMiddlecol">
-            		<div class="pageTitle">%(body_pre_docinfo)s</div>
-                	%(docinfo)s	
-                	%(body)s	
-				</div>
-          
-                
-                
+        <div class="middle">
+            <div id="leftpanel">
+                <div id="pagetitle">
+                    <p class="pageheader">VISUALIZATION ENGINE</p>
+                </div>
+                 <div id="leftmenucontainer">
+                     <ul id="leftmenulist">
+                     <li class="active"><a href="#" class="current">REST APIa</a>
+                     <li><a href="#">api documentation</a></li>
+                     <li><a href="#">Javascript</a></li>
+                     <li><a href="#">Visualization</a></li>
+                     <li><a href="#">Ruby</a></li>
+                     <li><a href="#">Python</a></li>
+                     <li><a href="#">Others</a></li>
+                     <li><a href="#">client libraries</a></li>
+                     </ul>
+                </div>
             </div>
-        
-     
+            <div id="middlecontent">
+                <div id="apiDoc" class="apiDoc">
+                %(body_pre_docinfo)s
+                %(docinfo)s	
+                %(body)s
+                </div>
+            </div>
+            <div id="rightpanel">
+                <div id="rightsidepanel">
+                    <div id="rpaneltext">
+                        <p class="rightpaneltext">ReportGrid's visualization engine can render 95% of all common visualizations. It's easy to build your own custom visualizations on the same analytics API that our visualizations are built on.</p>
+                    </div>
+                </div>
+            </div>
+          </div> 
         <div class="footer">
-        	
-            <div class="sitelist" id="footer.leftcol">
-                <div class="row">
-                	<ul>
-                    <li><a href="solutions.html">solutions</a></li>
-                    <li><a href="underconstruction.html">analytics database</a></li>
-                    <li><a href="underconstruction.html">visualization engine</a></li>
-                    <li><a href="underconstruction.html">professional services</a></li>
+            <div id="sitecontainer">
+                <ul id="sitelist">
+                    <li class="active"><a href="solution.html" class="current">solutions</a>
+                    <ul id="subsitelist">
+                        <li class="subactive"><a href="analytics-database.html" id="subcurrent">analytics database</a></li>
+                        <li><a href="visualization-engine.html">visualization engine</a></li>
+                        <li><a href="professional-services.html">professional services</a></li>
                     </ul>
-                </div>
-                <div class="row">
-                <li ><a href="usecases.html">use cases</a>
-                    <ul class="subsitelist">
-                        <li ><a href="underconstruction.html">embeddable analytics</a></li>
-                        <li><a href="underconstruction.html">internal analytics</a></li>
-                        <li><a href="underconstruction.html">business intelligence</a></li>
-                    </ul>
-                </li>
-                </div>
-                <div class="row">
-                <li ><a href="pricing.html">pricing</a>
-                    <ul class="subsitelist">
-                        <li ><a href="underconstruction.html">cost calculator</a></li>
-                        <li><a href="signup.html">signup</a></li>
-                    </ul>
-                </li>
-                </div>
-                <div class="row">
-                <li ><a href="developer.html">developer</a>
-                    <ul class="subsitelist">
-                        <li ><a href="http://api.reportgrid.com/doc/rest-api.v1.rst.html">api documentation</a></li>
-                        <li><a href="underconstruction.html">console</a></li>
-                        <li><a href="underconstruction.html">client libraries</a></li>
-                    </ul>
-                </li>
-                </div>
-                <div class="row">
-                <li ><a href="support.html">support</a>
-                    <ul class="subsitelist">
-                        <li ><a href="http://reportgrid.freshdesk.com/">help desk</a></li>
-                        <li><a href="underconstruction.html">white papers</a></li>
-                    </ul>
-                </li>
-                </div>
-                <div class="row">
-                    <li ><a href="about.html">about</a>
-                    	<ul class="subsitelist">
-                        	<li ><a href="underconstruction.html">news</a></li>
-                        	<li><a href="underconstruction.html">team</a></li>
-                        	<li><a href="contactus.html">contact</a></li>
-                    	</ul>
                     </li>
-                </div>
+                    <li class="active"><a href="use-cases.html" class="current">use cases</a>
+                    <ul id="subsitelist">
+                        <li class="subactive"><a href="embeddable-analytics.html" id="subcurrent">embeddable analytics</a></li>
+                        <li><a href="internal-analytics.html">internal analytics</a></li>
+                        <li><a href="business-intelligence.html">business intelligence</a></li>
+                    </ul>
+                    </li>
+                    <li class="active"><a href="pricing.html" class="current">pricing</a>
+                    <ul id="subsitelist">
+                        <li class="subactive"><a href="developer-credit.html" id="subcurrent">developer credit</a></li>
+                        <li><a href="sign-up.html">signup</a></li>
+                    </ul>
+                    </li>
+                    <li class="active"><a href="developer.html" class="current">developer</a>
+                    <ul id="subsitelist">
+                        <li class="subactive"><a href="api-documentation.html" id="subcurrent">api documentation</a></li>
+                        <li><a href="console.html">console</a></li>
+                        <li><a href="http://github.com/reportgrid/client-libraries">client libraries</a></li>
+                    </ul>
+                    </li>
+                    <li class="active"><a href="support.html" class="current">support</a>
+                    <ul id="subsitelist">
+                        <li class="subactive"><a href="http://reportgrid.freshdesk.com/" id="subcurrent">help desk</a></li>
+                        <li><a href="white-papers.html">white papers</a></li>
+                        <li><a href="control-panel.html">control panel</a></li>
+                    </ul>
+                    </li>
+                    <li class="active"><a href="about.html" class="current">about</a>
+                    <ul id="subsitelist">
+                        <li class="subactive"><a href="news.html" id="subcurrent">news</a></li>
+                        <li><a href="team.html">team</a></li>
+                        <li><a href="contact-us.html">contact</a></li>
+                    </ul>
+                    </li>
+                </ul>
             </div>
-            <div class="footerrightcol" id="footer.rightcol">
-            	<div class="phoneNumber">
-                	(888) 673-9958
-           		</div>
-           		
-            	<div class="privacyTerms">
-                	<a href="privacy.html">privacy</a> : 
-                	<a href="termsofuse.html">terms of use</a> 
-                	<br>© 2010-2011 ReportGrid Inc.
-            	</div>
-            	<div class="socialIcons">
-               		<a href="contactus.html" target="_blank"> <img src="images/contactusicon.png"></a> 
-               					<a href="http://twitter.com/#!/ReportGrid" target="_blank"><img src="images/facebookicon.png"></a>
-                				<a href="http://www.facebook.com/ReportGrid?v=wall" target="_blank"><img src="images/twittericon.png"></a>
-            				</div>
-						</div> 
-              		</div>
-  
-                
-           	     
-           		</div>
-     
-	</body>
+            <div id="phonefooter">
+                <p class="phonelarge">(888) 673-9958</p>
+            </div>
+            <div id="termsprivacy">
+                <p class="micro"><a href="privacy.html">privacy</a> : <a href="termsofuse.html">terms of use</a> <br>© 2010-2011 ReportGrid Inc. <p>
+            </div>
+            <div id=contactus>
+                <a href="contact-us.html" target="_blank"> <img src="images/contactusicon.png"> </a>
+            </div>
+            <div id=facebook>
+                <a href="http://www.facebook.com/ReportGrid?v=wall" target="_blank"> <img src="images/facebookicon.png"> </a>
+            </div>
+            <div id=twitter>
+                <a href="http://twitter.com/#!/ReportGrid" target="_blank"> <img src="images/twittericon.png"> </a>
+            </div>
+        </div>
+      </div>
+    </body>
 </html>
