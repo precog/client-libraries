@@ -1,12 +1,13 @@
 @import url('colors/rg-colors-default.css');
 
-/* SVG */
 .rg 
 {
 	fill: none;
 	stroke: none;
+	position: relative;
 }
 
+/* SVG */
 .rg line, .rg path
 {
 	stroke-width: 1;
@@ -243,24 +244,18 @@
 	padding: 0;
 }
 
+.rg ul.leaderboard li.nogradient
+{
+	background-image: none;
+	text-shadow: 1px 1px 1px #999;
+}
+
 .rg ul.leaderboard li
 {
 	font-family:Tahoma,Arial,Helvetica,sans-serif;
 	font-size: 9pt;
 	color: #222;
 	background-color: #fff;
-}
-
-.rg .leaderboard li.nogradient
-{
-	background-image: none;
-	text-shadow: 1px 1px 1px #999;
-}
-
-.rg li
-{
-	padding: 0;
-	margin: 0;
 	background-image: -webkit-gradient(
 		linear,
 		left top,
@@ -275,14 +270,13 @@
 	);
 
 	background-repeat: repeat-y;
-	
-	border: 2px solid #ccc;
+	border-width: 2px;
+	border-style: solid;
 	margin: 0 0 4px 0;
 	max-width: 200px;
 	padding: 4px 6px;
 	
 	font-weight: bold;
-	font-size: 85%;
 	
 	-webkit-text-shadow: 0 1px 0 #fff;
 	-moz-text-shadow: 0 1px 0 #fff;
@@ -527,3 +521,103 @@
 	stroke-width: 1;
 }
 
+
+.rg.menu
+{
+	border:1px solid #CCC;
+    border-radius:2px;
+	width: 20px;
+	height: 20px;
+	background-image : url(images/button-download.png);
+	background-color : rgba(255,255,255,0.75);
+}
+
+.rg.menu div.options
+{
+	background-image : url(images/spinner.gif);
+	background-repeat: no-repeat;
+	background-position: -1000px -1000px; 
+}
+
+.rg.menu.downloading
+{
+	background-image : url(images/spinner.gif);
+	border: none;
+}
+
+.rg.menu div.options
+{
+    display: none;
+	border:1px solid #CCC;
+    border-radius:2px;
+	float:left;
+	margin-top: 20px;
+	margin-left: -1px;
+	background-color : rgba(255,255,255,0.9);
+	z-index: 10000;
+	position: absolute;
+}
+
+.rg.menu ul
+{
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.rg.menu ul li
+{
+	font-family: Helvetica, Arial, Sans-Serif;
+	color:#999;
+	font-size: 80%;
+	text-decoration: none;
+	display: block;
+	padding-left: 1em;
+	padding-right: .3em;
+	line-height: 200%;
+	cursor: pointer;
+}
+
+.rg.menu div.title
+{
+	border-bottom: 1px solid #CCC;
+	font-family: Helvetica, Arial, Sans-Serif;
+	color:#999;
+	font-size: 85%;
+	border-bottom: 1px solid #CCC;	
+	padding-left:.3em;
+	padding-right: .3em;
+	line-height: 200%;
+}
+
+.rg.menu:hover > div.options
+{
+    display: block;
+}
+
+.rg.menu.downloading > div.options
+{
+	display: none;
+}
+
+.rg.menu.top
+{
+	position: absolute;
+	top: 0px;
+}
+
+.rg.menu.bottom
+{
+	position: absolute;
+	bottom: 0px;
+}
+
+.rg.menu.left
+{
+	left: 0px;
+}
+
+.rg.menu.right
+{
+	right: 0px;
+}
