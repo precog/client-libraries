@@ -1,0 +1,1081 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Visualization Engine</title>
+        <!--[if IE]>
+        <link rel="stylesheet" type="text/css" href="ie.css" />
+        <![endif]-->
+        <link rel="stylesheet" type="text/css" href="css/apidoc.css" />
+        <link rel="stylesheet" type="text/css" href="css/innerpage.css" />           
+    </head>
+ <body>
+      <div id="wrapper">
+        <div class="header">
+            <div id="headerlogo">
+                <a href="./index.html"><img src="images/logo1.png"></a>
+            </div>
+            <div id="loginbutton">
+                <a href="#"><img src="images/loginbutton.png"></a>
+            </div>
+            <div id="navcontainer">
+                <ul id="navlist">
+                    <li><a href="./index.html">home</a></li>
+                    <li class="active"><a href="solution.html" class="current">solutions</a>
+                    <ul id="subnavlist">
+                        <li class="subactive"><a href="analytics-database.html" id="subcurrent">analytics database</a></li>
+                        <li><a href="visualization-engine.html">visualization engine</a></li>
+                        <li><a href="professional-services.html">professional services</a></li>                        
+                    </ul>
+                    </li>
+                    <li class="active"><a href="use-cases.html" class="current">use cases</a>
+                    <ul id="subnavlist">
+                        <li class="subactive"><a href="embeddable-analytics.html" id="subcurrent">embeddable analytics</a></li>
+                        <li><a href="internal-analytics.html">internal analytics</a></li>
+                        <li><a href="business-intelligence.html">business intelligence</a></li>
+                    </ul>
+                    </li>
+                    <li class="active"><a href="pricing.html" class="current">pricing</a>
+                    <ul id="subnavlist">
+                        <li class="subactive"><a href="developer-credit.html" id="subcurrent">developer credit</a></li>
+                        <li><a href="sign-up.html">signup</a></li>
+                    </ul>
+                    </li>
+                    <li class="active"><a href="developer.html" class="current">developer</a>
+                    <ul id="subnavlist">
+                        <li class="subactive"><a href="api-documentation.html" id="subcurrent">api documentation</a></li>
+                        <li><a href="console.html">console</a></li>
+                        <li><a href="http://github.com/reportgrid/client-libraries">client libraries</a></li>
+                    </ul>
+                    </li>
+                    <li class="active"><a href="support.html" class="current">support</a>
+                    <ul id="subnavlist">
+                        <li class="subactive"><a href="http://reportgrid.freshdesk.com/" id="subcurrent">help desk</a></li>
+                        <li><a href="white-papers.html">white papers</a></li>
+                        <li><a href="control-panel.html">control panel</a></li>
+                    </ul>
+                    </li>
+                    <li class="active"><a href="about.html" class="current">about</a>
+                    <ul id="subnavlist">
+                        <li class="subactive"><a href="news.html" id="subcurrent">news</a></li>
+                        <li><a href="team.html">team</a></li>
+                        <li><a href="contact-us.html">contact</a></li>
+                    </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="middle">
+            <div id="leftpanel">
+                <div id="pagetitle">
+                    <p class="pageheader">VISUALIZATION ENGINE</p>
+                </div>
+                 <div id="leftmenucontainer">
+                     <ul id="leftmenulist">
+                     <li class="active"><a href="#" class="current">REST APIa</a>
+                     <li><a href="#">api documentation</a></li>
+                     <li><a href="#">Javascript</a></li>
+                     <li><a href="#">Visualization</a></li>
+                     <li><a href="#">Ruby</a></li>
+                     <li><a href="#">Python</a></li>
+                     <li><a href="#">Others</a></li>
+                     <li><a href="#">client libraries</a></li>
+                     </ul>
+                </div>
+            </div>
+            <div id="middlecontent">
+                <div id="apiDoc" class="apiDoc">
+                <h1 class="title">The ReportGrid REST API</h1>
+                	
+                <div class="contents topic" id="api-methods">
+<p class="topic-title first">API Methods</p>
+<ul class="simple">
+<li><a class="reference internal" href="#overview" id="id2">Overview</a></li>
+<li><a class="reference internal" href="#fundamental-concepts" id="id3">Fundamental Concepts</a><ul>
+<li><a class="reference internal" href="#events-and-data-points" id="id4">Events and Data Points</a></li>
+<li><a class="reference internal" href="#tags" id="id5">Tags</a></li>
+<li><a class="reference internal" href="#virtual-file-system" id="id6">Virtual File System</a></li>
+<li><a class="reference internal" href="#tokens" id="id7">Tokens</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id1" id="id8">API Methods</a><ul>
+<li><a class="reference internal" href="#token-manipulation" id="id9">Token Manipulation</a><ul>
+<li><a class="reference internal" href="#token-creation" id="id10">Token Creation</a></li>
+<li><a class="reference internal" href="#querying-child-tokens" id="id11">Querying Child Tokens</a></li>
+<li><a class="reference internal" href="#querying-token-properties" id="id12">Querying Token Properties</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#recording-data" id="id13">Recording Data</a></li>
+<li><a class="reference internal" href="#querying" id="id14">Querying</a><ul>
+<li><a class="reference internal" href="#explore" id="id15">Explore</a></li>
+<li><a class="reference internal" href="#variable-count" id="id16">Variable Count</a></li>
+<li><a class="reference internal" href="#variable-series" id="id17">Variable Series</a></li>
+<li><a class="reference internal" href="#series-of-summary-statistics" id="id18">Series of Summary Statistics</a></li>
+<li><a class="reference internal" href="#length" id="id19">Length</a></li>
+<li><a class="reference internal" href="#values" id="id20">Values</a></li>
+<li><a class="reference internal" href="#histogram" id="id21">Histogram</a></li>
+<li><a class="reference internal" href="#value-counts" id="id22">Value Counts</a></li>
+<li><a class="reference internal" href="#value-series" id="id23">Value Series</a></li>
+<li><a class="reference internal" href="#advanced-searches" id="id24">Advanced Searches</a></li>
+<li><a class="reference internal" href="#intersection-queries" id="id25">Intersection Queries</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="overview">
+<h1><a class="toc-backref" href="#id2">Overview</a></h1>
+<p>The ReportGrid platform exposes a <a class="reference external" href="http://en.wikipedia.org/wiki/Representational_State_Transfer">REST API</a> from
+which you can:</p>
+<ul class="simple">
+<li>record data points (events and associated properties)</li>
+<li>perform queries, like retrieving counts and time series data</li>
+<li>manage tokens</li>
+</ul>
+<p>In addition to the REST API, which may be used from any language and platform that supports HTTP connections, we offer
+a growing number of client libraries designed to make using ReportGrid as simple as possible.</p>
+<p>The REST API only supports JSON and adheres strictly to the HTTP specification. All requests should have a Content-Type
+header equal to <strong>application/json</strong> and use token authentication.</p>
+<p>The API root is located at the following URL:</p>
+<p><a class="reference external" href="http://api.reportgrid.com/services/analytics/v1">http://api.reportgrid.com/services/analytics/v1</a></p>
+</div>
+<div class="section" id="fundamental-concepts">
+<h1><a class="toc-backref" href="#id3">Fundamental Concepts</a></h1>
+<p>In order to successfully use the ReportGrid API, you should be familiar with a few key concepts: data points, tags, the
+virtual file system, and tokens.</p>
+<div class="section" id="events-and-data-points">
+<h2><a class="toc-backref" href="#id4">Events and Data Points</a></h2>
+<p>ReportGrid is designed to aggregate, analyze, and visualize <em>events</em> and <em>data points</em>. We'll begin with discussing
+events, and then explore data points, which are simply a generalization of events.</p>
+<p>An event is anything that happens at a particular point in time. For example, the delivery of an email, the withdrawal
+of cash from an ATM, a click on a web page, or the processing of a census form.</p>
+<p>Events are identified by <em>name</em> and <em>properties</em>: the event name is just a string that uniquely identifies the event
+(usually describing what occurred, such as &quot;push to mobile device&quot;, while properties are additional metadata that
+describe details of the event (such as the handset, carrier, location, and type of the push).</p>
+<p>Time is implicitly a property of every event, and if you do not specify a time for an event, ReportGrid uses the time
+at the moment when the event is tracked through the API.</p>
+<p>Data points are very similar to events, but dispense with the restriction on time being part of an event; a data point
+is simply a name coupled with associated metadata.</p>
+</div>
+<div class="section" id="tags">
+<h2><a class="toc-backref" href="#id5">Tags</a></h2>
+<p>Tags provide a mechanism that can be used to specify special kinds of event metadata where the system can take
+advantage of additional information to improve searches. For example, timestamps and geolocation information
+are kinds of data that should be explicitly specified using tags so that they are not treated as opaque values.
+Special syntax for identifying tagged properties will be listed below in the tracking section of the API.</p>
+</div>
+<div class="section" id="virtual-file-system">
+<h2><a class="toc-backref" href="#id6">Virtual File System</a></h2>
+<p>Whenever you track data or query using ReportGrid, you must specify a <em>path</em> in the ReportGrid virtual file system.
+The Virtual File System is much like a real file system: there is a root directory, and any directory can contain other
+directories, as well as data.</p>
+<p>You use the Virtual File System to organize data, for example, tracking events from different customers in different
+folders. Most client libraries allow you to automatically roll-up data to higher-level folders in the file system, so
+you can look at data at differing levels of granularity.</p>
+</div>
+<div class="section" id="tokens">
+<h2><a class="toc-backref" href="#id7">Tokens</a></h2>
+<p>Tokens are how you control access to resources in ReportGrid.</p>
+<p>Every ReportGrid account is assigned a master token, which can be used to create other tokens. Tokens are always
+associated with a particular path in the virtual file system, and have access to both that path, and to all of its
+descendants.</p>
+<p>Tokens may have read, write, and share permissions, but they cannot have more permissions than their parent token (the
+token used to create them). Typically, you will store one or more tokens for each of your customers, and each token
+will permit access to a customer-specific path in the Virtual File System (e.g. /customers/jdoe/).</p>
+<p>All requests to the REST API require token authentication, which is accomplished by using a <strong>tokenId=[guid_tokenId]</strong>
+query string parameter.</p>
+</div>
+</div>
+<div class="section" id="id1">
+<h1><a class="toc-backref" href="#id8">API Methods</a></h1>
+<p>In the following documentation, each API method is specified in a table which describes the request method, the url
+pattern to which the request should be sent, and the format that the body of the request should adhere to. All requests
+should specify the Content-Type header to have the value <strong>application/json</strong>.</p>
+<p>In the sample requests below, all elements enclosed in parenthesis indicate configurable elements; opitonal elements
+are denoted -(elem) and elements where a selection may be made are labeled as (option1 | option2 | ...).</p>
+<div class="section" id="token-manipulation">
+<h2><a class="toc-backref" href="#id9">Token Manipulation</a></h2>
+<p>The two major things that tokens control are sets of permissions which contol access to data at paths in the  virtual
+filesystem, and limits on the kind of data that can be tracked at that path.</p>
+<p>ReportGrid's tokens API is located at:</p>
+<p><a class="reference external" href="http://api.reportgrid.com/services/analytics/v0/tokens/?tokenId=(guid">http://api.reportgrid.com/services/analytics/v0/tokens/?tokenId=(guid</a>)</p>
+<div class="section" id="token-creation">
+<h3><a class="toc-backref" href="#id10">Token Creation</a></h3>
+<p>Tokens can be created by POSTing to the ReportGrid tokens API with a JSON object that describes the path, permissions,
+and limits of the token.  A descendent token's permissions and limits cannot exceed (but may equal) the parent's.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="22%" />
+<col width="10%" />
+<col width="57%" />
+<col width="11%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>method</td>
+<td colspan="3">POST</td>
+</tr>
+<tr><td>url pattern</td>
+<td colspan="3">(API ROOT)/tokens</td>
+</tr>
+<tr><td>body</td>
+<td colspan="3">A JSON object describing the properties of the token.
+See below for an example.</td>
+</tr>
+<tr><td>request parameters</td>
+<td>tokenId</td>
+<td>The parent token to use in creating the new token</td>
+<td>required</td>
+</tr>
+</tbody>
+</table>
+<pre class="literal-block">
+{
+  &quot;path&quot;: &quot;/startups/launches&quot;,
+  &quot;permissions&quot;: {
+    &quot;read&quot;: true,
+    &quot;write&quot;: true,
+    &quot;share&quot;: false,
+    &quot;explore&quot;: false
+  },
+  &quot;expires&quot;: 9223372036854775807,
+  &quot;limits&quot;: {
+    &quot;order&quot;: 2,
+    &quot;limit&quot;: 2,
+    &quot;depth&quot;: 2,
+    &quot;tags&quot;: 1
+  }
+}
+</pre>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="8%" />
+<col width="73%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>path</td>
+<td colspan="2">the path in the virtual filesystem that this token controls access to</td>
+</tr>
+<tr><td rowspan="4">permissions</td>
+<td>read</td>
+<td>ability to query the token path</td>
+</tr>
+<tr><td>write</td>
+<td>ability to track data at the token's path</td>
+</tr>
+<tr><td>share</td>
+<td>whether this token can be used to create descendent tokens</td>
+</tr>
+<tr><td colspan="2">explore | whether children of this token's path can be listed</td>
+</tr>
+<tr><td>expires</td>
+<td colspan="2">timestamp when this token expires</td>
+</tr>
+<tr><td rowspan="4">limits</td>
+<td>order</td>
+<td>the maximum number of metadata properties accessible in an intersection query</td>
+</tr>
+<tr><td>limit</td>
+<td>the maximum number of metadata properties that can be stored with a data point</td>
+</tr>
+<tr><td>depth</td>
+<td>the maximum depth of a metadata object associated with a data point</td>
+</tr>
+<tr><td>tags</td>
+<td>the maximum number of tags that can be applied to a data point</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="querying-child-tokens">
+<h3><a class="toc-backref" href="#id11">Querying Child Tokens</a></h3>
+<p>To find the child tokens of a given token, simply send a GET request to the tokens URL</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="22%" />
+<col width="10%" />
+<col width="57%" />
+<col width="11%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>method</td>
+<td colspan="3">GET</td>
+</tr>
+<tr><td>url pattern</td>
+<td colspan="3">(API ROOT)/tokens</td>
+</tr>
+<tr><td>request parameters</td>
+<td>tokenId</td>
+<td>the parent token for which to retrieve children</td>
+<td>required</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="querying-token-properties">
+<h3><a class="toc-backref" href="#id12">Querying Token Properties</a></h3>
+<p>To retrieve the properties of a token, simply send a GET request to the url of the token to be retrieved.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="22%" />
+<col width="10%" />
+<col width="57%" />
+<col width="11%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>method</td>
+<td colspan="3">GET</td>
+</tr>
+<tr><td>url pattern</td>
+<td colspan="3">(API ROOT)/tokens</td>
+</tr>
+<tr><td>request parameters</td>
+<td>tokenId</td>
+<td>the parent token for which to retrieve children</td>
+<td>required</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="recording-data">
+<h2><a class="toc-backref" href="#id13">Recording Data</a></h2>
+<p>Two different methods are available for recording data points. In both cases, all that you need to do is send a POST
+request to the virtual filesystem path at which you desire to store the data; the two methods differ only with respect
+to whether or not the data is automatically timestamped if no timestamp is explicitly specified.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="27%" />
+<col width="12%" />
+<col width="47%" />
+<col width="14%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>method</td>
+<td colspan="3">POST</td>
+</tr>
+<tr><td>url pattern</td>
+<td colspan="3">(API ROOT)/vfs/(path)&quot;</td>
+</tr>
+<tr><td>body</td>
+<td colspan="3">A JSON object where each property represents an event
+to be tracked. See the <a class="reference internal" href="#querying">Querying</a> section for an
+example.</td>
+</tr>
+<tr><td rowspan="2">request parameters</td>
+<td>tokenId</td>
+<td>(your token id)</td>
+<td>required</td>
+</tr>
+<tr><td>count</td>
+<td>(number of occurences to record)</td>
+<td>optional</td>
+</tr>
+</tbody>
+</table>
+<p>Here, the body of the request is a JSON object. Each field in the object corresponds to an event being tracked; this
+provides you with the ability to track multiple events at once. For each property in the JSON object, the name of the
+property will used as event identifier. The value of the property can be any valid JSON structure (usually a JSON
+object).</p>
+<p>You will notice that in the example above, a couple of fields are prefixed with the &quot;#&quot; character. Properties whose
+names start with &quot;#&quot; identify so-called &quot;tag properties&quot; of the object. Tagged properties are used to provide
+information that needs to be treated specially by the system. For example, time and geolocation are specified using the
+#timestamp and #location properties. These tags can have the following formats:</p>
+<pre class="literal-block">
+// tell the system to autogenerate a timestamp for the event (if using the basic tracking api, this can be omitted)
+{&quot;myEvent&quot;: {&quot;#timestamp&quot;: true }}
+{&quot;myEvent&quot;: {&quot;#timestamp&quot;: &quot;auto&quot; }}
+
+// tell the system to use a specific timestamp
+{&quot;myEvent&quot;: {&quot;#timestamp&quot;: 1315321200000}}
+
+// tell the system to automatically determine a location for the event using IP resolution;
+// you may use the X-Forwarded-For header to specify an IP address if the event is not being tracked
+// directly from a client machine
+{&quot;myEvent&quot;: {&quot;#location&quot;: true}}
+{&quot;myEvent&quot;: {&quot;#location&quot;: &quot;auto&quot;}}
+
+// explicitly identify a location
+{&quot;myEvent&quot;: {&quot;#location&quot;: [&quot;usa&quot;, &quot;usa/colorado&quot;, &quot;usa/colorado/boulder&quot;]}}
+{&quot;myEvent&quot;: {&quot;#location&quot;: {&quot;country&quot;: &quot;usa&quot;, &quot;state&quot;: &quot;usa/colorado&quot;, &quot;city&quot;: &quot;usa/colorado/boulder&quot;}}}
+</pre>
+<p>The &quot;store&quot; call is identical to the base tracking call specified above, with a couple of very minor differences.
+First, the URL pattern is instead <tt class="docutils literal">(API <span class="pre">ROOT)/store/vfs/(path)</span></tt>; second, events sent to the store path are not
+automatically timestamped if the #timestamp tag is absent.</p>
+</div>
+<div class="section" id="querying">
+<h2><a class="toc-backref" href="#id14">Querying</a></h2>
+<p>ReportGrid makes it easy to retrieve time series or aggregated metrics on the fly. Following REST conventions, all you
+have to do is perform an HTTP request to the location of the metric you want. Most queries can be done using simple
+GET requests, although a couple of more complex queries require POST.</p>
+<p>The following examples will be based upon an event having been tracked by sending a POST to
+<a class="reference external" href="http://api.reportgrid.com/services/analytics/v1/vfs/mysupportco/myclient1?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D">http://api.reportgrid.com/services/analytics/v1/vfs/mysupportco/myclient1?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D</a>
+with the header (Content-Type = application/json) and the body content:</p>
+<pre class="literal-block">
+{
+  &quot;customer_support&quot; : {
+    &quot;type&quot;: &quot;call&quot;,
+    &quot;duration&quot;: 147,
+    &quot;representative&quot;: &quot;Alice Brewer&quot;,
+    &quot;resolution&quot;: {
+      &quot;type&quot;: &quot;escalated&quot;,
+      &quot;to&quot;:   &quot;Candice Deming&quot;
+    },
+    &quot;#timestamp&quot;: (see below),
+    &quot;#location&quot;: (see below)
+  }
+}
+</pre>
+<p>Anywhere that you see &quot;(path)&quot; below it is referring to the path at which the event was stored; in this example, that
+would be &quot;mysupportco/myclient1&quot;.</p>
+<div class="section" id="explore">
+<h3><a class="toc-backref" href="#id15">Explore</a></h3>
+<p>You can explore the virtual filesystem by simply sending a GET request to any path that you're interested in. Paths
+have two different components: the virtual filesystem path, and then the path to the property you're interested in
+within the event object. The two types of the path component can be distinguished by the path separator; in the former
+case, it's a &quot;/&quot;, while in the latter it is &quot;.&quot; to mimic retrieving properties from an object graph.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="11%" />
+<col width="36%" />
+<col width="33%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>method</td>
+<td colspan="3">GET</td>
+</tr>
+<tr><td>url pattern</td>
+<td colspan="3">(API ROOT)/vfs/(path)/(object path)</td>
+</tr>
+<tr><td>request parameters</td>
+<td>tokenId</td>
+<td>your token id</td>
+<td>required</td>
+</tr>
+<tr><td>response format</td>
+<td colspan="3">JSON array of child path element names.</td>
+</tr>
+</tbody>
+</table>
+<p>For example, given the above tracked event, a request to
+<a class="reference external" href="http://api.reportgrid.com/services/analytics/v1/vfs/mysupportco/myclient1/.customer_support.resolution?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D">http://api.reportgrid.com/services/analytics/v1/vfs/mysupportco/myclient1/.customer_support.resolution?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D</a>
+would return the value <tt class="docutils literal"><span class="pre">[&quot;.type&quot;,</span> &quot;.to&quot;]</tt></p>
+</div>
+<div class="section" id="variable-count">
+<h3><a class="toc-backref" href="#id16">Variable Count</a></h3>
+<p>The simplest query that can be performed simply retrieves the number of times a given event (or property of an event)
+was observed.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="11%" />
+<col width="36%" />
+<col width="33%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>method</td>
+<td colspan="3">GET or POST</td>
+</tr>
+<tr><td>url pattern</td>
+<td colspan="3">(API ROOT)/vfs/(path)/(object path)/count</td>
+</tr>
+<tr><td rowspan="4">request parameters</td>
+<td>tokenId</td>
+<td>your token id</td>
+<td>required</td>
+</tr>
+<tr><td>start</td>
+<td>starting timestamp</td>
+<td>optional</td>
+</tr>
+<tr><td>end</td>
+<td>ending timestamp</td>
+<td>optional</td>
+</tr>
+<tr><td>location</td>
+<td>location to seach</td>
+<td>required if used in tracking</td>
+</tr>
+<tr><td>response format</td>
+<td colspan="3">Numeric</td>
+</tr>
+</tbody>
+</table>
+<p>If you simply want to count the nuber of occurrences of an event, all you need to specify of the object path is the
+event type:
+<a class="reference external" href="http://api.reportgrid.com/services/analytics/v1/vfs/mysupportco/myclient1/.customer_support/count?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D">http://api.reportgrid.com/services/analytics/v1/vfs/mysupportco/myclient1/.customer_support/count?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D</a></p>
+<p>If you want to count the nuber of occurrences of a property of an event, you can walk down the object graph as shown
+here. This is useful in the case that not every event has the same structure; for example, the
+.customer_support.resolution.to property may only be present when the resolution type is &quot;escalated&quot;.
+<a class="reference external" href="http://api.reportgrid.com/services/analytics/v1/vfs/mysupportco/myclient1/.customer_support.resolution.to/count?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D">http://api.reportgrid.com/services/analytics/v1/vfs/mysupportco/myclient1/.customer_support.resolution.to/count?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D</a></p>
+</div>
+<div class="section" id="variable-series">
+<h3><a class="toc-backref" href="#id17">Variable Series</a></h3>
+<p>ReportGrid provides special convenience syntax and handling for time-series queries. In this example, we return the
+hourly counts of escalated customer support events.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="11%" />
+<col width="36%" />
+<col width="33%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>method</td>
+<td colspan="3">GET or POST</td>
+</tr>
+<tr><td>url pattern</td>
+<td colspan="3">(API ROOT)/vfs/(path)/(object path)/series/hour</td>
+</tr>
+<tr><td rowspan="4">request parameters</td>
+<td>tokenId</td>
+<td>your token id</td>
+<td>required</td>
+</tr>
+<tr><td>start</td>
+<td>starting timestamp</td>
+<td>optional</td>
+</tr>
+<tr><td>end</td>
+<td>ending timestamp</td>
+<td>optional</td>
+</tr>
+<tr><td>location</td>
+<td>location to seach)</td>
+<td>required if used in tracking</td>
+</tr>
+<tr><td>response format</td>
+<td colspan="3"><p class="first">JSON array of arrays where each inner array has two elements: the first
+element is an object identifying the key that the value was stored
+against, and the second element is a count. If, for example, you are
+querying by both time and location, the format will be something like:</p>
+<p class="last"><tt class="docutils literal"><span class="pre">[[{&quot;timestamp&quot;:</span> 1315454910389, &quot;location&quot;: <span class="pre">&quot;usa&quot;},</span> 132], <span class="pre">...]</span></tt></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>In addition to &quot;hour&quot; in the example above, you could also use &quot;minute&quot;, &quot;day&quot;, &quot;week&quot;, &quot;month&quot;, and &quot;year&quot;.</p>
+</div>
+<div class="section" id="series-of-summary-statistics">
+<h3><a class="toc-backref" href="#id18">Series of Summary Statistics</a></h3>
+<p>The queries for these series are identical to above, but admit one additional path component describing the type
+of summary statistics to return.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="11%" />
+<col width="36%" />
+<col width="33%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>method</td>
+<td colspan="3">GET</td>
+</tr>
+<tr><td rowspan="2">url pattern</td>
+<td colspan="3">(API ROOT)/vfs/(path)/(object path)/series/hour/means</td>
+</tr>
+<tr><td colspan="3">(API ROOT)/vfs/(path)/(object path)/series/hour/standardDeviations</td>
+</tr>
+<tr><td rowspan="4">request parameters</td>
+<td>tokenId</td>
+<td>(your token id)</td>
+<td>required</td>
+</tr>
+<tr><td>start</td>
+<td>starting timestamp</td>
+<td>optional</td>
+</tr>
+<tr><td>end</td>
+<td>ending timestamp</td>
+<td>optional</td>
+</tr>
+<tr><td>location</td>
+<td>(location to seach)</td>
+<td>required if used in tracking</td>
+</tr>
+<tr><td>response format</td>
+<td colspan="3">Same as for count series.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="length">
+<h3><a class="toc-backref" href="#id19">Length</a></h3>
+<p>This query returns the number of distinct values a property was observed to take on.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="11%" />
+<col width="36%" />
+<col width="33%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>method</td>
+<td colspan="3">GET</td>
+</tr>
+<tr><td>url pattern</td>
+<td colspan="3">(API ROOT)/vfs/(path)/(object path)/length&quot;</td>
+</tr>
+<tr><td>request parameters</td>
+<td>tokenId</td>
+<td>(your token id)</td>
+<td>required</td>
+</tr>
+<tr><td>response format</td>
+<td colspan="3">Numeric</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<p><a class="reference external" href="http://api.reportgrid.com/services/analytics/v1/vfs/mysupportco/myclient1/.customer_support.resolution.to/length?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D">http://api.reportgrid.com/services/analytics/v1/vfs/mysupportco/myclient1/.customer_support.resolution.to/length?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D</a></p>
+</div>
+<div class="section" id="values">
+<h3><a class="toc-backref" href="#id20">Values</a></h3>
+<p>These queries are used to determine what values a property was recorded to have.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="11%" />
+<col width="36%" />
+<col width="33%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>method</td>
+<td colspan="3">GET</td>
+</tr>
+<tr><td>url pattern</td>
+<td colspan="3">(API ROOT)/vfs/(path)/(object path)/values&quot;</td>
+</tr>
+<tr><td rowspan="4">request parameters</td>
+<td>tokenId</td>
+<td>(your token id)</td>
+<td>required</td>
+</tr>
+<tr><td>start</td>
+<td>starting timestamp</td>
+<td>optional</td>
+</tr>
+<tr><td>end</td>
+<td>ending timestamp</td>
+<td>optional</td>
+</tr>
+<tr><td>location</td>
+<td>(location to seach)</td>
+<td>required if used in tracking</td>
+</tr>
+<tr><td>response format</td>
+<td colspan="3"><p class="first">JSON array of arrays where each inner array has two elements: the first
+element is a value, and the second is a count of the number of times that
+value was observed.</p>
+<p class="last"><tt class="docutils literal"><span class="pre">[[&quot;escalated&quot;,</span> 132], [&quot;resolved&quot;, 175]]</tt></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<p><a class="reference external" href="http://api.reportgrid.com/services/analytics/v1/vfs/mysupportco/myclient1/.customer_support.type/values?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D">http://api.reportgrid.com/services/analytics/v1/vfs/mysupportco/myclient1/.customer_support.type/values?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D</a></p>
+</div>
+<div class="section" id="histogram">
+<h3><a class="toc-backref" href="#id21">Histogram</a></h3>
+<p>Histogram queries return a histogram of the counts of occurrences of the values of a property.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="11%" />
+<col width="36%" />
+<col width="33%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>method</td>
+<td colspan="3">GET</td>
+</tr>
+<tr><td>url pattern</td>
+<td colspan="3">(API ROOT)/vfs/(path)/(object path)/histogram</td>
+</tr>
+<tr><td>request parameters</td>
+<td>tokenId</td>
+<td>your token id</td>
+<td>required</td>
+</tr>
+<tr><td>response format</td>
+<td colspan="3"><p class="first">JSON array of arrays where each inner array has two elements: the first
+element is a value, and the second is a count of the number of times that
+value was observed.</p>
+<p class="last"><tt class="docutils literal"><span class="pre">[[&quot;call&quot;,</span> 132], [&quot;email&quot;, 175]]</tt></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Two variants on the histogram query are also available for properties that may take on very large numbers of values;
+these return the top and bottom <tt class="docutils literal">n</tt> results relative to the count of the keys.</p>
+<p>Example:</p>
+<p><a class="reference external" href="http://api.reportgrid.com/services/analytics/v1/vfs/mysupportco/myclient1/.customer_support.type/histogram?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D">http://api.reportgrid.com/services/analytics/v1/vfs/mysupportco/myclient1/.customer_support.type/histogram?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D</a></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="11%" />
+<col width="36%" />
+<col width="33%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>method</td>
+<td colspan="3">GET</td>
+</tr>
+<tr><td rowspan="2">url pattern</td>
+<td colspan="3">(API ROOT)/vfs/(path)/(object path)/histogram/top/<tt class="docutils literal">n</tt></td>
+</tr>
+<tr><td colspan="3">(API ROOT)/vfs/(path)/(object path)/histogram/bottom/<tt class="docutils literal">n</tt></td>
+</tr>
+<tr><td>request parameters</td>
+<td>tokenId</td>
+<td>your token id</td>
+<td>required</td>
+</tr>
+<tr><td>response format</td>
+<td colspan="3">Same as above.</td>
+</tr>
+</tbody>
+</table>
+<p>Examples:</p>
+<p><a class="reference external" href="http://api.reportgrid.com/services/analytics/v1/vfs/mysupportco/myclient1/.customer_support.type/histogram/top/20?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D">http://api.reportgrid.com/services/analytics/v1/vfs/mysupportco/myclient1/.customer_support.type/histogram/top/20?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D</a></p>
+<p><a class="reference external" href="http://api.reportgrid.com/services/analytics/v1/vfs/mysupportco/myclient1/.customer_support.type/histogram/bottom/20?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D">http://api.reportgrid.com/services/analytics/v1/vfs/mysupportco/myclient1/.customer_support.type/histogram/bottom/20?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D</a></p>
+</div>
+<div class="section" id="value-counts">
+<h3><a class="toc-backref" href="#id22">Value Counts</a></h3>
+<p>This is similar to the <a class="reference internal" href="#variable-count">Variable Count</a> query described above, but instead of counts of variable occurrences, it
+returns the count of times a given value occurred, either globally or within a specified time period.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="11%" />
+<col width="36%" />
+<col width="33%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>method</td>
+<td colspan="3">GET or POST</td>
+</tr>
+<tr><td>url pattern</td>
+<td colspan="3">(API ROOT)/vfs/(path)/(object path)/values/(URL-encoded JSON value)/count</td>
+</tr>
+<tr><td rowspan="4">request parameters</td>
+<td>tokenId</td>
+<td>your token id</td>
+<td>required</td>
+</tr>
+<tr><td>start</td>
+<td>starting timestamp</td>
+<td>optional</td>
+</tr>
+<tr><td>end</td>
+<td>ending timestamp</td>
+<td>optional</td>
+</tr>
+<tr><td>location</td>
+<td>(location to seach)</td>
+<td>required if used in tracking</td>
+</tr>
+<tr><td>response format</td>
+<td colspan="3">Numeric</td>
+</tr>
+</tbody>
+</table>
+<p>Values can only be retrieved for 'leaves' of the JSON object graph. Thus, only string, numeric, and boolean values
+may be supplied, and values must be URL-encoded to escape illegal characters.</p>
+<p>Example:</p>
+<p><a class="reference external" href="http://api.reportgrid.com/services/analytics/v1/vfs/mysupportco/myclient1/.customer_support.type/values/call/count?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D">http://api.reportgrid.com/services/analytics/v1/vfs/mysupportco/myclient1/.customer_support.type/values/call/count?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D</a></p>
+</div>
+<div class="section" id="value-series">
+<h3><a class="toc-backref" href="#id23">Value Series</a></h3>
+<p>This is similar to the <a class="reference internal" href="#variable-series">Variable Series</a> query described above, but instead of counts of variable occurrences, it
+returns the counts of times a given value occurred in a specified time period.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="30%" />
+<col width="43%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>method</td>
+<td colspan="3">GET or POST</td>
+</tr>
+<tr><td>url pattern</td>
+<td colspan="3">(API ROOT)/vfs/(path)/(object path)/values/(URL-encoded JSON value)/series/hour</td>
+</tr>
+<tr><td rowspan="4">request parameters</td>
+<td>tokenId</td>
+<td>your token id</td>
+<td>required</td>
+</tr>
+<tr><td>start</td>
+<td>starting timestamp</td>
+<td>optional</td>
+</tr>
+<tr><td>end</td>
+<td>ending timestamp</td>
+<td>optional</td>
+</tr>
+<tr><td>location</td>
+<td>location to seach)</td>
+<td>required if used in tracking</td>
+</tr>
+<tr><td>response format</td>
+<td colspan="3"><p class="first">JSON array of arrays where each inner array has two elements: the first
+element is an object identifying the key that the value was stored
+against, and the second element is a count. If, for example, you are
+querying by both time and location, the format will be something like:</p>
+<p class="last"><tt class="docutils literal"><span class="pre">[[{&quot;timestamp&quot;:</span> 1315454910389, &quot;location&quot;: <span class="pre">&quot;usa&quot;},</span> 132], <span class="pre">...]</span></tt></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>In addition to &quot;hour&quot; in the example above, you could also use &quot;minute&quot;, &quot;day&quot;, &quot;week&quot;, &quot;month&quot;, and &quot;year&quot;.</p>
+</div>
+<div class="section" id="advanced-searches">
+<h3><a class="toc-backref" href="#id24">Advanced Searches</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="30%" />
+<col width="43%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>method</td>
+<td colspan="3">POST</td>
+</tr>
+<tr><td>url pattern</td>
+<td colspan="3">(API ROOT)/search</td>
+</tr>
+<tr><td>body</td>
+<td colspan="3">See below</td>
+</tr>
+<tr><td rowspan="4">request parameters</td>
+<td>tokenId</td>
+<td>your token id</td>
+<td>required</td>
+</tr>
+<tr><td>start</td>
+<td>starting timestamp</td>
+<td>optional, may be specified in the request body</td>
+</tr>
+<tr><td>end</td>
+<td>ending timestamp</td>
+<td>optional, may be specified in the request body</td>
+</tr>
+<tr><td>location</td>
+<td>location to seach</td>
+<td>required if used in tracking,
+may be specified in the request body</td>
+</tr>
+<tr><td>response format</td>
+<td colspan="3"><p class="first">In the case of a count query, the return value is simply numeric, as elsewhere.</p>
+<p>In the case of a series query, the result is again a JSON array of arrays where each inner
+array has two elements: the first element is an object identifying the key that the value was
+stored against, and the second element is a count. If, for example, you are
+querying by both time and location, the format will be something like:</p>
+<p class="last"><tt class="docutils literal"><span class="pre">[[{&quot;timestamp&quot;:</span> 1315454910389, &quot;location&quot;: <span class="pre">&quot;usa&quot;},</span> 132], <span class="pre">...]</span></tt></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Unlike the other queries above, these queries are executed using POST requests and have a relatively complex request
+body format, examples of which are shown below. Both count and time series queries can be run using the search
+directive. Both examples below could be sent to this url:
+<a class="reference external" href="http://api.reportgrid.com/services/analytics/v1/search?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D">http://api.reportgrid.com/services/analytics/v1/search?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D</a></p>
+<p>Count Example:</p>
+<pre class="literal-block">
+{
+  &quot;select&quot;: &quot;count&quot;,
+  &quot;from&quot;: &quot;/mysupportco/myclient1&quot;,
+  &quot;where&quot;: [
+    {&quot;variable&quot;: &quot;.customer_support.type&quot;, &quot;value: &quot;call&quot;},
+    {&quot;variable&quot;: &quot;.customer_support.resolution.type&quot;, &quot;value: &quot;escalated&quot;}
+  ],
+  &quot;start&quot;: 1315454900000,
+  &quot;end&quot;: 1315454910000,
+  &quot;location&quot;: &quot;usa/colorado&quot;
+}
+</pre>
+<p>Series Example:</p>
+<pre class="literal-block">
+{
+  &quot;select&quot;: &quot;series/minute&quot;,
+  &quot;from&quot;: &quot;/mysupportco/myclient1&quot;,
+  &quot;where&quot;: [
+    {&quot;variable&quot;: &quot;.customer_support.type&quot;, &quot;value: &quot;call&quot;},
+    {&quot;variable&quot;: &quot;.customer_support.resolution.type&quot;, &quot;value: &quot;escalated&quot;}
+  ],
+  &quot;start&quot;: 1315454900000,
+  &quot;end&quot;: 1315454910000,
+  &quot;location&quot;: &quot;usa/colorado&quot;
+}
+</pre>
+</div>
+<div class="section" id="intersection-queries">
+<h3><a class="toc-backref" href="#id25">Intersection Queries</a></h3>
+<p>Intersection queries are used to retrieve multidimensional data structures similar to those used in a pivot table.
+Instead of, for example, a simple time series, you can retrieve a set of time series where each time series
+corresponds to the result of an advanced search.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="30%" />
+<col width="43%" />
+</colgroup>
+<tbody valign="top">
+<tr><td>method</td>
+<td colspan="3">POST</td>
+</tr>
+<tr><td>url pattern</td>
+<td colspan="3">(API ROOT)/intersect</td>
+</tr>
+<tr><td>body</td>
+<td colspan="3">See below</td>
+</tr>
+<tr><td rowspan="4">request parameters</td>
+<td>tokenId</td>
+<td>your token id</td>
+<td>required</td>
+</tr>
+<tr><td>start</td>
+<td>starting timestamp</td>
+<td>optional, may be specified in the request body</td>
+</tr>
+<tr><td>end</td>
+<td>ending timestamp</td>
+<td>optional, may be specified in the request body</td>
+</tr>
+<tr><td>location</td>
+<td>location to seach</td>
+<td>required if used in tracking,
+may be specified in the request body</td>
+</tr>
+<tr><td>response format</td>
+<td colspan="3"><p class="first">In the case of a count query, the result is a JSON array of arrays where each inner array
+represents an n-tuple (value1, value2, ..., valuen, count) where value1..valuen take on
+the values of variables specified in the query, and the count returned represents the number
+of times this combination of values was observed in the specified time period. For example,</p>
+<p><tt class="docutils literal"><span class="pre">[[&quot;call&quot;,</span> &quot;escalated&quot;, 12], [&quot;call&quot;, &quot;resolved&quot;, 8], [&quot;email&quot;, &quot;escalated&quot;, 3], <span class="pre">...]</span></tt></p>
+<p>Here, the order of the elements value1..valuen is the same as the order in which variables
+were specified in the query.</p>
+<p class="last">In the case of a series intersection query, the result is a 3-dimensional JSON array similar
+to the above, but where instead of a count, the final member of each tuple is a time series
+as described in <a class="reference internal" href="#value-series">Value Series</a> above.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Both examples below could be sent to this url:
+<a class="reference external" href="http://api.reportgrid.com/services/analytics/v1/intersect?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D">http://api.reportgrid.com/services/analytics/v1/intersect?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D</a></p>
+<p>Count Example:</p>
+<pre class="literal-block">
+{
+  &quot;select&quot;: &quot;count&quot;,
+  &quot;from&quot;: &quot;/mysupportco/myclient1&quot;,
+  &quot;properties&quot;: [
+    {&quot;property&quot;: &quot;.customer_support.type&quot;, &quot;limit&quot;: 10, &quot;order&quot;: &quot;descending&quot;},
+    {&quot;property&quot;: &quot;.customer_support.resolution.type&quot;, &quot;limit&quot;: 10, &quot;order&quot;: &quot;ascending&quot;}
+  ],
+  &quot;start&quot;: 1315454900000,
+  &quot;end&quot;: 1315454910000,
+  &quot;location&quot;: &quot;usa/colorado&quot;
+}
+</pre>
+<p>Series Example:</p>
+<pre class="literal-block">
+{
+  &quot;select&quot;: &quot;series/minute&quot;,
+  &quot;from&quot;: &quot;/mysupportco/myclient1&quot;,
+  &quot;where&quot;: [
+    {&quot;variable&quot;: &quot;.customer_support.type&quot;, &quot;limit&quot;: 10, &quot;order&quot;: &quot;descending&quot;},
+    {&quot;variable&quot;: &quot;.customer_support.resolution.type&quot;, &quot;limit&quot;: 10, &quot;order&quot;: &quot;ascending&quot;}
+  ],
+  &quot;start&quot;: 1315454900000,
+  &quot;end&quot;: 1315454910000,
+  &quot;location&quot;: &quot;usa/colorado&quot;
+}
+</pre>
+<p>In both of these examples, the query engine will find the top 10 counts of customer support type values and the
+bottom 10 counts of customer support resolution type values, and will return a matrix of these as described above.</p>
+</div>
+</div>
+</div>
+                </div>
+            </div>
+            <div id="rightpanel">
+                <div id="rightsidepanel">
+                    <div id="rpaneltext">
+                        <p class="rightpaneltext">ReportGrid's visualization engine can render 95&#37; of all common visualizations. It's easy to build your own custom visualizations on the same analytics API that our visualizations are built on.</p>
+                    </div>
+                </div>
+            </div>
+          </div> 
+        <div class="footer">
+            <div id="sitecontainer">
+                <ul id="sitelist">
+                    <li class="active"><a href="solution.html" class="current">solutions</a>
+                    <ul id="subsitelist">
+                        <li class="subactive"><a href="analytics-database.html" id="subcurrent">analytics database</a></li>
+                        <li><a href="visualization-engine.html">visualization engine</a></li>
+                        <li><a href="professional-services.html">professional services</a></li>
+                    </ul>
+                    </li>
+                    <li class="active"><a href="use-cases.html" class="current">use cases</a>
+                    <ul id="subsitelist">
+                        <li class="subactive"><a href="embeddable-analytics.html" id="subcurrent">embeddable analytics</a></li>
+                        <li><a href="internal-analytics.html">internal analytics</a></li>
+                        <li><a href="business-intelligence.html">business intelligence</a></li>
+                    </ul>
+                    </li>
+                    <li class="active"><a href="pricing.html" class="current">pricing</a>
+                    <ul id="subsitelist">
+                        <li class="subactive"><a href="developer-credit.html" id="subcurrent">developer credit</a></li>
+                        <li><a href="sign-up.html">signup</a></li>
+                    </ul>
+                    </li>
+                    <li class="active"><a href="developer.html" class="current">developer</a>
+                    <ul id="subsitelist">
+                        <li class="subactive"><a href="api-documentation.html" id="subcurrent">api documentation</a></li>
+                        <li><a href="console.html">console</a></li>
+                        <li><a href="http://github.com/reportgrid/client-libraries">client libraries</a></li>
+                    </ul>
+                    </li>
+                    <li class="active"><a href="support.html" class="current">support</a>
+                    <ul id="subsitelist">
+                        <li class="subactive"><a href="http://reportgrid.freshdesk.com/" id="subcurrent">help desk</a></li>
+                        <li><a href="white-papers.html">white papers</a></li>
+                        <li><a href="control-panel.html">control panel</a></li>
+                    </ul>
+                    </li>
+                    <li class="active"><a href="about.html" class="current">about</a>
+                    <ul id="subsitelist">
+                        <li class="subactive"><a href="news.html" id="subcurrent">news</a></li>
+                        <li><a href="team.html">team</a></li>
+                        <li><a href="contact-us.html">contact</a></li>
+                    </ul>
+                    </li>
+                </ul>
+            </div>
+            <div id="phonefooter">
+                <p class="phonelarge">(888) 673-9958</p>
+            </div>
+            <div id="termsprivacy">
+                <p class="micro"><a href="privacy.html">privacy</a> : <a href="termsofuse.html">terms of use</a> <br>© 2010-2011 ReportGrid Inc. <p>
+            </div>
+            <div id=contactus>
+                <a href="contact-us.html" target="_blank"> <img src="images/contactusicon.png"> </a>
+            </div>
+            <div id=facebook>
+                <a href="http://www.facebook.com/ReportGrid?v=wall" target="_blank"> <img src="images/facebookicon.png"> </a>
+            </div>
+            <div id=twitter>
+                <a href="http://twitter.com/#!/ReportGrid" target="_blank"> <img src="images/twittericon.png"> </a>
+            </div>
+        </div>
+      </div>
+    </body>
+</html>
