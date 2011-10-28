@@ -105,7 +105,7 @@ filesystem, and limits on the kind of data that can be tracked at that path.
 
 ReportGrid's tokens API is located at:
 
-http://api.reportgrid.com/services/analytics/v1/tokens/?tokenId=(guid)
+http://api.reportgrid.com/services/analytics/v0/tokens/?tokenId=(guid)
 
 Token Creation
 --------------
