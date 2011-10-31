@@ -26,11 +26,11 @@ check() {
 }
 
 log() {
-	echo -e "[\033[1m${CURRENT_ACTION}\033[0m] " $* 1>&2
+	echo -e "[${CURRENT_ACTION}] " $* 1>&2
 }
 
 error() {
-	echo -e "[\033[31m${CURRENT_ACTION}\033[0m] " $* 1>&2
+	echo -e "[${CURRENT_ACTION}] " $* 1>&2
 }
 
 
@@ -107,4 +107,4 @@ for action in $ACTIONS; do
 	fi
 done
 
-echo -e '[\033[32msuccess\033[0m] All done!' 1>&2
+echo -e '[success] All done!' 1>&2
