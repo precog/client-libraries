@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Harsh on errors
+set -e
+
 TEMPLATE=conf/template.html
 TARGET=deploy
 ACTIONS=build
@@ -23,11 +26,11 @@ check() {
 }
 
 log() {
-	echo -e "[\033[1m${CURRENT_ACTION}\033[0m] " $* 1>&2
+	echo -e "[${CURRENT_ACTION}] " $* 1>&2
 }
 
 error() {
-	echo -e "[\033[31m${CURRENT_ACTION}\033[0m] " $* 1>&2
+	echo -e "[${CURRENT_ACTION}] " $* 1>&2
 }
 
 
@@ -50,7 +53,8 @@ for action in $ACTIONS; do
 				fname=`echo $f | sed 's!^src/!!g' | sed 's/.txt$//g'`.html
 				
 				log "    $f"
-				rst2html --template=$TEMPLATE $f $TARGET/$fname
+
+				rst2html --halt=2 --report=2 --template=$TEMPLATE $f $TARGET/$fname
 				
 				if [ $? -ne 0 ]; then
 					ERROR=true
@@ -69,24 +73,19 @@ for action in $ACTIONS; do
 		;;
 		
 		deploy)
-			if [ ! -e $TARGET ]; then
+		        if [ "$ERROR" = "true" ]; then
+			    log "Cannot deploy due to preceding errors"
+			else
+			    if [ ! -e $TARGET ]; then
 				ERROR=true
 				log 'Target directory does not exist!'
-			else
+			    else
 				log 'Syncing target directory to server...'
 				
-				cwd="$(pwd)"
-				cd $TARGET
-				
-				error 'Not yet implemented!'
-				# rsync -azvhP * danielspiewak.com:domains/anti-xml.org/html/
-				# 
-				# if [ $? -ne 0 ]; then
-					# ERROR=true
-				# fi
-				# 
-				# cd "$cwd"
-				# log 'Complete'
+				cd `dirname $0`
+
+				s3cmd -v -F --acl-public --add-header='Cache-Control:max-age=0' sync -r deploy/ s3://api.reportgrid.com/doc/
+			    fi
 			fi
 		;;
 		
@@ -108,4 +107,4 @@ for action in $ACTIONS; do
 	fi
 done
 
-echo -e '[\033[32msuccess\033[0m] All done!' 1>&2
+echo -e '[success] All done!' 1>&2
