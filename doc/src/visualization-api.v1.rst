@@ -682,6 +682,7 @@ ReportGrid.compare
 It takes two argument and returns an integer as the result of their comparison.
 
 examples:
+
 ::
 	
 	console.log(ReportGrid.compare("b", "a"));
@@ -712,6 +713,7 @@ ReportGrid.date.snap
 For the specified periodicity, it snaps the timestamp to the closest value and returns it in timestamp format. The mode parameter states if the snap always happen on the value before (mode < 0), to the value after (mode > 0) or to the closest one (mode = 0, default value).
 
 example:
+
 ::
 
 	console.log(ReportGrid.date.snap(new Date("2011-08-01 05:46:00"), "day"))
@@ -725,6 +727,7 @@ ReportGrid.dump
 It takes one argument of any type and returns a string out of it. It is very convenient to serialize and object in a readable string.
 
 examples:
+
 ::
 	
 	console.log(ReportGrid.dump(123456.789));
@@ -756,6 +759,7 @@ ReportGrid.info.viz.version
 Contains the version of the reportgrid-viz.js in use.
 
 examples:
+
 ::
 	
 	console.log(ReportGrid.info.viz.version);
@@ -778,6 +782,7 @@ The symbols you can draw are: "triangleDown", "triangleUp", "square", "diamond",
 If size is not specified 100 is the default value.
 
 example:
+
 ::
 	
 	console.log(ReportGrid.symbol("star"));
