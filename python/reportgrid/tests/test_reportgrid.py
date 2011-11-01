@@ -22,7 +22,7 @@
 # THE SOFTWARE.
 #
 
-import reportgrid
+from reportgrid import reportgrid
 import time
 
 
