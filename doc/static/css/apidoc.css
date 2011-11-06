@@ -49,7 +49,7 @@ font-weight: normal;
   border: none }
 
 #id1 td {
-	color: #fff;
+	color: #aaa;
 }
 
 .apiDoc table.borderless td ,.apiDoc table.borderless th {
@@ -320,8 +320,8 @@ background-color: #25252b;
 padding: 1em
   }
   
-pre.literal-block {
-  color: #aaa;
+#id1 .literal-block {
+  color: #fff;
 }
   
 .apiDoc span.classifier {
