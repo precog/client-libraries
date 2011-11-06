@@ -48,6 +48,10 @@ font-weight: normal;
 .apiDoc .borderless ,.apiDoc .table.borderless td ,.apiDoc table.borderless th {
   border: none }
 
+.td p {
+	color: #fff;
+}
+
 .apiDoc table.borderless td ,.apiDoc table.borderless th {
   /* Override padding for "table.docutils td" with "! important".
      The right padding separates the table cells. */
@@ -175,7 +179,7 @@ div.warning p.admonition-title {
 
 .apiDoc h1.section-subtitle ,.apiDoc h2.section-subtitle ,.apiDoc h3.section-subtitle ,.apiDoc 
 h4.section-subtitle ,.apiDoc h5.section-subtitle ,.apiDoc h6.section-subtitle {
-	  margin-top: 1em 
+  margin-top: 1em 
 }
 
 .apiDoc .section {
