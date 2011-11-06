@@ -326,6 +326,8 @@ padding: 1em
   
 .apiDoc pre.literal-block {
   color: #fff;
+  font-family: abel;
+  font-size: 4pt;
 }
   
 .apiDoc span.classifier {
