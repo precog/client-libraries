@@ -63,7 +63,7 @@ font-weight: normal;
 
 .apiDoc p em{
 font-size: 1em;
-color: #C7CEF2;
+color: #AAA;
 }
 
 .apiDoc .hidden {
@@ -83,7 +83,7 @@ color: #C7CEF2;
   }
 
 .apiDoc dl.docutils dt {
-  color:#C7CEF2;
+  color:#AAA;
   font-family: abel;
 
 .apiDoc div.abstract {
@@ -202,7 +202,7 @@ padding: 0 1em;
 
 .apiDoc h1 ,.apiDoc h2 ,.apiDoc h3 ,.apiDoc h4 {
 	font-weight: bold;
-	color: #C7CEF2;
+	color: #AAA;
 	padding-bottom: .10em;
 	margin-bottom: .55em;
 	border-bottom: 2px solid #3E3E47;
