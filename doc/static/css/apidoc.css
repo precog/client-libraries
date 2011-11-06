@@ -6,15 +6,11 @@
 
 @import url(html4css1.css);
 
-.apiDoc P{
+.apiDoc {
 	text-align: left;
 	font-size: 14px;
 	font-family: abel;
 	color:#A8AECC;
-}
-
-.apiDoc *{
-	text-align: left;
 }
 
 .apiDoc ol.simple li ,.apiDoc ul.simple li {
@@ -326,8 +322,6 @@ padding: 1em
   
 .apiDoc pre.literal-block {
   color: #fff;
-  font-family: abel;
-  font-size: 4pt;
 }
   
 .apiDoc span.classifier {
