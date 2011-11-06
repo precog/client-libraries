@@ -10,7 +10,7 @@
 	text-align: left;
 	font-size: 14px;
 	font-family: abel;
-	color:#A8AECC;;
+	color:#A8AECC;
 }
 
 .apiDoc ol.simple li ,.apiDoc ul.simple li {
@@ -257,7 +257,6 @@ div.align-right {
 	list-style-type:none ! important;
 	color: #8A8FA8;
 	font-size: .8em;
-
    }
   
 .apiDoc ol.arabic {
