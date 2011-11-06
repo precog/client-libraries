@@ -48,7 +48,7 @@ font-weight: normal;
 .apiDoc .borderless ,.apiDoc .table.borderless td ,.apiDoc table.borderless th {
   border: none }
 
-.docutils .tr .td {
+.td {
 	color: #fff;
 }
 
