@@ -48,7 +48,7 @@ font-weight: normal;
 .apiDoc .borderless ,.apiDoc .table.borderless td ,.apiDoc table.borderless th {
   border: none }
 
-.td p {
+.docutils .tr .td {
 	color: #fff;
 }
 
@@ -315,10 +315,14 @@ div.align-right {
 
 .apiDoc pre.literal-block ,.apiDoc pre.doctest-block {
 line-height:1.25em;
-color:#aaa;
+color: #aaa;
 background-color: #25252b;
 padding: 1em
   }
+  
+.literal-block {
+  color: #aaa;
+}
   
 .apiDoc span.classifier {
 font-size: .875em;
