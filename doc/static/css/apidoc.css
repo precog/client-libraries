@@ -366,12 +366,18 @@ font-size:.875em;
   margin-left: 1px;
    }
 
+.apiDoc table.docutils {
+	padding-top: 10px;
+	padding-bottom: 10px;
+	padding-right: 10px;
+	padding-left: 10px;
+}
+
 .apiDoc table.docutils td ,.apiDoc table.docutils th ,.apiDoc 
 table.docinfo td ,.apiDoc table.docinfo th {
 font-size:.875em;
 color:#AAA;
 padding: 0.75em ;
-padding-left: 10px;
 vertical-align:middle;
 border-bottom:solid 1px #334;
 border-right:solid 1px #334;
