@@ -379,7 +379,7 @@ background-color: #141417;
 padding:1.em;
 }
 
-#id1 tr td {
+#apidoc #id1 table.docutils td {
 	font-weight: bold;
 }
 
