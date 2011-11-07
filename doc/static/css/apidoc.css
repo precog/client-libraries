@@ -86,7 +86,12 @@ color: #AAA;
   font-family: abel;
   }
 
-
+.apiDoc dl.docutils dt {
+  color:#AAA;
+  padding-left: 10px;
+  padding-right: 10px;
+  font-family: abel;
+}
 
 .apiDoc div.abstract {
   margin: 2em 5em }
@@ -375,10 +380,6 @@ border-bottom:solid 1px #334;
 border-right:solid 1px #334;
 background-color: #141417;
 padding:1.em;
-}
-
-#apidoc #id1 table.docutils td {
-	font-weight: bold;
 }
 
 .apiDoc table.docutils th.field-name ,.apiDoc table.docinfo th.docinfo-name {
