@@ -9,7 +9,7 @@
  */
 
 define ("API_VERSION", "v1");
-define ("MAX_TIME", "9223372036854775807");
+define ("MAX_TIME", 9223372036854775807);
 define ("BASE_URL", "http://api.reportgrid.com/services/analytics/");
 
 class ReportGridAPI {
@@ -37,34 +37,50 @@ class ReportGridAPI {
      * @param String read         Does this token have read permissions
      * @param String write        Does this token have write permissions
      * @param String share        Does this token have share permissions
+     * @param String explore      Does this token have explore permissions
      * @param String order        The maximum number of sets in an intersection query
      * @param String limit        The maximum number of properties associated with an events
      * @param String depth        The maximum depth of properties associated with events
+     * @param String lossless     A bool value
      *
      * @return String token
      */
-    public function newToken($path = "", $expires = MAX_TIME, $read = false, $write = false, $share = false, $order = 0, $limit = 0, $depth = 0) {
+    public function newToken($path = "", $expires = MAX_TIME, $read = null, $write = null, $share = null, $explore = null, $order = null, $limit = null, $depth = null, $tags = null, $lossless = null) {
 
         $return_value = null;
         
         $params = array();
-        $params['path'] = $path;
+        if(nul !== $path)
+            $params['path'] = $path;
 
         $perms = array();
-        $perms['read'] = $read;
-        $perms['write'] = $write;
-        $perms['share'] = $share;
-        $params['permissions'] = $perms;
+        if(nul !== $read)
+            $perms['read'] = $read;
+        if(nul !== $write)
+            $perms['write'] = $write;
+        if(nul !== $share)
+            $perms['share'] = $share;
+        if(nul !== $explore)
+            $perms['explore'] = $explore;
+        if(nul !== $read)
+            $params['permissions'] = $perms;
 
         $params['expires'] = $expires;
 
         $limits = array();
-        $limits['order'] = $order;
-        $limits['limit'] = $limit;
-        $limits['depth'] = $depth;
+        if(nul !== $order)
+            $limits['order'] = $order;
+        if(nul !== $limit)
+            $limits['limit'] = $limit;
+        if(nul !== $depth)
+            $limits['depth'] = $depth;
+        if(nul !== $tags)
+            $limits['tags']  = $tags;
+        if(nul !== $lossless)
+            $limits['lossless']  = $lossless;
         $params['limits'] = $limits;
         
-        $result = $this->restHelper(BASE_URL . API_VERSION . "/tokens/?tokenId=" . $this->_tokenID, $params, "POST");
+        $result = $this->restHelper(BASE_URL . API_VERSION . "/tokens?tokenId=" . $this->_tokenID, $params, "POST");
         
         if (isset($result[0])) {
             $return_value = $result[0];
@@ -83,7 +99,7 @@ class ReportGridAPI {
 
         $return_value = null;
         
-        $return_value = $this->restHelper(BASE_URL . API_VERSION . "/tokens/?tokenId=" . $this->_tokenID, null, "GET");
+        $return_value = $this->restHelper(BASE_URL . API_VERSION . "/tokens?tokenId=" . $this->_tokenID, null, "GET");
         
         return $return_value;
     }    
