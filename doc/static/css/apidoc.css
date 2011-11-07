@@ -319,7 +319,7 @@ background-color: #25252b;
 padding: 1em
   }
   
-pre .literal-block {
+.apidoc pre {
   color: #828282;
 }
   
