@@ -367,11 +367,14 @@ font-size:.875em;
   margin-left: 1px;
    }
 
+.apiDoc table.docutils td:first-child {
+	font-weight: bold;
+}
+
 .apiDoc table.docutils td ,.apiDoc table.docutils th ,.apiDoc 
 table.docinfo td ,.apiDoc table.docinfo th {
 font-size:.875em;
 color:#AAA;
-font-weight: bold;
 font-family: abel;
 padding: 0.75em ;
 vertical-align:top;
