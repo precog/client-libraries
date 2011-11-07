@@ -359,19 +359,16 @@ font-size:.875em;
   margin: 1.25em 0;
   border:solid 1px #545766;
   border-collapse:collapse;
+  margin-top: 20px;
+  margin-top: 20px;
+  margin-top: 20px;
+  margin-top: 20px;
  }
 
 .apiDoc table.footnote {
   border: solid 1px #666;
   margin-left: 1px;
    }
-
-.apiDoc table.docutils {
-	padding-top: 10px !important;
-	padding-bottom: 10px !important;
-	padding-right: 10px !important;
-	padding-left: 10px !important;
-}
 
 .apiDoc table.docutils td ,.apiDoc table.docutils th ,.apiDoc 
 table.docinfo td ,.apiDoc table.docinfo th {
