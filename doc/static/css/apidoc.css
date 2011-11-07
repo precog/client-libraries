@@ -55,7 +55,7 @@ font-weight: normal;
 .apiDoc table.borderless td ,.apiDoc table.borderless th {
   /* Override padding for "table.docutils td" with "! important".
      The right padding separates the table cells. */
-  padding: 0 0.5em 0 0 ! important }
+  padding: 0 1.em 0 0 ! important }
 
 .apiDoc .first {
   /* Override more specific margin styles with "! important". */
@@ -392,7 +392,9 @@ padding:1.em;
   color:#888;
   }
 
-.apiDoc h1 tt.docutils ,.apiDoc h2 tt.docutils ,.apiDoc h3 tt.docutils ,.apiDoc h4 tt.docutils ,.apiDoc h5 tt.docutils ,.apiDoc h6 tt.docutils {  }
+.apiDoc h1 tt.docutils ,.apiDoc h2 tt.docutils ,.apiDoc h3 tt.docutils ,.apiDoc h4 tt.docutils ,.apiDoc h5 tt.docutils ,.apiDoc h6 tt.docutils {
+
+}
 
 .apiDoc tt.literal{
 	line-height:1.25em;
