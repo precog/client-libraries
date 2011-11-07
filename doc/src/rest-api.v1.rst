@@ -144,27 +144,27 @@ and limits of the token.  A descendent token's permissions and limits cannot exc
   }
  
 
-+--------------------+------------------------------------------------------------------------------------------+
-| path               | the path in the virtual filesystem that this token controls access to                    | 
-+--------------------+---------+--------------------------------------------------------------------------------+
-| permissions        | read    | ability to query the token path                                                |
-|                    +---------+--------------------------------------------------------------------------------+
-|                    | write   | ability to track data at the token's path                                      |
-|                    +---------+--------------------------------------------------------------------------------+
-|                    | share   | whether this token can be used to create descendent tokens                     |
-|                    +---------+--------------------------------------------------------------------------------+
-|                    | explore | whether children of this token's path can be listed                            |
-+--------------------+------------------------------------------------------------------------------------------+
-| expires            | timestamp when this token expires                                                        | 
-+--------------------+---------+--------------------------------------------------------------------------------+
-| limits             | order   | the maximum number of metadata properties accessible in an intersection query  |
-|                    +---------+--------------------------------------------------------------------------------+
-|                    | limit   | the maximum number of metadata properties that can be stored with a data point |
-|                    +---------+--------------------------------------------------------------------------------+
-|                    | depth   | the maximum depth of a metadata object associated with a data point            |
-|                    +---------+--------------------------------------------------------------------------------+
-|                    | tags    | the maximum number of tags that can be applied to a data point                 |
-+--------------------+---------+--------------------------------------------------------------------------------+
++--------------------+-------------------------------------------------------------------------------------------+
+| path               | the path in the virtual filesystem that this token controls access to                     | 
++--------------------+-----------+-------------------------------------------------------------------------------+
+| permissions        | read      | ability to query the token path                                               |
+|                    +-----------+-------------------------------------------------------------------------------+
+|                    | write     | ability to track data at the token's path                                     |
+|                    +-----------+-------------------------------------------------------------------------------+
+|                    | share     | whether this token can be used to create descendent tokens                    |
+|                    +-----------+-------------------------------------------------------------------------------+
+|                    | explore   | whether children of this token's path can be listed                           |
++--------------------+-----------+-------------------------------------------------------------------------------+
+| expires            | timestamp | when this token expires                                                       |
++--------------------+-----------+-------------------------------------------------------------------------------+
+| limits             | order     | the maximum number of metadata properties accessible in an intersection query |
+|                    +-----------+-------------------------------------------------------------------------------+
+|                    | limit     | the maximum number of metadata properties that can be stored with a data point|
+|                    +-----------+-------------------------------------------------------------------------------+
+|                    | depth     | the maximum depth of a metadata object associated with a data point           |
+|                    +-----------+-------------------------------------------------------------------------------+
+|                    | tags      | the maximum number of tags that can be applied to a data point                |
++--------------------+-----------+-------------------------------------------------------------------------------+
 
 Querying Child Tokens
 ---------------------

@@ -48,10 +48,6 @@ font-weight: normal;
 .apiDoc .borderless ,.apiDoc .table.borderless td ,.apiDoc table.borderless th {
   border: none }
 
-#id1 td {
-	color: #aaa;
-}
-
 .apiDoc table.borderless td ,.apiDoc table.borderless th {
   /* Override padding for "table.docutils td" with "! important".
      The right padding separates the table cells. */
@@ -367,11 +363,26 @@ font-size:.875em;
   margin-left: 1px;
    }
 
-.apiDoc table.docutils td:first-child {
-	font-weight: bold;
+.snippet-container {
+	padding-bottom: 10px;
+	padding-top: 10px;
 }
 
-.apiDoc table.docutils td ,.apiDoc table.docutils th ,.apiDoc 
+.apiDoc table.docutils td:first-child {
+	color: #5AA4CC;
+	font-size: 9pt;
+}
+
+.apiDoc table.docutils td:nth-child(2) {
+	color: #5AA4CC;
+}
+
+.apiDoc table.docutils td:last-child {
+	color: #AAA;
+}
+
+
+.apiDoc span.pre ,.apiDoc table.docutils td ,.apiDoc table.docutils th ,.apiDoc 
 table.docinfo td ,.apiDoc table.docinfo th {
 font-size:.875em;
 color:#AAA;
