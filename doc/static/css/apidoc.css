@@ -379,6 +379,10 @@ background-color: #141417;
 padding:1.em;
 }
 
+.docutils td {
+	font-weight: bold;
+}
+
 .apiDoc table.docutils th.field-name ,.apiDoc table.docinfo th.docinfo-name {
   font-weight:bold;
   text-align: left ;
