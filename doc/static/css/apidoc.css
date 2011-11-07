@@ -84,12 +84,11 @@ color: #AAA;
 .apiDoc dl.docutils dd {
   margin-bottom: 0.75em;
   font-family: abel;
+  padding-left: 10px;
   }
 
 .apiDoc dl.docutils dt {
   color:#AAA;
-  padding-left: 10px;
-  padding-right: 10px;
   font-family: abel;
 }
 
