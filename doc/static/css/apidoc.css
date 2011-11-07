@@ -356,13 +356,9 @@ font-size:.875em;
   margin: 2em 4em }
 
 .apiDoc table.docutils {
-  margin: 1.25em 0;
+  margin: 5.em 5.em;
   border:solid 1px #545766;
   border-collapse:collapse;
-  margin-top: 20px;
-  margin-top: 20px;
-  margin-top: 20px;
-  margin-top: 20px;
  }
 
 .apiDoc table.footnote {
