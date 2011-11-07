@@ -6,7 +6,7 @@
 
 @import url(html4css1.css);
 
-.apiDoc *{
+.apiDoc {
 	text-align: left;
 	font-size: 14px;
 	font-family: abel;
@@ -322,6 +322,8 @@ padding: 1em
 #id1 pre {
   color: #828282;
   background-color: #25252b;
+  font-family:abel;
+  font-size: 10pt;
 }
   
 .apiDoc span.classifier {
