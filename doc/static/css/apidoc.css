@@ -321,6 +321,7 @@ padding: 1em
   
 #id1 pre {
   color: #828282;
+  background-color: #25252b;
 }
   
 .apiDoc span.classifier {
