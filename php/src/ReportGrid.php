@@ -9,7 +9,6 @@
  */
 
 define ("API_VERSION", "v1");
-define ("MAX_TIME", 9223372036854775807);
 define ("BASE_URL", "http://api.reportgrid.com/services/analytics/");
 
 class ReportGridAPI {
@@ -50,8 +49,7 @@ class ReportGridAPI {
         $return_value = null;
         
         $params = array();
-        if(null !== $path)
-            $params['path'] = $path;
+        $params['path'] = $path;
 
         $perms = array();
         if(null !== $read)
@@ -102,37 +100,7 @@ class ReportGridAPI {
         $return_value = $this->restHelper(BASE_URL . API_VERSION . "/tokens?tokenId=" . $this->_tokenID, null, "GET");
         
         return $return_value;
-    }    
-    
-    /*
-     * todo:  doc
-     * Dis B BUSTED
-     */
-    public function updateToken($token="", $path = "", $expires = MAX_TIME, $read = false, $write = false, $share = false, $order = 0, $limit = 0, $depth = 0) {
-
-        $return_value = null;
-        
-        $params = array();
-        $params['path'] = $path;
-
-        $perms = array();
-        $perms['read'] = $read;
-        $perms['write'] = $write;
-        $perms['share'] = $share;
-        $params['permissions'] = $perms;
-
-        $params['expires'] = $expires;
-
-        $limits = array();
-        $limits['order'] = $order;
-        $limits['limit'] = $limit;
-        $limits['depth'] = $depth;
-        $params['limits'] = $limits;
-        
-        $return_value = $this->restHelper(BASE_URL . API_VERSION . "/tokens/" . $token . "?tokenId=" . $this->_tokenID, $params, "PUT");
-        
-        return $return_value;
-    }    
+    }
     
     /*
      * Return an array of data about a specific token
@@ -273,7 +241,6 @@ class ReportGridAPI {
             if ( ($verb == 'POST') || ($verb == 'PUT') ) {
                 
                 $http_params['http']['content'] = json_encode($params);
-                var_dump($http_params['http']['content']);
                 $http_params['http']['header'] = array("Content-Type: application/json");
                 
             }//end if
