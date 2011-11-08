@@ -24,7 +24,7 @@ The files are reportgrid-core.js and reportgrid-viz.js. The first requires a par
 	     src="http://api.reportgrid.com/js/reportgrid-viz.js"></script>
 	    <script type="text/javascript">
 	document.addEventListener("DOMContentLoaded", function(){
-	  ReportGrid.lineChart("#test", { path : "/acme/", event : "impression", property : "browser" });
+	  ReportGrid.lineChart("#chart", { path : "/acme/", event : "impression", property : "browser" });
 	}, false);
 	    </script>
 	  </head>
@@ -533,7 +533,7 @@ The following example renders the same chart as in the first example of this doc
 
 ::
 
-	ReportGrid.lineChart("#test", {
+	ReportGrid.lineChart("#chart", {
 	  axes : [{
 	    type : ".#time:hour"	
 	  }, {
