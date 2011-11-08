@@ -45,38 +45,38 @@ class ReportGridAPI {
      *
      * @return String token
      */
-    public function newToken($path = "", $expires = MAX_TIME, $read = null, $write = null, $share = null, $explore = null, $order = null, $limit = null, $depth = null, $tags = null, $lossless = null) {
+    public function newToken($path = "", $expires = null, $read = null, $write = null, $share = null, $explore = null, $order = null, $limit = null, $depth = null, $tags = null, $lossless = null) {
 
         $return_value = null;
         
         $params = array();
-        if(nul !== $path)
+        if(null !== $path)
             $params['path'] = $path;
 
         $perms = array();
-        if(nul !== $read)
+        if(null !== $read)
             $perms['read'] = $read;
-        if(nul !== $write)
+        if(null !== $write)
             $perms['write'] = $write;
-        if(nul !== $share)
+        if(null !== $share)
             $perms['share'] = $share;
-        if(nul !== $explore)
+        if(null !== $explore)
             $perms['explore'] = $explore;
-        if(nul !== $read)
+        if(null !== $read)
             $params['permissions'] = $perms;
-
-        $params['expires'] = $expires;
+        if(null !== $expires)
+            $params['expires'] = $expires;
 
         $limits = array();
-        if(nul !== $order)
+        if(null !== $order)
             $limits['order'] = $order;
-        if(nul !== $limit)
+        if(null !== $limit)
             $limits['limit'] = $limit;
-        if(nul !== $depth)
+        if(null !== $depth)
             $limits['depth'] = $depth;
-        if(nul !== $tags)
+        if(null !== $tags)
             $limits['tags']  = $tags;
-        if(nul !== $lossless)
+        if(null !== $lossless)
             $limits['lossless']  = $lossless;
         $params['limits'] = $limits;
         
@@ -273,6 +273,7 @@ class ReportGridAPI {
             if ( ($verb == 'POST') || ($verb == 'PUT') ) {
                 
                 $http_params['http']['content'] = json_encode($params);
+                var_dump($http_params['http']['content']);
                 $http_params['http']['header'] = array("Content-Type: application/json");
                 
             }//end if
