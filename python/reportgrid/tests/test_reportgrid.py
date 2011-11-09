@@ -27,7 +27,7 @@ import time
 
 
 ROOT_TOKEN_ID = 'A3BC1539-E8A9-4207-BB41-3036EC2C6E6D'
-HOST = 'api.reportgrid.com'
+HOST = 'devapi.reportgrid.com'
 PORT = 80
 PATH_PREFIX = reportgrid.Path.Analytics.Root
 
