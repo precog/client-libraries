@@ -107,7 +107,7 @@ class ReportGridAPI {
      *
      * @param String - Token
      *
-     * @return Array - All information about this token
+     * @return Mixed - Array with all the information about this token or FALSE if the token does not exist.
      */
     public function tokenInfo($token) {
 
@@ -115,7 +115,7 @@ class ReportGridAPI {
         
         $return_value = $this->restHelper(BASE_URL . API_VERSION . "/tokens/" . $token . "?tokenId=" . $this->_tokenID, null, "GET");
         
-        return $return_value;
+        return is_array($return_value) ? $return_value : false;
     }
     
     /*
@@ -123,7 +123,7 @@ class ReportGridAPI {
      *
      * @param String - Token
      *
-     * @return int - 0/1.  0=fail 1=success
+     * @return Bool - success or failure
      */
     public function deleteToken($token) {
 
@@ -131,7 +131,7 @@ class ReportGridAPI {
         
         $return_value = $this->restHelper(BASE_URL . API_VERSION . "/tokens/" . $token . "?tokenId=" . $this->_tokenID, null, "DELETE");
         
-        return $return_value;
+        return (bool) $return_value;
     }
     
     /*
@@ -147,7 +147,7 @@ class ReportGridAPI {
         $return_value = false;
         $return_value = $this->restHelper(BASE_URL . API_VERSION . "/vfs/" . $path . "/?tokenId=" . $this->_tokenID, $params, "POST");
         
-        return $return_value;
+        return $return_value !== false;
     }
     
     /*
@@ -176,22 +176,6 @@ class ReportGridAPI {
         }
         
         return $return_value;
-    }    
-    
-    /*
-     * Delete an existing event
-     *
-     * @param String - path
-     * @param Array - event parameters
-     *
-     * @return int - 0/1.  0=fail 1=success
-     */
-    public function deleteEvents($path = "", $params = array()) {
-
-        $return_value = false;
-        $return_value = $this->restHelper(BASE_URL . API_VERSION . "/vfs/" . $path . "/?tokenId=" . $this->_tokenID, $params, "POST");
-        
-        return $return_value;
     }
     
     /*
@@ -203,7 +187,7 @@ class ReportGridAPI {
      *
      * @return Array - search results
      */
-     function search($select = "", $from = "", $where = array()) {
+    public function search($select = "", $from = "", $where = array()) {
         
         $return_value = null;
         
