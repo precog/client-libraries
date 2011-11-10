@@ -8,8 +8,7 @@
  * PUT LICENSE HERE
  */
 
-define ("API_VERSION", "v1");
-define ("BASE_URL", "http://api.reportgrid.com/services/analytics/");
+define ("BASE_URL", "http://api.reportgrid.com/services/analytics/v1/");
 
 class ReportGridAPI {
     
@@ -79,7 +78,7 @@ class ReportGridAPI {
             $limits['lossless']  = $lossless;
         $params['limits'] = $limits;
         
-        $result = $this->restHelper($this->_baseUrl . API_VERSION . "/tokens?tokenId=" . $this->_tokenID, $params, "POST");
+        $result = $this->restHelper($this->_baseUrl . "tokens?tokenId=" . $this->_tokenID, $params, "POST");
         
         if (isset($result[0])) {
             $return_value = $result[0];
@@ -95,10 +94,11 @@ class ReportGridAPI {
      * @returns Array - All tokens associated with this->_tokenId
      */
     public function getTokens() {
-        $return_value = $this->restHelper($this->_baseUrl . API_VERSION . "/tokens?tokenId=" . $this->_tokenID, null, "GET");
+        $path = $this->_baseUrl . "tokens?tokenId=" . $this->_tokenID;
+        $return_value = $this->restHelper($path, null, "GET");
         return $return_value;
     }
-    
+
     /*
      * Return an array of data about a specific token
      *
@@ -107,7 +107,8 @@ class ReportGridAPI {
      * @return Mixed - Array with all the information about this token or FALSE if the token does not exist.
      */
     public function tokenInfo($token) {
-        $return_value = $this->restHelper($this->_baseUrl . API_VERSION . "/tokens/" . $token . "?tokenId=" . $this->_tokenID, null, "GET");
+        $path = $this->_baseUrl . "tokens/" . $token . "?tokenId=" . $this->_tokenID;
+        $return_value = $this->restHelper($path, null, "GET");
         return is_array($return_value) ? $return_value : false;
     }
     
@@ -117,7 +118,8 @@ class ReportGridAPI {
      * @param String - Token
      */
     public function deleteToken($token) {
-        $return_value = $this->restHelper($this->_baseUrl . API_VERSION . "/tokens/" . $token . "?tokenId=" . $this->_tokenID, null, "DELETE");
+        $path = $this->_baseUrl . "tokens/" . $token . "?tokenId=" . $this->_tokenID;
+        $this->restHelper($path, null, "DELETE");
     }
     
     /*
@@ -128,11 +130,37 @@ class ReportGridAPI {
      *
      * @return int - 0/1.  0=fail 1=success
      */
-    public function track($path = "", $events = array()) {
-        $return_value = $this->restHelper($this->_baseUrl . API_VERSION . "/vfs/" . $path . "/?tokenId=" . $this->_tokenID, $events, "POST");
+    public function track($path, $events = array()) {
+        $path = $this->_baseUrl . "vfs/" . $this->cleanPath($path) . "?tokenId=" . $this->_tokenID;
+        $return_value = $this->restHelper($path, $events, "POST");
         return $return_value !== false;
     }
     
+    static function dotFilter($v)
+    {
+        return $v[0] == '.';
+    }
+
+    static function notDotFilter($v)
+    {
+        return $v[0] != '.';
+    }
+
+    public function children($path, $type = 'all', $property = '')
+    {
+        $type = $property ? 'property' : $type;
+        $path = $this->_baseUrl . "vfs/" . $this->cleanPath($path) . "?tokenId=" . $this->_tokenID;
+        $return_value = $this->restHelper($path, null, "GET");
+        if($type == 'path')
+        {
+            $return_value = array_filter($return_value, array($this, 'notDotFilter'));
+        } else if($type = 'property') {
+            $return_value = array_filter($return_value, array($this, 'dotFilter'));
+        }
+        return $return_value;
+    }
+
+
     /*
      * Retrieve an event
      *
@@ -151,7 +179,7 @@ class ReportGridAPI {
             $periodicity = "series/" . $periodicity;
         }
         
-        $url = $this->_baseUrl . API_VERSION . "/vfs/" . $path . "/" . $interaction . "/values/" . $type . "/" . $periodicity . "?tokenId=" . $this->_tokenID;
+        $url = $this->_baseUrl . "vfs/" . $path . "/" . $interaction . "/values/" . $type . "/" . $periodicity . "?tokenId=" . $this->_tokenID;
         $result = $this->restHelper($url, null, "GET", "json");
         
         if ($result) {
@@ -179,7 +207,7 @@ class ReportGridAPI {
         $params['from'] = $from;
         $params['where'] = $where;
 
-        $result = $this->restHelper($this->_baseUrl . API_VERSION . "/search?tokenId=" . $this->_tokenID, $params, "POST");
+        $result = $this->restHelper($this->_baseUrl . "search?tokenId=" . $this->_tokenID, $params, "POST");
         
         if ($result) {
             $return_value = $result;
@@ -196,7 +224,6 @@ class ReportGridAPI {
      **** PRIVATE helper function ****
      *********************************/
     private function restHelper($json_endpoint, $params = null, $verb = 'GET') {
-        
         $return_value = null;
         
         $http_params = array(
@@ -212,14 +239,12 @@ class ReportGridAPI {
                 // workaround for php bug where http headers don't get sent in php 5.2 
                 if(version_compare(PHP_VERSION, '5.3.0') == -1){ 
                     ini_set('user_agent', 'PHP-SOAP/' . PHP_VERSION . "\r\n" . $header); 
-                } 
-
-                
+                }
             }//end if
         }//end if ($params !== null)
         
         $stream_context = stream_context_create($http_params);
-        $file_pointer = fopen($json_endpoint, 'rb', false, $stream_context);
+        $file_pointer = @fopen($json_endpoint, 'rb', false, $stream_context);
 
         if (!$file_pointer) {
             $stream_contents = false;
@@ -275,5 +300,10 @@ class ReportGridAPI {
         }//end outer else
         return $return_value;
     }//end restHelper
+
+    private function cleanPath($path)
+    {
+        return trim($path, '/');
+    }
 }
 ?>
