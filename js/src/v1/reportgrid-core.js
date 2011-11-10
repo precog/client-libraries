@@ -61,7 +61,7 @@ var ReportGrid = window.ReportGrid || {};
       for (var i = 0; i < scripts.length; i++) {
         var script = scripts[i];
         var src = script.getAttribute('src');
-        if (src && (typeof fragment == "string" && src.indexOf(fragment) != -1) || src.match(fragment)) {
+        if (src && ((typeof fragment == "string" && src.indexOf(fragment) != -1) || src.match(fragment))) {
           return script;
         }
       }
