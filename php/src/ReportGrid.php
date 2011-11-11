@@ -46,7 +46,7 @@ class ReportGridAPI {
      */
     public function newToken($path = "", $expires = null, $read = null, $write = null, $share = null, $explore = null, $order = null, $limit = null, $depth = null, $tags = null, $lossless = null) {
 
-        $return_value = null;
+        $return = null;
         
         $params = array();
         $params['path'] = $path;
@@ -81,10 +81,10 @@ class ReportGridAPI {
         $result = $this->restHelper($this->_baseUrl . "tokens?tokenId=" . $this->_tokenID, $params, "POST");
         
         if (isset($result[0])) {
-            $return_value = $result[0];
+            $return = $result[0];
         }
         
-        return $return_value;
+        return $return;
         
     }
     
@@ -95,8 +95,8 @@ class ReportGridAPI {
      */
     public function getTokens() {
         $path = $this->_baseUrl . "tokens?tokenId=" . $this->_tokenID;
-        $return_value = $this->restHelper($path, null, "GET");
-        return $return_value;
+        $return = $this->restHelper($path, null, "GET");
+        return $return;
     }
 
     /*
@@ -108,8 +108,8 @@ class ReportGridAPI {
      */
     public function tokenInfo($token) {
         $path = $this->_baseUrl . "tokens/" . $token . "?tokenId=" . $this->_tokenID;
-        $return_value = $this->restHelper($path, null, "GET");
-        return is_array($return_value) ? $return_value : false;
+        $return = $this->restHelper($path, null, "GET");
+        return is_array($return) ? $return : false;
     }
     
     /*
@@ -119,7 +119,8 @@ class ReportGridAPI {
      */
     public function deleteToken($token) {
         $path = $this->_baseUrl . "tokens/" . $token . "?tokenId=" . $this->_tokenID;
-        $this->restHelper($path, null, "DELETE");
+        $return = $this->restHelper($path, null, "DELETE");
+        return $return;
     }
     
     /*
@@ -132,8 +133,8 @@ class ReportGridAPI {
      */
     public function track($path, $events = array()) {
         $path = $this->_baseUrl . "vfs/" . $this->cleanPath($path) . "?tokenId=" . $this->_tokenID;
-        $return_value = $this->restHelper($path, $events, "POST");
-        return $return_value !== false;
+        $return = $this->restHelper($path, $events, "POST");
+        return $return !== false;
     }
     
     static function dotFilter($v)
@@ -150,14 +151,14 @@ class ReportGridAPI {
     {
         $type = $property ? 'property' : $type;
         $path = $this->_baseUrl . "vfs/" . $this->cleanPath($path) . "?tokenId=" . $this->_tokenID;
-        $return_value = $this->restHelper($path, null, "GET");
+        $return = $this->restHelper($path, null, "GET");
         if($type == 'path')
         {
-            $return_value = array_filter($return_value, array($this, 'notDotFilter'));
-        } else if($type = 'property') {
-            $return_value = array_filter($return_value, array($this, 'dotFilter'));
+            $return = array_filter($return, array($this, 'notDotFilter'));
+        } else if($type == 'property') {
+            $return = array_filter($return, array($this, 'dotFilter'));
         }
-        return $return_value;
+        return $return;
     }
 
 
@@ -173,7 +174,7 @@ class ReportGridAPI {
      */
     public function retrieveEvent($path = "", $interaction = "", $type = "", $periodicity = "eternity") {
 
-        $return_value = null;
+        $return = null;
         
         if ($periodicity != "count") {
             $periodicity = "series/" . $periodicity;
@@ -183,10 +184,10 @@ class ReportGridAPI {
         $result = $this->restHelper($url, null, "GET", "json");
         
         if ($result) {
-            $return_value = $result;
+            $return = $result;
         }
         
-        return $return_value;
+        return $return;
     }
     
     /*
@@ -200,7 +201,7 @@ class ReportGridAPI {
      */
     public function search($select = "", $from = "", $where = array()) {
         
-        $return_value = null;
+        $return = null;
         
         $params = array();
         $params['select'] = $select;
@@ -210,21 +211,20 @@ class ReportGridAPI {
         $result = $this->restHelper($this->_baseUrl . "search?tokenId=" . $this->_tokenID, $params, "POST");
         
         if ($result) {
-            $return_value = $result;
+            $return = $result;
         }
         
-        return $return_value;
+        return $return;
 
-     }
+    }
      
 /****************************************************************************/     
 /****************************************************************************/     
-     
     /*********************************
      **** PRIVATE helper function ****
      *********************************/
     private function restHelper($json_endpoint, $params = null, $verb = 'GET') {
-        $return_value = null;
+        $return = null;
         
         $http_params = array(
             'http' => array(
@@ -233,6 +233,8 @@ class ReportGridAPI {
         ));
         if ($params !== null) {
             if ( ($verb == 'POST') || ($verb == 'PUT') ) {
+                
+
                 $header = "Content-Type: application/json";
                 $http_params['http']['content'] = json_encode($params);
                 $http_params['http']['header'] = $header;
@@ -245,7 +247,6 @@ class ReportGridAPI {
         
         $stream_context = stream_context_create($http_params);
         $file_pointer = @fopen($json_endpoint, 'rb', false, $stream_context);
-
         if (!$file_pointer) {
             $stream_contents = false;
         } else {
@@ -265,7 +266,7 @@ class ReportGridAPI {
                 if ($result === null) {
                     error_log("Exception:  " . $stream_contents);
                 } else {
-                    $return_value = $result;
+                    $return = $result;
                 }
             /*
              * In the case of posting data (recordEvent) the API will return a 0 
@@ -275,9 +276,9 @@ class ReportGridAPI {
             } else {
                 
                 if (stripos($stream_meta_data['wrapper_data'][0], "200") !== false) {
-                    $return_value = true;
+                    $return = true;
                 } else {
-                    $return_value = false;
+                    $return = false;
                 }//end inner else           
             }//end middle else
             
@@ -291,14 +292,14 @@ class ReportGridAPI {
                 
                 $this->isError = true;
                 $this->errorMessage = $http_response_header[0];
-                $return_value = false;
+                $return = false;
                 
             } else {
                 throw new Exception("$verb $json_endpoint failed");
             }
             
         }//end outer else
-        return $return_value;
+        return $return;
     }//end restHelper
 
     private function cleanPath($path)
