@@ -177,28 +177,17 @@ module ReportGrid
 
     # Track an event
     def track(path, name, properties, options={})
-      options[:rollup]    ||= false
       options[:timestamp] ||= (Time.now.to_f * 1000.0).to_i
-      options[:count]     ||= 1
 
       # Sanitize path
-      unless path.start_with?(Path::Analytics::VFS)
-        path = "#{Path::Analytics::VFS}/#{path}"
-      end
+      path = "#{Path::Analytics::VFS}/#{path}" unless path.start_with?(Path::Analytics::VFS)
       path = sanitize_path(path)
 
       # Track event
-      parameters = options[:count] && options[:count] > 1 ? {:parameters => options[:count]} : {}
-      response = @analytics.post(path, :body => { name => properties.merge({'#timestamp' => options[:timestamp]}) }, :parameters => parameters)
-
-      # Roll up to parents if necessary
-      parent_path = sanitize_path(path.gsub(/\/[^\/]*/, ""))
-      if options[:rollup] && parent_path.start_with?(Path::Analytics::VFS) &&
-        parent_path != Path::Analytics::VFS
-          track(parent_path, name, properties, options)
-      end
-
-      response
+      parameters = {}
+      parameters[:rollup] = options[:rollup] if options[:rollup]
+      parameters[:count]  = options[:count]  if options[:count] && options[:count] > 0
+      @analytics.post(path, :body => { name => properties.merge({'#timestamp' => options[:timestamp]}) }, :parameters => parameters)
     end
 
     # Return children of the specified path
@@ -210,7 +199,7 @@ module ReportGrid
 
       children = @analytics.get(sanitize_path(path))
 
-      case  options[:type]
+      case options[:type]
         when :path
           children.reject {|obj| obj.start_with?('.')}
         when :property

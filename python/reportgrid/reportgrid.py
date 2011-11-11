@@ -179,8 +179,15 @@ class ReportGrid(object):
         return self.analytics.delete('%s/%s' % (Path.Analytics.Tokens, token_id))
 
 
-    def track(self, path, name, properties, rollup=False, timestamp=None, count=1):
+    def track(self, path, name, properties, rollup=0, timestamp=None, count=1):
         """Track an event"""
+
+        parameters = {}
+        if (count  != 1): 
+            parameters['count']  = count
+
+        if (rollup != 0): 
+            parameters['rollup'] = rollup
 
         # Sanitize path
         if not path.startswith(Path.Analytics.VFS):
@@ -195,13 +202,7 @@ class ReportGrid(object):
         properties['#timestamp'] = timestamp
         
         # Track event
-        self.analytics.post(path, { name: properties })
-
-        # Roll up to parents if necessary
-        parent_path = self.__sanitize_path('%s/../' % path)
-        if rollup and parent_path.startswith(Path.Analytics.VFS) and parent_path != Path.Analytics.VFS:
-            self.track(parent_path, name, properties, rollup, timestamp, count)
-
+        self.analytics.post(path, { name: properties }, parameters = parameters)
 
     def children(self, path, property=None, type='all'):
         """Return children of the specified path"""

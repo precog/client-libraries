@@ -16,8 +16,8 @@ class ReportGridClientTest < Test::Unit::TestCase
     def startup
       require 'reportgrid'
       @root_token_id = 'A3BC1539-E8A9-4207-BB41-3036EC2C6E6D'
-      @test_token_id = nil
-      @test_host = 'api.reportgrid.com'
+
+      @test_host = 'devapi.reportgrid.com'
       @test_port = 80
       @test_path = ReportGrid::Path::Analytics::ROOT
 
@@ -29,7 +29,7 @@ class ReportGridClientTest < Test::Unit::TestCase
 
       api = build_test_client
       api.track('/', 'test', {'test' => 123}, :rollup => true)
-      api.track('/testpath', 'test', {'test' => 456}, :rollup => true)
+      api.track('/rg-client/subdir/subsub', 'test', {'test' => 456}, :rollup => true)
       sleep(20)
     end
 
@@ -78,7 +78,14 @@ class ReportGridClientTest < Test::Unit::TestCase
     api = ReportGridClientTest.build_test_client
     response = api.children('/', :type => :path)
     assert_equal response.class, Array
-    assert_include response, 'testpath'
+    assert_include response, 'rg-client'
+  end
+
+  def test_deep_children
+    api = ReportGridClientTest.build_test_client
+    response = api.children('/rg-client/subdir', :type => :path)
+    assert_equal response.class, Array
+    assert_include response, 'subsub'
   end
 
   def test_children_with_type_property

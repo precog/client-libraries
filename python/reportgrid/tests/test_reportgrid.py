@@ -3,9 +3,9 @@ import time
 
 
 ROOT_TOKEN_ID = 'A3BC1539-E8A9-4207-BB41-3036EC2C6E6D'
-HOST = 'localhost'
-PORT = 30020
-PATH_PREFIX = ''
+HOST = 'devapi.reportgrid.com'
+PORT = 80
+PATH_PREFIX = '/services/analytics/v1'
 
 def setup_module(module):
     module.TestReportGrid.root_api = reportgrid.ReportGrid(ROOT_TOKEN_ID, HOST, PORT, PATH_PREFIX)
@@ -19,7 +19,7 @@ def setup_module(module):
         path='/',
         name='pytest',
         properties={'pyprop': 123},
-        rollup=True)
+        rollup=False)
 
     module.TestReportGrid.test_api.track(
         path='/py-client',
@@ -84,6 +84,11 @@ class TestReportGrid:
 
     def test_property_value_count(self):
         response = self.test_api.property_value_count(path='/', property='pytest.pyprop', value=123)
+        assert type(response) is int
+        assert response > 0
+
+    def test_rollup_property_value_count(self):
+        response = self.test_api.property_value_count(path='/', property='.pyprop', value=123)
         assert type(response) is int
         assert response > 0
 
