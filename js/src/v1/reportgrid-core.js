@@ -61,8 +61,7 @@ var ReportGrid = window.ReportGrid || {};
       for (var i = 0; i < scripts.length; i++) {
         var script = scripts[i];
         var src = script.getAttribute('src');
-
-        if (src && src.indexOf(fragment) != -1) {
+        if (src && ((typeof fragment == "string" && src.indexOf(fragment) != -1) || src.match(fragment))) {
           return script;
         }
       }
@@ -70,7 +69,7 @@ var ReportGrid = window.ReportGrid || {};
       return undefined;
     },
     getConfiguration: function() {
-      return Util.parseQueryParameters(Util.findScript('reportgrid').getAttribute('src'));
+      return Util.parseQueryParameters(Util.findScript(/reportgrid[^\/.]*\.js/).getAttribute('src'));
     },
 
     parseQueryParameters: function(url) {
@@ -895,7 +894,7 @@ var ReportGrid = window.ReportGrid || {};
     var http = $.Http();
 
     http.get(
-      $.Config.analyticsServer + '/tokens/',
+      $.Config.analyticsServer + '/tokens',
       Util.createCallbacks(success, failure, 'List all tokens'),
       {tokenId: $.Config.tokenId }
     );

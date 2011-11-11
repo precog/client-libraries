@@ -38,13 +38,13 @@ public class ReportGridClientTest extends TestCase {
       }
     }
 
-    public static final Service Local = new Service() {
-      @Override public URL serviceUrl() {
-        try {
-          return new URL("http", "api.reportgrid.com", 80, "/services/analytics/v1/");
-        } catch (MalformedURLException ex) {
-          Logger.getLogger(Service.class.getName()).log(Level.SEVERE, "Invalid client URL", ex);
-        }
+		public static final Service Local = new Service() {
+			@Override public URL serviceUrl() {
+				try {
+					return new URL("http", "devapi.reportgrid.com", 80, "/services/analytics/v1/");
+				} catch (MalformedURLException ex) {
+					Logger.getLogger(Service.class.getName()).log(Level.SEVERE, "Invalid client URL", ex);
+				}
 
         return null;
       }

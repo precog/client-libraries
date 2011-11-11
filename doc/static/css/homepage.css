@@ -1,0 +1,463 @@
+* {
+    border: 0;
+    list-style-type: none;
+    text-decoration: none;
+    position: relative;
+    color: #FFF;
+    font-family: arial;
+    outline: none;
+    margin: 0;
+    padding: 0;
+}
+address {
+    color: #8A8FA8;
+}
+p.normal {
+    font-size: 14px;
+    font-family: Abel;
+    color: #8A8FA8;
+}
+body { background-color: #0E0F12 }
+@font-face {
+    font-family: 'Abel';
+    src: url('fonts/abel-regular-webfont.eot');
+    src: url('fonts/abel-regular-webfont.eot?#iefix') format('embedded-opentype'), url('fonts/abel-regular-webfont.woff') format('woff'), url('fonts/abel-regular-webfont.ttf') format('truetype'), url('fonts/abel-regular-webfont.svg#AbelRegular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Questrial';
+    src: url('fonts/questrial-regular-webfont.eot');
+    src: url('fonts/questrial-regular-webfont.eot?#iefix') format('embedded-opentype'), url('fonts/questrial-regular-webfont.woff') format('woff'), url('fonts/questrial-regular-webfont.ttf') format('truetype'), url('fonts/questrial-regular-webfont.svg#') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Antic';
+    src: url('fonts/antic-regular-webfont.eot');
+    src: url('fonts/antic-regular-webfont.eot?#iefix') format('embedded-opentype'), url('fonts/antic-regular-webfont.woff') format('woff'), url('fonts/antic-regular-webfont.ttf') format('truetype'), url('fonts/antic-regular-webfont.svg#AnticRegular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Rexlia';
+    src: url('fonts/rexlia_free-webfont.eot');
+    src: url('fonts/rexlia_free-webfont.eot?#iefix') format('embedded-opentype'), url('fonts/rexlia_free-webfont.woff') format('woff'), url('fonts/rexlia_free-webfont.ttf') format('truetype'), url('fonts/rexlia_free-webfont.svg#RexliaFree') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+P {
+    font-size: 11px;
+    font-family: Abel;
+    color: #8A8FA8;
+    line-height: normal;
+    padding-bottom: 12px;
+}
+h1 {
+    font-size: 16px;
+    font-family: Abel;
+    font-weight: 400;
+    color: #8A8FA8;
+    list-style-type: none;
+    text-decoration: none;
+    padding-top: 30px;
+    padding-bottom: 24px;
+}
+h2 {
+    font-size: 11px;
+    font-family: Rexlia;
+    font-weight: 400;
+    color: ffffff;
+    list-style-type: none;
+    text-decoration: none;
+    padding-bottom: 20px;
+    padding-top: 20px;
+}
+h3 {
+    font-size: 16px;
+    font-family: Abel;
+    font-weight: 400;
+    color: #8A8FA8;
+    list-style-type: none;
+    text-decoration: none;
+    padding-top: 10px;
+    padding-bottom: 24px;
+}
+h4 {
+    font-size: 16px;
+    font-family: Abel;
+    color: #8A8FA8;
+    line-height: normal;
+}
+p.homepageslogan {
+    font-size: 24pt;
+    font-family: Abel;
+    color: #8A8FA8;
+    padding-bottom: 0;
+}
+p.homepageslogan2 {
+    font-size: 15pt;
+    font-family: Abel;
+    color: #8A8FA8;
+    padding-bottom: 0;
+}
+p.homepagetext {
+    font-size: 12pt;
+    font-family: Abel;
+    color: #8A8FA8;
+    padding-bottom: 0;
+}
+p.homepagetext2 {
+    font-size: 11pt;
+    font-family: Abel;
+    color: #8A8FA8;
+    padding-bottom: 0;
+}
+#wrapper {
+    width: 1070px;
+    background: 999999px;
+    margin: 0 auto;
+}
+ #wrapper .header {
+     position: absolute;
+     height: 168px;
+     width: 1070px;
+     background-image: url("../../images/header.png");
+ }
+ #wrapper .middle2 {
+     position: absolute;
+     top: 568px;
+     width: 1070px;
+     height: 150px;
+     background-image: url("../images/main2.png");
+ }
+ #wrapper .footer {
+     position: absolute;
+     top: 718px;
+     width: 1070px;
+     height: 142px;
+     background-image: url("../images/footer.png");
+ }
+#loginoverlay {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    background-color: #000;
+    z-index: 95;
+    display: none;
+}
+#loginmenu {
+    position: fixed;
+    background-image: url(../images/loginpanel.png);
+    z-index: 100;
+    height: 187px;
+    width: 307px;
+    left: 50%;
+    top: 50%;
+    margin-left: -153px;
+    margin-top: -93px;
+    display: none;
+}
+.fieldgroup input {
+    width: 200px;
+    height: 20px;
+    margin-bottom: 2px;
+    color: #000000;
+}
+#submit {
+    background-image: url(../images/loginbutton.png);
+    background-color: transparent;
+    top: 20px;
+    height: 18px;
+    width: 44px;
+    float: right;
+    right: 64px;
+}
+#submit:hover { opacity: 0.7px }
+#loginpopupbutton {
+    background-image: url(../images/loginbutton.png);
+    background-color: transparent;
+    position: absolute;
+    top: 90px;
+    height: 18px;
+    width: 44px;
+    right: 110px;
+    cursor: pointer;
+}
+#loginform .logingroup input {
+    width: 200px;
+    height: 20px;
+    margin-top: -8px;
+    margin-bottom: 2px;
+    color: #000000:;
+}
+#navcontainer {
+    position: absolute;
+    top: 100px;
+    left: 328px;
+    font-size: 10pt;
+    font-family: Antic;
+    z-index: 90;
+}
+ul#navlist {
+    font-family: Antic;
+    color: #fff;
+    padding: 10px;
+}
+ ul#navlist a {
+     text-decoration: none;
+     font-family: Questrial;
+ }
+ ul#navlist,
+ ul#navlist ul,
+ ul#navlist li {
+     list-style-type: none;
+     margin: 0;
+     padding: 0;
+ }
+ ul#navlist li { float: left }
+ ul#navlist li a {
+     color: #fff;
+     padding: 10px;
+ }
+ ul#navlist li:hover a {
+     color: #;
+     background-color: #3E3E47;
+     opacity: 0.9px;
+ }
+ ul#navlist li a:hover {
+     color: #fc3;
+     background-color: #3E3E47;
+     opacity: 0.9px;
+ }
+ ul#navlist li a:active {
+     color: #000;
+     background-color: #3E3E47;
+     padding: 10px;
+ }
+ul#subnavlist { display: none }
+ ul#subnavlist li { float: none }
+ ul#subnavlist li a {
+     color: ACB5D4;
+     background-color: #3E3E47;
+     margin: 0;
+     padding: 0;
+ }
+ul#navlist li:hover ul#subnavlist {
+    display: block;
+    position: absolute;
+    font-size: 9pt;
+    padding-top: 10px;
+}
+ ul#navlist li:hover ul#subnavlist li a {
+     display: block;
+     width: 10em;
+     border: none;
+     border-left: 2px;
+     opacity: 0.9px;
+     padding: 10px;
+ }
+ ul#navlist li:hover ul#subnavlist li a:before { content: "" }
+#middle1navcontainer {
+    position: absolute;
+    height: 262px;
+    width: 348px;
+    top: 74px;
+    text-align: right;
+    right: 0;
+    display: block;
+}
+#whatbutton {
+    background-image: url(../images/whatbuttonrollover.png);
+    display: block;
+    height: 85px;
+    width: 348px;
+}
+#howbutton {
+    background-image: url(../images/howbuttonrollover.png);
+    display: block;
+    height: 85px;
+    width: 348px;
+}
+#whybutton {
+    background-image: url(../images/whybuttonrollover.png);
+    display: block;
+    height: 85px;
+    width: 348px;
+}
+#news {
+    margin-top: 59px;
+    margin-left: 46px;
+    margin-right: 26.75px;
+    float: left;
+    width: 290px;
+    height: 80px;
+    font-size: 8pt;
+    color: #9298B3;
+    overflow: hidden;
+}
+ #news ul {
+     width: 9999px;
+     height: 42px;
+ }
+ #news ul li {
+     display: block;
+     height: 42px;
+     width: 290px;
+     float: left;
+     color: #9298B3;
+     font-family: antic;
+ }
+#quote {
+    margin-top: 41px;
+    margin-left: 26.75px;
+    margin-right: 26.75px;
+    float: left;
+    width: 290px;
+    height: 80px;
+    font-size: 9pt;
+    color: #9298B3;
+    overflow: hidden;
+}
+ #quote ul li {
+     display: block;
+     float: left;
+     color: #9298B3;
+     width: 290px;
+     height: 60px;
+     font-family: Antic;
+ }
+#customerlogo {
+    margin-top: 59px;
+    margin-left: 30.75px;
+    float: left;
+    width: 288px;
+    height: 80px;
+    display: block;
+    overflow: hidden;
+    color: #9298B3;
+}
+ #customerlogo ul li {
+     display: block;
+     float: left;
+     color: #9298B3;
+     padding-right: 20px;
+     height: 60px;
+ }
+#middle1 {
+    overflow: hidden;
+    display: block;
+    height: 402px;
+    width: 1070px;
+    position: absolute;
+    top: 166px;
+}
+#middle1contentarea { width: 1070px }
+#homepanel {
+    width: 100%;
+    height: 402px;
+    background-image: url("../images/main1.png");
+}
+#whatpanel {
+    width: 100%;
+    height: 402px;
+    background-image: url("../images/hwhat.png");
+}
+
+#dlwhitesheets {
+    position:relative;
+    top: 44px;
+    left: 540px;
+}
+
+#howpanel {
+    width: 100%;
+    height: 402px;
+    background-image: url("../images/hhow.png");
+}
+#whypanel {
+    width: 100%;
+    height: 402px;
+    background-image: url("../images/hwhy.png");
+}
+#mc_embed_signup {
+    position: absolute;
+    top: 354px;
+    left: 58px;
+}
+#mce-EMAIL {
+    width: 142px;
+    height: 23px;
+    padding-left: 4px;
+    margin-right: 2px;
+    margin-top: 0;
+    font-family: abel, arial, sans-serif;
+    font-size: 10pt;
+    color: #000;
+}
+#mc-embedded-subscribe {
+    background-image: url(../images/subscribebutton.png);
+    background-color: transparent;
+    height: 23px;
+    width: 14px;
+    font-family: abel, arial, sans-serif;
+    font-size: 12pt;
+}
+#mc-embedded-subscribe:hover {
+    background-image: url(../images/subscribebuttonrollover.png);
+    height: 23px;
+    width: 14px;
+}
+.table { }
+ .table ul {
+     float: left;
+     margin: 0;
+     padding: 0px;
+     margin-left: 47px;
+     padding-top: 32px;
+     color: #545766;
+ }
+ .table ul li {
+     padding-bottom: 10px;
+     width: 94px;
+     font-family: Questrial;
+     font-size: 7pt;
+     margin-right: -20px;
+     color: #545766;
+ }
+.headfooterlinks {
+    font-size: 7.5pt;
+    font-family: questrial;
+    padding-bottom: 0px;
+}
+#contactus {
+    position: absolute;
+    top: 86px;
+    left: 932px;
+}
+#facebook {
+    position: absolute;
+    top: 86px;
+    left: 958px;
+}
+#twitter {
+    position: absolute;
+    top: 86px;
+    left: 984px;
+}
+a:link,
+a:visited {
+    color: #545766;
+    text-decoration: none;
+}
+a:hover { color: #FFCD36 }
+#whatbutton:hover,
+#howbutton:hover,
+#whybutton:hover { background-position: 0 -85px }
+#quote ul,
+#customerlogo ul {
+    width: 9999px;
+    height: 60px;
+}

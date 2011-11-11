@@ -8,8 +8,9 @@
 
 .apiDoc *{
 	text-align: left;
-	font-size: 1em;
-	
+	font-size: 14px;
+	font-family: abel;
+	color:#A8AECC;
 }
 
 .apiDoc ol.simple li ,.apiDoc ul.simple li {
@@ -19,25 +20,28 @@
 	font-size: 1em;
 	padding:0 2em;
 	line-height: 1.5em;
-	font-weight: bold;
+	font-family: abel;
+	padding-bottom: 4px;
 }
 
 .apiDoc table.docutils caption {
 }
 
 .apiDoc contents.topic ul.simple li {
+color:#A8AECC;
 list-style-type: none;
 }
 
 .apiDoc ul.simple li ul li  {
 list-style-type: none;
 font-size: .875em;
-font-weight: normal;	
+font-weight: normal;
 }
 
 .apiDoc ul.simple li ul li ul li,.apiDoc ol.simple li ul li ul li{
 	font-size: .75em;
 	font-weight: normal;
+	padding-bottom: 4px;
 }
 
 /* used to remove borders from tables and images */
@@ -54,7 +58,7 @@ font-weight: normal;
   margin-top: 0 ! important }
 
 .apiDoc p{
-	font-size: .875em;
+	color:#A8AECC;
 }
 
 .apiDoc p em{
@@ -67,24 +71,22 @@ color: #AAA;
 
 
 .apiDoc a.toc-backref {
-	font-weight: bold;
-	color: #AAA;
-
+	font-size: 16;
+	color: #fff;
   }
 
 .apiDoc blockquote.epigraph { }
 
 .apiDoc dl.docutils dd {
-  color:#8A8FA8;
   margin-bottom: 0.75em;
   font-family: abel;
-  font-size: .875em;}
+  padding-left: 10px;
+  }
 
 .apiDoc dl.docutils dt {
   color:#AAA;
-  font-size: .875em;
   font-family: abel;
-  font-weight: bold }
+}
 
 .apiDoc div.abstract {
   margin: 2em 5em }
@@ -175,7 +177,7 @@ div.warning p.admonition-title {
 
 .apiDoc h1.section-subtitle ,.apiDoc h2.section-subtitle ,.apiDoc h3.section-subtitle ,.apiDoc 
 h4.section-subtitle ,.apiDoc h5.section-subtitle ,.apiDoc h6.section-subtitle {
-	  margin-top: 1em 
+  margin-top: 1em 
 }
 
 .apiDoc .section {
@@ -184,8 +186,8 @@ padding: 0 1em;
 
 .apiDoc contents-topic {
 	list-style-type: none;
-
-.apiDoc external	
+}
+.apiDoc external {
 }
 
 .apiDoc h1{
@@ -201,14 +203,15 @@ padding: 0 1em;
 }
 
 .apiDoc h1 ,.apiDoc h2 ,.apiDoc h3 ,.apiDoc h4 {
-padding-bottom: .10em;
-margin-bottom: .55em;
-border-bottom: 2px solid #3E3E47;
+	font-weight: bold;
+	color: #AAA;
+	padding-bottom: .10em;
+	margin-bottom: .55em;
+	border-bottom: 2px solid #3E3E47;
   }
   
 
 .apiDoc h2.subtitle {
-font-size: .875em;
   text-align: left;
    }
 
@@ -249,10 +252,9 @@ div.align-right {
 /*   text-align: left } */
 
 .apiDoc ol.simple ,.apiDoc ul.simple {
-	list-style-type: square ! important;
+	list-style-type:none ! important;
 	color: #8A8FA8;
 	font-size: .8em;
-
    }
   
 .apiDoc ol.arabic {
@@ -309,14 +311,12 @@ div.align-right {
   font: inherit }
 
 .apiDoc pre.literal-block ,.apiDoc pre.doctest-block {
-font-size:.75em;
 line-height:1.25em;
-color:#aaa;
+color: #AAA;
 background-color: #25252b;
 padding: 1em
-  }
+}
   
-
 .apiDoc span.classifier {
 font-size: .875em;
   font-family: sans-serif ;
@@ -333,10 +333,9 @@ font-size:.875em;
 .apiDoc span.option {
   white-space: nowrap }
 
-.apiDoc span.pre {
-	
+.apiDoc span.pre {	
   white-space: pre; 
-  font-size: .875em;}
+}
 
 .apiDoc span.problematic {
   color: red }
@@ -356,7 +355,6 @@ font-size:.875em;
 
 .apiDoc table.docutils {
   margin: 1.25em 0;
-  border:solid 1px #545766;
   border-collapse:collapse;
  }
 
@@ -365,20 +363,34 @@ font-size:.875em;
   margin-left: 1px;
    }
 
-.apiDoc table.docutils td: { 
+.snippet-container {
+	padding-bottom: 10px;
+	padding-top: 10px;
+}
 
-		 }
+.apiDoc table.docutils td:first-child {
+	color: #5AA4CC;
+	font-size: 9pt;
+}
 
-.apiDoc table.docutils td ,.apiDoc table.docutils th ,.apiDoc 
+.apiDoc table.docutils td:nth-child(2) {
+	color: #5AA4CC;
+}
+
+.apiDoc table.docutils td:last-child {
+	color: #AAA;
+}
+
+
+.apiDoc span.pre ,.apiDoc table.docutils td ,.apiDoc table.docutils th ,.apiDoc 
 table.docinfo td ,.apiDoc table.docinfo th {
 font-size:.875em;
 color:#AAA;
+font-family: abel;
 padding: 0.75em ;
-vertical-align:middle;
-border-bottom:solid 1px #334;
-border-right:solid 1px #334;
+vertical-align:top;
 background-color: #141417;
-padding:0.413em;
+padding:1.em;
 }
 
 .apiDoc table.docutils th.field-name ,.apiDoc table.docinfo th.docinfo-name {
@@ -388,8 +400,10 @@ padding:0.413em;
   color:#888;
   }
 
-.apiDoc h1 tt.docutils ,.apiDoc h2 tt.docutils ,.apiDoc h3 tt.docutils ,.apiDoc h4 tt.docutils ,.apiDoc h5 tt.docutils ,.apiDoc h6 tt.docutils {  }
+.apiDoc h1 tt.docutils ,.apiDoc h2 tt.docutils ,.apiDoc h3 tt.docutils ,.apiDoc h4 tt.docutils ,.apiDoc h5 tt.docutils ,.apiDoc h6 tt.docutils {
+}
 
 .apiDoc tt.literal{
-font-size: .875em;
+	line-height:1.25em;
+	color:#AAA;
 }

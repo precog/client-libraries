@@ -1,0 +1,622 @@
+/* _____________________  BASE COLORS  _____________________ */
+
+@import url('colors/rg-colors-default-001.css');
+/* _____________________  SVG  _____________________ */
+
+.rg 
+{
+	fill: none;
+	stroke: none;
+}
+
+.rg line, .rg path
+{		list-style:square
+	stroke-width: 1;
+	stroke: #CCC;
+}
+
+.rg text, .rg tspan
+{
+	font-family: Arial, Helvetica, sans-serif;
+	color:#999;
+	font-size:83%;
+	line-height:108%;
+	fill:#999;
+	stroke-width: 0;
+	text-rendering: optimizelegibility;
+}
+
+.rg .title .label text
+{
+	font-weight: bold;
+	font-size: 138.5%;
+}
+
+/* ______________ Stream Graph ____________________ */
+
+.rg .stream-chart path
+{
+    stroke-width:0;
+}
+
+.rg .stream-chart path:hover 
+{
+    fill-opacity:.9;
+	stroke:inherit;
+	stroke-width:1;
+}
+
+.rg .stream-chart g.group
+{
+	stroke-width: 1;
+	stroke-miterjoin:miter;
+	stroke-miterlimit:1;
+}
+/* _____________________  CHART DESIGN  _____________________ */
+.rg
+{
+	fill: none;
+	stroke: none;
+	
+	
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+}
+
+.rg g.group
+{
+	stroke-width: 1;
+}
+
+/* ___________________ Pie Chart ________________*/
+
+.rg .pie-chart g.group
+{
+	stroke-width: 1;
+	stroke-miterjoin:miter;
+	stroke-miterlimit:1;
+}
+
+.rg .pie-chart g.group path
+{
+	stroke: #inherit;
+	stroke-opacity: 1;
+}
+.rg .pie-chart g.group:hover 
+{
+	fill-opacity: .85;
+    stroke-width:2;
+}
+
+/* _____________________ Line Chart _______________*/
+
+.rg .line-chart g.group path.gradient
+{
+	fill:none;
+	stroke-width: 3;
+}
+
+.rg .line-chart g.group path.area
+{
+	stroke: none;
+	fill-opacity: 0.2;
+}
+
+/* ________Symbol Effects _________*/
+
+.rg .line-chart g.group .symbols path
+{
+	fill: #fff;
+	stroke: inherit;
+	stroke-width:inherit;
+}
+
+
+
+/*!!----------------------EFFECT STYLES--------------------!!
+
+_______________ No Effect ____________*/
+
+.rg .line-chart g.group path.noeffect
+{
+	fill:none;
+	stroke-width: 1;
+}
+
+/* _______________ Drop Shadow ____________*/
+
+.rg .line-chart g.group path.dropshadow
+{
+	fill:none;
+	stroke-width: 1;
+}
+
+.rg .line-chart g.group path.shadow
+{
+	fill:none;
+	stroke-width: 22;
+	stroke-opacity: 0.5;
+	stroke: #666;
+}
+
+/* _______________ Gradiant ____________*/
+
+.rg .line-chart g.group path.grad-0
+{
+	fill:none;
+	stroke-width: 1;
+    stroke-opacity:1.0;
+}
+
+.rg .line-chart g.group path.grad-1
+{
+	fill:none;
+	stroke-width: 2;
+	stroke-opacity: 0.75;
+}
+
+/*   !!-------------  Hover State's -----------------!!   */
+
+.rg .bar path.
+
+.rg .line-chart path.line:hover path
+{
+	stroke-width: 3;
+}
+
+
+.rg .group, .rg .group path:hover
+{
+	-webkit-transition: all 0.15s ease-in-out;
+	-moz-transition: all 0.15s ease-in-out;
+	-o-transition: all 0.15s ease-in-out;
+	-ms-transition: all 0.15s ease-in-out;
+	transition: all 0.15s ease-in-out;
+
+}
+
+
+.rg line-chart .group:hover path
+{
+    opacity: 1;
+    stroke-width: 3;
+}
+
+.rg .line-chart g.group:hover path.grad-1   
+{
+    opacity: .75;
+    stroke-width: 4;
+    
+}
+
+.rg .line-chart g.group path.grad-0 
+{
+    opacity:0;
+    stroke-width: 20;
+    
+}
+
+/*  !! ---------------------------  Tool Tip ------------------------!!   */
+
+#tooltip
+{
+	text-align: center;
+	font-weight: bold;
+	background-color: #fff;
+	border: 1px solid #ccc;
+	font-family: Arial, Helvetica, sans-serif;
+	color:#4d4d4d;
+	font-size:77%;
+	line-height:108%;
+	fill:#4d4d4d;
+	padding: 4px 8px;
+	
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	
+	-moz-box-shadow: 2px 2px 3px #666;
+	-webkit-box-shadow: 2px 2px 3px #666;
+	box-shadow: 2px 2px 3px #666;
+}
+
+
+/*   !!------------- Horizontal/Vertical Lines Etc ----------------!!   */ 
+
+.rg g.linechart-highlighter line, line.rule
+{
+	stroke-width: 1;
+	shape-rendering: crispEdges;
+	stroke-dasharray: 1, 1; 
+	stroke: #CCC;
+}
+
+.rg g.linechart-highlighter rect
+{
+	fill: #fff;
+	stroke: #CCC;
+	stroke-width: 1px;
+}
+
+.rg line.rule
+{
+	stroke: #CCC;
+}
+
+.rg g.tick line
+{
+	stroke-width: 1;
+	stroke: #CCC;
+}
+
+.rg g.tick line.major
+{
+	stroke-width: 2;
+	stroke: #999;
+}
+
+.rg g.rule line
+{
+	stroke-width: 1;
+	stroke: #ccc;
+	stroke-dasharray: 1,1;
+	shape-rendering: crispEdges;
+    stroke-opacity: 0;
+}
+
+.rg g.rule line.major
+{
+	stroke-width: 1;
+	stroke: #DDD;
+	stroke-dasharray: 1,2;
+	shape-rendering: crispEdges;
+    stroke-opacity:1;
+}
+
+.rg rect.panel-frame
+{
+	fill: #fff;
+	fill-opacity: 0;
+}
+
+/*   !!-----------------  Scales  ---------------------!!   */
+
+.rg .dimension-0 text
+{
+	font-weight: bold;
+}
+
+.rg .line-chart.dimension-1 path.line
+{
+	stroke: #666 !important;
+}
+
+.rg .dimension-1 text
+{
+	fill: #666;
+	stroke-width: 0 !important;
+	font-weight: bold;
+}
+
+/* ____________________ Leader Board  ________________*/
+
+.rg ul.leaderboard
+{
+	stroke:#666;
+	list-style-type:square;
+	margin:0px 5px 5px 5px;
+    padding:5px 5px 5px 20px;
+    background-color:#FFF;
+    boarder:2px solid #000;
+    
+	box-shadow: 2px 2px 2px rgba(200,200,200,0.15),
+	inset 0px 0px 0px rgba(255,255,255,0.25);
+	-o-box-shadow: 2px 2px 2px rgba(0,0,0,0.15),
+	inset 0px 0px 0px rgba(255,255,255,0.25);
+	-webkit-box-shadow: 2px 2px 2px rgba(0,0,0,0.15),
+	inset 0px 0px 0px rgba(255,255,255,0.25);
+	-moz-box-shadow: 2px 2px 2px rgba(0,0,0,0.15),
+	inset 0px 0px 0px rgba(255,255,255,0.25);    
+}
+
+.rg ul.leaderboard li
+{
+	font-family:Veranda, Arial, Helvetica, sans-serif;
+	font-size: 77%;
+}
+
+.rg .leaderboard li.nogradient
+{
+	background-image: none;
+}
+
+.rg li
+{	
+}
+
+.rg div.clear
+{
+	clear: left;
+}
+/* _____________ PIVOT TABLE _____________________ */
+.rg .pivot-table table
+{
+	font-family:Veranda, Arial, Helvetica, sans-serif;
+	border: none;
+clear:left;
+}
+
+
+.rg .pivot-table td
+{
+border-top:1px solid #F1F2F2; 
+border-left:1px solid #F1F2F2; 
+padding: 1px 8px 1px 5px;
+text-align: center;
+background-color: #FFF;
+}
+
+.rg .pivot-table th
+{
+font-weight: normal;
+color: #666;
+}
+
+.rg .pivot-table tfoot th.column.total, .pivot-table tbody th.row.total, th.table.total
+{
+min-width:50px;
+font-size: 150%;
+font-weight: bold;
+text-align: center;
+padding: 4px 10px;
+background-color:#D1D3D4;
+
+}
+
+
+.rg .pivot-table thead th.col-header, .rg.pivot-table thead th.row-header
+{
+padding: 0px 6px;
+font-weight:bold;
+font-size:150%;
+}
+
+.rg .pivot-table th.column.value, .rg.pivot-table th.row.value
+{
+font-weight: bold;
+padding: 2px 6px;
+text-align: left;
+}
+
+
+.rg .pivot-table th.row.valuealt
+{
+	border-bottom:1px solid #CCC;
+}
+
+.rg .pivot-table th.column.value
+{
+	background-color:#F1F2F2;
+}
+
+.rg .pivot-table thead th
+{
+	text-align: center;
+}
+
+.rg .pivot-table tbody th
+{
+	white-space: nowrap;
+	text-align: left;
+}
+
+.rg .pivot-table .spacer
+{
+	background: none;
+	border: 0;
+}
+
+.rg .anchor-line
+{
+	shape-rendering: crispEdges;
+	stroke: #666;
+	stroke-width: 1;
+}
+
+/* ________ Bar Chart __________________*/
+
+.rg .bar-chart rect.bar
+{
+	shape-rendering: crispEdges;
+	stroke-width: 0;
+	opacity: .9;
+}
+
+.rg .bar-chart rect.bar:hover
+{
+	opacity:1;
+	stroke-width:0;
+}
+
+.rg .border
+{
+	stroke: #666;
+	shape-rendering: crispEdges;
+}
+
+/* ____________ Fonts / Lables / Text ____________*/ 
+
+.rg .label text
+{
+	font-family: Arial, Helvatica, sans-serif;
+	font-weight: bold;
+	font-size: 77%;
+	fill: #FFF;
+	stroke: none;
+}
+
+
+.rg .label text.outline
+{
+	fill: none;
+	stroke: #666;
+	stroke-width: 2px;
+	stroke-opacity: 0;
+}
+
+.rg .label text.shadow
+{
+	fill: #CCC;
+	stroke-width: 3px;
+	stroke: #CCC;
+	opacity: 0;
+}
+
+.rg .label text.nooutline
+{
+	fill: #666;
+	font-weight: normal
+}
+
+.rg text.shadow.nooutline
+{
+	stroke-width: 1px;
+}
+
+.rg text.outline.noshadow
+{
+	stroke-width: 1px;
+	stroke: #666;
+}
+
+.rg .tick .label text
+{
+	font-size: 77%;
+}
+
+.rg .label text.outline
+{
+	stroke-width: 2px;
+	stroke-opacity: 0;
+}
+
+/* _____________________  SCATTER GRAPH  _____________________ */
+
+.rg .scatter-graph text
+{
+	font-size: 77%;
+}
+
+.rg .scatter-graph g.symbol path
+{
+	stroke: none;
+}
+
+/* _____________________  PIE CHART  _____________________ */
+
+.rg .pie-chart path
+{
+	stroke-width: 1;
+}
+
+/* _____________________  Funnel Chart  _____________________ */
+
+.rg .funnel-chart .funnel-outside
+{
+	stroke: none;
+}
+
+.rg .funnel-chart .arrow path
+{
+	stroke-width: .5px;
+	stroke: #DDD;
+	fill: #FFF;
+}
+
+.rg .funnel-chart .arrow text
+{
+    fill: #666;
+	font-size: 77%;
+	font-weight: bold;
+}
+
+/* ______________Balloons / Drill Downs ______________*/
+
+.rg path.balloon-connector
+{
+	stroke: #FFF;
+	stroke-width: 1;
+	stroke-dasharray: 0, 0;
+}
+
+.rg .balloon .label text.nooutline, .rg .balloon .label text.shadow.nooutline
+{
+	font-size: 93%;
+	font-weight: bold;
+}
+
+.rg .balloon path.bg
+{
+	fill : #FFF;
+	stroke : #ddd;
+	fill-opacity : 1;
+	stroke-width : 1;
+
+
+}
+
+.rg .balloon path.shadow
+{
+	opacity : 0.25;
+	fill : #666;
+	stroke : #666;
+	stroke-width : 1;
+}
+
+/* ___________________ Heat Grid ________________*/
+
+.rg .heat-grid rect
+{
+	shape-rendering: crispEdges;
+	stroke-width: 0;
+}
+
+
+/* -------------------Geo (map ---------------------*/
+.rg .geo
+{
+	stroke-opacity:0.5;
+	opacity:1;
+}
+
+.rg .geo path:hover
+{
+	stroke-opacity:1;
+	opacity: 0.75;
+}
+
+.rg .geo .contour path
+{
+	stroke: #ccc;
+	stroke-width: 1;
+}
+
+.rg .geo .centroid circle
+{
+	stroke: none;
+	fill-opacity: 0.50;
+}
+
+.rg .geo .map .county path
+{
+	stroke: none;
+}
+
+.rg .geo .map text
+{	
+	font-weight:bold;
+	font-size: 10px;	
+}

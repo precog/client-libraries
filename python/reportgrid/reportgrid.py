@@ -92,10 +92,13 @@ class HttpClient(object):
         self.port        = port
         self.path_prefix = path_prefix
 
-        self.conn        = httplib.HTTPConnection("%s:%d" % (host, int(port)))
-
     def __getattr__(self, name):
         """Send an HTTP request"""
+
+        # New connection per request, to avoid issues with servers closing connections
+        # We ran into this while testing against the dev cluster. Tests would fail with 
+        # a long stack trace and the error CannotSendRequest
+        self.conn = httplib.HTTPConnection("%s:%d" % (self.host, int(self.port)))
 
         name = name.upper()
 
@@ -153,7 +156,6 @@ class ReportGrid(object):
         """Initialize an API client"""
 
         self.analytics = HttpClient(token_id = token_id, host = host, port = port, path_prefix = path_prefix)
-
 
     def new_token(self, path):
         """Create a new token"""
