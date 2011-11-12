@@ -45,9 +45,6 @@ class ReportGridAPI {
      * @return String token
      */
     public function newToken($path = "", $expires = null, $read = null, $write = null, $share = null, $explore = null, $order = null, $limit = null, $depth = null, $tags = null, $lossless = null) {
-
-        $return = null;
-        
         $params = array();
         $params['path'] = $path;
 
@@ -78,11 +75,7 @@ class ReportGridAPI {
             $limits['lossless']  = $lossless;
         $params['limits'] = $limits;
         
-        $result = $this->restHelper($this->_baseUrl . "tokens?tokenId=" . $this->_tokenID, $params, "POST");
-        
-        if (isset($result[0])) {
-            $return = $result[0];
-        }
+        $return = $this->restHelper($this->_baseUrl . "tokens?tokenId=" . $this->_tokenID, $params, "POST");
         
         return $return;
         
@@ -93,8 +86,8 @@ class ReportGridAPI {
      *
      * @returns Array - All tokens associated with this->_tokenId
      */
-    public function getTokens() {
-        $path = $this->_baseUrl . "tokens?tokenId=" . $this->_tokenID;
+    public function tokens() {
+        $path   = $this->_baseUrl . "tokens?tokenId=" . $this->_tokenID;
         $return = $this->restHelper($path, null, "GET");
         return $return;
     }
@@ -106,8 +99,8 @@ class ReportGridAPI {
      *
      * @return Mixed - Array with all the information about this token or FALSE if the token does not exist.
      */
-    public function tokenInfo($token) {
-        $path = $this->_baseUrl . "tokens/" . $token . "?tokenId=" . $this->_tokenID;
+    public function token($token) {
+        $path   = $this->_baseUrl . "tokens/" . $token . "?tokenId=" . $this->_tokenID;
         $return = $this->restHelper($path, null, "GET");
         return is_array($return) ? $return : false;
     }
@@ -116,9 +109,11 @@ class ReportGridAPI {
      * Delete an existing token
      *
      * @param String - Token
+     *
+     * @return Boolean - success/failure
      */
     public function deleteToken($token) {
-        $path = $this->_baseUrl . "tokens/" . $token . "?tokenId=" . $this->_tokenID;
+        $path   = $this->_baseUrl . "tokens/" . $token . "?tokenId=" . $this->_tokenID;
         $return = $this->restHelper($path, null, "DELETE");
         return $return;
     }
@@ -129,28 +124,26 @@ class ReportGridAPI {
      * @param String - path
      * @param Array - events data
      *
-     * @return int - 0/1.  0=fail 1=success
+     * @return Bool - success/failure
      */
     public function track($path, $events = array()) {
-        $path = $this->_baseUrl . "vfs/" . $this->cleanPath($path) . "?tokenId=" . $this->_tokenID;
+        $path   = $this->_baseUrl . "vfs/" . $this->cleanPath($path) . "?tokenId=" . $this->_tokenID;
         $return = $this->restHelper($path, $events, "POST");
         return $return !== false;
     }
-    
-    static function dotFilter($v)
-    {
-        return $v[0] == '.';
-    }
 
-    static function notDotFilter($v)
-    {
-        return $v[0] != '.';
-    }
-
+    /*
+     * Returns the children of the path
+     * @params String - path
+     * @params String - 'all', 'path' or 'property'
+     * @params String - property name
+     *
+     * @return Array - values
+     */
     public function children($path, $type = 'all', $property = '')
     {
-        $type = $property ? 'property' : $type;
-        $path = $this->_baseUrl . "vfs/" . $this->cleanPath($path) . "?tokenId=" . $this->_tokenID;
+        $type   = $property ? 'property' : $type;
+        $path   = $this->_baseUrl . "vfs/" . $this->cleanPath($path) . ($property ? "/" . $this->normalizeProperty($property) : "") . "?tokenId=" . $this->_tokenID;
         $return = $this->restHelper($path, null, "GET");
         if($type == 'path')
         {
@@ -161,65 +154,170 @@ class ReportGridAPI {
         return $return;
     }
 
-
     /*
-     * Retrieve an event
+     * Returns the count of the specified event, event + property or event + property +value
+     * @params String - path
+     * @params String - 'all', 'path' or 'property'
+     * @params String - property name
+     * @params String - value
+     * @params Int - start timestamp in milliseconds
+     * @params Int - end timestamp in milliseconds
      *
-     * @param String - path
-     * @param String - interaction
-     * @param String - type
-     * @param String - periodicity
-     *
-     * @return Array - event occurances
+     * @return Array - values
      */
-    public function retrieveEvent($path = "", $interaction = "", $type = "", $periodicity = "eternity") {
-
-        $return = null;
-        
-        if ($periodicity != "count") {
-            $periodicity = "series/" . $periodicity;
-        }
-        
-        $url = $this->_baseUrl . "vfs/" . $path . "/" . $interaction . "/values/" . $type . "/" . $periodicity . "?tokenId=" . $this->_tokenID;
-        $result = $this->restHelper($url, null, "GET", "json");
-        
-        if ($result) {
-            $return = $result;
-        }
-        
+    public function count($path, $event, $property = '', $value = '', $start = '', $end = '')
+    {
+        $value  = $value ? "/values/" . urlencode(json_encode($value)) : '';
+        $time   = $start ? '&start=$start&end=$end' : '';
+        $path   = $this->_baseUrl . "vfs/" . $this->cleanPath($path) . "/" . $this->normalizeProperty($event).$this->normalizeProperty($property).$value."/count?tokenId=" . $this->_tokenID . $time;
+        $return = $this->restHelper($path, null, "GET");
         return $return;
     }
-    
+
     /*
-     * Search events
+     * Returns the values for the event + property combination
+     * @params String - path
+     * @params String - event name
+     * @params String - property name
+     * @params Int - limit of values to return
+     * @params Bool - sets the order descending (from top to bottom - default) or ascending (from bottom to top)
      *
-     * @param String - select
-     * @param String - from
-     * @param Array - event parameters
-     *
-     * @return Array - search results
+     * @return Array - values
      */
-    public function search($select = "", $from = "", $where = array()) {
-        
-        $return = null;
-        
-        $params = array();
-        $params['select'] = $select;
-        $params['from'] = $from;
-        $params['where'] = $where;
-
-        $result = $this->restHelper($this->_baseUrl . "search?tokenId=" . $this->_tokenID, $params, "POST");
-        
-        if ($result) {
-            $return = $result;
-        }
-        
+    public function values($path, $event, $property, $limit = 0, $descending = true)
+    {
+        $bounds = $limit ? ($descending ? "/top/$limit" : "/bottom/$limit") : '';
+        $path   = $this->_baseUrl . "vfs/" . $this->cleanPath($path) . "/" . $this->normalizeProperty($event).$this->normalizeProperty($property)."/values$bounds?tokenId=" . $this->_tokenID;
+        $return = $this->restHelper($path, null, "GET");
         return $return;
+    }
 
+    /*
+     * Returns the count of the specified event, event + property or event + property +value
+     * @params String - path
+     * @params String - 'all', 'path' or 'property'
+     * @params String - property name
+     * @params String - value
+     * @params String - periodicity: 'eternity', 'year', 'month', 'week', 'day', 'hour', minute
+     * @params Int - start timestamp in milliseconds
+     * @params Int - end timestamp in milliseconds
+     *
+     * @return Array - values
+     */
+    public function series($path, $event, $property = '', $value = '', $periodicity = 'day', $start = '', $end = '')
+    {
+        $value  = $value ? "/values/" . urlencode(json_encode($value)) : '';
+        $start  = $this->defaultStart($start);
+        $end    = $this->defaultEnd($end);
+        $time   = "&start=$start&end=$end";
+        $path   = $this->_baseUrl . "vfs/" . $this->cleanPath($path) . "/" . $this->normalizeProperty($event).$this->normalizeProperty($property).$value."/series/$periodicity?tokenId=" . $this->_tokenID . $time;
+        $return = $this->restHelper($path, null, "GET");
+        return $return;
+    }
+
+    /*
+     * Returns a timeseries or count (when used with the eternity periodicity - defaul) of occurrences of the event when one or more properties
+     * are set to a certain value. You can use the 'where' parameter to set the conditions of the query.
+     * @params String - path
+     * @params String - where, associative array where the keys are the property names prefixed with the event and the value is the filter.
+     * @params String - periodicity: 'eternity', 'year', 'month', 'week', 'day', 'hour', minute
+     * @params Int - start timestamp in milliseconds
+     * @params Int - end timestamp in milliseconds
+     *
+     * @return Array - values
+     */
+    public function search($path, $where, $periodicity = 'eternity', $start = '', $end = '')
+    {
+        $start  = $periodicity == 'eternity' ? '' : $this->defaultStart($start);
+        $end    = $periodicity == 'eternity' ? '' : $this->defaultEnd($end);
+        $time   = $start ? "&start=$start&end=$end" : '';
+        $url    = $this->_baseUrl . "search?tokenId=" . $this->_tokenID . $time;
+        $return = $this->restHelper($url, array(
+            select => $periodicity == 'eternity' ? "count" : "series/$periodicity",
+            from   => $path,
+            where  => $this->whereArray($where)
+        ), "POST");
+        return $return;
+    }
+
+    /*
+     * Returns the intersections of the specified properties. The "properties" argument must be an array of associative arrays that contains the
+     * following key/value pairs: property (event name + property name), limit (integer value), order ('descending' or 'ascending')
+     * @params String - path
+     * @params Array - properties
+     * @params String - periodicity: 'eternity', 'year', 'month', 'week', 'day', 'hour', minute
+     * @params Int - start timestamp in milliseconds
+     * @params Int - end timestamp in milliseconds
+     *
+     * @return Array - values
+     */
+    public function intersect($path, $properties, $periodicity = 'eternity', $start = '', $end ='')
+    {
+        $start  = $periodicity == 'eternity' ? '' : $this->defaultStart($start);
+        $end    = $periodicity == 'eternity' ? '' : $this->defaultEnd($end);
+        $time   = $start ? "&start=$start&end=$end" : '';
+        $url    = $this->_baseUrl . "intersect?tokenId=" . $this->_tokenID . $time;
+        $return = $this->restHelper($url, array(
+            select => $periodicity == 'eternity' ? "count" : "series/$periodicity",
+            from   => $path,
+            properties  => $properties
+        ), "POST");
+        return $return;
+    }
+
+    /*
+     * Returns the histogram count for each value in the specified event + property pair.
+     * @params String - path
+     * @params String - event name
+     * @params String - property name
+     * @params Int - start timestamp in milliseconds
+     * @params Int - end timestamp in milliseconds
+     *
+     * @return Array - values
+     */
+    public function histogram($path, $event, $property, $start = null, $end = null)
+    {
+        $time   = $start ? '&start=$start&end=$end' : '';
+        $path   = $this->_baseUrl . "vfs/" . $this->cleanPath($path) . "/" . $this->normalizeProperty($event).$this->normalizeProperty($property)."/histogram?tokenId=" . $this->_tokenID . $time;
+        $return = $this->restHelper($path, null, "GET");
+        return $return; 
     }
      
 /****************************************************************************/     
-/****************************************************************************/     
+/****************************************************************************/
+    private function whereArray($ob)
+    {
+        $where = array();
+        foreach($ob as $key => $value)
+            $where[] = array('variable' => $key, 'value' => $value);
+        return $where;    
+    }
+
+    private function defaultStart($start)
+    {
+        return $start ? $start : (time() - 7 * 24 * 60 * 60) * 1000;
+    }
+
+    private function defaultEnd($end)
+    {
+        return $end ? $end : (time() + 24 * 60 * 60) * 1000;
+    }
+
+    private function dotFilter($v)
+    {
+        return $v[0] == '.';
+    }
+
+    private function notDotFilter($v)
+    {
+        return $v[0] != '.';
+    }
+
+    private function normalizeProperty($p)
+    {
+        return $p ? ($p[0] == '.' ? $p : ".$p") : '';   
+    }
+
     /*********************************
      **** PRIVATE helper function ****
      *********************************/
@@ -261,7 +359,7 @@ class ReportGridAPI {
              */
             if (strlen($stream_contents) > 0) {
                 
-                $result = (array)json_decode($stream_contents);
+                $result = json_decode($stream_contents, true);
                 
                 if ($result === null) {
                     error_log("Exception:  " . $stream_contents);
