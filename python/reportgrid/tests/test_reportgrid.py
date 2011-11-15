@@ -112,7 +112,7 @@ class TestReportGrid:
         assert response > 0
 
     def test_rollup_property_value_count(self):
-        response = self.test_api.property_value_count(path='/', property='.pyprop', value=123)
+        response = self.test_api.property_value_count(path='/', property='pytest.pyprop', value=456)
         assert type(response) is int
         assert response > 0
 
