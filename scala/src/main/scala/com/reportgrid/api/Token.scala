@@ -31,3 +31,7 @@ case class Token(path: Path, permissions: Permissions, expires: Date, limits: Li
   def canWrite = permissions.write
   def canShare = permissions.share
 }
+
+object Token {
+  val Test = "A3BC1539-E8A9-4207-BB41-3036EC2C6E6D"
+}

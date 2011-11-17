@@ -37,4 +37,8 @@ object Server {
   val Local = Server(
     analyticsRootUrl = "http://localhost:8888/"
   )
+
+  val Dev = Server(
+    analyticsRootUrl = "http://devapi.reportgrid.com/services/analytics/v1/"
+  )
 }
