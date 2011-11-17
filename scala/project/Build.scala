@@ -7,8 +7,8 @@ object ScalaClientBuild extends Build {
   val buildVersion = "0.3.1"
   val buildScalaVersion = "2.9.1"
   
-  val blueeyes = GitAltDependency(_: java.io.File, file("../../blueeyes"),     RootProject(uri("git://github.com/jdegoes/blueeyes")))
-  val rosetta =  GitAltDependency(_: java.io.File, file("../../rosetta-json"), RootProject(uri("git://github.com/jdegoes/RosettaJson"))) 
+  val blueeyes = GitAltDependency(_: java.io.File, file("../../blueeyes"),     RootProject(uri("git://github.com/reportgrid/blueeyes")))
+  val rosetta =  GitAltDependency(_: java.io.File, file("../../RosettaJson"),  RootProject(uri("git://github.com/reportgrid/RosettaJson"))) 
 
   override def projectDefinitions(base: File) = {
     val client: Project = Project("scala-client", file(".")) settings(
