@@ -902,7 +902,7 @@ var ReportGrid = window.ReportGrid || {};
     var http = $.Http();
 
     http.get(
-      $.Config.analyticsServer + '/tokens',
+      $.Config.analyticsServer + '/tokens/children',
       Util.createCallbacks(success, failure, 'List all tokens'),
       {tokenId: $.Config.tokenId }
     );

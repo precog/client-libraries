@@ -87,7 +87,7 @@ class ReportGridAPI {
      * @returns Array - All tokens associated with this->_tokenId
      */
     public function tokens() {
-        $path   = $this->_baseUrl . "tokens?tokenId=" . $this->_tokenID;
+        $path   = $this->_baseUrl . "tokens/children?tokenId=" . $this->_tokenID;
         $return = $this->restHelper($path, null, "GET");
         return $return;
     }
