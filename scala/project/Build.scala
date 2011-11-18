@@ -16,6 +16,7 @@ object ScalaClientBuild extends Build {
       version      := buildVersion,
       scalaVersion := buildScalaVersion,
       scalacOptions ++= Seq("-deprecation", "-unchecked"),
+      resolvers += "Scala-Tools Snapshots" at "http://scala-tools.org/repo-snapshots/",
       libraryDependencies ++= Seq(
         "org.apache.httpcomponents" %  "httpclient"          % "4.1.1",
         "net.databinder"            %% "dispatch-http-json"  % "0.8.5"   % "provided",
