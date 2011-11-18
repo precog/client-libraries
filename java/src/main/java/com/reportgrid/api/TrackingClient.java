@@ -42,7 +42,6 @@ public class TrackingClient {
     return tokenId;
   } 
 
-
 	/**
 	 * Track the specified event.
 	 * 
@@ -54,47 +53,49 @@ public class TrackingClient {
 	 * @param serializer The function used to serialize the event to a JSON string.
 	 * @throws IOException 
 	 */
+  public <T> void track(Path path, Event<T> event, int rollup, ToJson<? super T> serializer) throws IOException {
+    track(path, event.buildRequestBody(serializer), String.valueOf(rollup));
+  }
+
   public <T> void track(Path path, Event<T> event, boolean rollup, ToJson<? super T> serializer) throws IOException {
-    track(path, event.buildRequestBody(serializer), rollup);
+    track(path, event.buildRequestBody(serializer), String.valueOf(rollup));
+  }
+
+  public void track(Path path, String eventBody, int rollup) throws IOException {
+    track(path, eventBody, String.valueOf(rollup));
+  }
+
+  public void track(Path path, String eventBody, boolean rollup) throws IOException {
+    track(path, eventBody, String.valueOf(rollup));
   }
 
   /**
    * Call the tracking API with a raw JSON string. 
    */
-  public void track(Path path, String eventBody, boolean rollup) throws IOException {
-    List<Path> paths = new ArrayList<Path>();
-    paths.add(path);
+  private void track(Path path, String eventBody, String rollup) throws IOException {
+    String servicePath = "vfs/" + path.relativize() + "?tokenId="+encode(tokenId, "UTF-8");
+    if (rollup != "0") servicePath = servicePath + "&rollup="+rollup;
 
-    if (rollup) {
-      path = path.getPrefix();
-      while (path != null) {
-        paths.add(path);
-        path = path.getPrefix();
-      }
+    URL trackingUrl = new URL(service.serviceUrl(), servicePath);
+    HttpURLConnection conn = (HttpURLConnection) trackingUrl.openConnection();
+    conn.setDoOutput(true);
+    conn.setRequestMethod("POST");
+    conn.setRequestProperty("Content-Type", "application/json");
+    conn.setRequestProperty("Content-Length", "" + eventBody.length());
+
+    DataOutputStream out = new DataOutputStream(conn.getOutputStream());
+    try {
+      out.writeBytes(eventBody);
+    } finally {
+      out.flush();
+      out.close();
     }
 
-    for (Path p : paths) {
-      URL trackingUrl = new URL(service.serviceUrl(), "vfs/" + p.relativize() + "?tokenId="+encode(tokenId, "UTF-8"));
-      HttpURLConnection conn = (HttpURLConnection) trackingUrl.openConnection();
-      conn.setDoOutput(true);
-      conn.setRequestMethod("POST");
-      conn.setRequestProperty("Content-Type", "application/json");
-      conn.setRequestProperty("Content-Length", "" + eventBody.length());
-
-      DataOutputStream out = new DataOutputStream(conn.getOutputStream());
-      try {
-        out.writeBytes(eventBody);
-      } finally {
-        out.flush();
-        out.close();
-      }
-
-      if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
-        throw new IOException(
-                "Unexpected response from server: " + conn.getResponseCode() + ": " + conn.getResponseMessage() + 
-                "; tracking url " + trackingUrl +
-                "; event body " + eventBody); 
-      }
+    if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
+      throw new IOException(
+              "Unexpected response from server: " + conn.getResponseCode() + ": " + conn.getResponseMessage() + 
+              "; tracking url " + trackingUrl +
+              "; event body " + eventBody); 
     }
   }
 }

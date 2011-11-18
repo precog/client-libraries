@@ -73,7 +73,7 @@ public class ReportGridClientTest extends TestCase {
       RawJson testJson = new RawJson("{\"test\":[{\"v\": 1}, {\"v\": 2}]}");
       TestData testData = new TestData(42, "Hello\" World", testJson);
       Event<TestData> testEvent = new Event<TestData>(new Date(), "test", testData, 1);
-      testClient.track(new Path("/test"), testEvent, false, toJson);
+      testClient.track(new Path("/test"), testEvent, 0, toJson);
     }
 
     public void testTrackingStrToJson() throws IOException {
@@ -81,14 +81,14 @@ public class ReportGridClientTest extends TestCase {
       TrackingClient testClient = new TrackingClient(Local, TrackingClient.TEST_TOKEN);
 
       Event<String> testEvent = new Event<String>(new Date(), "test", "{\"test\":[{\"v\": 1}, {\"v\": 2}]}", 1);
-      testClient.track(new Path("/test"), testEvent, false, toJson);
+      testClient.track(new Path("/test"), testEvent, 0, toJson);
     }
 
     public void testTrackingRawString() throws IOException {
       TrackingClient testClient = new TrackingClient(Local, TrackingClient.TEST_TOKEN);
 
       String rawJson = "{\"test\":[{\"v\": 1}, {\"v\": 2}]}";
-      testClient.track(new Path("/test"), rawJson, false);
+      testClient.track(new Path("/test"), rawJson, 0);
     }
 
     public void testRawJson() throws IOException {
@@ -110,8 +110,6 @@ public class ReportGridClientTest extends TestCase {
         .append("}")
         .toString();
 
-      System.out.println(testEvent.buildRequestBody(toJson));
-
       assertEquals(expected, testEvent.buildRequestBody(toJson));
     }
 
@@ -130,7 +128,6 @@ public class ReportGridClientTest extends TestCase {
       QueryClient client = new QueryClient(QueryClient.TEST_TOKEN);
 
       List<Property> properties = client.listChildProperties(new Path("/test"), new Property("test"), fromJson);
-      System.out.println("properties: " + properties);
       assertFalse(properties.isEmpty());  
     }
 }
