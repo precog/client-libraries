@@ -48,7 +48,7 @@ class TestToken extends BaseTest {
 		$info = $this->rg->token($this->token);
 		$this->assertFalse($info);
 	}
-
+/*
 	function testLossless()
 	{
 		$lossless = $this->rg->newToken("/", null, null, null, null, null, null, null, null, null, true); 
@@ -61,4 +61,5 @@ class TestToken extends BaseTest {
 		$this->assertFalse($info['limits']['lossless']);
 		$this->rg->deleteToken($notlossless);
 	}
+*/
 }

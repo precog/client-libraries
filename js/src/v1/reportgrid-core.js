@@ -918,7 +918,7 @@ var ReportGrid = window.ReportGrid || {};
     }
     http.get(
       $.Config.analyticsServer + '/tokens/' + token,
-      Util.createCallbacks(success, failure, 'List all tokens'),
+      Util.createCallbacks(success, failure, 'List token info'),
       {tokenId: $.Config.tokenId }
     );
   }
