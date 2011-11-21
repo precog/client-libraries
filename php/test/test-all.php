@@ -1,9 +1,4 @@
 <?php
-/*
-require_once('test-token.php');
-require_once('test-track.php');
-require_once('test-query.php');
-*/
 
 require_once('simpletest/autorun.php');
 
