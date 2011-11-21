@@ -5,6 +5,9 @@ set -e
 
 mvn -f java/pom.xml test
 
-pushd python && py.test && popd
-pushd ruby && rake test && popd
-
+pushd python && py.test
+popd
+pushd ruby && rake test
+popd
+pushd php/test && php test-all.php
+popd
