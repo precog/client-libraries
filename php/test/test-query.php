@@ -59,7 +59,7 @@ class TestQuery extends BaseTest {
 	function testIntersect()
 	{
 		$path = TestQuery::$path;
-		$series = $this->rg->intersect($path, array(array(property => '.impression.browser', limit => 3, order => 'descending')));
+		$series = $this->rg->intersect($path, array(array('property' => '.impression.browser', 'limit' => 3, 'order' => 'descending')));
 		$this->assertIsA($series, "Array");
 		$this->assertTrue(count($series) > 0);
 	}
