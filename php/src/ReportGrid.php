@@ -233,9 +233,9 @@ class ReportGridAPI {
         $time   = $start ? "&start=$start&end=$end" : '';
         $url    = $this->_baseUrl . "search?tokenId=" . $this->_tokenID . $time;
         $return = $this->restHelper($url, array(
-            select => $periodicity == 'eternity' ? "count" : "series/$periodicity",
-            from   => $path,
-            where  => $this->whereArray($where)
+            'select' => $periodicity == 'eternity' ? "count" : "series/$periodicity",
+            'from'   => $path,
+            'where'  => $this->whereArray($where)
         ), "POST");
         return $return;
     }
@@ -258,9 +258,9 @@ class ReportGridAPI {
         $time   = $start ? "&start=$start&end=$end" : '';
         $url    = $this->_baseUrl . "intersect?tokenId=" . $this->_tokenID . $time;
         $return = $this->restHelper($url, array(
-            select => $periodicity == 'eternity' ? "count" : "series/$periodicity",
-            from   => $path,
-            properties  => $properties
+            'select' => $periodicity == 'eternity' ? "count" : "series/$periodicity",
+            'from'   => $path,
+            'properties'  => $properties
         ), "POST");
         return $return;
     }
