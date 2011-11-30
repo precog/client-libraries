@@ -568,7 +568,7 @@ var ReportGrid = window.ReportGrid || {};
     }
 
     var description = 'Track event ' + firstEventName + ' (' + JSON.stringify(firstEventProperties) + ') @ ' + (firstEventTime === false ? "no time tracked" : "current time"),
-        parameters = { tokenId: (options && options.token) || $.Config.tokenId };
+        parameters = { tokenId: (options && options.tokenId) || $.Config.tokenId };
     if(options && options.rollup && options.rollup > 0)
       parameters.rollup = options.rollup;
 
