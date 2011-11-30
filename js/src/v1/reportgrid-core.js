@@ -269,6 +269,18 @@ var ReportGrid = window.ReportGrid || {};
       if(o.groups)
           q.groups = typeof o.groups == "string" ? o.groups : o.groups.join(",");
       return q;
+    },
+
+    whereConditions : function(where) {
+      if(!where) return null;
+      var result = [];
+      where = where instanceof Array ? where : [where];
+      for(var i = 0; i < where.length; i++) {
+        for(var key in where[i]) {
+          result.push({ variable : key, value : where[i][key] })
+        }
+      }
+      return result;
     }
   }
 
@@ -531,7 +543,7 @@ var ReportGrid = window.ReportGrid || {};
    *   }
    * });
    */
-  ReportGrid.track = function(path_, events, success, failure, token) {
+  ReportGrid.track = function(path_, events, success, failure, options) {
     if(typeof path_ == "string")
       path_ = [path_];
     var paths = [];
@@ -555,7 +567,11 @@ var ReportGrid = window.ReportGrid || {};
       break;
     }
 
-    var description = 'Track event ' + firstEventName + ' (' + JSON.stringify(firstEventProperties) + ') @ ' + (firstEventTime === false ? "no time tracked" : "current time");
+    var description = 'Track event ' + firstEventName + ' (' + JSON.stringify(firstEventProperties) + ') @ ' + (firstEventTime === false ? "no time tracked" : "current time"),
+        parameters = { tokenId: (options && options.token) || $.Config.tokenId };
+    if(options && options.rollup && options.rollup > 0)
+      parameters.rollup = options.rollup;
+
     for(var i = 0; i < paths.length; i++)
     {
       path = paths[i];
@@ -563,7 +579,7 @@ var ReportGrid = window.ReportGrid || {};
         $.Config.analyticsServer + '/vfs' + path,
         events,
         Util.createCallbacks(success, failure, description),
-        {tokenId: token || $.Config.tokenId }
+        parameters
       );
     }
   }
@@ -767,16 +783,12 @@ var ReportGrid = window.ReportGrid || {};
 
     var description = 'Select count from ' + path + ' where ' + JSON.stringify(options.where);
 
-    var where = [];
-    for(key in options.where)
-        where.push({ variable : key, value : options.where[key]});
-
     http.post(
       $.Config.analyticsServer + '/search',
       {
         select: "count",
         from:   path,
-        where:  where
+        where:  Util.whereConditions(options.where)
       },
       Util.createCallbacks(success, failure, description),
       Util.defaultQuery(options)
@@ -811,14 +823,10 @@ var ReportGrid = window.ReportGrid || {};
 
     var description = 'Select series/' + peri + ' from ' + path + ' where ' + JSON.stringify(options.where);
 
-    var where = [];
-    for(key in options.where)
-        where.push({ variable : key, value : options.where[key]});
-
     var ob = {
       select: "series/" + peri,
       from:   path,
-      where:  where
+      where:  Util.whereConditions(options.where)
     };
     var query = Util.groupQuery(options);
 
