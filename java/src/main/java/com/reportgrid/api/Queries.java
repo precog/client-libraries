@@ -129,7 +129,8 @@ public class Queries {
 			conn.setRequestProperty("Content-Length", "" + body.length());
 			DataOutputStream out = new DataOutputStream(conn.getOutputStream());
 			try {
-				out.writeBytes(body);
+        byte[] eventBytes = body.getBytes("UTF-8"); 
+        out.write(eventBytes, 0, eventBytes.length);
 			} finally {
 				out.flush();
 				out.close();

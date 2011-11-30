@@ -85,7 +85,8 @@ public class TrackingClient {
 
     DataOutputStream out = new DataOutputStream(conn.getOutputStream());
     try {
-      out.writeBytes(eventBody);
+      byte[] eventBytes = eventBody.getBytes("UTF-8"); 
+      out.write(eventBytes, 0, eventBytes.length);
     } finally {
       out.flush();
       out.close();
