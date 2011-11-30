@@ -91,19 +91,26 @@ public class ReportGridClientTest extends TestCase {
       testClient.track(new Path("/test"), rawJson, 0);
     }
 
+    public void testTrackingRawUTF8() throws IOException {
+      TrackingClient testClient = new TrackingClient(Local, TrackingClient.TEST_TOKEN);
+
+      String rawJson = "{\"test\":[{\"ดีลลิเชียส\": 1}, {\"v\": 2}]}";
+      testClient.track(new Path("/test"), rawJson, 0);
+    }
+
     public void testRawJson() throws IOException {
       ToJson<Object> toJson = new GsonToJson();
 
       String testString = "{\"test\":[{\"v\":1},{\"v\":2}]}";
       RawJson testJson = new RawJson(testString);
-      TestData testData = new TestData(42, "Hello World", testJson);
+      TestData testData = new TestData(42, "Hello\" World", testJson);
 
       Event<TestData> testEvent = new Event<TestData>(new Date(), "test", testData, 1);
 
       String expected = new StringBuilder("{")
           .append("\"").append(testEvent.getEventName()).append("\":{")
             .append("\"testInt\":").append(42).append(",")
-            .append("\"testStr\":\"Hello World\",")
+            .append("\"testStr\":\"Hello\\\" World\",")
             .append("\"~raw\":").append(testString).append(",")
             .append("\"#timestamp\":").append(testEvent.getTimestamp().getTime())
           .append("}")
@@ -111,6 +118,26 @@ public class ReportGridClientTest extends TestCase {
         .toString();
 
       assertEquals(expected, testEvent.buildRequestBody(toJson));
+    }
+
+    public void testOddCharacters() throws IOException {
+      ToJson<Object> toJson = new GsonToJson();
+      TestData testData = new TestData(1, "™", new RawJson(""));
+
+      Event<TestData> testEvent = new Event<TestData>(new Date(), "test", testData, 1);
+
+      String expected = new StringBuilder("{")
+          .append("\"").append(testEvent.getEventName()).append("\":{")
+            .append("\"testInt\":").append(1).append(",")
+            .append("\"testStr\":\"™\",")
+            .append("\"#timestamp\":").append(testEvent.getTimestamp().getTime())
+          .append("}")
+        .append("}")
+        .toString();
+
+      String result = testEvent.buildRequestBody(toJson);
+
+      assertEquals(expected, result);
     }
 
     public void testListChildPaths() throws IOException {
