@@ -75,7 +75,7 @@ extends ReportGridTrackingClient[Json](jsonImplementation) with QueryTerms[Json]
    */
   def track(path: Path, name: String, properties: Json = EmptyObject, rollup: Boolean = false, tags: Set[Tag[Json]] = Set.empty, count: Option[Int] = None, headers: Map[String, String] = Map.empty): Unit = {
     val paths = if (rollup) path :: path.ancestors else path :: Nil
-    val data = JsonObject(name -> (JsonObject(tags.map(_.toJsonField)(collection.breakOut): _*) ++ properties))
+    val data = JsonObject(name -> JsonObject(tags.map(_.toJsonField)(collection.breakOut): _*).merge(properties))
 
     paths.foreach { path =>
       AnalyticsServer.post("vfs" + path.toString, data, headers)

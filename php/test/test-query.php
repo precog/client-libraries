@@ -5,6 +5,30 @@ require_once('basetest.php');
 class TestQuery extends BaseTest {
 	public static $path = "/test/php/query";
 
+	function __construct()
+	{
+		$browsers = array('Chrome', 'Chrome', 'Chrome', 'Chrome', 'IE', 'IE', 'IE', 'Safari', 'Safari', 'Firefox');
+		$oses = array('Win', 'Win', 'Win', 'OSX', 'OSX', 'iOS');
+		$path = TestQuery::$path;
+		$rg = BaseTest::createApi();
+
+		for($i = 0; $i < 50; $i++)
+		{
+			$browser = ($browser = next($browsers)) ? $browser : reset($browsers);
+			$os = ($os = next($oses)) ? $os : reset($oses);
+			
+			if(!$rg->track($path, array(
+				'impression' => array(
+					'browser' => $browser,
+					'os' => $os
+				)
+			))) {
+				var_dump($rg->errorMessage);
+			}
+		}
+		sleep(15);
+	}
+
 	function testSeries()
 	{
 		$path = TestQuery::$path;
@@ -35,7 +59,7 @@ class TestQuery extends BaseTest {
 	function testIntersect()
 	{
 		$path = TestQuery::$path;
-		$series = $this->rg->intersect($path, array(array(property => '.impression.browser', limit => 3, order => 'descending')));
+		$series = $this->rg->intersect($path, array(array('property' => '.impression.browser', 'limit' => 3, 'order' => 'descending')));
 		$this->assertIsA($series, "Array");
 		$this->assertTrue(count($series) > 0);
 	}
@@ -122,28 +146,4 @@ class TestQuery extends BaseTest {
 		}
 		return false;
 	}
-}
-
-if(isset($_GET['builddata']) || (isset($argc) && in_array('--builddata', $argv)))
-{
-	$browsers = array('Chrome', 'Chrome', 'Chrome', 'Chrome', 'IE', 'IE', 'IE', 'Safari', 'Safari', 'Firefox');
-	$oses = array('Win', 'Win', 'Win', 'OSX', 'OSX', 'iOS');
-	$path = TestQuery::$path;
-	$rg = BaseTest::createApi();
-
-	for($i = 0; $i < 50; $i++)
-	{
-		$browser = ($browser = next($browsers)) ? $browser : reset($browsers);
-		$os = ($os = next($oses)) ? $os : reset($oses);
-		
-		if(!$rg->track($path, array(
-			'impression' => array(
-				'browser' => $browser,
-				'os' => $os
-			)
-		))) {
-			var_dump($rg->errorMessage);
-		}
-	}
-	exit;
 }

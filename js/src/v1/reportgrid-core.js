@@ -184,7 +184,7 @@ var ReportGrid = window.ReportGrid || {};
       else if (property.substr(0, 1) == ".") return property;
       else return "." + property;
     },
-    
+
     getBoundResults: function(o) {
       return o.top ? '/top/' + o.top : (o.bottom ? '/bottom/' + o.bottom : '');
     },
@@ -241,7 +241,7 @@ var ReportGrid = window.ReportGrid || {};
       else
         o["#timestamp"] = Util.normalizeTime(time);
     },
-    
+
     defaultQuery: function(o) {
       var q = { tokenId : $.Config.tokenId },
           start = Util.normalizeTime(o.start),
@@ -261,7 +261,7 @@ var ReportGrid = window.ReportGrid || {};
       }
       return q;
     },
-    
+
     groupQuery: function(o) {
       var q = Util.defaultQuery(o);
       if(o.groupBy)
@@ -269,6 +269,18 @@ var ReportGrid = window.ReportGrid || {};
       if(o.groups)
           q.groups = typeof o.groups == "string" ? o.groups : o.groups.join(",");
       return q;
+    },
+
+    whereConditions : function(where) {
+      if(!where) return null;
+      var result = [];
+      where = where instanceof Array ? where : [where];
+      for(var i = 0; i < where.length; i++) {
+        for(var key in where[i]) {
+          result.push({ variable : key, value : where[i][key] })
+        }
+      }
+      return result;
     }
   }
 
@@ -450,7 +462,7 @@ var ReportGrid = window.ReportGrid || {};
   var $ = ReportGrid.$;
 
   $.Util = Util;
-  
+
   $.Config = Util.getConfiguration();
 
   $.Extend = function(object, extensions) {
@@ -460,7 +472,7 @@ var ReportGrid = window.ReportGrid || {};
       }
     }
   }
-  
+
   $.Bool = function(v) {
     return v === true || v === 1 || (v = (""+v).toLowerCase()) == "true" || v == "on" || v == "1";
   }
@@ -472,7 +484,7 @@ var ReportGrid = window.ReportGrid || {};
       enableLog : "false"
     }
   );
-  
+
   $.Config.analyticsServer = Util.removeTrailingSlash($.Config.analyticsServer);
 
   $.Http = function() {
@@ -531,7 +543,7 @@ var ReportGrid = window.ReportGrid || {};
    *   }
    * });
    */
-  ReportGrid.track = function(path_, events, success, failure, token) {
+  ReportGrid.track = function(path_, events, success, failure, options) {
     if(typeof path_ == "string")
       path_ = [path_];
     var paths = [];
@@ -555,7 +567,11 @@ var ReportGrid = window.ReportGrid || {};
       break;
     }
 
-    var description = 'Track event ' + firstEventName + ' (' + JSON.stringify(firstEventProperties) + ') @ ' + (firstEventTime === false ? "no time tracked" : "current time");
+    var description = 'Track event ' + firstEventName + ' (' + JSON.stringify(firstEventProperties) + ') @ ' + (firstEventTime === false ? "no time tracked" : "current time"),
+        parameters = { tokenId: (options && options.tokenId) || $.Config.tokenId };
+    if(options && options.rollup && options.rollup > 0)
+      parameters.rollup = options.rollup;
+
     for(var i = 0; i < paths.length; i++)
     {
       path = paths[i];
@@ -563,7 +579,7 @@ var ReportGrid = window.ReportGrid || {};
         $.Config.analyticsServer + '/vfs' + path,
         events,
         Util.createCallbacks(success, failure, description),
-        {tokenId: token || $.Config.tokenId }
+        parameters
       );
     }
   }
@@ -759,24 +775,20 @@ var ReportGrid = window.ReportGrid || {};
   /**
    * Searches across a range of conditions to retrieve a total count.
    *
-   * ReportGrid.searchCount("/advertisers/Nike", {where: {"impression.carrier": "AT&T"}});
+   * ReportGrid.searchCount("/advertisers/Nike", {where: [{ "impression.carrier" : "AT&T"}]});
    * > 10
    */
   ReportGrid.searchCount = function(path_, options, success, failure) {
     var path = Util.sanitizePath(path_);
 
     var description = 'Select count from ' + path + ' where ' + JSON.stringify(options.where);
-    
-    var where = [];
-    for(key in options.where)
-        where.push({ variable : key, value : options.where[key]});
-    
+
     http.post(
       $.Config.analyticsServer + '/search',
       {
         select: "count",
         from:   path,
-        where:  where
+        where:  Util.whereConditions(options.where)
       },
       Util.createCallbacks(success, failure, description),
       Util.defaultQuery(options)
@@ -799,7 +811,7 @@ var ReportGrid = window.ReportGrid || {};
    *                                                        of each hour in the specified time range, etc.
    *  * groups : "1,2,3" or [1,2,3] - An optional property (it only makes sense when used in conjunction with "groupBy"); when used filters the group by the specified values.
    *
-   * ReportGrid.searchSeries("/advertisers/Nike", {periodicity: "hour", where: {".impression.carrier": "AT&T"}});
+   * ReportGrid.searchSeries("/advertisers/Nike", {periodicity: "hour", where: [{ ".impression.carrier" : "AT&T" }]});
    * > {"type":"timeseries", "periodicity":"hour", "data":{"1239232323":293, "234345468":222, ...}}
    *
    * Or, if using groupBy:
@@ -810,18 +822,14 @@ var ReportGrid = window.ReportGrid || {};
     var peri  = options.periodicity || "eternity";
 
     var description = 'Select series/' + peri + ' from ' + path + ' where ' + JSON.stringify(options.where);
-    
-    var where = [];
-    for(key in options.where)
-        where.push({ variable : key, value : options.where[key]});
 
     var ob = {
       select: "series/" + peri,
       from:   path,
-      where:  where
+      where:  Util.whereConditions(options.where)
     };
     var query = Util.groupQuery(options);
-    
+
     http.post(
       $.Config.analyticsServer + '/search',
       ob,
@@ -829,7 +837,7 @@ var ReportGrid = window.ReportGrid || {};
       query
     );
   }
-  
+
   /**
    * Intersect time series for events that meet the specified constraint. Note
    * that constraints may involve at most one event.
@@ -849,14 +857,14 @@ var ReportGrid = window.ReportGrid || {};
    * ReportGrid.intersect("/advertisers/Nike", {periodicity: "hour", properties: [{"property" : ".impression.platform", "limit" : 3, "order" : "descending"}]});
    * > {
    *     "iphone":    {"type":"timeseries", "periodicity":"hour", "data":{"1239232323":293, "234345468":222, ...}},
-   *     "android":   {"type":"timeseries", "periodicity":"hour", "data":{"1239232323":155, "234345468":222, ...}}, 
+   *     "android":   {"type":"timeseries", "periodicity":"hour", "data":{"1239232323":155, "234345468":222, ...}},
    *     "blackberry":{"type":"timeseries", "periodicity":"hour", "data":{"1239232323":65, ...}}
    *   }
    *
    * Or, if using groupBy:
    * > {
    *     "iphone":    {"type":"deltas", "zero":0, "data":{"0":293, "1": 386, ..., "59": 222}},
-   *     "android":   {"type":"deltas", "zero":0, "data":{"0":155, "1": 482, ..., "59": 333}}, 
+   *     "android":   {"type":"deltas", "zero":0, "data":{"0":155, "1": 482, ..., "59": 333}},
    *     "blackberry":{"type":"deltas", "zero":0, "data":{"0":470, "1": 284, ..., "59": 333}}
    *   }
    */
@@ -865,7 +873,7 @@ var ReportGrid = window.ReportGrid || {};
     var peri = options.periodicity || "eternity";
 
     var description = 'Intersect series/' + peri + ' from ' + path + ' where ' + JSON.stringify(options.properties);
-    
+
     var ob = {
       select:     peri == 'eternity' ? 'count' : "series/" + peri,
       from:       path,
@@ -881,7 +889,7 @@ var ReportGrid = window.ReportGrid || {};
       query
     );
   }
-  
+
   ReportGrid.histogram = function(path_, options, success, failure) {
     var path = Util.sanitizePath(path_);
     var property = Util.sanitizeProperty(options.property);
@@ -918,7 +926,7 @@ var ReportGrid = window.ReportGrid || {};
     }
     http.get(
       $.Config.analyticsServer + '/tokens/' + token,
-      Util.createCallbacks(success, failure, 'List all tokens'),
+      Util.createCallbacks(success, failure, 'List token info'),
       {tokenId: $.Config.tokenId }
     );
   }

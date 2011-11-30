@@ -3,7 +3,7 @@
  * Provides access to the Report Grid API platform.
  *
  **/
- 
+
 /*
  * PUT LICENSE HERE
  */
@@ -11,26 +11,26 @@
 define ("BASE_URL", "http://api.reportgrid.com/services/analytics/v1/");
 
 class ReportGridAPI {
-    
+
     private $_tokenID = null;
     private $_baseUrl = null;
     public $isError = false;
     public $errorMessage = null;
-    
+
     /*
      * Initialize a new ReportGridAPI object
      *
      * @param String $token_id
-     * 
+     *
      */
     public function __construct($token_id, $baseurl = BASE_URL) {
         $this->_tokenID = $token_id;
         $this->_baseUrl = $baseurl;
     }
-    
+
     /*
      * Create a new token
-     * 
+     *
      * @param String path         The path, relative to the parent's path, that will be associated with this tokenId
      * @param String expires 	  The expiration date of the token, measured in milliseconds from the start of the Unix Epoch, UTC time
      * @param String read         Does this token have read permissions
@@ -74,13 +74,13 @@ class ReportGridAPI {
         if(null !== $lossless)
             $limits['lossless']  = $lossless;
         $params['limits'] = $limits;
-        
+
         $return = $this->restHelper($this->_baseUrl . "tokens?tokenId=" . $this->_tokenID, $params, "POST");
-        
+
         return $return;
-        
+
     }
-    
+
     /*
      * Return all tokens this->_tokenId is a parent of
      *
@@ -104,7 +104,7 @@ class ReportGridAPI {
         $return = $this->restHelper($path, null, "GET");
         return is_array($return) ? $return : false;
     }
-    
+
     /*
      * Delete an existing token
      *
@@ -117,7 +117,7 @@ class ReportGridAPI {
         $return = $this->restHelper($path, null, "DELETE");
         return $return;
     }
-    
+
     /*
      * Record a new event
      *
@@ -126,7 +126,8 @@ class ReportGridAPI {
      *
      * @return Bool - success/failure
      */
-    public function track($path, $events = array()) {
+    public function track($path, $events = array(), $options = null) {
+ //       $token  = null != $options && isset()
         $path   = $this->_baseUrl . "vfs/" . $this->cleanPath($path) . "?tokenId=" . $this->_tokenID;
         $return = $this->restHelper($path, $events, "POST");
         return $return !== false;
@@ -155,7 +156,7 @@ class ReportGridAPI {
     }
 
     /*
-     * Returns the count of the specified event, event + property or event + property +value
+     * Returns the count of the specified event, event + property or event + property + value
      * @params String - path
      * @params String - 'all', 'path' or 'property'
      * @params String - property name
@@ -163,7 +164,7 @@ class ReportGridAPI {
      * @params Int - start timestamp in milliseconds
      * @params Int - end timestamp in milliseconds
      *
-     * @return Array - values
+     * @return Int - count
      */
     public function count($path, $event, $property = '', $value = '', $start = '', $end = '')
     {
@@ -171,7 +172,7 @@ class ReportGridAPI {
         $time   = $start ? '&start=$start&end=$end' : '';
         $path   = $this->_baseUrl . "vfs/" . $this->cleanPath($path) . "/" . $this->normalizeProperty($event).$this->normalizeProperty($property).$value."/count?tokenId=" . $this->_tokenID . $time;
         $return = $this->restHelper($path, null, "GET");
-        return $return;
+        return is_array($return) ? 0 : $return;
     }
 
     /*
@@ -233,9 +234,9 @@ class ReportGridAPI {
         $time   = $start ? "&start=$start&end=$end" : '';
         $url    = $this->_baseUrl . "search?tokenId=" . $this->_tokenID . $time;
         $return = $this->restHelper($url, array(
-            select => $periodicity == 'eternity' ? "count" : "series/$periodicity",
-            from   => $path,
-            where  => $this->whereArray($where)
+            'select' => $periodicity == 'eternity' ? "count" : "series/$periodicity",
+            'from'   => $path,
+            'where'  => $this->whereArray($where)
         ), "POST");
         return $return;
     }
@@ -258,9 +259,9 @@ class ReportGridAPI {
         $time   = $start ? "&start=$start&end=$end" : '';
         $url    = $this->_baseUrl . "intersect?tokenId=" . $this->_tokenID . $time;
         $return = $this->restHelper($url, array(
-            select => $periodicity == 'eternity' ? "count" : "series/$periodicity",
-            from   => $path,
-            properties  => $properties
+            'select' => $periodicity == 'eternity' ? "count" : "series/$periodicity",
+            'from'   => $path,
+            'properties'  => $properties
         ), "POST");
         return $return;
     }
@@ -280,17 +281,17 @@ class ReportGridAPI {
         $time   = $start ? '&start=$start&end=$end' : '';
         $path   = $this->_baseUrl . "vfs/" . $this->cleanPath($path) . "/" . $this->normalizeProperty($event).$this->normalizeProperty($property)."/histogram?tokenId=" . $this->_tokenID . $time;
         $return = $this->restHelper($path, null, "GET");
-        return $return; 
+        return $return;
     }
-     
-/****************************************************************************/     
+
+/****************************************************************************/
 /****************************************************************************/
     private function whereArray($ob)
     {
         $where = array();
         foreach($ob as $key => $value)
             $where[] = array('variable' => $key, 'value' => $value);
-        return $where;    
+        return $where;
     }
 
     private function defaultStart($start)
@@ -315,7 +316,7 @@ class ReportGridAPI {
 
     private function normalizeProperty($p)
     {
-        return $p ? ($p[0] == '.' ? $p : ".$p") : '';   
+        return $p ? ($p[0] == '.' ? $p : ".$p") : '';
     }
 
     /*********************************
@@ -323,7 +324,7 @@ class ReportGridAPI {
      *********************************/
     private function restHelper($json_endpoint, $params = null, $verb = 'GET') {
         $return = null;
-        
+
         $http_params = array(
             'http' => array(
                 'method' => $verb,
@@ -331,18 +332,18 @@ class ReportGridAPI {
         ));
         if ($params !== null) {
             if ( ($verb == 'POST') || ($verb == 'PUT') ) {
-                
+
 
                 $header = "Content-Type: application/json";
                 $http_params['http']['content'] = json_encode($params);
                 $http_params['http']['header'] = $header;
-                // workaround for php bug where http headers don't get sent in php 5.2 
-                if(version_compare(PHP_VERSION, '5.3.0') == -1){ 
-                    ini_set('user_agent', 'PHP-SOAP/' . PHP_VERSION . "\r\n" . $header); 
+                // workaround for php bug where http headers don't get sent in php 5.2
+                if(version_compare(PHP_VERSION, '5.3.0') == -1){
+                    ini_set('user_agent', 'PHP-SOAP/' . PHP_VERSION . "\r\n" . $header);
                 }
             }//end if
         }//end if ($params !== null)
-        
+
         $stream_context = stream_context_create($http_params);
         $file_pointer = @fopen($json_endpoint, 'rb', false, $stream_context);
         if (!$file_pointer) {
@@ -352,50 +353,50 @@ class ReportGridAPI {
             $stream_contents = stream_get_contents($file_pointer);
         }
         if ($stream_contents !== false) {
-            
+
             /*
-             * In the case of we're receiving stream data back from the API, 
+             * In the case of we're receiving stream data back from the API,
              * json decode it here.
              */
             if (strlen($stream_contents) > 0) {
-                
+
                 $result = json_decode($stream_contents, true);
-                
+
                 if ($result === null) {
                     error_log("Exception:  " . $stream_contents);
                 } else {
                     $return = $result;
                 }
             /*
-             * In the case of posting data (recordEvent) the API will return a 0 
-             * length response, in this scenario we're looking for the http 200 
+             * In the case of posting data (recordEvent) the API will return a 0
+             * length response, in this scenario we're looking for the http 200
              * header code to indicate the data was successfully received.
              */
             } else {
-                
+
                 if (stripos($stream_meta_data['wrapper_data'][0], "200") !== false) {
                     $return = true;
                 } else {
                     $return = false;
-                }//end inner else           
+                }//end inner else
             }//end middle else
-            
+
         } else {
 
             /*
-             * If there's an error message in the response 
+             * If there's an error message in the response
              * headers...send that back to the user
              */
             if (isset($http_response_header[0])) {
-                
+
                 $this->isError = true;
                 $this->errorMessage = $http_response_header[0];
                 $return = false;
-                
+
             } else {
                 throw new Exception("$verb $json_endpoint failed");
             }
-            
+
         }//end outer else
         return $return;
     }//end restHelper
