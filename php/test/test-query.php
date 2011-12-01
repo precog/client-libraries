@@ -16,7 +16,7 @@ class TestQuery extends BaseTest {
 		{
 			$browser = ($browser = next($browsers)) ? $browser : reset($browsers);
 			$os = ($os = next($oses)) ? $os : reset($oses);
-			
+
 			if(!$rg->track($path, array(
 				'impression' => array(
 					'browser' => $browser,
@@ -84,7 +84,7 @@ class TestQuery extends BaseTest {
 
 		foreach($top as $value)
 			$this->assertTrue($this->remove($value, $values));
-		
+
 		$bottom = $this->rg->values($path, 'impression', 'browser', 1, false);
 		$this->assertEqual(1, count($bottom));
 
