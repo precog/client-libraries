@@ -217,6 +217,48 @@ class ReportGridAPI {
     }
 
     /*
+     * Returns the "mean" of the specified property over time
+     * @params String - path
+     * @params String - event
+     * @params String - property name
+     * @params String - periodicity: year', 'month', 'week', 'day', 'hour', minute
+     * @params Int - start timestamp in milliseconds
+     * @params Int - end timestamp in milliseconds
+     *
+     * @return Array - values
+     */
+    public function means($path, $event, $property, $periodicity = 'day', $start = '', $end = '')
+    {
+        return $this->stats("means", $path, $event, $property, $periodicity, $start, $end);
+    }
+
+    /*
+     * Returns the "standard deviations" of the specified property over time
+     * @params String - path
+     * @params String - event
+     * @params String - property name
+     * @params String - periodicity: year', 'month', 'week', 'day', 'hour', minute
+     * @params Int - start timestamp in milliseconds
+     * @params Int - end timestamp in milliseconds
+     *
+     * @return Array - values
+     */
+    public function standardDeviations($path, $event, $property, $periodicity = 'day', $start = '', $end = '')
+    {
+        return $this->stats("standardDeviations", $path, $event, $property, $periodicity, $start, $end);
+    }
+
+    function stats($type, $path, $event, $property, $periodicity, $start, $end)
+    {
+        $start  = ($periodicity == 'eternity' && !$start) ? '' : $this->defaultStart($start);
+        $end    = ($periodicity == 'eternity' && !$end) ? '' : $this->defaultEnd($end);
+        $time   = $start ? "&start=$start&end=$end" : '';
+        $path   = $this->_baseUrl . "vfs/" . $this->cleanPath($path) . "/" . $this->normalizeProperty($event).$this->normalizeProperty($property)."/series/$periodicity/$type?tokenId=" . $this->_tokenID . $time;
+        $return = $this->restHelper($path, null, "GET");
+        return $return;
+    }
+
+    /*
      * Returns a timeseries or count (when used with the eternity periodicity - defaul) of occurrences of the event when one or more properties
      * are set to a certain value. You can use the 'where' parameter to set the conditions of the query.
      * @params String - path
@@ -229,8 +271,8 @@ class ReportGridAPI {
      */
     public function search($path, $where, $periodicity = 'eternity', $start = '', $end = '')
     {
-        $start  = $periodicity == 'eternity' ? '' : $this->defaultStart($start);
-        $end    = $periodicity == 'eternity' ? '' : $this->defaultEnd($end);
+        $start  = ($periodicity == 'eternity' && !$start) ? '' : $this->defaultStart($start);
+        $end    = ($periodicity == 'eternity' && !$end) ? '' : $this->defaultEnd($end);
         $time   = $start ? "&start=$start&end=$end" : '';
         $url    = $this->_baseUrl . "search?tokenId=" . $this->_tokenID . $time;
         $return = $this->restHelper($url, array(
@@ -254,8 +296,8 @@ class ReportGridAPI {
      */
     public function intersect($path, $properties, $periodicity = 'eternity', $start = '', $end ='')
     {
-        $start  = $periodicity == 'eternity' ? '' : $this->defaultStart($start);
-        $end    = $periodicity == 'eternity' ? '' : $this->defaultEnd($end);
+        $start  = ($periodicity == 'eternity' && !$start) ? '' : $this->defaultStart($start);
+        $end    = ($periodicity == 'eternity' && !$end) ? '' : $this->defaultEnd($end);
         $time   = $start ? "&start=$start&end=$end" : '';
         $url    = $this->_baseUrl . "intersect?tokenId=" . $this->_tokenID . $time;
         $return = $this->restHelper($url, array(
