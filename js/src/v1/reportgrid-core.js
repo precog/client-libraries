@@ -696,6 +696,52 @@ var ReportGrid = window.ReportGrid || {};
   }
 
   /**
+   * Retrieves time series means of the values of a numeric property.
+   *
+   * Options:
+   *  * periodicity: ["minute", "hour", "day", "week", "month", "year"] - The granularity of time that you want to see results at.
+   *  * start - the start of the time period to query
+   *  * end   - the end of the time period to query
+   */
+  ReportGrid.propertyMeans = function(path_, options, success, failure) {
+    var path     = Util.sanitizePath(path_);
+    var property = Util.sanitizeProperty(options.property);
+    var peri     = options.periodicity || "eternity";
+    var query    = Util.groupQuery(options);
+
+    var description = 'Get series for property means ' + path + property + ' (periodicity = ' + peri + ')';
+
+    http.get(
+      $.Config.analyticsServer + '/vfs' + (path + property) + '/series/' + peri + "/means",
+      Util.createCallbacks(success, failure, description),
+      query
+    );
+  }
+
+  /**
+   * Retrieves time standard deviations of the values of a numeric property.
+   *
+   * Options:
+   *  * periodicity: ["minute", "hour", "day", "week", "month", "year"] - The granularity of time that you want to see results at.
+   *  * start - the start of the time period to query
+   *  * end   - the end of the time period to query
+   */
+  ReportGrid.propertyStandardDeviations = function(path_, options, success, failure) {
+    var path     = Util.sanitizePath(path_);
+    var property = Util.sanitizeProperty(options.property);
+    var peri     = options.periodicity || "eternity";
+    var query    = Util.groupQuery(options);
+
+    var description = 'Get series for property standard deviations ' + path + property + ' (periodicity = ' + peri + ')';
+
+    http.get(
+      $.Config.analyticsServer + '/vfs' + (path + property) + '/series/' + peri + "/standardDeviations",
+      Util.createCallbacks(success, failure, description),
+      query
+    );
+  }
+
+  /**
    * Retrieves all values of the specified property throughout all time.
    *
    * ReportGrid.propertyValues("/customers/jdoe/blog-posts/1/", {property: "click.gender"});

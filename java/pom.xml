@@ -17,8 +17,9 @@
 
   <distributionManagement>
     <repository>
-      <id>ssh-repository</id>
-      <url>scpexe://mongodb03.reportgrid.com/root/reportgrid/apisite/release/maven2</url>
+      <id>reportgrid-maven</id>
+      <name>reportgrid s3 repository</name>
+      <url>s3://api.reportgrid.com/java</url>
     </repository>
   </distributionManagement>
 
@@ -36,12 +37,13 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
   <build>
     <extensions>
       <extension>
-        <groupId>org.apache.maven.wagon</groupId>
-	<artifactId>wagon-ssh-external</artifactId>
-	<version>1.0-beta-6</version>
+	<groupId>org.springframework.build.aws</groupId>
+	<artifactId>org.springframework.build.aws.maven</artifactId>
+	<version>3.0.0.RELEASE</version>
       </extension>
     </extensions>
   </build>

@@ -7,26 +7,47 @@ class TestQuery extends BaseTest {
 
 	function __construct()
 	{
+		if(skipgeneration())
+			return;
 		$browsers = array('Chrome', 'Chrome', 'Chrome', 'Chrome', 'IE', 'IE', 'IE', 'Safari', 'Safari', 'Firefox');
 		$oses = array('Win', 'Win', 'Win', 'OSX', 'OSX', 'iOS');
+		$numerics = array(0.1, 5, 20);
 		$path = TestQuery::$path;
 		$rg = BaseTest::createApi();
 
 		for($i = 0; $i < 50; $i++)
 		{
 			$browser = ($browser = next($browsers)) ? $browser : reset($browsers);
-			$os = ($os = next($oses)) ? $os : reset($oses);
-			
+			$os      = ($os = next($oses)) ? $os : reset($oses);
+			$num     = ($num = next($numerics)) ? $num : reset($numerics);
+
 			if(!$rg->track($path, array(
 				'impression' => array(
 					'browser' => $browser,
-					'os' => $os
+					'os'      => $os,
+					'num'     => $num
 				)
 			))) {
 				var_dump($rg->errorMessage);
 			}
 		}
 		sleep(15);
+	}
+
+	function testMeans()
+	{
+		$path = TestQuery::$path;
+		$values = $this->rg->means($path, 'impression', 'num');
+		$this->assertIsA($values, "Array");
+		$this->assertTrue($values[count($values)-1][1] > 0);
+	}
+
+	function testStandardDeviations()
+	{
+		$path = TestQuery::$path;
+		$values = $this->rg->standardDeviations($path, 'impression', 'num');
+		$this->assertIsA($values, "Array");
+		$this->assertTrue($values[count($values)-1][1] > 0);
 	}
 
 	function testSeries()
@@ -84,7 +105,7 @@ class TestQuery extends BaseTest {
 
 		foreach($top as $value)
 			$this->assertTrue($this->remove($value, $values));
-		
+
 		$bottom = $this->rg->values($path, 'impression', 'browser', 1, false);
 		$this->assertEqual(1, count($bottom));
 
