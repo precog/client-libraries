@@ -55,7 +55,7 @@ var ReportGrid = window.ReportGrid || {};
 
 (function() {
   var Util = {
-	findScript: function(fragment) {
+	  findScript: function(fragment) {
       var scripts = document.getElementsByTagName('SCRIPT');
 
       for (var i = 0; i < scripts.length; i++) {
@@ -129,6 +129,14 @@ var ReportGrid = window.ReportGrid || {};
       }
 
       return console;
+    },
+
+    getProtocol: function() {
+      var src = Util.findScript(/reportgrid[^\/.]*\.js/).getAttribute('src');
+      if(src && 'https:' == src.substr(0, 6))
+        return 'https:';
+      else
+        return 'http:';
     },
 
     createCallbacks: function(success, failure, msg) {
@@ -483,7 +491,7 @@ var ReportGrid = window.ReportGrid || {};
 
   $.Extend($.Config,
     {
-      analyticsServer: "http://api.reportgrid.com/services/analytics/v1/",
+      analyticsServer: Util.getProtocol() + "//api.reportgrid.com/services/analytics/v1/",
       useJsonp : "true",
       enableLog : "false"
     }
