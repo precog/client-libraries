@@ -251,6 +251,10 @@ var ReportGrid = window.ReportGrid || {};
         q.start = start || ReportGrid.Zero;
         q.end = end || ReportGrid.Inf;
       }
+      if(o.tag)
+      {
+        q.use_tag_children = o.tag;
+      }
       if(o.location)
       {
         q.location = o.location;
