@@ -41,9 +41,13 @@ class ReportGridClientTest < Test::Unit::TestCase
       require 'reportgrid'
       @root_token_id = 'A3BC1539-E8A9-4207-BB41-3036EC2C6E6D'
 
-      @test_host = 'devapi.reportgrid.com'
-      @test_port = 80
-      @test_path = ReportGrid::Path::Analytics::ROOT
+#      @test_host = 'devapi.reportgrid.com'
+#      @test_port = 80
+#      @test_path = ReportGrid::Path::Analytics::ROOT
+
+      @test_host = 'localhost'
+      @test_port = 30020
+      @test_path = ''
 
       api = build_root_client
       response = api.new_token('/ruby_test')

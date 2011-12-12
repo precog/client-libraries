@@ -1,10 +1,6 @@
 package com.reportgrid.api;
 
 import com.reportgrid.api.json.gson.GsonToJson;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import junit.framework.Assert.*;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.reportgrid.api.json.FromJson;
@@ -20,10 +16,15 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.junit.Test;
+import org.junit.BeforeClass;
+import static org.junit.Assert.*;
+
 /**
  * Unit test for simple tracking client.
  */
-public class ReportGridClientTest extends TestCase {
+public class ReportGridClientTest {
+    private static String testId = null;
 
     private static class TestData {
       public final int testInt;
@@ -50,22 +51,23 @@ public class ReportGridClientTest extends TestCase {
       }
     };
 
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
-    public ReportGridClientTest( String testName ) {
-      super( testName );
+    @BeforeClass
+    public static void beforeAll() throws Exception {
+      testId = "" + Double.valueOf(java.lang.Math.random() * 10000).intValue();
+      ToJson<Object> toJson = new GsonToJson();
+      TrackingClient testClient = new TrackingClient(Local, TrackingClient.TEST_TOKEN);
+
+      for (int i = 0; i < 30; i++) {
+        RawJson testJson = new RawJson("{\"test\":[{\"v\": 1}, {\"v\": 2}]}");
+        TestData testData = new TestData(i, "Hello\" World", testJson);
+        Event<TestData> testEvent = new Event<TestData>(new Date(), "test", testData, 1);
+        testClient.track(new Path("/test" + testId), testEvent, 0, toJson);
+      }
+
+      Thread.sleep(15000);
     }
 
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite() {
-      return new TestSuite( ReportGridClientTest.class );
-    }
-
+    @Test
     public void testTracking() throws IOException {
       ToJson<Object> toJson = new GsonToJson();
       TrackingClient testClient = new TrackingClient(Local, TrackingClient.TEST_TOKEN);
@@ -73,31 +75,35 @@ public class ReportGridClientTest extends TestCase {
       RawJson testJson = new RawJson("{\"test\":[{\"v\": 1}, {\"v\": 2}]}");
       TestData testData = new TestData(42, "Hello\" World", testJson);
       Event<TestData> testEvent = new Event<TestData>(new Date(), "test", testData, 1);
-      testClient.track(new Path("/test"), testEvent, 0, toJson);
+      testClient.track(new Path("/test" + testId), testEvent, 0, toJson);
     }
 
+    @Test
     public void testTrackingStrToJson() throws IOException {
       ToJson<String> toJson = new RawStringToJson();
       TrackingClient testClient = new TrackingClient(Local, TrackingClient.TEST_TOKEN);
 
       Event<String> testEvent = new Event<String>(new Date(), "test", "{\"test\":[{\"v\": 1}, {\"v\": 2}]}", 1);
-      testClient.track(new Path("/test"), testEvent, 0, toJson);
+      testClient.track(new Path("/test" + testId), testEvent, 0, toJson);
     }
 
+    @Test
     public void testTrackingRawString() throws IOException {
       TrackingClient testClient = new TrackingClient(Local, TrackingClient.TEST_TOKEN);
 
       String rawJson = "{\"test\":[{\"v\": 1}, {\"v\": 2}]}";
-      testClient.track(new Path("/test"), rawJson, 0);
+      testClient.track(new Path("/test" + testId), rawJson, 0);
     }
 
+    @Test
     public void testTrackingRawUTF8() throws IOException {
       TrackingClient testClient = new TrackingClient(Local, TrackingClient.TEST_TOKEN);
 
       String rawJson = "{\"test\":[{\"ดีลลิเชียส\": 1}, {\"v\": 2}]}";
-      testClient.track(new Path("/test"), rawJson, 0);
+      testClient.track(new Path("/test" + testId), rawJson, 0);
     }
 
+    @Test
     public void testRawJson() throws IOException {
       ToJson<Object> toJson = new GsonToJson();
 
@@ -120,6 +126,7 @@ public class ReportGridClientTest extends TestCase {
       assertEquals(expected, testEvent.buildRequestBody(toJson));
     }
 
+    @Test
     public void testOddCharacters() throws IOException {
       ToJson<Object> toJson = new GsonToJson();
       TestData testData = new TestData(1, "™", new RawJson(""));
@@ -140,21 +147,23 @@ public class ReportGridClientTest extends TestCase {
       assertEquals(expected, result);
     }
 
+    @Test
     public void testListChildPaths() throws IOException {
       FromJson<List<String>> fromJson = GsonFromJson.of(new TypeToken<List<String>>(){});
 
-      QueryClient client = new QueryClient(QueryClient.TEST_TOKEN);
+      QueryClient client = new QueryClient(QueryClient.TEST_TOKEN, Local);
 
-      List<Path> paths = client.listChildPaths(new Path("/test"), fromJson);
+      List<Path> paths = client.listChildPaths(new Path("/test" + testId), fromJson);
       assertFalse(paths.isEmpty()); 
     }
 
+    @Test
     public void testListChildProperties() throws IOException {
       FromJson<List<String>> fromJson = GsonFromJson.of(new TypeToken<List<String>>(){});
 
-      QueryClient client = new QueryClient(QueryClient.TEST_TOKEN);
+      QueryClient client = new QueryClient(QueryClient.TEST_TOKEN, Local);
 
-      List<Property> properties = client.listChildProperties(new Path("/test"), new Property("test"), fromJson);
+      List<Property> properties = client.listChildProperties(new Path("/test" + testId), new Property("test"), fromJson);
       assertFalse(properties.isEmpty());  
     }
 }
