@@ -1,6 +1,6 @@
 @import url('colors/rg-colors-default.css');
 
-.rg 
+.rg
 {
 	fill: none;
 	stroke: none;
@@ -33,7 +33,7 @@
 
 .rg .stream-chart path
 {
-	
+
 }
 
 .rg .group, .rg .group path:hover
@@ -60,8 +60,8 @@
 {
 	fill: none;
 	stroke: none;
-	
-	
+
+
 	-webkit-user-select: none;
 	-khtml-user-select: none;
 	-moz-user-select: none;
@@ -156,11 +156,11 @@
 	line-height:14px;
 	fill:#333;
 	padding: 3px 8px;
-	
+
 	-webkit-border-radius: 4px;
 	-moz-border-radius: 4px;
 	border-radius: 4px;
-	
+
 	-moz-box-shadow: 2px 2px 3px #666;
 	-webkit-box-shadow: 2px 2px 3px #666;
 	box-shadow: 2px 2px 3px #666;
@@ -170,7 +170,7 @@
 {
 	stroke-width: 1;
 	shape-rendering: crispEdges;
-	stroke-dasharray: 1, 1; 
+	stroke-dasharray: 1, 1;
 	stroke: #000;
 }
 
@@ -275,9 +275,9 @@
 	margin: 0 0 4px 0;
 	max-width: 200px;
 	padding: 4px 6px;
-	
+
 	font-weight: bold;
-	
+
 	-webkit-text-shadow: 0 1px 0 #fff;
 	-moz-text-shadow: 0 1px 0 #fff;
 	text-shadow: 0 1px 0 #fff;
@@ -285,7 +285,7 @@
 	-webkit-border-radius: 6px;
 	-moz-border-radius: 6px;
 	border-radius: 6px;
-	
+
 }
 
 .rg div.clear
@@ -536,7 +536,7 @@
 {
 	background-image : url(images/spinner.gif);
 	background-repeat: no-repeat;
-	background-position: -1000px -1000px; 
+	background-position: -1000px -1000px;
 }
 
 .rg.menu.downloading
@@ -584,7 +584,7 @@
 	font-family: Helvetica, Arial, Sans-Serif;
 	color:#999;
 	font-size: 85%;
-	border-bottom: 1px solid #CCC;	
+	border-bottom: 1px solid #CCC;
 	padding-left:.3em;
 	padding-right: .3em;
 	line-height: 200%;
@@ -620,4 +620,85 @@
 .rg.menu.right
 {
 	right: 0px;
+}
+
+.rg .sankey .rule
+{
+	stroke: none;
+}
+
+.rg .sankey .fill
+{
+	stroke: none;
+	fill-opacity: 0.4;
+}
+
+.rg .sankey .over .fill, .rg .sankey .over .fill.node
+{
+	fill-opacity: 0.8;
+	stroke-opacity: 1;
+	-webkit-transition: all 0.5s ease-in-out;
+	-moz-transition: all 0.5s ease-in-out;
+	-o-transition: all 0.5s ease-in-out;
+	-ms-transition: all 0.5s ease-in-out;
+	transition: all 0.5s ease-in-out;
+}
+
+.rg .sankey .fill.nonode
+{
+	stroke: none;
+}
+
+.rg .sankey .fill.node
+{
+	stroke: #fff;
+	stroke-width: 1;
+	stroke-opacity: 1;
+	fill-opacity: 0.6;
+}
+
+.rg .sankey .stroke
+{
+	stroke: #fff;
+	stroke-opacity: 0.7;
+}
+
+.rg .sankey g.label.node text
+{
+	font-size: 9px;
+	fill: #fff;
+	stroke: none;
+}
+
+.rg .sankey g.label.node.first text
+{
+	font-size: 16px;
+	fill: #fff;
+	stroke: none;
+}
+
+.rg .sankey g.label.edge text
+{
+	font-size: 11px;
+	fill: #fff;
+}
+
+.rg .sankey g.label.edge text.shadow, .rg .sankey g.label.node text.shadow
+{
+	opacity: 0.15;
+	stroke: #000;
+}
+
+.rg .sankey .image
+{
+	stroke: #000;
+	stroke-width: 1;
+/*	shape-rendering: crispEdges; */
+}
+
+.rg .sankey image
+{
+	shape-rendering: crispEdges;
+	image-rendering: optimizeQuality;
+	overflow: hidden;
 }
