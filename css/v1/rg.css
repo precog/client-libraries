@@ -698,7 +698,6 @@
 
 .rg .sankey image
 {
-	shape-rendering: crispEdges;
 	image-rendering: optimizeQuality;
 	overflow: hidden;
 }
