@@ -1,29 +1,44 @@
 import sbt._
 import Keys._
-import AltDependency._
 
 object ScalaClientBuild extends Build {
   val buildOrganization = "com.reportgrid"
   val buildVersion = "0.3.1"
   val buildScalaVersion = "2.9.1"
   
-  val blueeyes = GitAltDependency(_: java.io.File, file("../../blueeyes"),     RootProject(uri("git://github.com/reportgrid/blueeyes")))
-  val rosetta =  GitAltDependency(_: java.io.File, file("../../RosettaJson"),  RootProject(uri("git://github.com/reportgrid/RosettaJson"))) 
+  val blueeyesDeps = com.samskivert.condep.Depends( 
+    ("blueeyes",    null, "com.reportgrid" %% "blueeyes"     % "0.5.0-SNAPSHOT")
+  )
+
+  val rosettaDeps =  com.samskivert.condep.Depends(
+    ("RosettaJson", null, "com.reportgrid" %% "rosetta-json" % "0.3.4")
+  )
 
   override def projectDefinitions(base: File) = {
-    val client: Project = Project("scala-client", file(".")) settings(
+    val client: Project = ((blueeyesDeps.addDeps _) andThen (rosettaDeps.addDeps _))(Project("scala-client", file(".")).settings(
       organization := buildOrganization,
       version      := buildVersion,
       scalaVersion := buildScalaVersion,
       scalacOptions ++= Seq("-deprecation", "-unchecked"),
       resolvers += "Scala-Tools Snapshots" at "http://scala-tools.org/repo-snapshots/",
-      libraryDependencies ++= Seq(
+      libraryDependencies ++= (blueeyesDeps.libDeps ++ rosettaDeps.libDeps ++ Seq(
         "org.apache.httpcomponents" %  "httpclient"          % "4.1.1",
         "net.databinder"            %% "dispatch-http-json"  % "0.8.5"   % "provided",
         "net.liftweb"               %% "lift-json"           % "2.4-M4"  % "provided" intransitive(),
         "org.specs2"                %% "specs2"              % "1.7-SNAPSHOT"  % "test"
-      )
-    ) dependsOnAlt(blueeyes(base)) dependsOnAlt(rosetta(base)) 
+      )),
+      resolvers ++= Seq("ReportGrid repo" at                   "http://nexus.reportgrid.com/content/repositories/releases",
+			"ReportGrid snapshot repo" at          "http://nexus.reportgrid.com/content/repositories/snapshots",
+			"ReportGrid public repo" at            "http://nexus.reportgrid.com/content/repositories/public-releases",
+			"ReportGrid public snapshot repo" at   "http://nexus.reportgrid.com/content/repositories/public-snapshots",
+		        "Typesafe repo" at                     "http://repo.typesafe.com/typesafe/releases/"),
+      publishTo <<= (version) { version: String =>
+        val nexus = "http://nexus.reportgrid.com/content/repositories/"
+        if (version.trim.endsWith("SNAPSHOT")) Some("snapshots" at nexus+"public-snapshots/") 
+        else                                   Some("releases"  at nexus+"public-releases/")
+      },
+      credentials += Credentials(Path.userHome / ".ivy2" / ".rgcredentials")
+    ))
     
     client :: Nil
   }

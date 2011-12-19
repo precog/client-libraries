@@ -17,9 +17,9 @@
 
   <distributionManagement>
     <repository>
-      <id>reportgrid-maven</id>
-      <name>reportgrid s3 repository</name>
-      <url>s3://api.reportgrid.com/java</url>
+      <id>nexus.reportgrid.com</id>
+      <name>reportgrid public Nexus repo</name>
+      <url>http://nexus.reportgrid.com/content/repositories/public-releases</url>
     </repository>
   </distributionManagement>
 
@@ -37,14 +37,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
-  <build>
-    <extensions>
-      <extension>
-	<groupId>org.springframework.build.aws</groupId>
-	<artifactId>org.springframework.build.aws.maven</artifactId>
-	<version>3.0.0.RELEASE</version>
-      </extension>
-    </extensions>
-  </build>
 </project>
