@@ -940,6 +940,15 @@ var ReportGrid = window.ReportGrid || {};
 
     var query = Util.groupQuery(options);
 
+    for(var i = 0; i < ob.properties.length; i++)
+    {
+      var property = ob.properties[i];
+      if(!property.limit)
+        property.limit = 10;
+      if(!property.order)
+        property.order = "descending";
+    }
+
     http.post(
       $.Config.analyticsServer + '/intersect',
       ob,
