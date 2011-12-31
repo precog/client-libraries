@@ -198,15 +198,18 @@
 {
 	stroke-width: 1;
 	stroke: #ccc;
+	stroke-opacity: 0.5;
 	stroke-dasharray: 1,3;
-	shape-rendering: crispEdges;
+	shape-rendering: crispEdges; 
 }
 
 .rg g.rule line.major
 {
 	stroke-width: 1;
 	stroke: #999;
-	stroke-dasharray: 3,5;
+	stroke-dasharray: 0;
+	stroke-opacity: 0.5;
+/*	stroke-dasharray: 3,5; */
 	shape-rendering: crispEdges;
 }
 
