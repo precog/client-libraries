@@ -1,5 +1,5 @@
 (function(){
-var params = ReportGrid.$.Util.parseQueryParameters(ReportGrid.$.Util.findScript('usa-state-centroids.json.js').src),
+var params = ReportGrid.parseQueryParameters(ReportGrid.findScript('usa-state-centroids.json.js').src),
 	handler = params['callback'];
 window[handler]({"type":"FeatureCollection","features":[
 {"type":"Feature","id":"01","geometry":{"type":"Point","coordinates":[-86.766233,33.001471]},"properties":{"name":"Alabama","population":4447100}},

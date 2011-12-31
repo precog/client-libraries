@@ -1,5 +1,5 @@
 (function(){
-var params = ReportGrid.parseQueryParameters(ReportGrid.findScript('rn-world-name.json.js').src),
+var params = ReportGrid.parseQueryParameters(ReportGrid.findScript('rn-world-anems.json.js').src),
 	handler = params['callback'];
 window[handler]({
 "ABW" : "Aruba",

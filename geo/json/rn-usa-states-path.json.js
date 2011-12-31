@@ -1,5 +1,5 @@
 (function(){
-var params = ReportGrid.$.Util.parseQueryParameters(ReportGrid.$.Util.findScript('rn-usa-states-path.json.js').src),
+var params = ReportGrid.parseQueryParameters(ReportGrid.findScript('rn-usa-states-path.json.js').src),
 	handler = params['callback'];
 window[handler]({
 "01" : "United States/AL",
