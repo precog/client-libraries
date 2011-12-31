@@ -45,11 +45,6 @@
 	transition: all 0.25s ease-in-out;
 }
 
-.rg .group path
-{
-
-}
-
 .rg .group:hover path
 {
 	opacity: 1.0;
@@ -138,6 +133,7 @@
 	fill: #fff;
 	stroke: inherit;
 }
+
 
 .rg .line-chart path.line:hover
 {
