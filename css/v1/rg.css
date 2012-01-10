@@ -236,6 +236,7 @@
 	font-weight: bold;
 }
 
+/* TO REMOVE AFTER INTEGRATION BETWEEN VIZ AND CHARTS */
 .rg ul.leaderboard
 {
 	list-style: none;
@@ -286,12 +287,108 @@
 	border-radius: 6px;
 
 }
+/* END REMOVE */
+
+.rg div.leaderboard *
+{
+	font-family:Tahoma,Arial,Helvetica,sans-serif;
+	font-size: 11pt;
+	padding: 0px;
+	margin: 0px;
+}
+
+.rg div.leaderboard ul
+{
+	list-style: none;
+}
+
+.rg div.leaderboard li
+{
+	position: relative;
+	width: 100%;
+	clear: left;
+	margin-bottom: -6px;
+}
+
+.rg div.leaderboard .background, .rg div.leaderboard .barback
+{
+	opacity: 0.1;
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: -10;
+}
+
+.rg div.leaderboard .labels
+{
+	margin: 4px;
+	color: #1F77B4; /* THIS NEEDS TO GO INTO THE PALETTES */
+	height: 2.5em;
+	line-height: 2em;
+	vertical-align: 50%;
+}
+
+.rg div.leaderboard .rank
+{
+	float: left;
+	background-color: #ffffff;
+	padding: 0;
+	margin: 6px 12px 6px 3px;
+	width: 2em;
+	height: 2em;
+	text-align: center;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+
+.rg div.leaderboard .description
+{
+	display: block;
+	float: left;
+	padding: 6px 0;
+}
+
+.rg div.leaderboard .value
+{
+	display: block;
+	float: right;
+	color: #FF7F0E; /* THIS NEEDS TO GO INTO THE PALETTES */
+	padding: 6px 4px;
+}
+
+.rg div.leaderboard .barpadding
+{
+	padding: 0px 6px 6px 6px;
+}
+
+.rg div.leaderboard .barback
+{
+	opacity: 0.2;
+}
+
+.rg div.leaderboard .barcontainer
+{
+	position: relative;
+}
+
+.rg div.leaderboard .barcontainer, .rg div.leaderboard .bar, .rg div.leaderboard .barback
+{
+	height: 2px;
+}
+
+.rg div.leaderboard .bar
+{
+	opacity: 1;
+}
 
 .rg div.clear
 {
 	clear: left;
 }
-
 /* PIVOT TABLE */
 .rg table.pivot-table
 {
