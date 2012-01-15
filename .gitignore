@@ -3,3 +3,7 @@ tags
 target
 .DS_Store
 doc/deploy/
+
+# IDEA artifacts
+.idea/
+*.iml
