@@ -2,6 +2,7 @@ package com.reportgrid.api;
 
 import com.reportgrid.api.Queries.JsonStreamHandler;
 import com.reportgrid.api.Queries.ValuesOf;
+import com.reportgrid.api.Queries.CountOf;
 import com.reportgrid.api.json.FromJson;
 import java.io.IOException;
 import java.util.List;
@@ -55,6 +56,16 @@ public class QueryClient {
 		);			
 	}
 
+  /**
+   * Query for and return the paths that are children of the specified path.
+   *
+   * @param path The path to retrieve children for
+   * @param fromJson The FromJson converter to use to deserialize the result. This
+   	 * converter should be able to transform a JSON string into a
+   	 * {@link java.util.List<Path>}
+   * @return
+   * @throws IOException
+   */
 	public List<Path> listChildPaths(Path path, FromJson<List<String>> fromJson) throws IOException {
 		return filterPaths(
 			Queries.list(path, null, new JsonStreamHandler<List<String>>(fromJson)).query(service, tokenId)
@@ -62,14 +73,26 @@ public class QueryClient {
 	}
 
 	/**
-	 * Returns a builder for queries that can be used to return
-	 * @param property
-	 * @param fromJson
-	 * @return 
+	 * Returns a builder for queries that can be used to return the values for a given property.
+	 * @param property The property to query
+	 * @param fromJson A converter for JSON deserialization that can transform a JSON string into
+   *                 a {@link java.util.List<String>}
+	 * @return the builder
 	 */
 	public ValuesOf<List<String>> valuesOf(Property property, FromJson<List<String>> fromJson) {
-		return new ValuesOf<List<String>>(property, new JsonStreamHandler<List<String>>((fromJson)));
+		return new ValuesOf<List<String>>(property, new JsonStreamHandler<List<String>>(fromJson));
 	}
+
+  /**
+   * Returns a builder for queries that can be used to return the count of a given property.
+   * @param property The property to query
+ 	 * @param fromJson A converter for JSON deserialization that can transform a JSON string into
+    *                 a {@link java.util.List<String>}
+   * @return the builder
+   */
+  public CountOf<Integer> countOf(Property property, FromJson<Integer> fromJson) {
+      return new CountOf<Integer>(property, new JsonStreamHandler<Integer>(fromJson));
+  }
 
 	private static List<Path> filterPaths(List<String> stringResults) {
 		List<Path> results = new ArrayList<Path>();

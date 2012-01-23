@@ -25,8 +25,10 @@ import static org.junit.Assert.*;
  */
 public class ReportGridClientTest {
     private static String testId = null;
+  private static final Path rollupBasePath = new Path("/test" + testId + "/rollup");
+  private static final Path rollupChildPath = rollupBasePath.append(new Path("child"));
 
-    private static class TestData {
+  private static class TestData {
       public final int testInt;
       public final String testStr;
       @SerializedName("~raw")
@@ -40,7 +42,7 @@ public class ReportGridClientTest {
     }
 
 		public static final Service Local = new Service() {
-			@Override public URL serviceUrl() {
+			public URL serviceUrl() {
 				try {
 					return new URL("http", "devapi.reportgrid.com", 80, "/services/analytics/v1/");
 				} catch (MalformedURLException ex) {
@@ -64,7 +66,10 @@ public class ReportGridClientTest {
         testClient.track(new Path("/test" + testId), testEvent, 0, toJson);
       }
 
-      Thread.sleep(15000);
+      // Rollup tracking
+      testClient.track(rollupChildPath, "{ \"testvalue\" : \"here\" }", true);
+
+      Thread.sleep(30000);
     }
 
     @Test
@@ -76,6 +81,18 @@ public class ReportGridClientTest {
       TestData testData = new TestData(42, "Hello\" World", testJson);
       Event<TestData> testEvent = new Event<TestData>(new Date(), "test", testData, 1);
       testClient.track(new Path("/test" + testId), testEvent, 0, toJson);
+    }
+    
+    @Test
+    public void testRollup() throws IOException {
+    TrackingClient testClient = new TrackingClient(Local, TrackingClient.TEST_TOKEN);
+
+
+
+    FromJson<Integer> fromJson = GsonFromJson.of(new TypeToken<Integer>(){});
+    QueryClient queryClient = new QueryClient(TrackingClient.TEST_TOKEN, Local);
+    Integer childCount = queryClient.countOf(new Property("testvalue"), fromJson).on(rollupChildPath).query(Local, TrackingClient.TEST_TOKEN);
+    assertEquals(childCount, queryClient.countOf(new Property("testvalue"), fromJson).on(rollupBasePath).query(Local, TrackingClient.TEST_TOKEN));
     }
 
     @Test

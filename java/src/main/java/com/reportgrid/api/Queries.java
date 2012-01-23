@@ -31,9 +31,8 @@ public class Queries {
 	 */
 	public static class StringStreamHandler implements StreamHandler<String> {
 		/**
-		 * Execute this query against the provided service with the given token 
-		 * @param service
-		 * @param tokenId
+		 * Read from the given InputStream
+		 * @param stream The input stream
 		 * @return the result data as a JSON-encoded string.
 		 */
 		public String readFrom(InputStream stream) throws IOException {
@@ -97,6 +96,28 @@ public class Queries {
 			};
 		}
 	}
+
+    public static class CountOf<T> {
+        private final Property property;
+        		private final StreamHandler<T> reader;
+        		public CountOf(Property property, StreamHandler<T> reader) {
+        			this.property = property;
+        			this.reader = reader;
+        		}
+
+        		public Query<T> on(final Path path) {
+        			return new Query<T>() {
+        				public T query(Service service, String tokenId) throws IOException {
+        					return _query(
+        						service,
+        						vfsUrl(service, path.append(property).append(new Path("count")), tokenId),
+        						null,
+        						reader
+        					);
+        				}
+        			};
+        		}
+    }
 
 	/**
 	 * A literate builder for queries that return selections of data over a range
@@ -164,7 +185,6 @@ public class Queries {
 	 */
 	public static Query<List<String>> list(final Path path, final Property property, final StreamHandler<List<String>> handler) {
 		return new Query<List<String>>() {
-			@Override
 			public List<String> query(Service service, String tokenId) throws IOException {
 				URL url = vfsUrl(service, path.append(property), tokenId);
 				return _query(service, url, null, handler);
