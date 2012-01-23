@@ -119,11 +119,10 @@ class TestReportGrid:
         assert type(response) is int
         assert response > 0
 
-## Disabled until we fix the root/test token setup
-#    def test_rollup_property_value_count(self):
-#        response = self.test_api.property_value_count(path='/', property='pytest.pyprop', value=456)
-#        assert type(response) is int
-#        assert response > 0
+    def test_rollup_property_value_count(self):
+        response = self.test_api.property_value_count(path='/', property='pytest.pyprop', value=456)
+        assert type(response) is int
+        assert response > 0
 
     def test_property_value_series(self):
         response = self.test_api.property_value_series(path='/', property='pytest.pyprop', value=123)
