@@ -24,14 +24,20 @@
 
 from reportgrid import reportgrid
 import time
-
-
-ROOT_TOKEN_ID = 'A3BC1539-E8A9-4207-BB41-3036EC2C6E6D'
-HOST = 'devapi.reportgrid.com'
-PORT = 80
-PATH_PREFIX = reportgrid.Path.Analytics.Root
+import pytest
 
 def setup_module(module):
+    ROOT_TOKEN_ID = pytest.config.getvalue('token')
+    HOST = pytest.config.getvalue('host')
+    PORT = pytest.config.getvalue('port')
+    PATH_PREFIX = pytest.config.getvalue('path')
+
+    print("Starting tests with the following settings: ")
+    print("""  host  = %s
+  port  = %d
+  path  = %s
+  token = %s""" % (HOST, PORT, PATH_PREFIX, ROOT_TOKEN_ID))
+
     module.TestReportGrid.root_api = reportgrid.ReportGrid(ROOT_TOKEN_ID, HOST, PORT, PATH_PREFIX)
     response = module.TestReportGrid.root_api.new_token(path='/python_test')
 
@@ -53,6 +59,7 @@ def setup_module(module):
         rollup=True)
 
     time.sleep(20)
+
 
 def teardown_module(module):
     module.TestReportGrid.root_api.delete_token(token_id=module.TestReportGrid.test_token_id)
