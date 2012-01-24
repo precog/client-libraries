@@ -13,7 +13,7 @@ object ScalaClientBuild extends Build {
   lazy val client: Project = ((blueeyesDeps.addDeps _) andThen (rosettaDeps.addDeps _)) {
     Project(id = "scala-client", base = file(".")).settings(
       organization := "com.reportgrid",
-      version      := "0.3.2",
+      version      := "0.3.3-SNAPSHOT",
       scalaVersion := "2.9.1",
       scalacOptions ++= Seq("-deprecation", "-unchecked"),
 

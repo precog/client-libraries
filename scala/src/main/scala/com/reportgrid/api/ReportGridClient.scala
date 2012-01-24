@@ -32,7 +32,7 @@ import rosetta.io._
 
 case class Trackable[Json: JsonImplementation](
   path: Path, name: String, properties: Json, 
-  rollup: Boolean = false, 
+  rollup: RollupLimit = NoRollup, 
   tags: Set[Tag[Json]] = Set.empty[Tag[Json]], 
   count: Option[Int] = None, 
   headers: Map[String, String] = Map.empty)
@@ -43,7 +43,7 @@ abstract class ReportGridTrackingClient[Json](jsonImplementation: JsonImplementa
 
   def track(path: Path, name: String, 
             properties: Json = jsonImplementation.EmptyObject, 
-            rollup: Boolean = false, 
+            rollup: RollupLimit = NoRollup, 
             tags: Set[Tag[Json]] = Set.empty[Tag[Json]], 
             count: Option[Int] = None, 
             headers: Map[String, String] = Map.empty): Unit
@@ -73,12 +73,18 @@ extends ReportGridTrackingClient[Json](jsonImplementation) with QueryTerms[Json]
    * @param timestamp   An optional timestamp denoting the time at which the event occurred.
    * @param count       An optional count of how many times the event occurred.
    */
-  def track(path: Path, name: String, properties: Json = EmptyObject, rollup: Boolean = false, tags: Set[Tag[Json]] = Set.empty, count: Option[Int] = None, headers: Map[String, String] = Map.empty): Unit = {
-    val paths = if (rollup) path :: path.ancestors else path :: Nil
+  def track(path: Path, name: String, properties: Json = EmptyObject, rollup: RollupLimit, tags: Set[Tag[Json]] = Set.empty, count: Option[Int] = None, headers: Map[String, String] = Map.empty): Unit = {
+    val paths = if (false) path :: path.ancestors else path :: Nil
     val data = JsonObject(name -> JsonObject(tags.map(_.toJsonField)(collection.breakOut): _*).merge(properties))
 
+    val client = rollup match {
+      case NoRollup => AnalyticsServer
+      case FullRollup => AnalyticsServer.query("rollup", "true")
+      case LimitedRollup(depth) => AnalyticsServer.query("rollup", depth.toString)
+    }
+
     paths.foreach { path =>
-      AnalyticsServer.post("vfs" + path.toString, data, headers)
+      client.post("vfs" + path.toString, data, headers)
     }
   }
 
