@@ -31,7 +31,7 @@ class TestQuery extends BaseTest {
 				var_dump($rg->errorMessage);
 			}
 		}
-		sleep(15);
+		sleep(30); // Wait for stage propagation
 	}
 
 	function testMeans()
@@ -116,16 +116,18 @@ class TestQuery extends BaseTest {
 	function testCount()
 	{
 		$path = TestQuery::$path;
-		$count = $this->rg->count($path, '.impression');
+		$count = $this->rg->count($path, 'impression');
 
 		$this->assertIsA($count, "Int");
 
 		$this->assertTrue(0 < $count);
-		$this->assertTrue($count == $this->rg->count($path, 'impression'));
+		$this->assertTrue($count == $this->rg->count($path, '.impression'));
 
-		$this->assertTrue(0 < ($pcount = $this->rg->count($path, 'impression', 'browser')) && $pcount <= $count);
+                // Per John, property counts not needed (20120123)
+		//$this->assertTrue(0 < ($pcount = $this->rg->count($path, 'impression', 'browser')) && $pcount <= $count, "Count mismatch : $count !< $pcount");
 
-		$this->assertTrue(0 < ($vcount = $this->rg->count($path, 'impression', 'browser', 'Chrome')) && $vcount < $pcount);
+		$this->assertTrue(0 < ($vcount = $this->rg->count($path, 'impression', 'browser', 'Chrome')), "Value count <= 0");
+                $this->assertTrue($vcount < $count, "Value count ($vcount) >= total event count ($count)");
 	}
 
 	function testChildren()

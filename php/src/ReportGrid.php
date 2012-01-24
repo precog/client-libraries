@@ -95,9 +95,9 @@ class ReportGridAPI {
     /*
      * Return an array of data about a specific token
      *
-     * @param String - Token
+     * @param String $token Token
      *
-     * @return Mixed - Array with all the information about this token or FALSE if the token does not exist.
+     * @return Mixed Array with all the information about this token or FALSE if the token does not exist.
      */
     public function token($token) {
         $path   = $this->_baseUrl . "tokens/" . $token . "?tokenId=" . $this->_tokenID;
@@ -121,14 +121,17 @@ class ReportGridAPI {
     /*
      * Record a new event
      *
-     * @param String - path
-     * @param Array - events data
+     * @param String $path The path in which to store this event
+     * @param Array $events event data
+     * @param Array $options Tracking options
      *
      * @return Bool - success/failure
      */
     public function track($path, $events = array(), $options = null) {
- //       $token  = null != $options && isset()
         $path   = $this->_baseUrl . "vfs/" . $this->cleanPath($path) . "?tokenId=" . $this->_tokenID;
+        if (null !== $options && array_key_exists('rollup', $options)) {
+          $path = $path . "&rollup=" . $options['rollup'];
+        }
         $return = $this->restHelper($path, $events, "POST");
         return $return !== false;
     }
