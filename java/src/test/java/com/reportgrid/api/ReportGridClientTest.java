@@ -25,8 +25,8 @@ import static org.junit.Assert.*;
  */
 public class ReportGridClientTest {
     private static String testId = null;
-  private static final Path rollupBasePath = new Path("/test" + testId + "/rollup");
-  private static final Path rollupChildPath = rollupBasePath.append(new Path("child"));
+  private static Path rollupBasePath;
+  private static Path rollupChildPath;
 
   private static class TestData {
       public final int testInt;
@@ -56,6 +56,8 @@ public class ReportGridClientTest {
     @BeforeClass
     public static void beforeAll() throws Exception {
       testId = "" + Double.valueOf(java.lang.Math.random() * 10000).intValue();
+      rollupBasePath = new Path("/test" + testId + "/rollup");
+      rollupChildPath = rollupBasePath.append(new Path("child"));
       ToJson<Object> toJson = new GsonToJson();
       TrackingClient testClient = new TrackingClient(Local, TrackingClient.TEST_TOKEN);
 
