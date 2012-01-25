@@ -1,3 +1,6 @@
+# condeps symlinks
+/blueeyes
+
 *~
 *.pyc
 tags
