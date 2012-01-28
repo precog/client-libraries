@@ -971,6 +971,20 @@ var ReportGrid = window.ReportGrid || {};
     );
   }
 
+  ReportGrid.propertiesHistogram = function(path_, options, success, failure) {
+    var path     = Util.sanitizePath(path_);
+    var property = Util.sanitizeProperty(options.property);
+    var bounds = Util.getBoundResults(options);
+
+    var description = 'Histogram for object properties at ' + path + property;
+
+    http.get(
+      $.Config.analyticsServer + '/vfs' + (path + property) + '/properties/count' + bounds,
+      Util.createCallbacks(success, failure, description),
+      Util.defaultQuery(options)
+    );
+  }
+
   /** Lists all tokens.
    */
   ReportGrid.tokens = function(success, failure) {
