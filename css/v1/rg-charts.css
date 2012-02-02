@@ -31,11 +31,11 @@
 
 .rg .group, .rg .group path:hover
 {
-	-webkit-transition: all 0.25s ease-in-out;
-	-moz-transition: all 0.25s ease-in-out;
-	-o-transition: all 0.25s ease-in-out;
-	-ms-transition: all 0.25s ease-in-out;
-	transition: all 0.25s ease-in-out;
+	-webkit-transition: all 0.4s ease-in-out;
+	-moz-transition: all 0.4s ease-in-out;
+	-o-transition: all 0.4s ease-in-out;
+	-ms-transition: all 0.4s ease-in-out;
+	transition: all 0.4s ease-in-out;
 }
 
 .rg .group:hover path
@@ -43,7 +43,6 @@
 	opacity: 1.0;
 }
 
-/* CHART DESIGN */
 .rg
 {
 	fill: none;
@@ -135,6 +134,59 @@
 	-moz-box-shadow: 2px 2px 3px #666;
 	-webkit-box-shadow: 2px 2px 3px #666;
 	box-shadow: 2px 2px 3px #666;
+}
+
+.rg.tooltip
+{
+	transition: all 0.4s;
+	-webkit-transition: all 0.4s;
+	-moz-transition: all 0.4s;
+	-ms-transition: all 0.4s;
+	-o-transition: all 0.4s;
+	pointer-events:none;
+}
+
+.rg.tooltip .container
+{
+	max-width: 180px;
+}
+
+.rg.tooltip .background
+{
+	background-color: #fafafa;
+	opacity: 0.9;
+	border: 2px solid #aaa;
+	border-radius: 8px;
+
+	-moz-box-shadow: 2px 2px 3px rgba(0,0,0,0.5);
+	-webkit-box-shadow: 2px 2px 3px rgba(0,0,0,0.5);
+	box-shadow: 2px 2px 3px rgba(0,0,0,0.5);
+}
+
+.rg.tooltip .content
+{
+	padding: 6px 8px;
+	text-align: center;
+	color: #000;
+	pointer-events:all;
+}
+
+.rg.tooltip .anchor
+{
+/*	border: 1px solid red;
+
+	margin-top: -5px;
+	margin-left: -5px;
+	width: 6px;
+	height: 6px;
+	opacity: 0.9;
+	border: 2px solid #aaa;
+	border-radius: 6px;
+
+	-moz-box-shadow: 2px 2px 3px rgba(0,0,0,0.5);
+	-webkit-box-shadow: 2px 2px 3px rgba(0,0,0,0.5);
+	box-shadow: 2px 2px 3px rgba(0,0,0,0.5);
+*/
 }
 
 .rg g.linechart-highlighter line, line.rule
@@ -309,7 +361,7 @@
 {
 	clear: left;
 }
-/* PIVOT TABLE */
+
 .rg table.pivot-table
 {
 	clear:left;
@@ -326,7 +378,7 @@
 	text-align: right;
 	font-size:11px;
 	text-shadow: 1px 1px 1px #aaa;
-	-moz-text-shadow: 0.5px 0.25px 1px #aaa;
+	-moz-text-shadow: 0.5px 0.4px 1px #aaa;
 	min-width: 40px;
 	background-color: #fff;
 }
