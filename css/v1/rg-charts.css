@@ -148,19 +148,22 @@
 
 .rg.tooltip .container
 {
-	max-width: 180px;
+	max-width: 150px;
 }
 
 .rg.tooltip .background
 {
 	background-color: #fafafa;
-	opacity: 0.9;
-	border: 2px solid #aaa;
-	border-radius: 8px;
+	opacity: 0.95;
+	border-left: 1px solid #ddd;
+	border-top: 1px solid #ddd;
+	border-right: 1px solid #bbb;
+	border-bottom: 1px solid #bbb;
+	border-radius: 3px;
 
-	-moz-box-shadow: 2px 2px 3px rgba(0,0,0,0.5);
-	-webkit-box-shadow: 2px 2px 3px rgba(0,0,0,0.5);
-	box-shadow: 2px 2px 3px rgba(0,0,0,0.5);
+	-moz-box-shadow: 2px 2px 3px rgba(0,0,0,0.2);
+	-webkit-box-shadow: 2px 2px 3px rgba(0,0,0,0.2);
+	box-shadow: 2px 2px 3px rgba(0,0,0,0.2);
 }
 
 .rg.tooltip .content
@@ -173,6 +176,17 @@
 
 .rg.tooltip .anchor
 {
+	margin-top: -8px;
+	margin-left: -8px;
+	width: 8px;
+	height: 8px;
+	border: 4px solid #333;
+	border-radius: 8px;
+/*	background-color: #fff; */
+
+	-moz-box-shadow: 2px 2px 3px rgba(0,0,0,0.2);
+	-webkit-box-shadow: 2px 2px 3px rgba(0,0,0,0.2);
+	box-shadow: 2px 2px 3px rgba(0,0,0,0.2);
 /*	border: 1px solid red;
 
 	margin-top: -5px;
@@ -183,9 +197,9 @@
 	border: 2px solid #aaa;
 	border-radius: 6px;
 
-	-moz-box-shadow: 2px 2px 3px rgba(0,0,0,0.5);
-	-webkit-box-shadow: 2px 2px 3px rgba(0,0,0,0.5);
-	box-shadow: 2px 2px 3px rgba(0,0,0,0.5);
+	-moz-box-shadow: 2px 2px 3px rgba(0,0,0,0.2);
+	-webkit-box-shadow: 2px 2px 3px rgba(0,0,0,0.2);
+	box-shadow: 2px 2px 3px rgba(0,0,0,0.2);
 */
 }
 
@@ -225,7 +239,7 @@
 {
 	stroke-width: 1;
 	stroke: #ccc;
-	stroke-opacity: 0.5;
+	stroke-opacity: 0.2;
 	stroke-dasharray: 1,3;
 	shape-rendering: crispEdges;
 }
@@ -235,7 +249,7 @@
 	stroke-width: 1;
 	stroke: #999;
 	stroke-dasharray: 0;
-	stroke-opacity: 0.5;
+	stroke-opacity: 0.2;
 /*	stroke-dasharray: 3,5; */
 	shape-rendering: crispEdges;
 }
@@ -378,7 +392,7 @@
 	text-align: right;
 	font-size:11px;
 	text-shadow: 1px 1px 1px #aaa;
-	-moz-text-shadow: 0.5px 0.4px 1px #aaa;
+	-moz-text-shadow: 0.2px 0.4px 1px #aaa;
 	min-width: 40px;
 	background-color: #fff;
 }
@@ -695,11 +709,11 @@
 {
 	fill-opacity: 0.8;
 	stroke-opacity: 1;
-	-webkit-transition: all 0.5s ease-in-out;
-	-moz-transition: all 0.5s ease-in-out;
-	-o-transition: all 0.5s ease-in-out;
-	-ms-transition: all 0.5s ease-in-out;
-	transition: all 0.5s ease-in-out;
+	-webkit-transition: all 0.2s ease-in-out;
+	-moz-transition: all 0.2s ease-in-out;
+	-o-transition: all 0.2s ease-in-out;
+	-ms-transition: all 0.2s ease-in-out;
+	transition: all 0.2s ease-in-out;
 }
 
 .rg .sankey .fill.nonode
