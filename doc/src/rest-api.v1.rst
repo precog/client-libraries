@@ -663,3 +663,71 @@ Series Example: ::
 
 In both of these examples, the query engine will find the top 10 counts of customer support type values and the 
 bottom 10 counts of customer support resolution type values, and will return a matrix of these as described above.
+
+
+Result Formatting
+-----------------
+
+The default format of query results is JSON (or JSONP, if a callback parameter is provided). This can be changed through
+the use of the *format* parameter. Currently, CSV format is supported via the keyword "csv". For example, a query to:
+
+http://api.reportgrid.com/services/analytics/v1/vfs/query/test2/.impression.keywords/properties/count?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D&format=csv
+
+Would return the CSV-formatted:
+
+        property,count
+        ".orange",559
+        ".kiwi",399
+        ".lemon",180
+        ".peach",716
+        ".apple",413
+        ".pear",648
+
+Query Save/Replay
+-----------------
+
+In cases where you would like to send query results to another party, you may use the save/replay functionality service. Simply add *save* to 
+your query parameters (no value required) and you will receive back a replay ID that can be used to rerun and cache your query at some point
+in the future. For example, the query
+
+http://api.reportgrid.com/services/analytics/v1/vfs/query/test2/.impression.keywords/properties/count?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D&save
+
+Returns the replay ID:
+
+    9501B897-A30F-41F2-9E17-5A4A0FCEF508
+
+This replay ID can then be used with the *replay* parameter to run the saved query:
+
+http://api.reportgrid.com/services/analytics/v1/?replay=9501B897-A30F-41F2-9E17-5A4A0FCEF508
+
+    [[".orange",559],[".kiwi",399],[".lemon",180],[".peach",716],[".apple",413],[".pear",648]]
+
+Additionally, you may provide an *allowedParams* parameter with a comma-separated list of query parameters that may be overridden
+at the time of replay. In this example, we allow for overriding the format parameter if desired:
+
+http://api.reportgrid.com/services/analytics/v1/vfs/query/test2/.impression.keywords/properties/count?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D&save&allowedParams=format
+
+    F0AE132F-652F-4890-A41B-B0FB3DB505CC
+
+http://api.reportgrid.com/services/analytics/v1/?replay=F0AE132F-652F-4890-A41B-B0FB3DB505CC&format=csv
+
+    property,count
+    ".orange",559
+    ".kiwi",399
+    ".lemon",180
+    ".peach",716
+    ".apple",413
+    ".pear",648
+
+If you would like the other party to be able to override the query VFS path, use the special *path* parameter in the allowedOverride list:
+
+http://api.reportgrid.com/services/analytics/v1/vfs/query/test2/.impression.keywords/properties/count?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D&save&allowedParams=path
+
+    10271275-2345-4272-986D-CB09FA8BFE4B
+
+You can then specify the overridden path as a URL-encoded *path* parameter in the replay:
+
+http://api.reportgrid.com/services/analytics/v1/?replay=10271275-2345-4272-986D-CB09FA8BFE4B&path=%2Fvfs%2Fquery
+
+    ["test2","test"]
+
