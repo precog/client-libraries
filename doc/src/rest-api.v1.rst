@@ -673,15 +673,16 @@ the use of the *format* parameter. Currently, CSV format is supported via the ke
 
 http://api.reportgrid.com/services/analytics/v1/vfs/query/test2/.impression.keywords/properties/count?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D&format=csv
 
-Would return the CSV-formatted:
+Would return the CSV-formatted: ::
 
-        property,count
-        ".orange",559
-        ".kiwi",399
-        ".lemon",180
-        ".peach",716
-        ".apple",413
-        ".pear",648
+    property,count
+    ".orange",559
+    ".kiwi",399
+    ".lemon",180
+    ".peach",716
+    ".apple",413
+    ".pear",648
+
 
 Query Save/Replay
 -----------------
@@ -692,13 +693,15 @@ in the future. For example, the query
 
 http://api.reportgrid.com/services/analytics/v1/vfs/query/test2/.impression.keywords/properties/count?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D&save
 
-Returns the replay ID:
+Returns the replay ID: ::
 
     9501B897-A30F-41F2-9E17-5A4A0FCEF508
 
 This replay ID can then be used with the *replay* parameter to run the saved query:
 
 http://api.reportgrid.com/services/analytics/v1/?replay=9501B897-A30F-41F2-9E17-5A4A0FCEF508
+
+Which results in the query result: ::
 
     [[".orange",559],[".kiwi",399],[".lemon",180],[".peach",716],[".apple",413],[".pear",648]]
 
@@ -707,9 +710,13 @@ at the time of replay. In this example, we allow for overriding the format param
 
 http://api.reportgrid.com/services/analytics/v1/vfs/query/test2/.impression.keywords/properties/count?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D&save&allowedParams=format
 
+::
+
     F0AE132F-652F-4890-A41B-B0FB3DB505CC
 
 http://api.reportgrid.com/services/analytics/v1/?replay=F0AE132F-652F-4890-A41B-B0FB3DB505CC&format=csv
+
+::
 
     property,count
     ".orange",559
@@ -723,11 +730,15 @@ If you would like the other party to be able to override the query VFS path, use
 
 http://api.reportgrid.com/services/analytics/v1/vfs/query/test2/.impression.keywords/properties/count?tokenId=A3BC1539-E8A9-4207-BB41-3036EC2C6E6D&save&allowedParams=path
 
+::
+
     10271275-2345-4272-986D-CB09FA8BFE4B
 
 You can then specify the overridden path as a URL-encoded *path* parameter in the replay:
 
 http://api.reportgrid.com/services/analytics/v1/?replay=10271275-2345-4272-986D-CB09FA8BFE4B&path=%2Fvfs%2Fquery
+
+::
 
     ["test2","test"]
 
