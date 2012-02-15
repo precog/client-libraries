@@ -964,11 +964,23 @@ var ReportGrid = window.ReportGrid || {};
     var query = Util.defaultQuery(options);
     var bounds = Util.getBoundResults(options);
 
-    http.get(
-      $.Config.analyticsServer + '/vfs' + path + property + '/histogram' + bounds,
-      Util.createCallbacks(success, failure, description),
-      query
-    );
+    if(options.where) {
+      var ob = {
+        where:  Util.whereConditions(options.where)
+      };
+      http.post(
+        $.Config.analyticsServer + '/vfs' + path + property + '/histogram' + bounds,
+        ob,
+        Util.createCallbacks(success, failure, description),
+        query
+      );
+    } else {
+      http.get(
+        $.Config.analyticsServer + '/vfs' + path + property + '/histogram' + bounds,
+        Util.createCallbacks(success, failure, description),
+        query
+      );
+    }
   }
 
   ReportGrid.propertiesHistogram = function(path_, options, success, failure) {
