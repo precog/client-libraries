@@ -292,6 +292,7 @@ var ReportGrid = window.ReportGrid || {};
           result.push({ variable : key, value : where[i][key] })
         }
       }
+
       return result;
     }
   }
@@ -964,23 +965,16 @@ var ReportGrid = window.ReportGrid || {};
     var query = Util.defaultQuery(options);
     var bounds = Util.getBoundResults(options);
 
-    if(options.where) {
-      var ob = {
-        where:  Util.whereConditions(options.where)
-      };
-      http.post(
-        $.Config.analyticsServer + '/vfs' + path + property + '/histogram' + bounds,
-        ob,
-        Util.createCallbacks(success, failure, description),
-        query
-      );
-    } else {
-      http.get(
-        $.Config.analyticsServer + '/vfs' + path + property + '/histogram' + bounds,
-        Util.createCallbacks(success, failure, description),
-        query
-      );
+    if(options.where)
+    {
+      query.content =  JSON.stringify({ where : Util.whereConditions(options.where) });
     }
+
+    http.get(
+      $.Config.analyticsServer + '/vfs' + path + property + '/histogram' + bounds,
+      Util.createCallbacks(success, failure, description),
+      query
+    );
   }
 
   ReportGrid.propertiesHistogram = function(path_, options, success, failure) {
