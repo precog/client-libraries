@@ -203,7 +203,7 @@
 */
 }
 
-.rg g.linechart-highlighter line, line.rule
+.rg g.linechart-highlighter line
 {
 	stroke-width: 1;
 	shape-rendering: crispEdges;
@@ -237,20 +237,15 @@
 
 .rg g.rule line
 {
-	stroke-width: 1;
-	stroke: #ccc;
-	stroke-opacity: 0.2;
-	stroke-dasharray: 1,3;
+/*	stroke-width: 1; */
+	stroke: #f0f0f0;
 	shape-rendering: crispEdges;
 }
 
 .rg g.rule line.major
 {
 	stroke-width: 1;
-	stroke: #999;
-	stroke-dasharray: 0;
-	stroke-opacity: 0.2;
-/*	stroke-dasharray: 3,5; */
+	stroke: #ccc;
 	shape-rendering: crispEdges;
 }
 
