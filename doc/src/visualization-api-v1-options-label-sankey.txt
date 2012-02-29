@@ -1,0 +1,6 @@
+``edge`` : function(data point, stats) string
+	The label to display inside the edges.
+``edgeover`` : function(data point, stats) string
+	The label to display when the mouse is over an edge.
+``node`` : function(data point, stats) string
+	The label to display inside the node rectangles. Note that multiline messages (each line separated by \n character) are accepted and the first line will be rendered bigger than the rest.

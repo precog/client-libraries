@@ -1,4 +1,4 @@
-axis : function(string type) string
+``axis`` : function(string type) string
 	The label to apply as a legend for the axis.
-tickmark : function(any value, string type) string
+``tickmark`` : function(any value, string type) string
 	The label to apply to the individual tick-marks of the scales. The ``value`` argument is the scaled value for that tick-mark and ``type`` is the name of the axis.

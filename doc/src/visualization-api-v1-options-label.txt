@@ -1,14 +1,13 @@
 Label Options
 ---------------
 
-The label options object provides a way to customize the label and texts that appear on your visualizations. They usually take a function so that your labels can be customized with their related datapoints_.
-Different visualizations have different options over to display or not some of those labels. You can override those options by stating yours.
+The label options object provides a way to customize the labels and texts that appear on your visualizations. They usually take a function so that your labels can be customized with their related datapoints.
 
 **options:**
 
-``title`` : string OR function(array variables, array datapoint_) string
-	Controls the text to display in the title. The ``variables`` array contains objects with a ``type`` field that can be used to know the axis that are involved in the visualization. The datapoint_ array is a collection of data that is the response to a query. Each datapoint_ has one or more fields describing it. If the parameter is ``null`` or returns ``null`` the title will not be rendered at all.
-``datapoint`` : function(object datapoint_, object stats_) string
-	The label to display on top of each datapoint_ of the chart. The datapoint_ is associated to a shape in the visualization and that shape depends on the kind of visualization. For a piechart the datapoint_ is associated to a slice of the pie, while for a line chart the data point is one point on the line. If the parameter is ``null`` or returns ``null`` the label will not be rendered at all.
-``datapointover`` : function(object datapoint_, object stats) string
-	The label to display when the user passes his mouse over a datapoint_ shape (see above) or touches a shape in a touch environment.  If the parameter is ``null`` or returns ``null`` the label will not be rendered at all.
+``title`` : string OR function(array variables, array datapoint) string
+	Controls the text to display in the title. The ``variables`` array contains objects with a ``type`` field that can be used to know the axis that are involved in the visualization. The datapoint array is a collection of data that is the response to a query. Each datapoint has one or more fields describing it. If the parameter is ``null`` or returns ``null`` the title will not be rendered at all.
+``datapoint`` : function(object datapoint, object stats) string
+	The label to display on top of each datapoint of the chart. The datapoint is associated to a shape in the visualization and that shape depends on the kind of visualization. For a piechart the datapoint is associated to a slice of the pie, while for a line chart the data point is one point on the line. If the parameter is ``null`` or returns ``null`` the label will not be rendered at all.
+``datapointover`` : function(object datapoint, object stats) string
+	The label to display when the user passes his mouse over a datapoint shape (see above) or touches a shape in a touch environment.  If the parameter is ``null`` or returns ``null`` the label will not be rendered at all.
