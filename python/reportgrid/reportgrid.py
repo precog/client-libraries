@@ -308,9 +308,10 @@ class ReportGrid(object):
             return {'start': start, 'end': end}
         else:
             now = datetime.datetime.utcnow()
+
             return {
-              'start': int(time.mktime(now.replace(year = now.year - 1).timetuple()) * 1000.0),
-              'end': int(time.mktime(now.replace(year = now.year + 1).timetuple()) * 1000.0)
+              'start': int(time.mktime((now - datetime.timedelta(days = 365)).timetuple()) * 1000.0),
+              'end': int(time.mktime((now + datetime.timedelta(days = 365)).timetuple()) * 1000.0)
             }
 
 
