@@ -1,10 +1,3 @@
-* charts API
-* query API
-* core API
-* reportgrid API
-* rendering API
-
-
 ===================================
 The ReportGrid Charts API
 ===================================
