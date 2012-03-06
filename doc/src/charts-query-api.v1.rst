@@ -1,5 +1,5 @@
 ===================================
-The ReportGrid Charts Query API
+Charts Query API
 ===================================
 
 .. contents:: :depth: 2
@@ -8,7 +8,10 @@ The ReportGrid Charts Query API
 Overview
 ---------------
 
-The Charts Query API is intended to be a utility library to load/handle/transform/enhance datasets. A dataset is considere to be an array of datapoints where a datapoint is usually a JavsSript object (key/value pairs).
+The Charts Query API is intended to be a utility library to load/handle/transform/enhance datasets. A dataset is considered to be an array of datapoints where a datapoint is usually a JavsSript object (key/value pairs).
+
+The Charts Query API is included in both the "reportgrid-query.js" and the "reportgrid-charts.js" files and you can use its functionalities by adding one (or both) to your HTML page. For inclusion details see either the documentation for Charts API or ReportGrid Query API.
+
 Usually the Charts Query API is used to transform a dataset into one that better fits the requirements of our Charts library.
 
 All of the data manipulation start with a reference to ``ReportGrid.query``. For example
@@ -58,9 +61,17 @@ The example above is not the same as:
 The second case is creating many instances of a Query object that are not really ever used. Running the above script is equivalent to ``ReportGrid.query.execute(log)`` and the end result is obviously an empty dataset.
 
 
----------------
-Methods
----------------
+--------------------
+Data Loading Methods
+--------------------
+
+The following methods are used to inject new datasets in the current stack. Note that the datasets will be appended to the stack and will not clear what was in there before.
+
+data
+===========================
+``.data(Array values)``
+
+Appends the passed values to the current stack.
 
 load
 ============================
@@ -78,35 +89,38 @@ The ``loader`` function is responsible of loading some data asynchrnously and to
 			}, 250);
 		})
 
-data
+
+
+
+
+
+
+
+
+
+
+
+
+
+--------------------
+Dataset Methods
+--------------------
+
+The following methods perform some kind of transformation at the dataset level. In practice the transformation is repeated for each dataset in the stack.
+
+addIndex
 ===========================
-``.data(Array values)``
+``addIndex(?String name, ?Int start)``
 
-Appends the passed values to the current stack.
-
-map
-===========================
-``.map(Function handler)``
-
-Transforms each datapoint in the dataset according to the ``handler`` function. The ``handler`` function takes as argument one datapoint and optionally a ``index`` value (integer starting from zero that resets for each dataset in the stack).
+Adds a new field to each datapoint with an associated index. The default name (if not set for ``name``) is `ìndex`` and the default starting value is ``1``.
+Note that indexes are reset for each dataset in the stack. So if you plan to have a unique value for each datapoint you should `stackMerge`_ your stack first.
 
 ::
 	
 	ReportGrid.query
-		.data([{gender : "male"}, {gender : "female"}])
-		.map(function(dp) {
-			return { ismale : dp.gender == "male" };
-		})
-
-Map can be very handy to tranform primitive values (strings, numbers ...) into an array of JavaScript objects.
-
-::
-	
-	ReportGrid.query
-		.data(["Franco", "John"])
-		.map(function(name) {
-			return { name : name };
-		})
+		.load(asyncLoader)
+		.addIndex() // add ``index : 1`` to the first datapoint, ``index : 2`` to the second and so on.
+		.addIndex("index0", 0) // add a new ``index0`` field that starts from 0.
 
 audit
 ===========================
@@ -125,6 +139,112 @@ Performs the ``handler`` action on each datapoint for the dataset. It can be use
 			return { ismale : dp.gender == "male" };
 		})
 
+filter
+===========================
+``filter(Function filterFunction)``
+
+Each datapoint in the datasets is passed to the ``filterFunction``. If that function returns ``true`` the value is preserved in the stack, otherwise it will be removed.
+
+::
+	
+	ReportGrid.query
+		.load(asyncLoader)
+		.filter(function(dp) {
+			return dp.age > 21 && dp.gender == "female";
+		})
+
+filterValue
+===========================
+``filterValue(String fieldName, mixed filterValue)``
+
+Filter the datapoints based on the value of ``fieldName``. ``filterValue`` can be either a function taking the current value for ``fieldName`` as the argument or a static value.
+
+::
+	
+	ReportGrid.query
+		.load(asyncLoader)
+		.filterValue("age", function(v) { return v > 21})
+		.filterValue("gender", "female")
+
+filterValues
+===========================
+``filterValues(Object filterObject)``
+
+Works like `filterValue`_ but on multiple fields at once.
+
+::
+	
+	ReportGrid.query
+		.load(asyncLoader)
+		.filterValues({
+			age : function(v) { return v > 21},
+			gender : "female"
+		})
+
+limit
+===========================
+``limit(?Int offset, Int count)``
+
+Removes from the dataset the elements before ``offset`` (default is 0) and after ``offset + limit``.
+
+In this example only the first 5 datapoints are preserved:
+
+::
+	
+	ReportGrid.query
+		.load(asyncLoader)
+		.limit(5)
+
+In this example only the 5 datapoints after the first 10 are preserved:
+
+::
+	
+	ReportGrid.query
+		.load(asyncLoader)
+		.limit(10, 5)
+
+map
+===========================
+``.map(Function handler)``
+
+Transforms each datapoint in the dataset according to the ``handler`` function. The ``handler`` function takes as argument one datapoint and optionally a ``index`` value (integer starting from zero that resets for each dataset in the stack).
+
+::
+	
+	ReportGrid.query
+		.data([{gender : "male"}, {gender : "female"}])
+		.map(function(dp) {
+			return { ismale : dp.gender == "male" };
+		})
+
+Map can be very handy to tranform primitive values (strings, numbers ...) into datasets of JavaScript objects.
+
+::
+	
+	ReportGrid.query
+		.data(["Franco", "John"])
+		.map(function(name) {
+			return { name : name };
+		})
+
+mapValue
+===========================
+``mapValue(String name, mixed f)``
+
+Similar to `setValue`_ but the function that generates the values take the current value of the field as argument.
+
+::
+	
+	ReportGrid.query
+		.data([{ value : 8 }])
+		.mapValue("value", function(v) { return v * v })
+
+mapValues
+===========================
+``mapValues(Object o)``
+
+Applies a transformation function to each field specified in the argument object. See also `setValue`_, `setValues`_ and `mapValue`_.
+
 renameFields
 ===========================
 ``.renameFields(Object fields)``
@@ -141,198 +261,284 @@ Maps the field names to new values. Only the mapped fields will be preserved, al
 			// note that origin is discarded with this operation
 		})
 
+reverse
+===========================
+``reverse()``
+
+Reverses the sequence of the datapoints in each dataset in the stack.
+
+setValue
+===========================
+``setValue(String name, mixed f)``
+
+Adds or changes the value of the field ``name``. The second argument can be either a function that takes the entire datapoint as argument or a static value.
+
+::
+	
+	ReportGrid.query
+		.data([{ width : 10, height : 20 }])
+		.setValue("area", function(dp){ return dp.width * dp.height; })
+		.setValue("geom", "rectangle")
+
+setValues
+===========================
+``setValues(Object o)``
+
+Works much as `setValue`_ but instead of working on a single key/value pair it works on a set of key/values pairs. The pairs are passed in one JavaScript object.
+
+::
+	
+	ReportGrid.query
+		.data([{ width : 10, height : 20 }])
+		.setValues({
+			area : function(dp){ return dp.width * dp.height; }),
+			geom : "rectangle"
+		})
+
+sort
+===========================
+``sort(Function sortFunction)``
+
+Reorders the datapoints in a dataset according to ``sortFunction``. The function must return an integer value used for comparison.
+
+::
+	
+	ReportGrid.query
+		.load(asyncLoader)
+		.sort(function(a, b) {
+			if(a.gender != b.gender)
+				return a.gender == 'male' ? -1 : 1;
+			return a.age - b.age;
+		})
+
+sortValue
+===========================
+``sortValue(String fieldName, ?Boolean ascending)``
+
+Reorders the dataset according to the values of the property ``fieldName``. The second argument states if the order should be ascending (default) or not.
+
+::
+	
+	ReportGrid.query
+		.load(asyncLoader)
+		.sortValue("gender")
+		.sortValue("age")
+
+Note that in the example above the result might be different than using `sort`_ or `sortValues`_.
+
+sortValues
+===========================
+``sortValues(Object objectSort)``
+
+Works much like as `sortValue`_ but applying more than one comparison at once. Note that the values for ``objectSort`` are boolean values that determine the direction of the sorting for each property.
+
+::
+	
+	ReportGrid.query
+		.load(asyncLoader)
+		.sortValues({
+			gender : true,
+			age : trur
+		})
+
+split
+===========================
+``split(mixed splitArgument)``
+
+Splits the datasets in the stack into multiple datasets according to ``splitArgument``. ``splitArgument`` can be either a field name (split by value) or a function that takes one datapoint at the time and assign it to a bucket identified by the return value.
+
+::
+	
+	ReportGrid.query
+		.load(asyncLoader) // after the load, the stack contains one dataset
+		.split("gender")   // the split creates one dataset for each value of "gender"
+
+unique
+===========================
+``unique(?Function uniqueFunction)``
+
+Removes duplicates from the datasets. If ``uniqueFunction`` is passed than it will be used to determine if two datapoins are equal, otherwise each datapoint will be structurally compared analyzing the value of each field recursively.
+
+This operation is computationally expensive so use it with care, particularly if ``uniqueFunction`` is not provided.
+
+::
+	
+	ReportGrid.query
+		.data([{name:"Franco"},{name:"John"},{name:"Franco"}])
+		.unique() // the result is [{name:"Franco"},{name:"Franco"}]
+
+
+
+
+
+
+
+
+--------------------
+Execution Method
+--------------------
+
+The only execution method is ``execute``. Note that if you are using the Query Charts API to generate data for a chart, you don't need to call this method because it is handled automatically by the visualization. Executing the method manually will generate an execution error.
+
+execute
+===========================
+``execute(Array callback)``
+
+Performs the query chain and sends the result to the ``callback`` function.
+
+::
+	
+	ReportGrid.query
+		.load(asyncLoad)
+		.execute(function(dataset) {
+			console.log("loaded " + dataset.length + " items");
+		})
+
+
+
+
+
+
+
+
+
+
+
+
+--------------------
+Stack Methods
+--------------------
+
+The following methods act on the stack as a whole.
+
+stackCross
+===========================
+``stackCross()``
+
+Performs a cross operation an all the datapoints of all the datasets currently in the stack.
+
+::
+	
+	ReportGrid.query
+		.data([{ name : "Franco" }, { name : "John" }]) // first dataset
+		.data([{ group : "A" }, { group : "B" }]) // second dataset
+		.stackCross()
+		// produces: [
+		//   { name : "Franco", group : "A" },
+		//   { name : "Franco", group : "B" },
+		//   { name : "John", group : "A" },
+		//   { name : "John", group : "B" }
+		// ]
+
+stackClear
+===========================
+``stackClear()``
+
+Removes all the datasets from the stack.
+
+stackDiscard
+===========================
+``stackDiscard(?howmany : Int)``
+
+Removes the last ``howmany`` (default is 1) datasets from the stack.
+
+stackKeep
+===========================
+``stackKeep(?howmany : Int)``
+
+Removes the datasets in the stack after ``howmany`` (default is 1).
+
+stackMerge
+===========================
+``stackMerge()``
+
+Merges multiples datasets in the stack in one dataset.
+
+stackReverse
+===========================
+``stackReverse()``
+
+Reverses the order of the datasets in the stack.
+
+stackRetrieve
+===========================
+``stackRetrieve(?String name)``
+
+Retrieves and appends tha data stored through ``stackStore`` at the end of the current stack.
+
+stackRotate
+===========================
+``stackRotate(?Function matchingFunction)``
+
+Rotates the datasets in the stack. The rotation is performed on the position of each datapoint in the datasets if the ``matchingFunction`` is not provided. The ``matchingFunction`` takes two datapoints from two different datasets, the result must be a boolean that states if the 2 datapoints should be moved to the same dataset.
+
+stackStore
+===========================
+``stackStore(?String name)``
+
+Puts the current stack into a reserved meomory space for later retrieval with ``stackRetrieve``. You can optionally associate a ``name`` to the stored data.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--------------------
+Low Level Methods
+--------------------
+
+The methods below are used a lot internally and are exposed because can cover usages that are not possible using the methods decribed above. These methods require probably a deeper knowledge of JavaScript and more code writing.
+
+asyncAll
+===========================
+``asyncAll(Function asyncTransformer)``
+
+Transforms asynchronously each dataset. The ``asyncTransformer`` is a function that takes a handler function that takes an array of datapoints as argument.
+
+asyncEach
+===========================
+``asyncEach(Function asyncTransformer)``
+
+Transforms asynchronously each datapoint in a dataset. The ``asyncTransformer`` is a function that takes a handler function that takes one datapoint as argument.
+
+fold
+===========================
+``fold(mixed start, Function reduceFunction : Dynamic -> Dynamic -> Array<Dynamic> -> Dynamic)``
+
+The ``fold`` can be used to reduce a dataset of values to a new dataset or to add cumulative values to the datapoints. It takes two arguments, the first one can be either a static value or a function:
+
+``startFunction(?Array dataset, ?Array newDataset) mixed``
+The function takes the current dataset and a new empty dataset as argument. It must return a value that is used as a base value for the ``reduceFunction``.
+
+If a static value is provided, that value will be used as base.
+
+``reduceFunction(mixed base, mixed datapoint, ?Array newDataset) mixed``
+
+The ``reduceFunction`` is invoked once for each datapoint in the dataset. The first argument is the base value, the second is the current datapoint and the third is the new dataset that will replace the original dataset in the stack. The function must return a new value that replaces the value of base on further interactions of ``reduceFunction``.
+
 transform
 ===========================
 ``.transform(Function transformer)``
 
 The ``transformer`` function takes an entire dataset as argument (Array of datapoints) and must return a new dataset.
 
-stackCross
+stackAsync
 ===========================
-``stackCross()``
+``stackAsync(Function asyncTransformer)``
 
-???
+Much like ``stackTransform`` but instead of returning the new stack, the ``asyncTransformer`` will use the ``handler`` function passed as argument to send the data to the stack. It is useful if the stack transformation happens asynchronously.
 
 stackTransform
 ===========================
-``stackTransform(t : StackTransformer)``
+``stackTransform(Function transformer)``
 
-???
-
-stackAsync
-===========================
-``stackAsync(f : AsyncStack)``
-
-???
-
-asyncAll
-===========================
-``asyncAll(f : Async)``
-
-???
-
-asyncEach
-===========================
-``asyncEach(f : Dynamic -> (Array<Dynamic> -> Void) -> Void)``
-
-???
-
-setValue
-===========================
-``setValue(name : String, f : Dynamic)``
-
-???
-
-setValues
-===========================
-``setValues(o : Dynamic)``
-
-???
-
-mapValue
-===========================
-``mapValue(name : String, f : Dynamic)``
-
-???
-
-mapValues
-===========================
-``mapValues(o : Dynamic)``
-
-???
-
-addIndex
-===========================
-``addIndex(?name : String, ?start : Int)``
-
-???
-
-filter
-===========================
-``filter(f : Dynamic -> Bool)``
-
-???
-
-filterValues
-===========================
-``filterValues(f : Dynamic)``
-
-???
-
-filterValue
-===========================
-``filterValue(name : String, f : Dynamic)``
-
-???
-
-sort
-===========================
-``sort(f : Dynamic -> Dynamic -> Int)``
-
-???
-
-sortValue
-===========================
-``sortValue(field : String, ?ascending : Bool)``
-
-???
-
-sortValues
-===========================
-``sortValues(o : Dynamic)``
-
-???
-
-limit
-===========================
-``limit(?offset : Int, count : Int)``
-
-???
-
-reverse
-===========================
-``reverse()``
-
-???
-
-unique
-===========================
-``unique(?f : Dynamic -> Dynamic -> Bool)``
-
-???
-
-fold
-===========================
-``fold(startf : Array<Dynamic> -> Array<Dynamic> -> Dynamic, reducef : Dynamic -> Dynamic -> Array<Dynamic> -> Dynamic)``
-
-???
-
-stackMerge
-===========================
-``stackMerge()``
-
-???
-
-stackDiscard
-===========================
-``stackDiscard(?howmany : Int)``
-
-???
-
-stackKeep
-===========================
-``stackKeep(?howmany : Int)``
-
-???
-
-split
-===========================
-``split(f : Dynamic -> String)``
-
-???
-
-stackRotate
-===========================
-``stackRotate(?matchingf : Dynamic -> Dynamic -> Bool)``
-
-???
-
-stackReverse
-===========================
-``stackReverse()``
-
-???
-
-stackStore
-===========================
-``stackStore(?name : String)``
-
-???
-
-stackRetrieve
-===========================
-``stackRetrieve(?name : String)``
-
-???
-
-stackClear
-===========================
-``stackClear()``
-
-???
-
-execute
-===========================
-``execute(handler : Array<Dynamic> -> Void)``
-
-???
-
-
-
-
----------------
-Use Cases
----------------
-
-
-- jquery integration
+The "transformer" function takes the entire stack (array of array of datapoints) and should return a new transformed stack.

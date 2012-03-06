@@ -2,6 +2,15 @@
 The ReportGrid JS Visualization API
 ===================================
 
+
+IMPORTANT!
+
+The Visualization API is now considered deprecated and it has been replaced by the following APIs:
+
+ * `Charts API <charts-api.v1.rst.html>`_
+ * `Charts Query API <charts-query-api.v1.rst.html>`_
+ * `ReportGrid Query API <reportgrid-query-api.v1.rst.html>`_
+
 .. contents:: :depth: 2
 
 ---------------

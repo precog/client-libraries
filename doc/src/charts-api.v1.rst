@@ -1,5 +1,5 @@
 ===================================
-The ReportGrid Charts API
+Charts API
 ===================================
 
 .. contents:: :depth: 2
@@ -10,7 +10,7 @@ Overview
 
 ReportGrid JavaScript charts are HTML5 widgets that you can embed in your web pages. First of all you have to be sure to include the required javascript files.
 
-The minimal setup requires that you add a reference to reportgrid-charts.js. This file has no dependencies and is used to generates all of the charts in the ReportGrid library.
+The minimal setup requires the inclusion of the ``reportgrid-charts.js`` file. This file has no dependencies and is used to generates all of the charts in the ReportGrid library.
 
 ::
 	
