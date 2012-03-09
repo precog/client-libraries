@@ -146,12 +146,12 @@
 	pointer-events:none;
 }
 
-.rg.tooltip .container
+.rg.tooltip .rg_container
 {
 	max-width: 150px;
 }
 
-.rg.tooltip .background
+.rg.tooltip .rg_background
 {
 	background-color: #fafafa;
 	opacity: 0.95;
@@ -166,7 +166,7 @@
 	box-shadow: 2px 2px 3px rgba(0,0,0,0.2);
 }
 
-.rg.tooltip .content
+.rg.tooltip .rg_content
 {
 	padding: 6px 8px;
 	text-align: center;
@@ -174,7 +174,7 @@
 	pointer-events:all;
 }
 
-.rg.tooltip .anchor
+.rg.tooltip .rg_anchor
 {
 	margin-top: -8px;
 	margin-left: -8px;
@@ -182,25 +182,10 @@
 	height: 8px;
 	border: 4px solid #333;
 	border-radius: 8px;
-/*	background-color: #fff; */
 
 	-moz-box-shadow: 2px 2px 3px rgba(0,0,0,0.2);
 	-webkit-box-shadow: 2px 2px 3px rgba(0,0,0,0.2);
 	box-shadow: 2px 2px 3px rgba(0,0,0,0.2);
-/*	border: 1px solid red;
-
-	margin-top: -5px;
-	margin-left: -5px;
-	width: 6px;
-	height: 6px;
-	opacity: 0.9;
-	border: 2px solid #aaa;
-	border-radius: 6px;
-
-	-moz-box-shadow: 2px 2px 3px rgba(0,0,0,0.2);
-	-webkit-box-shadow: 2px 2px 3px rgba(0,0,0,0.2);
-	box-shadow: 2px 2px 3px rgba(0,0,0,0.2);
-*/
 }
 
 .rg g.linechart-highlighter line
@@ -292,7 +277,7 @@
 	margin-bottom: -6px;
 }
 
-.rg div.leaderboard .background, .rg div.leaderboard .barback
+.rg div.leaderboard .rg_background, .rg div.leaderboard .rg_barback
 {
 	opacity: 0.1;
 	display: block;
@@ -304,7 +289,7 @@
 	z-index: -10;
 }
 
-.rg div.leaderboard .labels
+.rg div.leaderboard .rg_labels
 {
 	margin: 4px;
 	height: 2.5em;
@@ -312,10 +297,9 @@
 	vertical-align: 50%;
 }
 
-.rg div.leaderboard .rank
+.rg div.leaderboard .rg_rank
 {
 	float: left;
-	background-color: #ffffff;
 	padding: 0;
 	margin: 6px 12px 6px 3px;
 	width: 2em;
@@ -327,41 +311,51 @@
 	clear: left;
 }
 
-.rg div.leaderboard .description
+.rg_rank
+{
+	background-color: #ffffff;
+}
+
+.fill.rg_rank
+{
+	color: #ffffff;
+}
+
+.rg div.leaderboard .rg_description
 {
 	display: block;
 	float: left;
 	padding: 6px 0;
 }
 
-.rg div.leaderboard .value
+.rg div.leaderboard .rg_value
 {
 	display: block;
 	float: right;
 	padding: 6px 4px;
 }
 
-.rg div.leaderboard .barpadding
+.rg div.leaderboard .rg_barpadding
 {
 	padding: 0px 6px 6px 6px;
 }
 
-.rg div.leaderboard .barback
+.rg div.leaderboard .rg_barback
 {
 	opacity: 0.2;
 }
 
-.rg div.leaderboard .barcontainer
+.rg div.leaderboard .rg_barcontainer
 {
 	position: relative;
 }
 
-.rg div.leaderboard .barcontainer, .rg div.leaderboard .bar, .rg div.leaderboard .barback
+.rg div.leaderboard .rg_barcontainer, .rg div.leaderboard .rg_bar, .rg div.leaderboard .rg_barback
 {
 	height: 2px;
 }
 
-.rg div.leaderboard .bar
+.rg div.leaderboard .rg_bar
 {
 	opacity: 1;
 }
