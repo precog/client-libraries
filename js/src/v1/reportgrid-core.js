@@ -991,6 +991,25 @@ var ReportGrid = window.ReportGrid || {};
     );
   }
 
+  ReportGrid.events = function(path_, options, success, failure) {
+    var path     = Util.sanitizePath(path_);
+    var event = Util.sanitizeProperty(options.event);
+
+    var description = 'Get the raw events at ' + path;
+    var query = Util.defaultQuery(options);
+    if(options.properties)
+        query.properties = options.properties;
+    if(options.limit)
+        query.limit = options.limit;
+
+    http.post(
+      $.Config.analyticsServer + '/vfs' + path + event + '/events',
+      {},
+      Util.createCallbacks(success, failure, description),
+      query
+    );
+  }
+
   /** Lists all tokens.
    */
   ReportGrid.tokens = function(success, failure) {

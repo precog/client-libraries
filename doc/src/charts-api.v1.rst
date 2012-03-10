@@ -40,6 +40,7 @@ The charts are styled with a default theme using the ``rg-charts.css`` styleshee
 You can change the color schemes of the visualization loading one of our optional `css palettes`_. The palettes CSS files are located at http://api.reportgrid.com/css/colors/
 
 Every visualization is a method of the object ``ReportGrid`` and every visualization takes an element placeholder as the first argument. That argument can be a DOM element or a CSS selector (string); usually you will want to use the ID selector of an existing DIV in your page. In the example above the "#chart" selector refers to the <div id="chart"></div> node in the DOM.
+
 The second argument is a parameter objects that must provide at least two fields: ``axes`` and ``data`` (or ``load``).
 
 The second argument is always an object that contains all the info required to make the visualization render.
@@ -51,6 +52,7 @@ Data Loading
 -----------------------
 
 Loading data is the first step to generate meaningful visualizations. The data can be provided by any accessible source and format provided that it is passed as an array of data points to the visualization engine. In this document we will refer to a data point as to a JavaScript object containing key/value pairs and to a dataset as an array of data points.
+
 To build a pie chart that depicts male population VS female population you will probably need a dataset in the following format:
 
 ::
@@ -128,6 +130,7 @@ ReportGrid.barChart
 ``ReportGrid.barChart(selector el, parameters object) void``
 
 Based on the values in the data set, for each tick in the X axis might exist one or more bar. The bars can belong to the same Y axis or to different ones (in that case more than 2 ``axes`` must be specified). If they belong to the same Y axis the data can be segmented to produce several bars. The bars segmented on the same Y axis can be stacked or not.
+
 Bar charts can also be rendered horizontally.
 
 **options:**
@@ -164,6 +167,7 @@ ReportGrid.funnelChart
 ``ReportGrid.funnelChart(selector el, parameters object) void``
 
 The funnel chart is an extremely insightful visualization to quickly grasp ROI-like information. The funnel starts big for a certain variable and 'funnel' into subordinate values.
+
 Note that the subordinate values do not necessarely need to be smaller and you can achieve that way a reversed funnel effect.
 The funnel chart requires two axes, one to segment the funnel and one to size the segments.
 
@@ -203,7 +207,9 @@ ReportGrid.geo
 ``ReportGrid.geo(selector el, parameters object) void``
 
 The geo visualization can be used to produce choropleth charts or point/area diagrams. Each geo visualization can overlay more than one geographic layer associated or not to the datapoints retrieved by the query. This gives you the option to load geographic features to convey data information and/or to decorate the visualization.
+
 Note that the data contained in the geographic features (if any) is merged in the datapoint when the visualization is rendered. That metadata will be contained in the ``#data`` field. In the same way also the centroids in pixel of the geometries is injected in the datapoint in the ``#centroid`` field.
+
 Geo charts require two axes, one to identify the geomtry features and one to apply the colouring or scaling the overlapped symbol.
 
 **options:**
@@ -254,6 +260,7 @@ Map Options
 	A scale factor to reduce or enlarge the geographic visualization.
 ``template`` : string
 	To simplify geo consumption some premade templates and geographic files are made available by the ReportGrid API.
+
 	The available templates are:
 	* ``"world"`` :
 	* ``"usa-states"`` :
@@ -306,12 +313,15 @@ ReportGrid.leaderBoard
 ``ReportGrid.leaderBoard(selector el, parameters object) void``
 
 This visualization renders a list of values associated to the datapoints produced by your query.
+
 The leaderboard requires two axes, one to generate the items in the list and the other to quantify each item.
 
 **options:**
 
 ``animation`` : object animation options
 	Defines the `animation behavior`_ of the visualization.
+``colorscale`` : bool
+	Associates the background color of the rank numbers to the CSS palette. Default is false.
 ``click`` : function(object datapoint, object stats) void
 	A handler function that is executed when the user click or touches a datapoint.
 ``displaybar`` : bool (defaultr true)
@@ -392,7 +402,9 @@ ReportGrid.pieChart
 ``ReportGrid.pieChart(selector el, parameters object) void``
 
 The ``pieChart`` is obviously used to render pie charts, but it can also be used to render donut charts.
+
 All of the ``radius`` parameters below should be expressed as a ``float`` value between 0 and 1 where 0 is at the center of the pie and 1 is at the edge of the available chart space.
+
 The pie chart requires two axes, one for the slicing and one to set the slice size.
 
 **options:**
@@ -489,8 +501,11 @@ ReportGrid.sankey
 ``ReportGrid.sankey(selector el, parameters object) void``
 
 Sankey diagrams are a type of flow diagram in which nodes are connecte by arrows whose width is proportional to the flow quantity. They are typically used to visualize transfer of quantities between processes. They can also be seen as bi-dimensional funnel charts.
+
 The visualization is composed of nodes rendered as rectangle whose height is proportional to their weight in the graph. The nodes are layed on a set of vertical lines (those lines can be styled using CSS rules and are hidden by default) called layers. The nodes are automatically associated to the layers unless you provide a ``layoutmap`` definition that exactly the location of the nodes. If the ``layoutmap`` is not defined, the visualization will use the algorithm specified in ``layoutmethod``.
+
 Complex layouts may use dummy nodes to fill the graph in a way that edges are correctly positioned. The dummy node id is by convention prefixed with the pund "#" character. Dummy nodes do not render labels or mouse over.
+
 The sankey requires only one axis to quantify each edge node but it expects the data points to be formatted in a certain way. All the edge data points must contain a pair of ``head``/``tail`` fields that identify the nodes uniquely and a weight field that matches the mandatory axis type. Optionally, you can pass a set of node data points that are used to set the absolute weight of each node (that value can be greater than the sum of each edge flowing in or out). Those nodes must have the field `ìd`` and a weight field matchind the mandatory axis type.
 
 
@@ -546,6 +561,7 @@ ReportGrid.scatterGraph
 ``ReportGrid.scatterGraph(selector el, parameters object) void``
 
 A scatter graph is a visualization to display data for two variables in a data set (more variables can be addressed using size and colors). The data is displayed is displayed as a collection of points or symbols.
+
 The scatter graph requires two axes, one for the X axis and one for the Y axis.
 
 **options:**
@@ -591,6 +607,7 @@ The scatter graph requires two axes, one for the X axis and one for the Y axis.
 		Same as above but with control over the lightness or darkness of the stop color in the gradient.
 ``interpolation`` : string
 	Controls how the lines in the stream graph are interoilated, the allowed values are: "basis", "basisopen", "basisclosed", "cardinal", "cardinalopen", "cardinalclosed", "cardinal:{value}", "cardinalopen:{value}", "cardinalclosed:{value}", "monotone", "stepafter", "stepbefore", "linear".
+	
 	The ``{value}`` parameter for certain interpolation values should be replaced with a float value.
 ``segment`` : object segmentoptions
 	An object that describes the options for segmenting the data (see below).

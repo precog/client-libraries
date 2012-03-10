@@ -113,6 +113,7 @@ addIndex
 ``addIndex(?String name, ?Int start)``
 
 Adds a new field to each datapoint with an associated index. The default name (if not set for ``name``) is `ìndex`` and the default starting value is ``1``.
+
 Note that indexes are reset for each dataset in the stack. So if you plan to have a unique value for each datapoint you should `stackMerge`_ your stack first.
 
 ::
@@ -138,6 +139,12 @@ Performs the ``handler`` action on each datapoint for the dataset. It can be use
 		.map(function(dp) {
 			return { ismale : dp.gender == "male" };
 		})
+
+console
+===========================
+``console()``
+
+Display the current state of the stack in the console when available.
 
 filter
 ===========================
@@ -472,6 +479,12 @@ stackRotate
 
 Rotates the datasets in the stack. The rotation is performed on the position of each datapoint in the datasets if the ``matchingFunction`` is not provided. The ``matchingFunction`` takes two datapoints from two different datasets, the result must be a boolean that states if the 2 datapoints should be moved to the same dataset.
 
+stackSortValue
+===========================
+``stackSortValue(String fieldName, Bool ascending)``
+
+Sums all the values of fieldName for each datapoint in the dataset and use that value to compare the datasets in the stack.
+
 stackStore
 ===========================
 ``stackStore(?String name)``
@@ -536,6 +549,12 @@ stackAsync
 ``stackAsync(Function asyncTransformer)``
 
 Much like ``stackTransform`` but instead of returning the new stack, the ``asyncTransformer`` will use the ``handler`` function passed as argument to send the data to the stack. It is useful if the stack transformation happens asynchronously.
+
+stackSort
+===========================
+``stackSort(Function sortFunction)``
+
+Reorders the sequence of the datasets in the stack.
 
 stackTransform
 ===========================

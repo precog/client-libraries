@@ -63,7 +63,9 @@ Simplified Query Model
 -----------------------
 
 In the simplified query model you have the options to quickly build a big set of visualizations in a really easy fashion.
-The simplidied query model always tries to fill the blanks for you. 
+
+The simplidied query model always tries to fill the blanks for you.
+
 You can have one of the following combinations of parameters:
 
  * path: the query will retrieve all the count of all of the events at the path
@@ -87,6 +89,7 @@ end : timestamp
 	The ``start`` and ``end`` paramater must be specified as a timestamp (number), Date or a parsable date string.
 path : string
 	The path where the events are stored. The path must alwyas begin with a slash ``/``. The ending slash is optional.
+	
 	Note that any path is a valid value even if no events are stored there. In case the path does not exist because there are no events stored yet, the server will response with an empty set of data.
 periodicity : string
 	Periodicity can be any of the following values: ``minute``, ``hour``, ``day``, ``week``, ``month``, ``year`` or ``eternity``

@@ -2,6 +2,7 @@ Segment Options
 ---------------
 
 Segment options convey a way to separate several datapoints into separated set of values. This comes handy when you want to draw several lines from a uniquer data set of datapoints.
+
 Both the ``scale`` and ``transform`` parameters are optionals.
 
 **options:**

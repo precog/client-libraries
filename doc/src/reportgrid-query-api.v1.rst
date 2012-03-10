@@ -113,6 +113,7 @@ As you can see the event is automatically preserved but the path is lost. To pre
 		.count({ path : path, event : "impression" }, ["path"])
 
 To be able to use the following queries you must ensure that the token has the ``read`` permission. Some methods also require the ``explore`` permission.
+
 Each method description contains the parameters required for the query and the format of the datapoints loaded by the function. In the return formats, the fields prefixed with ``$`` have variable names that depend on the query context.
 
 --------------------
@@ -159,7 +160,9 @@ Non-Series Methods
 --------------------
 
 The scope of the following queries can be optionally restricted by passing a ``start`` and an ``end`` parameters. Both can take a string that represents a date (ex: "yestarday", "3 months ago", "2012-01-10 05:30:25" ...), a timestamp value (numeric) or a Date instance.
+
 It is also possible to restrict the scope of a query to a certain tag; a tag is commonly used for geographical locations but can be used for any hierarchical value. tags must be enabled at the time of tracking to be usable.
+
 All the fields suffixed with a "+" can be repeated more than once in each datapoint.
 
 count
@@ -211,6 +214,16 @@ The following query will return a histrogram of the counts of each field in keyo
 	Reportgrid.query
 		.propertiesHistogram({ path : '/', event : 'viewed', property : 'keywords' })
 
+rawEvents
+============================
+parameters : ``{ path : String, event : String, ?limit : Int, ?properties : Dynamic, ?start : Dynamic, ?end : Dynamic, ?tag : String}``
+
+datapoint format : same as the origin tracked event or defined by the passed ``properties`` parameter.
+
+Loads an array of events as they where captured by the ReportGrid service. The default value for limit is 1000 and limits the number of events returned by the service.
+
+If you want to load only a subset of the fields in the event, specify a comma-separated list of property names in the ``property`` parameter.
+
 summary
 ============================
 parameters: ``{ path : String, event : String, property : String, String type }``
@@ -240,10 +253,14 @@ Series Methods
 --------------------
 
 Time series methods alway happen between in a defined time range. If the ``start`` and ``end`` are omitted some default values are always assumed. Also the ``periodcity`` is always assumend if not state explicitly. Both ``start`` and ``end`` can take a string that represents a date (ex: "yestarday", "3 months ago", "2012-01-10 05:30:25" ...), a timestamp value (numeric) or a Date instance.
+
 The ``periodicity`` can assume one of the following values: minute, hour, day, week, month or year.
-If a ``groupby`` parameter is passed the datapoints will not have a ``time:$periodicity`` field but will have a ``periodicity`` field containing an integer values whose value range varies with the periodicity itself (0 to 59 for minutes, 0 to 23 for hours and so on). The ``groupby`` value must be a valid ``periodicity``value.
+
+If a ``groupby`` parameter is passed the datapoints will not have a ``time:$periodicity`` field but will have a ``periodicity`` field containing an integer values whose value range varies with the periodicity itself (0 to 59 for minutes, 0 to 23 for hours and so on). The ``groupby`` value must be a valid ``periodicity`` value.
+
 Optionally a ``timezone`` value can be passed. The time zone is expressed as a string describing the time shift: "+1", "-0.5" ...
 It is also possible to restrict the scope of a query to a certain tag; a tag is commonly used for geographical locations but can be used for any hierarchical value. tags must be enabled at the time of tracking to be usable.
+
 All the fields suffixed with a "+" can be repeated more than once in each datapoint.
 
 intersectSeries

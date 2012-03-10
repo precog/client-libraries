@@ -2,4 +2,5 @@ Padding Options
 ---------------
 
 If not configured, the values below are automatically set to convey the best possible visual without cutting off parts of the axis labels or titles. All of these options are measures in pixels (integer values).
+
 The available options are: ``bottom``, ``left``, ``right`` and ``top``.
