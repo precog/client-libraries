@@ -6,7 +6,7 @@ To use the Java client with Maven, add the following repository to your POM:
       ...
       <repository>
         <id>reportgrid-maven</id>
-        <url>http://api.reportgrid.com/java</url>
+        <url>http://nexus.reportgrid.com/content/repositories/public-releases</url>
       </repository>
     </repositories>
 
