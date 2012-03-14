@@ -416,10 +416,34 @@ var Precog = window.Precog || {};
 
   if("undefined" != typeof ReportGrid && "undefined" != typeof ReportGrid.query)
   {
-    ReportGrid.query.quirrel = function(query) {
+    function format(template, args)
+    {
+      for(key in args)
+      {
+        template = template.split('${'+key+'}').join(args[key]);
+      }
+      return template;
+    }
+
+    ReportGrid.query.quirrel = function(query, params) {
+      if(params)
+      {
+        query = format(query, params);
+      }
       return ReportGrid.query.load(function(handler) {
         Precog.quirrel(query, handler);
-      })
+      });
+    };
+    rg.query.BaseQuery.prototype.quirrel =
+    rg.query.Query.prototype.quirrel =
+    rg.query.ReportGridBaseQuery.prototype.quirrel =
+    rg.query.ReportGridQuery.prototype.quirrel = function(query) {
+      return this.stackCross().asyncEach(function(data, handler) {
+        var q = format(query, data);
+        console.log(data);
+        console.log(q);
+        Precog.quirrel(q, handler);
+      });
     };
   }
 })();
