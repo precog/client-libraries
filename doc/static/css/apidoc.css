@@ -8,13 +8,19 @@
 
 .apiDoc *{
 	text-align: left;
-	font-size: 14px;
-	font-family: abel;
-	color:#A8AECC;
+	font-size: 16px;
+	color:#333;
+}
+
+a {
+	text-decoration: underline;
+}
+a:hover {
+color: #60B2DC;
 }
 
 .apiDoc ol.simple li ,.apiDoc ul.simple li {
-	color:#A8AECC;
+	color:#333;
 	list-style-position: inside;
 	list-style-type: square;
 	font-size: 1em;
@@ -28,7 +34,7 @@
 }
 
 .apiDoc contents.topic ul.simple li {
-color:#A8AECC;
+color:#333;
 list-style-type: none;
 }
 
@@ -58,12 +64,12 @@ font-weight: normal;
   margin-top: 0 ! important }
 
 .apiDoc p{
-	color:#A8AECC;
+	color:#333;
 }
 
 .apiDoc p em{
 font-size: 1em;
-color: #AAA;
+color: #CCC;
 }
 
 .apiDoc .hidden {
@@ -71,8 +77,8 @@ color: #AAA;
 
 
 .apiDoc a.toc-backref {
-	font-size: 16;
-	color: #fff;
+	font-size: 16px;
+	color: #3895C7;
   }
 
 .apiDoc blockquote.epigraph { }
@@ -84,7 +90,7 @@ color: #AAA;
   }
 
 .apiDoc dl.docutils dt {
-  color:#AAA;
+  color:#000;
   font-family: abel;
 }
 
@@ -149,7 +155,7 @@ div.warning p.admonition-title {
   margin: 0 0 0.5em 1em ;
   border: medium outset ;
   padding: 1em ;
-  background-color:#1F2126 ;
+  background-color:#fff ;
   width:25% ;
   float: right ;
   clear: right }
@@ -203,8 +209,10 @@ padding: 0 1em;
 }
 
 .apiDoc h1 ,.apiDoc h2 ,.apiDoc h3 ,.apiDoc h4 {
-	font-weight: bold;
-	color: #AAA;
+	text-transform: uppercase;
+	font-family: abel;
+	font-size: 18pt;
+	color: #3895C7;
 	padding-bottom: .10em;
 	margin-bottom: .55em;
 	border-bottom: 2px solid #3E3E47;
@@ -302,8 +310,11 @@ div.align-right {
   font-weight: bold }
 
 .apiDoc p.topic-title {
+	font-family: abel;
+	text-transform: uppercase; 
 	font-size:1.1em;
-  font-weight: bold;}
+	color: #3895C7;
+  }
 
 .apiDoc pre.address {
   margin-bottom: 0 ;
@@ -312,9 +323,15 @@ div.align-right {
 
 .apiDoc pre.literal-block ,.apiDoc pre.doctest-block {
 line-height:1.25em;
-color: #AAA;
-background-color: #25252b;
-padding: 1em
+color: #000;
+background-color: #fff;
+font-size: 9pt;
+padding: 1em ;
+font-family: Andale Mono, Courrier New, monospace;
+border-width: 1px;
+border-color: #B6B7BF;
+margin-top: 10px;
+margin-bottom: 10px;
 }
   
 .apiDoc span.classifier {
@@ -384,13 +401,12 @@ font-size:.875em;
 
 .apiDoc span.pre ,.apiDoc table.docutils td ,.apiDoc table.docutils th ,.apiDoc 
 table.docinfo td ,.apiDoc table.docinfo th {
-font-size:.875em;
-color:#AAA;
-font-family: abel;
-padding: 0.75em ;
+font-size: 8pt;
+color:#fff;
+font-family: monospace, courier;
 vertical-align:top;
-background-color: #141417;
-padding:1.em;
+background-color: #000;
+padding: .4em;
 }
 
 .apiDoc table.docutils th.field-name ,.apiDoc table.docinfo th.docinfo-name {
@@ -404,6 +420,5 @@ padding:1.em;
 }
 
 .apiDoc tt.literal{
-	line-height:1.25em;
-	color:#AAA;
+	color: #8CC63F;
 }
