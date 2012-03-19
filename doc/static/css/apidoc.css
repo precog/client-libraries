@@ -78,7 +78,7 @@ color: #CCC;
 
 .apiDoc a.toc-backref {
 	font-size: 16px;
-	color: #3895C7;
+	color: #8CC63F;
   }
 
 .apiDoc blockquote.epigraph { }
@@ -212,7 +212,7 @@ padding: 0 1em;
 	text-transform: uppercase;
 	font-family: abel;
 	font-size: 18pt;
-	color: #3895C7;
+	color: #8CC63F;
 	padding-bottom: .10em;
 	margin-bottom: .55em;
 	border-bottom: 2px solid #3E3E47;
@@ -313,7 +313,7 @@ div.align-right {
 	font-family: abel;
 	text-transform: uppercase; 
 	font-size:1.1em;
-	color: #3895C7;
+	color: #8CC63F;
   }
 
 .apiDoc pre.address {
@@ -328,6 +328,7 @@ background-color: #fff;
 font-size: 9pt;
 padding: 1em ;
 font-family: Andale Mono, Courrier New, monospace;
+border-style: solid;
 border-width: 1px;
 border-color: #B6B7BF;
 margin-top: 10px;
@@ -401,12 +402,9 @@ font-size:.875em;
 
 .apiDoc span.pre ,.apiDoc table.docutils td ,.apiDoc table.docutils th ,.apiDoc 
 table.docinfo td ,.apiDoc table.docinfo th {
-font-size: 8pt;
-color:#fff;
+font-size: 10pt;
+color:#000;
 font-family: monospace, courier;
-vertical-align:top;
-background-color: #000;
-padding: .4em;
 }
 
 .apiDoc table.docutils th.field-name ,.apiDoc table.docinfo th.docinfo-name {
@@ -420,5 +418,5 @@ padding: .4em;
 }
 
 .apiDoc tt.literal{
-	color: #8CC63F;
+	color: #3895C7;
 }
