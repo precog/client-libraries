@@ -333,6 +333,7 @@ border-width: 1px;
 border-color: #B6B7BF;
 margin-top: 10px;
 margin-bottom: 10px;
+overflow: auto;
 }
   
 .apiDoc span.classifier {
