@@ -456,8 +456,13 @@ var Precog = window.Precog || {};
     {
       clearValueIfOld(id);
       var v = C.getValue(idValue(id));
-      if(null != v) delayedCleanup(id);
-      return JSON.parse(v);
+      if(v) 
+      {
+        delayedCleanup(id);
+        return JSON.parse(v);
+      } else {
+        return null;
+      }
     }
 
     function cacheSet(id, value)
@@ -533,17 +538,13 @@ var Precog = window.Precog || {};
     }
 
     ReportGrid.query.quirrel = function(query, params) {
-      if(params)
-      {
-        query = format(query, params);
-      }
       return ReportGrid.query.load(cachedLoader(query));
     };
     rg.query.BaseQuery.prototype.quirrel =
     rg.query.Query.prototype.quirrel =
     rg.query.ReportGridBaseQuery.prototype.quirrel =
     rg.query.ReportGridQuery.prototype.quirrel = function(query) {
-      return this.stackCross().asyncEach(function(data, handler) {
+      return this.data({}).stackCross().asyncEach(function(data, handler) {
         var q = format(query, data);
         cachedLoader(q)(handler);
       });
