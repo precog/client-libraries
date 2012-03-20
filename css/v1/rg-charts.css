@@ -765,3 +765,8 @@
 {
 	fill: #e0e0e0;
 }
+
+.rg .pointer
+{
+	cursor: pointer;
+}
