@@ -360,7 +360,7 @@ The ``lineChart`` can be used to build standard line charts, area charts stacked
 	States if an area shape must be rendered below the line chart or not.
 ``effect`` : string
 	States the effect to apply to the line(s) of the chart. The parameters in curly brackets are optional and refine the style.
-	 * "noeffect" : 
+	 * "noeffect" :
 		The line is rendered with a solid color.
 	 * "dropshadow" :
 		The line is rendered with a background shadow.
@@ -370,8 +370,8 @@ The ``lineChart`` can be used to build standard line charts, area charts stacked
 		The optional parameters are used to set the offset (x and y) of the shadow and of how many degrees of gray the shadow is composed.
 	 * "gradient" :
 		The line is rendered with a gradient from the middle outwards.
-	 * "gradient:{lightness}" : 
-	 * "gradient:{lightness}:{levels}" : 
+	 * "gradient:{lightness}" :
+	 * "gradient:{lightness}:{levels}" :
 		The ``lightness`` parameter is used to state how brigther (or darker) the end of the gradient will be and the ``levels`` parameterd states the number of steps that form the gradient.
 ``symbol`` : string OR function(object datapoint, object stats) string
 	Each datapoint in the line charts can be associated to an optional symbol. The symbol can be described statically using a string or using a function. The symbol must be expressed in SVG PATH format. There is a practical function ``ReportGrid.symbol.get()`` to quickly build symbols.
@@ -387,6 +387,8 @@ The ``lineChart`` can be used to build standard line charts, area charts stacked
 	An object that describes the options for segmenting the data (see below).
 ``segmenton`` : string
 	A shortcut that is equivalent to : ``{ segment : { on : "propertyname" } }``
+``sensibleradius`` : int
+	The distance from a datapoint within which the mouseover and click events should be fired.
 
 .. include:: visualization-api-v1-options-cartesian.txt
 .. include:: visualization-api-v1-options-layout.txt
