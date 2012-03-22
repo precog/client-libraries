@@ -232,7 +232,9 @@ datapoint format for standard deviation: ``{ standardDeviation : Float }``
 
 datapoint format for mean: ``{ mean : Float }``
 
-Returns one datapoint that stores the absolute mean or standard deviation value.
+datapoint format for sum: ``{ sum : Float }``
+
+Returns one datapoint that stores the absolute mean, sum or standard deviation value. The allowed valued for ``type`` are ``mean``, ``standarddeviation`` or ``sum``.
 
 values
 ============================
