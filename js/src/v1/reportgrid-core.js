@@ -754,6 +754,21 @@ var ReportGrid = window.ReportGrid || {};
     );
   }
 
+  ReportGrid.propertySums = function(path_, options, success, failure) {
+    var path     = Util.sanitizePath(path_);
+    var property = Util.sanitizeProperty(options.property);
+    var peri     = options.periodicity || "eternity";
+    var query    = Util.groupQuery(options);
+
+    var description = 'Get series for property sum ' + path + property + ' (periodicity = ' + peri + ')';
+
+    http.get(
+      $.Config.analyticsServer + '/vfs' + (path + property) + '/series/' + peri + "/sums",
+      Util.createCallbacks(success, failure, description),
+      query
+    );
+  }
+
   /**
    * Retrieves all values of the specified property throughout all time.
    *
