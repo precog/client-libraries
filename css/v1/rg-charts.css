@@ -369,58 +369,60 @@
 {
 	clear:left;
 	border-spacing:0;
+	font-family:Helvetica,sans-serif;
+	font-size: 10pt;
+	letter-spacing: 1px;
 }
 
 .rg .pivot-table td
 {
-	border-left: 1px solid #f0f0f0;
-	border-right: 1px solid #CECECE;
-	border-top: 1px solid #f0f0f0;
-	border-bottom: 1px solid #CECECE;
+	border-left: 1px solid #fff;
+	border-right: 1px solid #fff;
+	border-top: 1px solid #fff;
+	border-bottom: 1px solid #fff;
 	padding: 1px 6px 1px 3px;
 	text-align: right;
-	font-size:11px;
-	text-shadow: 1px 1px 1px #aaa;
-	-moz-text-shadow: 0.2px 0.4px 1px #aaa;
+	font-size: 11px;
 	min-width: 40px;
 	background-color: #fff;
 }
 
 .rg .pivot-table th
 {
-	border-left: 1px solid #f0f0f0;
-	border-top: 1px solid #f0f0f0;
-	border-right: 1px solid #969696;
-	border-bottom: 1px solid #969696;
-	background-color: #e4e4e4;
+	border-left: 1px solid #fff;
+	border-top: 1px solid #fff;
+	border-right: 1px solid #fff;
+	border-bottom: 1px solid #fff;
+	background-color: #FAFAFA;
 	padding: 0 2px 0 3px;
-	text-shadow: 1px 1px 0 #FFFFFF;
-	-moz-text-shadow: 1px 1px 0 #FFFFFF;
-	-webkit-text-shadow: 1px 1px 0 #FFFFFF;
 	font-weight: normal;
 	color: #000000;
-	font-size:11px;
 }
 
 .rg .pivot-table tfoot th.column.total, .rg .pivot-table tbody th.row.total, .rg .pivot-table tfoot th.table.total
 {
 	font-weight: bold;
+	color: #999;
+	font-size: 10px;
 	text-align: right;
 	padding-right: 4px;
+	padding-bottom: 6px;
+	padding-top: 6px;
+	background-color: #fff;
 }
 
 .rg .pivot-table thead th.col-header, .rg .pivot-table thead th.row-header
 {
-	font-weight: bold;
-	padding: 0px 6px;
+	padding: 6px 6px;
+	font-size: 13px;
 	background-color: #eee;
 	color: #444;
 }
 
 .rg .pivot-table th.column.value, .rg .pivot-table th.row.value
 {
-	font-weight: bold;
-	padding: 2px 6px;
+	padding: 4px 6px;
+	font-size: 11px;
 }
 
 .rg .pivot-table thead th
@@ -436,7 +438,9 @@
 
 .rg .pivot-table td:hover
 {
-	border: 1px solid #0026FF !important;
+	border: 1px solid #fff !important;
+	background-color: #fff !important;
+	color: #000 !important;
 }
 
 .rg.pivot-table .spacer
