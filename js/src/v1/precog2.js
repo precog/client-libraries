@@ -407,7 +407,7 @@ var Precog = window.Precog || {};
     var description = 'Quirrel query ' + query;
 
     http.get(
-      $.Config.analyticsServer + '/vfs',
+      $.Config.analyticsServer + '/vfs/',
       Util.createCallbacks(success, failure, description),
       { tokenId: $.Config.tokenId, q : query }
     );
