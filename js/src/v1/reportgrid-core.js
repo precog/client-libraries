@@ -121,11 +121,11 @@ var ReportGrid = window.ReportGrid || {};
       if (!console) {
         console = {};
 
-        console.log   = function() {}
-        console.debug = function() {}
-        console.info  = function() {}
-        console.warn  = function() {}
-        console.error = function() {}
+        console.log   = function() {};
+        console.debug = function() {};
+        console.info  = function() {};
+        console.warn  = function() {};
+        console.error = function() {};
       }
 
       return console;
@@ -289,13 +289,13 @@ var ReportGrid = window.ReportGrid || {};
       where = where instanceof Array ? where : [where];
       for(var i = 0; i < where.length; i++) {
         for(var key in where[i]) {
-          result.push({ variable : key, value : where[i][key] })
+          result.push({ variable : key, value : where[i][key] });
         }
       }
 
       return result;
     }
-  }
+  };
 
   var Network = {
     doAjaxRequest: function(options) {
@@ -316,7 +316,7 @@ var ReportGrid = window.ReportGrid || {};
         else {
           return new ActiveXObject("Microsoft.XMLHTTP");
         }
-      }
+      };
 
       var request = createNewXmlHttpRequest();
 
@@ -336,7 +336,7 @@ var ReportGrid = window.ReportGrid || {};
             failure(request.status, request.statusText);
           }
         }
-      }
+      };
 
       for (var name in headers) {
         var value = headers[name];
@@ -382,7 +382,7 @@ var ReportGrid = window.ReportGrid || {};
         }catch(e){
             window[funcName] = undefined;
         }
-      }
+      };
 
       var extraQuery = {};
 
@@ -721,7 +721,10 @@ var ReportGrid = window.ReportGrid || {};
     var property = Util.sanitizeProperty(options.property);
     var peri     = options.periodicity || "eternity";
     var query    = Util.groupQuery(options);
-
+    if(options.where)
+    {
+      query.content =  JSON.stringify({ where : Util.whereConditions(options.where) });
+    }
     var description = 'Get series for property means ' + path + property + ' (periodicity = ' + peri + ')';
 
     http.get(
@@ -744,7 +747,10 @@ var ReportGrid = window.ReportGrid || {};
     var property = Util.sanitizeProperty(options.property);
     var peri     = options.periodicity || "eternity";
     var query    = Util.groupQuery(options);
-
+    if(options.where)
+    {
+      query.content =  JSON.stringify({ where : Util.whereConditions(options.where) });
+    }
     var description = 'Get series for property standard deviations ' + path + property + ' (periodicity = ' + peri + ')';
 
     http.get(
@@ -759,7 +765,10 @@ var ReportGrid = window.ReportGrid || {};
     var property = Util.sanitizeProperty(options.property);
     var peri     = options.periodicity || "eternity";
     var query    = Util.groupQuery(options);
-
+    if(options.where)
+    {
+      query.content =  JSON.stringify({ where : Util.whereConditions(options.where) });
+    }
     var description = 'Get series for property sum ' + path + property + ' (periodicity = ' + peri + ')';
 
     http.get(
@@ -778,7 +787,6 @@ var ReportGrid = window.ReportGrid || {};
   ReportGrid.propertyValues = function(path_, options, success, failure) {
     var path     = Util.sanitizePath(path_);
     var property = Util.sanitizeProperty(options.property);
-
     var description = 'Get all values of property ' + path + property;
     var bounds = Util.getBoundResults(options);
     http.get(
