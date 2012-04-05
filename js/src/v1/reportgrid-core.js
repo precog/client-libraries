@@ -55,7 +55,7 @@ var ReportGrid = window.ReportGrid || {};
 
 (function() {
   var Util = {
-	  findScript: function(fragment) {
+    findScript: function(fragment) {
       var scripts = document.getElementsByTagName('SCRIPT');
 
       for (var i = 0; i < scripts.length; i++) {
@@ -112,7 +112,7 @@ var ReportGrid = window.ReportGrid || {};
         queries.push(name + '=' + encodeURIComponent(value));
       }
 
-      if (queries.length == 0) return url;
+      if (queries.length === 0) return url;
       else return url + suffix + queries.join('&');
     },
 
@@ -149,15 +149,15 @@ var ReportGrid = window.ReportGrid || {};
           else {
             $.Log.debug('Success: ' + msg);
           }
-        }
-      }
+        };
+      };
 
       var failureFn = function(fn, msg) {
         if (fn) return fn;
         else return function(code, reason) {
           $.Log.error('Failure: ' + msg + ': code = ' + code + ', reason = ' + reason);
-        }
-      }
+        };
+      };
 
       return {
         success: successFn(success, msg),
@@ -166,19 +166,19 @@ var ReportGrid = window.ReportGrid || {};
     },
 
     removeLeadingSlash: function(path) {
-      if (path.length == 0) return path;
+      if (path.length === 0) return path;
       else if (path.substr(0, 1) == '/') return path.substr(1);
       else return path;
     },
 
     removeTrailingSlash: function(path) {
-      if (path.length == 0) return path;
+      if (path.length === 0) return path;
       else if (path.substr(path.length - 1) == "/") return path.substr(0, path.length - 1);
       else return path;
     },
 
     removeDuplicateSlashes: function(path) {
-      return path.replace(/[/]+/g, "/");
+      return path.replace(/[\/]+/g, "/");
     },
 
     sanitizePath: function(path) {
@@ -188,8 +188,10 @@ var ReportGrid = window.ReportGrid || {};
 
     sanitizeProperty: function(property) {
       if (property === undefined) throw Error("Property cannot be undefined");
-      else if (property.length == 0) return property;
-      else if (property.substr(0, 1) == ".") return property;
+      else if (property.length === 0)
+        return property;
+      else if (property.substr(0, 1) == ".")
+        return property;
       else return "." + property;
     },
 
@@ -198,8 +200,10 @@ var ReportGrid = window.ReportGrid || {};
     },
 
     splitPathVar: function(pathVar) {
-      if (pathVar.length == 0) return ["/", ""];
-      if (pathVar.substr(0, 1) == ".") return ["/", pathVar]
+      if (pathVar.length === 0)
+        return ["/", ""];
+      if (pathVar.substr(0, 1) == ".")
+        return ["/", pathVar];
 
       var index = pathVar.indexOf('/.');
 
@@ -388,7 +392,10 @@ var ReportGrid = window.ReportGrid || {};
 
       extraQuery.method   = method;
 
-      for (_ in headers) { extraQuery.headers = JSON.stringify(headers); break; }
+      for (var _ in headers)
+      {
+          extraQuery.headers = JSON.stringify(headers); break;
+      }
 
       extraQuery.callback = funcName;
 
@@ -466,9 +473,9 @@ var ReportGrid = window.ReportGrid || {};
             }
           );
         }
-      }
+      };
     }
-  }
+  };
 
   ReportGrid.$ = {};
 
@@ -484,11 +491,11 @@ var ReportGrid = window.ReportGrid || {};
         object[name] = extensions[name];
       }
     }
-  }
+  };
 
   $.Bool = function(v) {
     return v === true || v === 1 || (v = (""+v).toLowerCase()) == "true" || v == "on" || v == "1";
-  }
+  };
 
   $.Extend($.Config,
     {
@@ -502,7 +509,7 @@ var ReportGrid = window.ReportGrid || {};
 
   $.Http = function() {
     return $.Bool(ReportGrid.$.Config.useJsonp) ? ReportGrid.$.Http.Jsonp : ReportGrid.$.Http.Ajax;
-  }
+  };
 
   $.Http.Ajax  = Network.createHttpInterface(Network.doAjaxRequest);
   $.Http.Jsonp = Network.createHttpInterface(Network.doJsonpRequest);
@@ -515,7 +522,7 @@ var ReportGrid = window.ReportGrid || {};
     info:   function(text) { console.info(text);  },
     warn:   function(text) { console.warn(text);  },
     error:  function(text) { console.error(text); }
-  }
+  };
 
   /** Constants */
   ReportGrid.Minute   = 'minute';
@@ -536,13 +543,13 @@ var ReportGrid = window.ReportGrid || {};
     Week:     "week",
     Year:     "year",
     Eternity: "eternity"
-  }
+  };
 
   /** Time constants. */
   ReportGrid.Time = {
     Zero:  0,
     Inf:   2147483647
-  }
+  };
 
   /** Tracks an event. If no #timestamp is specified, the current time is used.
    *
@@ -563,7 +570,7 @@ var ReportGrid = window.ReportGrid || {};
     for(var i = 0; i < path_.length; i++)
       paths.push(Util.sanitizePath(path_[i]));
 
-    if (events == null) throw Error("argument 'events' cannot be null");
+    if (!events) throw Error("argument 'events' cannot be null");
 
     for (var eventName in events) {
       // Allow user to specify Date for timestamp:
@@ -573,7 +580,7 @@ var ReportGrid = window.ReportGrid || {};
     // Extract out first event for logging:
     var firstEventName, firstEventProperties, firstEventTime;
 
-    for (var eventName in events) {
+    for (eventName in events) {
       firstEventName       = eventName;
       firstEventProperties = events[eventName];
       firstEventTime       = events[eventName]["#timestamp"];
@@ -585,7 +592,7 @@ var ReportGrid = window.ReportGrid || {};
     if(options && options.rollup && options.rollup > 0)
       parameters.rollup = options.rollup;
 
-    for(var i = 0; i < paths.length; i++)
+    for(i = 0; i < paths.length; i++)
     {
       path = paths[i];
       http.post(
@@ -595,7 +602,7 @@ var ReportGrid = window.ReportGrid || {};
         parameters
       );
     }
-  }
+  };
 
   /**
    * Lists children of the specified path and optional property. You can use this
@@ -627,7 +634,7 @@ var ReportGrid = window.ReportGrid || {};
 
     var path     = Util.sanitizePath(path_);
     var property = Util.sanitizeProperty(options.property || "");
-    var type     = (property != "") ? "property" : (options.type || "all").toLowerCase();
+    var type     = (property !== "") ? "property" : (options.type || "all").toLowerCase();
 
     var description = 'List children of ' + path + property;
 
@@ -639,7 +646,7 @@ var ReportGrid = window.ReportGrid || {};
         success: function(content) {
           var noDotFilter = function(e) { return e.charAt(0) != '.'; };
           var dotFilter   = function(e) { return e.charAt(0) == '.'; };
-          var allFilter   = function(e) { return true; }
+          var allFilter   = function(e) { return true; };
 
           var typeToFilter = {
             "path":   noDotFilter,
@@ -654,7 +661,7 @@ var ReportGrid = window.ReportGrid || {};
       },
       {tokenId: $.Config.tokenId }
     );
-  }
+  };
 
   /**
    * Retrieves total counts of how often the specified property appeared in events
@@ -674,7 +681,7 @@ var ReportGrid = window.ReportGrid || {};
       Util.createCallbacks(success, failure, description),
       Util.defaultQuery(options)
     );
-  }
+  };
 
   /**
    * Retrieves time series counts of how often the specified property appeared
@@ -706,7 +713,7 @@ var ReportGrid = window.ReportGrid || {};
       Util.createCallbacks(success, failure, description),
       query
     );
-  }
+  };
 
   /**
    * Retrieves time series means of the values of a numeric property.
@@ -723,7 +730,7 @@ var ReportGrid = window.ReportGrid || {};
     var query    = Util.groupQuery(options);
     if(options.where)
     {
-      query.content =  JSON.stringify({ where : Util.whereConditions(options.where) });
+      query.content = JSON.stringify({ where : Util.whereConditions(options.where) });
     }
     var description = 'Get series for property means ' + path + property + ' (periodicity = ' + peri + ')';
 
@@ -732,7 +739,7 @@ var ReportGrid = window.ReportGrid || {};
       Util.createCallbacks(success, failure, description),
       query
     );
-  }
+  };
 
   /**
    * Retrieves time standard deviations of the values of a numeric property.
@@ -749,7 +756,7 @@ var ReportGrid = window.ReportGrid || {};
     var query    = Util.groupQuery(options);
     if(options.where)
     {
-      query.content =  JSON.stringify({ where : Util.whereConditions(options.where) });
+      query.content = JSON.stringify({ where : Util.whereConditions(options.where) });
     }
     var description = 'Get series for property standard deviations ' + path + property + ' (periodicity = ' + peri + ')';
 
@@ -758,7 +765,7 @@ var ReportGrid = window.ReportGrid || {};
       Util.createCallbacks(success, failure, description),
       query
     );
-  }
+  };
 
   ReportGrid.propertySums = function(path_, options, success, failure) {
     var path     = Util.sanitizePath(path_);
@@ -767,7 +774,7 @@ var ReportGrid = window.ReportGrid || {};
     var query    = Util.groupQuery(options);
     if(options.where)
     {
-      query.content =  JSON.stringify({ where : Util.whereConditions(options.where) });
+      query.content = JSON.stringify({ where : Util.whereConditions(options.where) });
     }
     var description = 'Get series for property sum ' + path + property + ' (periodicity = ' + peri + ')';
 
@@ -776,7 +783,7 @@ var ReportGrid = window.ReportGrid || {};
       Util.createCallbacks(success, failure, description),
       query
     );
-  }
+  };
 
   /**
    * Retrieves all values of the specified property throughout all time.
@@ -788,13 +795,18 @@ var ReportGrid = window.ReportGrid || {};
     var path     = Util.sanitizePath(path_);
     var property = Util.sanitizeProperty(options.property);
     var description = 'Get all values of property ' + path + property;
-    var bounds = Util.getBoundResults(options);
+    var bounds = Util.getBoundResults(options),
+        query = Util.defaultQuery(options);
+    if(options.where)
+    {
+      query.content = JSON.stringify({ where : Util.whereConditions(options.where) });
+    }
     http.get(
       $.Config.analyticsServer + '/vfs' + (path + property) + '/values' + bounds,
       Util.createCallbacks(success, failure, description),
-      Util.defaultQuery(options)
+      query
     );
-  }
+  };
 
   /**
    * Retrieves the total number of times the property was equal to the specified
@@ -817,7 +829,7 @@ var ReportGrid = window.ReportGrid || {};
       Util.createCallbacks(success, failure, description),
       Util.defaultQuery(options)
     );
-  }
+  };
 
   /**
    * Retrieves the time series count of when the property was equal to the
@@ -852,7 +864,7 @@ var ReportGrid = window.ReportGrid || {};
       Util.createCallbacks(success, failure, description),
       query
     );
-  }
+  };
 
   /**
    * Searches across a range of conditions to retrieve a total count.
@@ -875,7 +887,7 @@ var ReportGrid = window.ReportGrid || {};
       Util.createCallbacks(success, failure, description),
       Util.defaultQuery(options)
     );
-  }
+  };
 
 
   /**
@@ -918,7 +930,7 @@ var ReportGrid = window.ReportGrid || {};
       Util.createCallbacks(success, failure, description),
       query
     );
-  }
+  };
 
   /**
    * Intersect time series for events that meet the specified constraint. Note
@@ -961,6 +973,8 @@ var ReportGrid = window.ReportGrid || {};
       from:       path,
       properties: options.properties
     };
+    if(options.where)
+        ob.where = Util.whereConditions(options.where);
 
     var query = Util.groupQuery(options);
 
@@ -979,7 +993,7 @@ var ReportGrid = window.ReportGrid || {};
       Util.createCallbacks(success, failure, description),
       query
     );
-  }
+  };
 
   ReportGrid.histogram = function(path_, options, success, failure) {
     var path = Util.sanitizePath(path_);
@@ -990,7 +1004,7 @@ var ReportGrid = window.ReportGrid || {};
 
     if(options.where)
     {
-      query.content =  JSON.stringify({ where : Util.whereConditions(options.where) });
+      query.content = JSON.stringify({ where : Util.whereConditions(options.where) });
     }
 
     http.get(
@@ -998,7 +1012,7 @@ var ReportGrid = window.ReportGrid || {};
       Util.createCallbacks(success, failure, description),
       query
     );
-  }
+  };
 
   ReportGrid.propertiesHistogram = function(path_, options, success, failure) {
     var path     = Util.sanitizePath(path_);
@@ -1012,7 +1026,7 @@ var ReportGrid = window.ReportGrid || {};
       Util.createCallbacks(success, failure, description),
       Util.defaultQuery(options)
     );
-  }
+  };
 
   ReportGrid.events = function(path_, options, success, failure) {
     var path     = Util.sanitizePath(path_);
@@ -1021,17 +1035,17 @@ var ReportGrid = window.ReportGrid || {};
     var description = 'Get the raw events at ' + path;
     var query = Util.defaultQuery(options);
     if(options.properties)
-        query.properties = options.properties;
+      query.properties = options.properties;
     if(options.limit)
-        query.limit = options.limit;
-
-    http.post(
+      query.limit = options.limit;
+    if(options.where)
+      query.content = JSON.stringify({ where : Util.whereConditions(options.where) });
+    http.get(
       $.Config.analyticsServer + '/vfs' + path + event + '/events',
-      {},
       Util.createCallbacks(success, failure, description),
       query
     );
-  }
+  };
 
   /** Lists all tokens.
    */
@@ -1043,7 +1057,7 @@ var ReportGrid = window.ReportGrid || {};
       Util.createCallbacks(success, failure, 'List all tokens'),
       {tokenId: $.Config.tokenId }
     );
-  }
+  };
 
   ReportGrid.token = function(token, success, failure) {
     var http = $.Http();
@@ -1058,7 +1072,7 @@ var ReportGrid = window.ReportGrid || {};
       Util.createCallbacks(success, failure, 'List token info'),
       {tokenId: $.Config.tokenId }
     );
-  }
+  };
 
   /** Creates a new token.
    */
@@ -1071,7 +1085,7 @@ var ReportGrid = window.ReportGrid || {};
       Util.createCallbacks(success, failure, 'Create a token (' + JSON.stringify(newToken) + ')'),
       {tokenId: $.Config.tokenId }
     );
-  }
+  };
 
   /** Deletes the token with the specified id.
    */
@@ -1083,7 +1097,7 @@ var ReportGrid = window.ReportGrid || {};
       Util.createCallbacks(success, failure, 'Delete token ' + tokenId),
       {tokenId: $.Config.tokenId }
     );
-  }
+  };
 })();
 
 
