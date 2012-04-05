@@ -1,6 +1,6 @@
 <?php
 
-require_once('basetest_Precog.php');
+require_once('basetest.php');
 
 class TestStoring extends PrecogBaseTest {
 	var $path = "/precog/beta/test/php/track/";

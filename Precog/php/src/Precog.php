@@ -2,9 +2,10 @@
 /**
  * Provides access to the Precog API platform.
  *
+ * Author: Alissa Pajer
  **/
 
-define ("BASE_URL", "http://beta2012v1.precog.io/v1/");
+define ("BASE_URL", "http://api.precog.io/v1/");
 
 class PrecogAPI {
  
@@ -15,6 +16,7 @@ class PrecogAPI {
      * Initialize a new PrecogAPI object
      *
      * @param String $token_id
+     * @param String $baseurl
      *
      */
     public function __construct($token_id, $baseurl = BASE_URL) 
