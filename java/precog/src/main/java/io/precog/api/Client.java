@@ -68,6 +68,7 @@ public class Client {
    * Store a raw JSON string at the sep. 
    */
   public void store(Path path, String recordJson) throws IOException {
+    byte[] recordBytes = recordJson.getBytes("UTF-8"); 
     String servicePath = "vfs/" + path.relativize() + "?tokenId="+encode(tokenId, "UTF-8");
 
     URL serviceURL = new URL(service.serviceUrl(), servicePath);
@@ -75,11 +76,10 @@ public class Client {
     conn.setDoOutput(true);
     conn.setRequestMethod("POST");
     conn.setRequestProperty("Content-Type", "application/json");
-    conn.setRequestProperty("Content-Length", "" + recordJson.length());
+    conn.setRequestProperty("Content-Length", "" + recordBytes.length);
 
     DataOutputStream out = new DataOutputStream(conn.getOutputStream());
     try {
-      byte[] recordBytes = recordJson.getBytes("UTF-8"); 
       out.write(recordBytes, 0, recordBytes.length);
     } finally {
       out.flush();
