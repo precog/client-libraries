@@ -3,17 +3,22 @@
 require_once('basetest.php');
 
 class TestQuery extends PrecogBaseTest {
-        var $path = "/precog/beta/test/php/query/";
+        static function path() 
+        {
+            return "/unit_test/beta/test/php/query/TEST" . uniqid(rand(), true);
+        }
 
-	function testQueries()
+        function testQueries()
 	{
-                $this->rg->store($this->path, array('foo' => 42));
-                $value = $this->rg->query("
-                    num := count(load(//precog/beta/test/php/query)) 
-                    a := 4 
-                    a + num");
-		$this->assertIsA($value, "Array");
-                $this->assertTrue($value[0] > 0);
+            $path = TestQuery::path();    
+            echo $path;
+            $this->rg->store($path, array('foo' => 42));
+            $value = $this->rg->query("
+                num := count(load(//precog/beta/test/php/query/TEST$path)) 
+                a := 4 
+                a + num");
+	    $this->assertIsA($value, "Array");
+            $this->assertTrue($value[0] > 0);
         }
 }
 ?>

@@ -20,7 +20,7 @@ function skipgeneration()
 }
 
 abstract class PrecogBaseTest extends UnitTestCase {
-	static $id = 'ED0493A5-6044-4047-A404-BC87B46D4EED';
+	static $id = '2D36035A-62F6-465E-A64A-0E37BCC5257E';
 	public static function createApi()
 	{
           $HOST  = "beta2012v1.precog.io";
