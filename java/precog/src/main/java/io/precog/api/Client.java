@@ -11,12 +11,13 @@ import static java.net.URLEncoder.encode;
  * A simple client for storeing arbitrary records in the Precog database.
  * @author knuttycombe
  */
-public class TrackingClient {
+public class Client {
   private final Service service;
   private final String tokenId;
 
   /** The default test token. */
-  public static final String TEST_TOKEN = "A3BC1539-E8A9-4207-BB41-3036EC2C6E6D";
+  public static final String TEST_TOKEN = "2D36035A-62F6-465E-A64A-0E37BCC5257E";
+  public static final Path TEST_ROOT = new Path("/unit_test/beta");
 
 	/**
    * A convenience constructor that uses the default production API.
@@ -27,7 +28,7 @@ public class TrackingClient {
 	 * @param tokenId The string token that permits storage of records at or below the
    * virtual filesystem path to be used 
 	 */
-  public TrackingClient(String tokenId) {
+  public Client(String tokenId) {
     this.service = Service.ProductionHttp;
     this.tokenId = tokenId;
   }
@@ -35,7 +36,7 @@ public class TrackingClient {
   /**
    *
    */
-  public TrackingClient(Service service, String tokenId) {
+  public Client(Service service, String tokenId) {
     this.service = service;
     this.tokenId = tokenId;
   }
