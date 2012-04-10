@@ -31,7 +31,7 @@ namespace Precog.Client
 		public void TestStoreAndQuery ()
 		{
 			var path = Path();
-			var query = String.Format("count(/{0})", path);
+			var query = String.Format("count(load(\"{0}\"))", path);
 			float count = client.Query<List<float>>(query)[0];
 
 			client.Store(path, "test");
