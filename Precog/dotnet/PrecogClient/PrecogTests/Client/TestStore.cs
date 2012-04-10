@@ -32,7 +32,7 @@ namespace Precog.Client
 		{
 			var path = Path();
 			var query = String.Format("count(load(\"{0}\"))", path);
-			float count = client.Query<List<float>>(query)[0];
+			int count = (int) client.Query<List<float>>(query)[0];
 
 			client.Store(path, "test");
 
@@ -40,7 +40,7 @@ namespace Precog.Client
 			var success = false;
 			while(retry++ < RETRIES)
 			{
-				var newcount = client.Query<List<float>>(query)[0];
+				var newcount = (int) client.Query<List<float>>(query)[0];
 				if(newcount > count)
 				{
 					success = true;
