@@ -55,7 +55,7 @@ var Precog = window.Precog || {};
 
 (function() {
   var Util = {
-	  findScript: function(fragment) {
+    findScript: function(fragment) {
       var scripts = document.getElementsByTagName('SCRIPT');
 
       for (var i = 0; i < scripts.length; i++) {
@@ -68,10 +68,12 @@ var Precog = window.Precog || {};
 
       return undefined;
     },
+    getPageConfiguration: function() {
+      return Util.parseQueryParameters(window.location.href);
+    },
     getConfiguration: function() {
       return Util.parseQueryParameters(Util.findScript(/precog[^\/.]*\.js/).getAttribute('src'));
     },
-
     parseQueryParameters: function(url) {
       var index = url.indexOf('?');
 
@@ -112,7 +114,7 @@ var Precog = window.Precog || {};
         queries.push(name + '=' + encodeURIComponent(value));
       }
 
-      if (queries.length == 0) return url;
+      if (queries.length === 0) return url;
       else return url + suffix + queries.join('&');
     },
 
@@ -121,11 +123,11 @@ var Precog = window.Precog || {};
       if (!console) {
         console = {};
 
-        console.log   = function() {}
-        console.debug = function() {}
-        console.info  = function() {}
-        console.warn  = function() {}
-        console.error = function() {}
+        console.log   = function() {};
+        console.debug = function() {};
+        console.info  = function() {};
+        console.warn  = function() {};
+        console.error = function() {};
       }
 
       return console;
@@ -149,15 +151,15 @@ var Precog = window.Precog || {};
           else {
             $.Log.debug('Success: ' + msg);
           }
-        }
-      }
+        };
+      };
 
       var failureFn = function(fn, msg) {
         if (fn) return fn;
         else return function(code, reason) {
           $.Log.error('Failure: ' + msg + ': code = ' + code + ', reason = ' + reason);
-        }
-      }
+        };
+      };
 
       return {
         success: successFn(success, msg),
@@ -166,13 +168,13 @@ var Precog = window.Precog || {};
     },
 
     removeTrailingSlash: function(path) {
-      if (path.length == 0) return path;
+      if (path.length === 0) return path;
       else if (path.substr(path.length - 1) == "/") return path.substr(0, path.length - 1);
       else return path;
     },
 
     removeDuplicateSlashes: function(path) {
-      return path.replace(/[/]+/g, "/");
+      return path.replace(/[\/]+/g, "/");
     },
 
     sanitizePath: function(path) {
@@ -200,7 +202,7 @@ var Precog = window.Precog || {};
         else {
           return new ActiveXObject("Microsoft.XMLHTTP");
         }
-      }
+      };
 
       var request = createNewXmlHttpRequest();
 
@@ -220,7 +222,7 @@ var Precog = window.Precog || {};
             failure(request.status, request.statusText);
           }
         }
-      }
+      };
 
       for (var name in headers) {
         var value = headers[name];
@@ -266,13 +268,13 @@ var Precog = window.Precog || {};
         }catch(e){
             window[funcName] = undefined;
         }
-      }
+      };
 
       var extraQuery = {};
 
       extraQuery.method   = method;
 
-      for (_ in headers) { extraQuery.headers = JSON.stringify(headers); break; }
+      for (var _ in headers) { extraQuery.headers = JSON.stringify(headers); break; }
 
       extraQuery.callback = funcName;
 
@@ -350,9 +352,9 @@ var Precog = window.Precog || {};
             }
           );
         }
-      }
+      };
     }
-  }
+  };
 
   Precog.$ = {};
 
@@ -360,6 +362,7 @@ var Precog = window.Precog || {};
 
   $.Util = Util;
 
+  $.PageConfig = Util.getPageConfiguration();
   $.Config = Util.getConfiguration();
 
   $.Extend = function(object, extensions) {
@@ -368,25 +371,26 @@ var Precog = window.Precog || {};
         object[name] = extensions[name];
       }
     }
-  }
+  };
 
   $.Bool = function(v) {
     return v === true || v === 1 || (v = (""+v).toLowerCase()) == "true" || v == "on" || v == "1";
-  }
+  };
 
   $.Extend($.Config,
     {
-      analyticsServer: Util.getProtocol() + "//play2012v1.precog.io/v1",
+      analyticsService: Util.getProtocol() + "//api.precog.io/v1",
       useJsonp : "true",
       enableLog : "false"
     }
   );
 
-  $.Config.analyticsServer = Util.removeTrailingSlash($.Config.analyticsServer);
+  $.Config.analyticsService = Util.removeTrailingSlash($.PageConfig.analyticsService || $.Config.analyticsService);
+  $.Config.tokenId = $.PageConfig.tokenId || $.Config.tokenId;
 
   $.Http = function() {
     return $.Bool(Precog.$.Config.useJsonp) ? Precog.$.Http.Jsonp : Precog.$.Http.Ajax;
-  }
+  };
 
   $.Http.Ajax  = Network.createHttpInterface(Network.doAjaxRequest);
   $.Http.Jsonp = Network.createHttpInterface(Network.doJsonpRequest);
@@ -399,19 +403,19 @@ var Precog = window.Precog || {};
     info:   function(text) { console.info(text);  },
     warn:   function(text) { console.warn(text);  },
     error:  function(text) { console.error(text); }
-  }
+  };
 
   var http = $.Http();
 
-  Precog.quirrel = function(query, success, failure) {
-    var description = 'Quirrel query ' + query;
+  Precog.query = function(query, success, failure) {
+    var description = 'Precog query ' + query;
 
     http.get(
-      $.Config.analyticsServer + '/vfs/',
+      $.Config.analyticsService + '/vfs/',
       Util.createCallbacks(success, failure, description),
       { tokenId: $.Config.tokenId, q : query }
     );
-  }
+  };
 
   if("undefined" != typeof ReportGrid && "undefined" != typeof ReportGrid.query)
   {
@@ -455,7 +459,7 @@ var Precog = window.Precog || {};
     {
       clearValueIfOld(id);
       var v = C.getValue(idValue(id));
-      if(v) 
+      if(v)
       {
         delayedCleanup(id);
         return JSON.parse(v);
@@ -492,7 +496,7 @@ var Precog = window.Precog || {};
 
     function format(template, args)
     {
-      for(key in args)
+      for(var key in args)
       {
         template = template.split('${'+key+'}').join(args[key]);
       }
@@ -522,7 +526,7 @@ var Precog = window.Precog || {};
           queue[id].push(handler);
         } else {
           queue[id] = [];
-          Precog.quirrel(query, function(data) {
+          Precog.query(query, function(data) {
             cacheSet(id, data);
             delayedCleanup(id);
             handler(data);
@@ -536,13 +540,13 @@ var Precog = window.Precog || {};
       }
     }
 
-    ReportGrid.query.quirrel = function(query, params) {
+    ReportGrid.query.precog = function(query, params) {
       return ReportGrid.query.load(cachedLoader(query));
     };
-    rg.query.BaseQuery.prototype.quirrel =
-    rg.query.Query.prototype.quirrel =
-    rg.query.ReportGridBaseQuery.prototype.quirrel =
-    rg.query.ReportGridQuery.prototype.quirrel = function(query) {
+    rg.query.BaseQuery.prototype.precog =
+    rg.query.Query.prototype.precog =
+    rg.query.ReportGridBaseQuery.prototype.precog =
+    rg.query.ReportGridQuery.prototype.precog = function(query) {
       return this.data({}).stackCross().asyncEach(function(data, handler) {
         var q = format(query, data);
         cachedLoader(q)(handler);
