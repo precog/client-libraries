@@ -698,7 +698,7 @@
 	fill-opacity: 0.4;
 }
 
-.rg .sankey .over .fill, .rg .sankey .over .fill.node
+.rg .sankey .over .fill, .rg .sankey .over .fill.node, .rg .sankey .over .stroke
 {
 	fill-opacity: 0.8;
 	stroke-opacity: 1;
@@ -724,7 +724,14 @@
 
 .rg .sankey .stroke
 {
+	stroke-width: 2;
+	stroke-opacity: 0.7;
+}
+
+.rg .sankey .hook-area .stroke, .rg .sankey .diagonal .stroke, .rg .sankey .node .stroke, .rg .sankey .elbow .stroke
+{
 	stroke: #fff;
+	stroke-width: 1;
 	stroke-opacity: 0.7;
 }
 
