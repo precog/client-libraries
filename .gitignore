@@ -12,3 +12,11 @@ doc/deploy/
 # IDEA artifacts
 .idea/
 *.iml
+
+# monodevelop
+*.pidb
+*.userprefs
+*.dll
+*.mdb
+ServiceStack.Text
+test-results
