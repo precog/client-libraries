@@ -17,7 +17,7 @@ class TestQuery extends PrecogBaseTest {
         sleep(10);
 
         $value = $this->rg->query("
-            num := count(load(/$path)) 
+            num := count(/$path) 
             a := 4 
             a + num");
 
