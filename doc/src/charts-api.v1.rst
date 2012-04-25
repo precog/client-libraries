@@ -484,7 +484,14 @@ A pivot table is a data summarization table. It can be created on any number of 
 	Configuration object for text labels.
 ``startcolor`` : string
 	Color for the background cell with a value of zero. This option is used only if ``displayheatmap`` is set to true.
-
+``cellclass``: function(object datapoint, object stats) string
+	A function to inject custom class(es) in the cell container. If the function returns ``null`` nothing is injected.
+``valueclass``: function(mixed value, string header) string
+	A function to inject custom class(es) in the value container (it refers to one of the possible values that a dimension/header can have). If the function returns ``null`` nothing is injected.
+``headerclass``: function(string header) string
+	A function to inject custom class(es) in the header container. If the function returns ``null`` nothing is injected.
+``totalclass``: function(mixed value, array of string headers) string
+	A function to inject custom class(es) in the total celll container. If the function returns ``null`` nothing is injected.
 
 .. include:: visualization-api-v1-options-label.txt
 
