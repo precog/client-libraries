@@ -51,9 +51,9 @@ if(/^[\],:{}\s]*$/.test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g,'@').
 throw new SyntaxError('JSON.parse');};}}());
 
 // Precog core:
-var Precog = window.Precog || {};
 
 (function() {
+  var Precog = window.Precog = (window.Precog || {});
   var Util = {
     findScript: function(fragment) {
       var scripts = document.getElementsByTagName('SCRIPT');
@@ -407,7 +407,7 @@ var Precog = window.Precog || {};
 
   var http = $.Http();
 
-  Precog.query = function(query, success, failure) {
+  var executeQuery = function(query, success, failure) {
     var description = 'Precog query ' + query;
 
     http.get(
@@ -417,83 +417,107 @@ var Precog = window.Precog || {};
     );
   };
 
-  if("undefined" != typeof ReportGrid && "undefined" != typeof ReportGrid.query)
-  {
-    // USTORE
-    var C=(function(){var e,a,c,f,b,k,i,j,d;var g={setValue:function(l,m,n){if(e){if(n&&a){sessionStorage.setItem(l,m)}else{localStorage.setItem(l,m)}}else{if(c){if(n){i.setAttribute(l,m);i.save(d)}else{f.setAttribute(l,m);f.save(ieDb)}}}},getValue:function(m,n){var l="";if(e){if(n&&a){l=sessionStorage.getItem(m)}else{l=localStorage.getItem(m)}}else{if(c){if(n){i.load(d);l=i.getAttribute(m)}else{f.load(ieDb);l=f.getAttribute(m)}}}return l},deleteValue:function(l,m){if(e){this.setValue(l,null,m)}else{if(c){if(m){i.removeAttribute(l);i.save(d)}else{f.removeAttribute(l);f.save(ieDb)}}}},clearDB:function(l){if(e){if(l){sessionStorage.clear()}else{localStorage.clear()}}else{if(c){h.clearDB(l)}}}};var h={detectIE:function(){if(/MSIE (\d+\.\d+);/.test(navigator.userAgent)){var l=new Number(RegExp.$1);if(l>=5.5&&l<=8){return true}}return false},init:function(){var n=document.createElement("meta");n.name="save";n.content="userdata";document.getElementsByTagName("head").item(0).appendChild(n);var m=new Date().getTime();var l=document.createElement("div");b="ie-db-"+m;ieDb="userStorage";l.setAttribute("id",b);body.appendChild(l);f=document.getElementById(b);f.style.behavior="url('#default#userData')";f.style.display="none";if(window.name===null||window.name===undefined||window.name===""){window.name="ie-sesh-db-"+m}j=window.name;d=j;l=document.createElement("div");l.setAttribute("id",j);f.appendChild(l);i=document.getElementById(j);i.style.behavior="url('#default#userData')";i.style.display="none"},clearDB:function(r){var m=new Date().getTime(),t=document.createElement("div"),l=r?i:f,p=r?d:ieDb,s=l.xmlDocument,n=s.firstChild.attributes,q,o=n.length;while(0<=--o){q=n[o];l.removeAttribute(q.nodeName)}l.save(p)}};return{init:function(){if(typeof(window.localStorage)==="object"){e=true;try{if(typeof(window.sessionStorage)==="object"){a=true}}catch(l){a=false}}else{if(h.detectIE()){c=true;h.init()}}},setValue:function(l,m){g.setValue(l,m,false)},setSessionValue:function(l,m){g.setValue(l,m,true)},getValue:function(l){return g.getValue(l,false)},getSessionValue:function(l){return g.getValue(l,true)},deleteValue:function(l){g.deleteValue(l,false)},deleteSessionValue:function(l){g.deleteValue(l,true)},clearLocalStorage:function(){g.clearDB(false)},clearSessionStorage:function(){g.clearDB(true)},clearDOMStorage:function(){g.clearDB(false);g.clearDB(true)}}})();
-    C.init();
+  // USTORE
+  /* Copyright (c) 2010-2012 Marcus Westin */
+  $.Store = (function(){function h(){try{return d in b&&b[d]}catch(a){return!1}}function i(){try{return e in b&&b[e]&&b[e][b.location.hostname]}catch(a){return!1}}var a={},b=window,c=b.document,d="localStorage",e="globalStorage",f="__storejs__",g;a.disabled=!1,a.set=function(a,b){},a.get=function(a){},a.remove=function(a){},a.clear=function(){},a.transact=function(b,c,d){var e=a.get(b);d||(d=c,c=null),typeof e=="undefined"&&(e=c||{}),d(e),a.set(b,e)},a.getAll=function(){},a.getKeys=function(){},a.serialize=function(a){return JSON.stringify(a)},a.deserialize=function(a){return typeof a!="string"?undefined:JSON.parse(a)};if(h())g=b[d],a.set=function(b,c){if(c===undefined)return a.remove(b);g.setItem(b,a.serialize(c))},a.get=function(b){return a.deserialize(g.getItem(b))},a.remove=function(a){g.removeItem(a)},a.clear=function(){g.clear()},a.getAll=function(){var b={};for(var c=0;c<g.length;++c){var d=g.key(c);b[d]=a.get(d)}return b},a.getKeys=function(){var a=[];for(var b=0;b<g.length;++b)a.push(g.key(b));return a};else if(i())g=b[e][b.location.hostname],a.set=function(b,c){if(c===undefined)return a.remove(b);g[b]=a.serialize(c)},a.get=function(b){return a.deserialize(g[b]&&g[b].value)},a.remove=function(a){delete g[a]},a.clear=function(){for(var a in g)delete g[a]},a.getAll=function(){var b={};for(var c=0;c<g.length;++c){var d=g.key(c);b[d]=a.get(d)}return b},a.getKeys=function(){var a=[];for(var b=0;b<g.length;++b)a.push(g.key(b));return a};else if(c.documentElement.addBehavior){var j,k;try{k=new ActiveXObject("htmlfile"),k.open(),k.write('<script>document.w=window</script><iframe src="/favicon.ico"></frame>'),k.close(),j=k.w.frames[0].document,g=j.createElement("div")}catch(l){g=c.createElement("div"),j=c.body}function m(b){return function(){var c=Array.prototype.slice.call(arguments,0);c.unshift(g),j.appendChild(g),g.addBehavior("#default#userData"),g.load(d);var e=b.apply(a,c);return j.removeChild(g),e}}function n(a){return"_"+a}a.set=m(function(b,c,e){c=n(c);if(e===undefined)return a.remove(c);b.setAttribute(c,a.serialize(e)),b.save(d)}),a.get=m(function(b,c){return c=n(c),a.deserialize(b.getAttribute(c))}),a.remove=m(function(a,b){b=n(b),a.removeAttribute(b),a.save(d)}),a.clear=m(function(a){var b=a.XMLDocument.documentElement.attributes;a.load(d);for(var c=0,e;e=b[c];c++)a.removeAttribute(e.name);a.save(d)}),a.getAll=m(function(b){var c=b.XMLDocument.documentElement.attributes;b.load(d);var e={};for(var f=0,g;g=c[f];++f)e[g]=a.get(g);return e}),a.getKeys=m(function(a){var b=a.XMLDocument.documentElement.attributes;a.load(d);var c=[];for(var e=0,f;f=b[e];++e)c.push(f);return c})}try{a.set(f,f),a.get(f)!=f&&(a.disabled=!0),a.remove(f)}catch(l){a.disabled=!0}return typeof module!="undefined"&&typeof module!="function"?module.exports=a:typeof define=="function"&&define.amd&&define(a),a})();
+//  try {
+//    delete window["store"];
+//  } catch(e) { window["store"] = null; }
+
+    // MD5
+    var Md5 = function(){};
+    Md5.prototype = {
+  bitOR: function(a,b) { var lsb = a & 1 | b & 1; var msb31 = a >>> 1 | b >>> 1; return msb31 << 1 | lsb; },
+  bitXOR: function(a,b) { var lsb = a & 1 ^ b & 1; var msb31 = a >>> 1 ^ b >>> 1; return msb31 << 1 | lsb; },
+  bitAND: function(a,b) { var lsb = a & 1 & (b & 1); var msb31 = a >>> 1 & b >>> 1; return msb31 << 1 | lsb; },
+  addme: function(x,y) { var lsw = (x & 65535) + (y & 65535); var msw = (x >> 16) + (y >> 16) + (lsw >> 16); return msw << 16 | lsw & 65535; },
+  rhex: function(num) { var str = ""; var hex_chr = "0123456789abcdef"; var _g = 0; while(_g < 4) { var j = _g++; str += hex_chr.charAt(num >> j * 8 + 4 & 15) + hex_chr.charAt(num >> j * 8 & 15); } return str; },
+  str2blks: function(str) { var nblk = (str.length + 8 >> 6) + 1, blks = [], _g1 = 0, _g = nblk * 16; while(_g1 < _g) { blks[++_g1] = 0; } var i = 0; while(i < str.length) { blks[i >> 2] |= str.charCodeAt(i) << (str.length * 8 + i) % 4 * 8; i++; } blks[i >> 2] |= 128 << (str.length * 8 + i) % 4 * 8; var l = str.length * 8; var k = nblk * 16 - 2; blks[k] = l & 255; blks[k] |= (l >>> 8 & 255) << 8; blks[k] |= (l >>> 16 & 255) << 16; blks[k] |= (l >>> 24 & 255) << 24; return blks; },
+  rol: function(num,cnt) { return num << cnt | num >>> 32 - cnt; },
+  cmn: function(q,a,b,x,s,t)  { return this.addme(this.rol(this.addme(this.addme(a,q),this.addme(x,t)),s),b); },
+  ff: function(a,b,c,d,x,s,t) { return this.cmn(this.bitOR(this.bitAND(b,c),this.bitAND(~b,d)),a,b,x,s,t); },
+  gg: function(a,b,c,d,x,s,t) { return this.cmn(this.bitOR(this.bitAND(b,d),this.bitAND(c,~d)),a,b,x,s,t); },
+  hh: function(a,b,c,d,x,s,t) { return this.cmn(this.bitXOR(this.bitXOR(b,c),d),a,b,x,s,t); },
+  ii: function(a,b,c,d,x,s,t) { return this.cmn(this.bitXOR(c,this.bitOR(b,~d)),a,b,x,s,t); },
+  doEncode: function(str) { var x = this.str2blks(str),a = 1732584193,b = -271733879,c = -1732584194,d = 271733878,step,i = 0; while(i < x.length) { var olda = a;var oldb = b;var oldc = c;var oldd = d;step = 0;a = this.ff(a,b,c,d,x[i],7,-680876936);d = this.ff(d,a,b,c,x[i + 1],12,-389564586);c = this.ff(c,d,a,b,x[i + 2],17,606105819);b = this.ff(b,c,d,a,x[i + 3],22,-1044525330);a = this.ff(a,b,c,d,x[i + 4],7,-176418897);d = this.ff(d,a,b,c,x[i + 5],12,1200080426);c = this.ff(c,d,a,b,x[i + 6],17,-1473231341);b = this.ff(b,c,d,a,x[i + 7],22,-45705983);a = this.ff(a,b,c,d,x[i + 8],7,1770035416);d = this.ff(d,a,b,c,x[i + 9],12,-1958414417);c = this.ff(c,d,a,b,x[i + 10],17,-42063);b = this.ff(b,c,d,a,x[i + 11],22,-1990404162);a = this.ff(a,b,c,d,x[i + 12],7,1804603682);d = this.ff(d,a,b,c,x[i + 13],12,-40341101);c = this.ff(c,d,a,b,x[i + 14],17,-1502002290);b = this.ff(b,c,d,a,x[i + 15],22,1236535329);a = this.gg(a,b,c,d,x[i + 1],5,-165796510);d = this.gg(d,a,b,c,x[i + 6],9,-1069501632);c = this.gg(c,d,a,b,x[i + 11],14,643717713);b = this.gg(b,c,d,a,x[i],20,-373897302);a = this.gg(a,b,c,d,x[i + 5],5,-701558691);d = this.gg(d,a,b,c,x[i + 10],9,38016083);c = this.gg(c,d,a,b,x[i + 15],14,-660478335);b = this.gg(b,c,d,a,x[i + 4],20,-405537848);a = this.gg(a,b,c,d,x[i + 9],5,568446438);d = this.gg(d,a,b,c,x[i + 14],9,-1019803690);c = this.gg(c,d,a,b,x[i + 3],14,-187363961);b = this.gg(b,c,d,a,x[i + 8],20,1163531501);a = this.gg(a,b,c,d,x[i + 13],5,-1444681467);d = this.gg(d,a,b,c,x[i + 2],9,-51403784);c = this.gg(c,d,a,b,x[i + 7],14,1735328473);b = this.gg(b,c,d,a,x[i + 12],20,-1926607734);a = this.hh(a,b,c,d,x[i + 5],4,-378558);d = this.hh(d,a,b,c,x[i + 8],11,-2022574463);c = this.hh(c,d,a,b,x[i + 11],16,1839030562);b = this.hh(b,c,d,a,x[i + 14],23,-35309556);a = this.hh(a,b,c,d,x[i + 1],4,-1530992060);d = this.hh(d,a,b,c,x[i + 4],11,1272893353);c = this.hh(c,d,a,b,x[i + 7],16,-155497632);b = this.hh(b,c,d,a,x[i + 10],23,-1094730640);a = this.hh(a,b,c,d,x[i + 13],4,681279174);d = this.hh(d,a,b,c,x[i],11,-358537222);c = this.hh(c,d,a,b,x[i + 3],16,-722521979);b = this.hh(b,c,d,a,x[i + 6],23,76029189);a = this.hh(a,b,c,d,x[i + 9],4,-640364487);d = this.hh(d,a,b,c,x[i + 12],11,-421815835);c = this.hh(c,d,a,b,x[i + 15],16,530742520);b = this.hh(b,c,d,a,x[i + 2],23,-995338651);a = this.ii(a,b,c,d,x[i],6,-198630844);d = this.ii(d,a,b,c,x[i + 7],10,1126891415);c = this.ii(c,d,a,b,x[i + 14],15,-1416354905);b = this.ii(b,c,d,a,x[i + 5],21,-57434055);a = this.ii(a,b,c,d,x[i + 12],6,1700485571);d = this.ii(d,a,b,c,x[i + 3],10,-1894986606);c = this.ii(c,d,a,b,x[i + 10],15,-1051523);b = this.ii(b,c,d,a,x[i + 1],21,-2054922799);a = this.ii(a,b,c,d,x[i + 8],6,1873313359);d = this.ii(d,a,b,c,x[i + 15],10,-30611744);c = this.ii(c,d,a,b,x[i + 6],15,-1560198380);b = this.ii(b,c,d,a,x[i + 13],21,1309151649);a = this.ii(a,b,c,d,x[i + 4],6,-145523070);d = this.ii(d,a,b,c,x[i + 11],10,-1120210379);c = this.ii(c,d,a,b,x[i + 2],15,718787259);b = this.ii(b,c,d,a,x[i + 9],21,-343485551);a = this.addme(a,olda);b = this.addme(b,oldb);c = this.addme(c,oldc);d = this.addme(d,oldd);i += 16; } return this.rhex(a) + this.rhex(b) + this.rhex(c) + this.rhex(d); }
+};
+  $.Md5 = function(s) { return new Md5().doEncode(s); };
+
+  // CACHE
+  Precog.cache = (function(){
     var VALUE_PREFIX = "PRECOG_Q_",
         DATE_PREFIX  = "PRECOG_D_",
-        TIMEOUT = 60 * 5 * 1000;
+        enabled,
+        timeout = 300000; // 5 minutes
 
     function idDate(id) { return DATE_PREFIX + id; }
     function idValue(id) { return VALUE_PREFIX + id; }
-
     function ids()
     {
-      var len = VALUE_PREFIX.length,
+      var keys = $.Store.getKeys(),
+          len = VALUE_PREFIX.length,
           result = [],
-          count = C.length;
+          count = keys.length;
       for(var i = 0; i < count; i++)
       {
-        var key = C.key(i);
+        var key = keys[i];
         if(key.substr(0, len) != VALUE_PREFIX)
           continue;
         result.push(key.substr(len));
       }
       return result;
     }
-
     function delayedCleanup(id)
     {
-      setTimeout(function() { cacheRemove(id); }, TIMEOUT);
+      setTimeout(function() { cacheRemove(id); }, timeout);
     }
-
     function cacheRemove(id)
     {
-      C.deleteValue(idDate(id));
-      C.deleteValue(idValue(id));
+      $.Store.remove(idDate(id));
+      $.Store.remove(idValue(id));
     }
-
     function cacheGet(id)
     {
       clearValueIfOld(id);
-      var v = C.getValue(idValue(id));
+      var v = $.Store.get(idValue(id));
       if(v)
       {
         delayedCleanup(id);
-        return JSON.parse(v);
+        return v;
       } else {
         return null;
       }
     }
-
     function cacheSet(id, value)
     {
-      C.setValue(idDate(id), Date.now().getTime());
-      C.setValue(idValue(id), JSON.stringify(value));
+      $.Store.set(idDate(id), new Date().getTime());
+      $.Store.set(idValue(id), value);
     }
 
     function clearValueIfOld(id)
     {
       var idd = idDate(id);
-      var v = C.getValue(idd);
-      if(null == v)
+      var v = $.Store.get(idd);
+      if(!v)
         return;
-      if(v < Date.now().getTime() - TIMEOUT * 1000)
+      if(v < new Date().getTime() - timeout * 1000)
       {
-        C.deleteValue(idd);
-        C.deleteValue(idValue(id));
+        $.Store.remove(idd);
+        $.Store.remove(idValue(id));
       }
     }
-
     function cleanOld()
     {
       var list = ids();
       for(var i = 0; i < list.length; i++)
-        clearValueIfOld()
+        clearValueIfOld(list[i]);
     }
-
+    function clearAll()
+    {
+      var list = ids();
+      for(var i = 0; i < list.length; i++)
+        cacheRemove(list[i]);
+    }
     function format(template, args)
     {
       for(var key in args)
@@ -502,55 +526,89 @@ var Precog = window.Precog || {};
       }
       return template;
     }
-
     function uid(s)
     {
       s = s.replace(/\s+/gi, " ");
-      return haxe.Md5.encode(s);
+      return $.Md5(s);
+    }
+    var queue = {};
+    function executeCachedQuery(query, success, failure)
+    {
+      var id = uid(query),
+          val = cacheGet(id);
+      if(val)
+      {
+        success(val);
+      } else if(queue[id]) {
+        queue[id].push(success);
+      } else {
+        queue[id] = [];
+        executeQuery(query, function(data) {
+          cacheSet(id, data);
+          delayedCleanup(id);
+          success(data);
+          for(var i = 0; i < queue[id].length; i++)
+          {
+            queue[id][i](data);
+          }
+          delete queue[id];
+        }, failure);
+      }
     }
 
     cleanOld();
 
-    var queue = {};
-
-    function cachedLoader(query)
-    {
-      var id = uid(query);
-      return function(handler) {
-        var val = cacheGet(id);
-        if(val)
+    return {
+      isEnabled : function() {
+        return enabled;
+      },
+      enable : function() {
+        if($.Store.disabled)
         {
-          handler(val);
-        } else if(queue[id])
-        {
-          queue[id].push(handler);
+          this.disable();
         } else {
-          queue[id] = [];
-          Precog.query(query, function(data) {
-            cacheSet(id, data);
-            delayedCleanup(id);
-            handler(data);
-            for(var i = 0; i < queue[id].length; i++)
-            {
-              queue[id][i](data);
-            }
-            delete queue[id];
-          });
+          enabled = true;
+          Precog.query = executeCachedQuery;
         }
+      },
+      disable : function() {
+        enabled = false;
+        Precog.query = executeQuery;
+      },
+      setTimeout : function(t) {
+        timeout = +t;
+      },
+      cachedResults : function() {
+        return ids().length;
+      },
+      cachedIds : function() {
+        return ids();
+      },
+      clear : function() {
+        clearAll();
       }
-    }
-
-    ReportGrid.query.precog = function(query, params) {
-      return ReportGrid.query.load(cachedLoader(query));
     };
-    rg.query.BaseQuery.prototype.precog =
-    rg.query.Query.prototype.precog =
-    rg.query.ReportGridBaseQuery.prototype.precog =
-    rg.query.ReportGridQuery.prototype.precog = function(query) {
-      return this.data({}).stackCross().asyncEach(function(data, handler) {
-        var q = format(query, data);
-        cachedLoader(q)(handler);
+  })();
+
+  Precog.cache.enable();
+
+  if(window.ReportGrid && window.ReportGrid.query)
+  {
+    var r = window.ReportGrid;
+    r.query.precog = function(query) {
+      return r.query.load(function(handler) {
+        Precog.query(query, handler);
       });
     };
+
+    var f = function(query) {
+      return this.data({}).stackCross().asyncEach(function(data, handler) {
+        Precog.query(format(query, data), handler);
+      });
+    };
+    var pk = r.$.pk;
+    pk.rg_query_BaseQuery.prototype.precog = pk.rg_query_Query.prototype.precog = f;
+    if(pk.rg_query_ReportGridBaseQuery)
+      pk.rg_query_ReportGridBaseQuery.prototype.precog = pk.rg_query_ReportGridQuery.prototype.precog = f;
   }
 })();
