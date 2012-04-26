@@ -595,20 +595,22 @@ throw new SyntaxError('JSON.parse');};}}());
   if(window.ReportGrid && window.ReportGrid.query)
   {
     var r = window.ReportGrid;
-    r.query.precog = function(query) {
+    r.query.precog = function(q) {
       return r.query.load(function(handler) {
-        Precog.query(query, handler);
+        Precog.query(q, handler);
       });
     };
 
-    var f = function(query) {
+    var f = function(q) {
       return this.data({}).stackCross().asyncEach(function(data, handler) {
-        Precog.query(format(query, data), handler);
+        Precog.query(format(q, data), handler);
       });
     };
+    /*
     var pk = r.$.pk;
     pk.rg_query_BaseQuery.prototype.precog = pk.rg_query_Query.prototype.precog = f;
     if(pk.rg_query_ReportGridBaseQuery)
       pk.rg_query_ReportGridBaseQuery.prototype.precog = pk.rg_query_ReportGridQuery.prototype.precog = f;
+    */
   }
 })();
