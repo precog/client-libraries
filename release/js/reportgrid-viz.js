@@ -1,1 +1,1 @@
-v0/reportgrid-viz.js
+../../reportgrid/js/src/v1/reportgrid-viz.js
