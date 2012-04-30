@@ -1,1 +1,1 @@
-../../js/src/reportgrid-charts.js
+v1/reportgrid-charts.js

@@ -1,1 +1,1 @@
-../../js/src/reportgrid-query.js
+v1/reportgrid-query.js

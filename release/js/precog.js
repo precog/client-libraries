@@ -1,1 +1,1 @@
-v1/precog.js
+/Users/francoponticelli/Projects/reportgrid/client-libraries/reportgrid/js/src/v1/precog.js
