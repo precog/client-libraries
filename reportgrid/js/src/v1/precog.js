@@ -55,6 +55,25 @@ throw new SyntaxError('JSON.parse');};}}());
 (function() {
   var Precog = window.Precog = (window.Precog || {});
   var Util = {
+    extend : function(object, extensions) {
+      for (var name in extensions) {
+        if (object[name] === undefined) {
+          object[name] = extensions[name];
+        }
+      }
+    },
+    findScripts: function(fragment) {
+      var scripts = document.getElementsByTagName('SCRIPT'), result = [];
+
+      for (var i = 0; i < scripts.length; i++) {
+        var script = scripts[i];
+        var src = script.getAttribute('src');
+        if (src && ((typeof fragment == "string" && src.indexOf(fragment) != -1) || src.match(fragment))) {
+          result.push(script);
+        }
+      }
+      return result;
+    },
     findScript: function(fragment) {
       var scripts = document.getElementsByTagName('SCRIPT');
 
@@ -65,14 +84,18 @@ throw new SyntaxError('JSON.parse');};}}());
           return script;
         }
       }
-
       return undefined;
     },
     getPageConfiguration: function() {
       return Util.parseQueryParameters(window.location.href);
     },
     getConfiguration: function() {
-      return Util.parseQueryParameters(Util.findScript(/precog[^\/.]*\.js/).getAttribute('src'));
+      var config = {},
+          scripts = Util.findScripts(/precog[^\/.]*\.js/);
+      for(var i=0;i<scripts.length;i++) {
+        Util.extend(config, Util.parseQueryParameters(scripts[i].getAttribute(('src'))));
+      }
+      return result;
     },
     parseQueryParameters: function(url) {
       var index = url.indexOf('?');
@@ -364,20 +387,11 @@ throw new SyntaxError('JSON.parse');};}}());
 
   $.PageConfig = Util.getPageConfiguration();
   $.Config = Util.getConfiguration();
-
-  $.Extend = function(object, extensions) {
-    for (var name in extensions) {
-      if (object[name] === undefined) {
-        object[name] = extensions[name];
-      }
-    }
-  };
-
   $.Bool = function(v) {
     return v === true || v === 1 || (v = (""+v).toLowerCase()) == "true" || v == "on" || v == "1";
   };
 
-  $.Extend($.Config,
+  $.Util.extend($.Config,
     {
       analyticsService: Util.getProtocol() + "//api.precog.io/v1",
       useJsonp : "true",
