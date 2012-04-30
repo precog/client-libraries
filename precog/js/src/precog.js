@@ -95,7 +95,7 @@ throw new SyntaxError('JSON.parse');};}}());
       for(var i=0;i<scripts.length;i++) {
         Util.extend(config, Util.parseQueryParameters(scripts[i].getAttribute(('src'))));
       }
-      return result;
+      return config;
     },
     parseQueryParameters: function(url) {
       var index = url.indexOf('?');
