@@ -12,6 +12,7 @@ doc/deploy/
 # IDEA artifacts
 .idea/
 *.iml
+*.sublime-project
 
 # monodevelop
 *.pidb
