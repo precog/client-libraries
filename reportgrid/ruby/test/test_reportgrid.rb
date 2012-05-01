@@ -180,4 +180,11 @@ class ReportGridClientTest < Test::Unit::TestCase
     #assert response[ReportGrid::Periodicity::ETERNITY].class == Array
     #assert response[ReportGrid::Periodicity::ETERNITY].length > 0
   end
+
+  def test_gif_url
+    api = ReportGridClientTest.build_test_client
+    url = api.gif_url('/test/ruby/giftrack', 'conversion', {'browser' => "Chrome"}, :rollup => 1)
+
+    assert_equal "http://api.reportgrid.com/services/viz/gif/transparent.gif?path=%2Ftest%2Fruby%2Fgiftrack&service=http%3A%2F%2Fdevapi.reportgrid.com%3A80%2Fservices%2Fanalytics%2Fv1&rollup=1&tokenId=#{ReportGridClientTest.test_token_id}&event=%7B%22conversion%22%3A%7B%22browser%22%3A%22Chrome%22%7D%7D", url
+  end
 end

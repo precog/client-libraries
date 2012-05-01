@@ -27,6 +27,7 @@ require 'net/http'
 require 'pp'
 require 'time'
 require 'uri'
+require 'cgi'
 
 require 'rubygems'
 require 'json'
@@ -40,6 +41,7 @@ module ReportGrid
   module API
     HOST = 'api.reportgrid.com'
     PORT = 80
+    GIF_URL = "http://api.reportgrid.com/services/viz/gif/transparent.gif"
   end
 
   # Path constants
@@ -83,6 +85,7 @@ module ReportGrid
 
   # Simple HTTP client for ReportGrid API
   class HttpClient
+    attr_reader :token_id, :host, :port, :path_prefix
 
     # Initialize an HTTP connection
     def initialize(token_id, host, port, path_prefix)
@@ -273,7 +276,24 @@ module ReportGrid
       })
     end
 
+    def gif_url(path, name, properties, options={})
+      options[:service] ||= urlencode("http://#{@analytics.host}:#{@analytics.port}#{@analytics.path_prefix}")
+      options[:path] ||= urlencode(path)
+      options[:tokenId] = @analytics.token_id
+
+      unless options[:timestamp].nil?
+        properties['#timestamp'] = options.delete(:timestamp)
+      end
+      options[:event] ||= urlencode({ name => properties }.to_json).gsub("+", "%20")
+
+      "#{API::GIF_URL}?#{options.to_a.map{|kv| kv.join("=")}.join("&")}"
+    end
+
     private
+
+    def urlencode(str)
+      CGI.escape(str).gsub("+", "%20")
+    end
 
     # Sanitize a URL path
     def sanitize_path(path)
