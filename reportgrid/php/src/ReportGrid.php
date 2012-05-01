@@ -9,6 +9,7 @@
  */
 
 define ("BASE_URL", "http://api.reportgrid.com/services/analytics/v1/");
+define ("GIF_URL",  "http://api.reportgrid.com/services/viz/gif/transparent.gif");
 
 class ReportGridAPI {
 
@@ -134,6 +135,18 @@ class ReportGridAPI {
         }
         $return = $this->restHelper($path, $events, "POST");
         return $return !== false;
+    }
+
+    public function gifUrl($path, $events, $options = null) {
+        $args = array("tokenId=" . $this->_tokenID, "path=" . urlencode($path), "event=" . urlencode(json_encode($events)));
+        if(BASE_URL != $this->_baseUrl)
+            $args[] = 'service=' . urlencode($this->_baseUrl);
+        if($options) {
+            foreach ($options as $key => $value) {
+                $args[] = $key . "=" . urlencode($value);
+            }
+        }
+        return GIF_URL . "?" . implode('&', $args);
     }
 
     /*

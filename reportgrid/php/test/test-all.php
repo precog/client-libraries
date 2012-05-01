@@ -7,6 +7,7 @@ class AllTests extends TestSuite {
         $this->TestSuite('All tests');
         $this->addFile('test-token.php');
         $this->addFile('test-track.php');
+        $this->addFile('test-gif-track.php');
         $this->addFile('test-query.php');
     }
 }
