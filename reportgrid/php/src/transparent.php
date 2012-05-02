@@ -31,6 +31,7 @@ if(!$token || !$path || !$event)
 	$events = json_decode($event, true);
 
 	$api = $service ? new ReportGridAPI($token, $service) : new ReportGridAPI($token);
+	$api->forwardIP = true;
 	if(!$api->track($path, $events, $options))
 		error("unable to track data");
 }
