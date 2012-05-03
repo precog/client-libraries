@@ -3,7 +3,7 @@
 # Any errors should make this fail
 set -e
 
-mvn -f java/reportgrid/pom.xml test
+mvn -f java/pom.xml test
 
 pushd python && py.test
 popd
