@@ -17,7 +17,11 @@ class TestGifTracking extends BaseTest {
 	{
 		$count = $this->rg->count($this->path, 'conversion');
 		$url = $this->rg->gifUrl($this->path, $this->event, array("rollup" => 1));
-		$gif = file_get_contents($url);
+		var_dump($url);
+		$this->event["conversion"]["#location"] = true;
+		$url = $this->rg->gifUrl($this->path, $this->event, array("rollup" => 1));
+		var_dump($url);
+		file_get_contents($url);
 		sleep(20);
 		$count = $this->assertTrue($this->rg->count($this->path, 'conversion') > $count);
 	}

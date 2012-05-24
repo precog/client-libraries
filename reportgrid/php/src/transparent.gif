@@ -33,7 +33,7 @@ if(!$token || !$path || !$event)
 	$api = $service ? new ReportGridAPI($token, $service) : new ReportGridAPI($token);
 	$api->forwardIP = true;
 	if(!$api->track($path, $events, $options))
-		error("unable to track data");
+		error("unable to track data at $path for $token: " . json_encode($events) . " with " . $api->errorMessage);
 }
 
 header("Content-type: image/gif");

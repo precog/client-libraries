@@ -34,7 +34,7 @@ class ReportGridAPI {
      * Create a new token
      *
      * @param String path         The path, relative to the parent's path, that will be associated with this tokenId
-     * @param String expires 	  The expiration date of the token, measured in milliseconds from the start of the Unix Epoch, UTC time
+     * @param String expires      The expiration date of the token, measured in milliseconds from the start of the Unix Epoch, UTC time
      * @param String read         Does this token have read permissions
      * @param String write        Does this token have write permissions
      * @param String share        Does this token have share permissions
@@ -383,11 +383,14 @@ class ReportGridAPI {
      *********************************/
     private function ip()
     {
+        $headers = @apache_request_headers();
+        if($headers && isset($headers['X-Forwarded-For']))
+            return trim(array_shift(explode(',', $headers['X-Forwarded-For'])));
         return array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER)
             ? $_SERVER['HTTP_X_FORWARDED_FOR']
-            : array_key_exists('REMOTE_ADDR', $_SERVER)
+            : (array_key_exists('REMOTE_ADDR', $_SERVER)
             ? $_SERVER['REMOTE_ADDR']
-            : null;
+            : null);
     }
 
     private function restHelper($json_endpoint, $params = null, $verb = 'GET') {
