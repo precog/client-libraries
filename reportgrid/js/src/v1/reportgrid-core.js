@@ -262,9 +262,9 @@ var ReportGrid = window.ReportGrid || {};
       {
         q.start = start || ReportGrid.Zero;
         q.end = end || ReportGrid.Inf;
-        if("undefined" === typeof(q.offset))
+        if("undefined" === typeof(q.tzoffset))
         {
-          q.offset = new Date().getTimezoneOffset() * 60000;
+          q.tzoffset = new Date().getTimezoneOffset() * 60000;
         }
       }
       if(o.tag)
