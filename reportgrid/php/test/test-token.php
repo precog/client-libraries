@@ -10,10 +10,14 @@ class TestToken extends BaseTest {
 	{
 		parent::setUp();
 		$this->token = $this->rg->newToken($this->path);
+		// A sleep is required to allow for propagation of token state through the cluster
+		sleep(1);
+		echo "Created token $this->token\n"; 
 	}
 
 	function tearDown()
 	{
+		echo "Deleting token $this->token\n"; 
 		$this->rg->deleteToken($this->token);
 	}
 
@@ -27,10 +31,11 @@ class TestToken extends BaseTest {
 	{
 		$this->assertIsA($this->rg->token($this->token),"Array");
 		$this->assertTrue($this->rg->deleteToken($this->token));
+		// A sleep is required to allow for propagation of token state through the cluster
+		sleep(1);
 		$this->assertNotNull($this->rg->token($this->token));
 		$this->assertFalse($this->rg->deleteToken($this->token));
 	}
-
 	function testChildren()
 	{
 		$list = $this->rg->tokens();
@@ -45,9 +50,12 @@ class TestToken extends BaseTest {
 
 		$this->assertTrue($this->rg->deleteToken($this->token));
 
+		// A sleep is required to allow for propagation of token state through the cluster
+		sleep(1);
 		$info = $this->rg->token($this->token);
 		$this->assertFalse($info);
 	}
+
 /*
 	function testLossless()
 	{
@@ -63,3 +71,5 @@ class TestToken extends BaseTest {
 	}
 */
 }
+?>
+<!-- -*-  mode:php; tab-width:8; indent-tabs-mode:nil;  -*- -->
