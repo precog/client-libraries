@@ -46,6 +46,9 @@ def setup_module(module):
     module.TestReportGrid.test_token_id = response
     module.TestReportGrid.test_api = reportgrid.ReportGrid(module.TestReportGrid.test_token_id, HOST, PORT, PATH_PREFIX)
 
+    # Wait to allow the token to propagate
+    time.sleep(1)
+
     module.TestReportGrid.test_api.track(
         path='/',
         name='pytest',
@@ -58,11 +61,14 @@ def setup_module(module):
         properties={'pyprop': 456},
         rollup=True)
 
-    time.sleep(20)
+    # Wait to allow the events to propagate
+    time.sleep(1)
 
 
 def teardown_module(module):
     module.TestReportGrid.root_api.delete_token(token_id=module.TestReportGrid.test_token_id)
+    # Wait to allow the deletion to propagage
+    time.sleep(1)
     assert module.TestReportGrid.test_token_id not in module.TestReportGrid.root_api.tokens()
 
 class TestReportGrid: 
