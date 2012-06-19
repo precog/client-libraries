@@ -188,6 +188,26 @@ Works like `filterValue`_ but on multiple fields at once.
 			gender : "female"
 		})
 
+firstElement
+===========================
+``firstElement()``
+
+Take the first element of the dataset and transform it into a dataset. The value must be an array itself.
+
+::
+	
+	ReportGrid.query
+		.load(asyncLoader)
+		.firstElement()
+
+The above is roughly equivalent to:
+
+::
+	
+	ReportGrid.query
+		.load(asyncLoader)
+		.transform(function(data) { return data[0]; })
+
 limit
 ===========================
 ``limit(?Int offset, Int count)``
