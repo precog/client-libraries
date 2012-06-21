@@ -4,7 +4,7 @@
   <groupId>com.reportgrid</groupId>
   <artifactId>reportgrid-java-client</artifactId>
   <packaging>jar</packaging>
-  <version>1.0.7-SNAPSHOT</version>
+  <version>1.0.7</version>
   <name>java-client</name>
   <url>http://www.reportgrid.com/api-documentation.html</url>
 
