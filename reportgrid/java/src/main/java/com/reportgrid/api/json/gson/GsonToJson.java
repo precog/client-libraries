@@ -17,7 +17,11 @@ import com.reportgrid.api.json.ToJson;
  */
 public class GsonToJson implements ToJson<Object> {
   public String serialize(Object value) {
-    Gson gson = new GsonBuilder().registerTypeAdapter(RawJson.class, new RawJsonSerializer()).create();
+    Gson gson = new GsonBuilder()
+                  .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+                  .registerTypeAdapter(RawJson.class, new RawJsonSerializer())
+                  .create();
+
 		return gson.toJson(value);
 	}
 
