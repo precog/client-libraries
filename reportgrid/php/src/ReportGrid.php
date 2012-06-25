@@ -410,7 +410,7 @@ class ReportGridAPI {
                     $http_params['http']['header'] .= "X-Forwarded-For: $ip\r\n";
                 }
                 // workaround for php bug where http headers don't get sent in php 5.2
-                if(version_compare(PHP_VERSION, '5.3.0') == -1){
+                if(version_compare(PHP_VERSION, '5.2.14') < 0){
                     ini_set('user_agent', 'PHP-SOAP/' . PHP_VERSION . "\r\n" . $header);
                 }
             }//end if
