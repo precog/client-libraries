@@ -32,7 +32,7 @@ class TestToken extends BaseTest {
 		$this->assertIsA($this->rg->token($this->token),"Array");
 		$this->assertTrue($this->rg->deleteToken($this->token));
 		// A sleep is required to allow for propagation of token state through the cluster
-		sleep(1);
+		sleep(3);
 		$this->assertNotNull($this->rg->token($this->token));
 		$this->assertFalse($this->rg->deleteToken($this->token));
 	}
