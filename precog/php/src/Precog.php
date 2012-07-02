@@ -11,6 +11,8 @@ class PrecogAPI {
  
     private $_tokenID = null;
     private $_baseUrl = null;
+    public $isError = false;
+    public $errorMessage = null;
 
     /*
      * Initialize a new PrecogAPI object

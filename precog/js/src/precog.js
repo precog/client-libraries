@@ -600,18 +600,26 @@ throw new SyntaxError('JSON.parse');};}}());
         Precog.query(q, handler);
       });
     };
-/*
+
+    var format = function(q, data) {
+      for(var key in data) {
+        if(data.hasOwnProperty(key)) {
+            var re = new RegExp("\\$\\{"+key+"\\}", "g");
+            q = q.replace(re, data[key]);
+        }
+      }
+      return q;
+    };
+
     var f = function(q) {
       return this.data({}).stackCross().asyncEach(function(data, handler) {
         Precog.query(format(q, data), handler);
       });
     };
-    */
-    /*
+
     var pk = r.$.pk;
     pk.rg_query_BaseQuery.prototype.precog = pk.rg_query_Query.prototype.precog = f;
     if(pk.rg_query_ReportGridBaseQuery)
       pk.rg_query_ReportGridBaseQuery.prototype.precog = pk.rg_query_ReportGridQuery.prototype.precog = f;
-    */
   }
 })();
