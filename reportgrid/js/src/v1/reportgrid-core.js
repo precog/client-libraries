@@ -279,6 +279,10 @@ var ReportGrid = window.ReportGrid || {};
       {
         q.timeZone = o.timeZone;
       }
+      if(o.disablecache)
+      {
+        q.disablecache = o.disablecache;
+      }
       return q;
     },
 
