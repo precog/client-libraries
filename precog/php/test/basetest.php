@@ -23,7 +23,7 @@ abstract class PrecogBaseTest extends UnitTestCase {
 	static $id = '2D36035A-62F6-465E-A64A-0E37BCC5257E';
 	public static function createApi()
 	{
-          $HOST  = "beta2012v1.precog.io";
+          $HOST  = "beta2012v1.precog.com";
           $PORT  = 80;
           $PATH  = "/v1/";
           $TOKEN = PrecogBaseTest::$id;
