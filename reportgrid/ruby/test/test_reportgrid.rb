@@ -22,7 +22,9 @@
 # THE SOFTWARE.
 #
 
+require 'cgi'
 require 'test/unit'
+require 'uri'
 
 class ReportGridClientTest < Test::Unit::TestCase
   class << self
@@ -184,8 +186,10 @@ class ReportGridClientTest < Test::Unit::TestCase
 
   def test_gif_url
     api = ReportGridClientTest.build_test_client
-    url = api.gif_url('/test/ruby/giftrack', 'conversion', {'browser' => "Chrome"}, :rollup => 1)
+    url_params = CGI.parse(URI.parse(api.gif_url('/test/ruby/giftrack', 'conversion', {'browser' => "Chrome"}, :rollup => 1)).query)
 
-    assert_equal "http://api.reportgrid.com/services/viz/gif/transparent.gif?path=%2Ftest%2Fruby%2Fgiftrack&service=http%3A%2F%2Fdevapi.reportgrid.com%3A80%2Fservices%2Fanalytics%2Fv1&tokenId=#{ReportGridClientTest.test_token_id}&event=%7B%22conversion%22%3A%7B%22browser%22%3A%22Chrome%22%7D%7D&rollup=1", url
+    expected_url_params = CGI.parse(URI.parse("http://api.reportgrid.com/services/viz/gif/transparent.gif?path=%2Ftest%2Fruby%2Fgiftrack&service=http%3A%2F%2Fdevapi.reportgrid.com%3A80%2Fservices%2Fanalytics%2Fv1&tokenId=#{ReportGridClientTest.test_token_id}&event=%7B%22conversion%22%3A%7B%22browser%22%3A%22Chrome%22%7D%7D&rollup=1").query)
+
+    assert_equal url_params, expected_url_params
   end
 end
