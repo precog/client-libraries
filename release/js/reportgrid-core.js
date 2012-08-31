@@ -1,1 +1,1 @@
-../../js/src/reportgrid-core.js
+v1/reportgrid-core.js

@@ -7,7 +7,17 @@ tags
 target
 .DS_Store
 doc/deploy/
+*.swp
 
 # IDEA artifacts
 .idea/
 *.iml
+*.sublime-project
+
+# monodevelop
+*.pidb
+*.userprefs
+*.dll
+*.mdb
+ServiceStack.Text
+test-results

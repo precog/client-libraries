@@ -1,0 +1,40 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>io.precog</groupId>
+  <artifactId>precog-java-client</artifactId>
+  <packaging>jar</packaging>
+  <version>1.0.0-SNAPSHOT</version>
+  <name>precog-java-client</name>
+  <url>http://precog.io/api.html</url>
+
+  <inceptionYear>2012</inceptionYear>
+
+  <organization>
+    <name>ReportGrid, Inc.</name>
+    <url>http://precog.io/</url>
+  </organization>  
+
+  <distributionManagement>
+    <repository>
+      <id>nexus.reportgrid.com</id>
+      <name>reportgrid public Nexus repo</name>
+      <url>http://nexus.reportgrid.com/content/repositories/public-snapshots</url>
+    </repository>
+  </distributionManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>1.7.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.10</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

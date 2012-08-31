@@ -41,7 +41,7 @@ You can change the color schemes of the visualization loading one of our optiona
 
 Every visualization is a method of the object ``ReportGrid`` and every visualization takes an element placeholder as the first argument. That argument can be a DOM element or a CSS selector (string); usually you will want to use the ID selector of an existing DIV in your page. In the example above the "#chart" selector refers to the <div id="chart"></div> node in the DOM.
 
-The second argument is a parameter objects that must provide at least two fields: ``axes`` and ``data`` (or ``load``).
+The second argument is a parameter object that must provide at least two fields: ``axes`` and ``data`` (or ``load``).
 
 The second argument is always an object that contains all the info required to make the visualization render.
 
@@ -59,7 +59,7 @@ To build a pie chart that depicts male population VS female population you will 
 	
 	var data = [{ gender : "male", population: 137 }, { gender : "female", population: 143 }];
 
-In the parameters object (the second argument of every visualization method) you always have to set a data source this can be done by setting either ``data`` or ``load`` (see below). The other mandatory parametr for the parameters object is ``axes``. So the complete pie chart example for population by gender is:
+In the parameters object (the second argument of every visualization method) you always have to set a data source this can be done by setting either ``data`` or ``load`` (see below). The other mandatory parameter for the parameters object is ``axes``. So the complete pie chart example for population by gender is:
 
 ::
 	
@@ -484,7 +484,14 @@ A pivot table is a data summarization table. It can be created on any number of 
 	Configuration object for text labels.
 ``startcolor`` : string
 	Color for the background cell with a value of zero. This option is used only if ``displayheatmap`` is set to true.
-
+``cellclass``: function(object datapoint, object stats) string
+	A function to inject custom class(es) in the cell container. If the function returns ``null`` nothing is injected.
+``valueclass``: function(mixed value, string header) string
+	A function to inject custom class(es) in the value container (it refers to one of the possible values that a dimension/header can have). If the function returns ``null`` nothing is injected.
+``headerclass``: function(string header) string
+	A function to inject custom class(es) in the header container. If the function returns ``null`` nothing is injected.
+``totalclass``: function(mixed value, array of string headers) string
+	A function to inject custom class(es) in the total celll container. If the function returns ``null`` nothing is injected.
 
 .. include:: visualization-api-v1-options-label.txt
 

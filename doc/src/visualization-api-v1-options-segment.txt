@@ -13,3 +13,5 @@ Both the ``scale`` and ``transform`` parameters are optionals.
 	The scale function is used to transform each segmented data set of datapoints in a new data set.
 ``transform`` : function(array datapoint) array
 	The transform function works on the data orthogonally.
+``values``: string array (optional)
+	Specifies the values for the segmentation. This parameter is optional and if not set, the segment values are derived from the loaded dataset.

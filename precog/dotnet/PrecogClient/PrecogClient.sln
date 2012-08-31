@@ -1,0 +1,60 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrecogClient", "PrecogClient.csproj", "{88B629F8-E460-40B5-8725-271B3868F2F8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrecogTests", "PrecogTests\PrecogTests.csproj", "{9413D004-3E59-4213-A2BD-799F65EB1E7E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrecogServiceStack", "PrecogServiceStack\PrecogServiceStack.csproj", "{A96BD863-C606-4361-B17D-C1F9EE75CAED}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{88B629F8-E460-40B5-8725-271B3868F2F8}.Debug|x86.ActiveCfg = Debug|x86
+		{88B629F8-E460-40B5-8725-271B3868F2F8}.Debug|x86.Build.0 = Debug|x86
+		{88B629F8-E460-40B5-8725-271B3868F2F8}.Release|x86.ActiveCfg = Release|x86
+		{88B629F8-E460-40B5-8725-271B3868F2F8}.Release|x86.Build.0 = Release|x86
+		{9413D004-3E59-4213-A2BD-799F65EB1E7E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9413D004-3E59-4213-A2BD-799F65EB1E7E}.Debug|x86.Build.0 = Debug|Any CPU
+		{9413D004-3E59-4213-A2BD-799F65EB1E7E}.Release|x86.ActiveCfg = Release|Any CPU
+		{9413D004-3E59-4213-A2BD-799F65EB1E7E}.Release|x86.Build.0 = Release|Any CPU
+		{A96BD863-C606-4361-B17D-C1F9EE75CAED}.Debug|x86.ActiveCfg = Debug|x86
+		{A96BD863-C606-4361-B17D-C1F9EE75CAED}.Debug|x86.Build.0 = Debug|x86
+		{A96BD863-C606-4361-B17D-C1F9EE75CAED}.Release|x86.ActiveCfg = Release|x86
+		{A96BD863-C606-4361-B17D-C1F9EE75CAED}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = PrecogTests\PrecogTests.csproj
+		Policies = $0
+		$0.DotNetNamingPolicy = $1
+		$1.DirectoryNamespaceAssociation = Hierarchical
+		$1.ResourceNamePolicy = FileName
+		$0.TextStylePolicy = $2
+		$2.FileWidth = 120
+		$2.TabWidth = 4
+		$2.RemoveTrailingWhitespace = True
+		$2.inheritsSet = Mono
+		$2.inheritsScope = text/plain
+		$2.scope = text/plain
+		$0.TextStylePolicy = $3
+		$3.inheritsSet = null
+		$3.scope = text/x-csharp
+		$0.CSharpFormattingPolicy = $4
+		$4.inheritsSet = Mono
+		$4.inheritsScope = text/x-csharp
+		$4.scope = text/x-csharp
+		$0.StandardHeader = $5
+		$5.Text = 
+		$5.IncludeInNewFiles = True
+		$0.VersionControlPolicy = $6
+		$6.inheritsSet = Mono
+		$0.ChangeLogPolicy = $7
+		$7.UpdateMode = ProjectRoot
+		$7.MessageStyle = $8
+		$8.LineAlign = 0
+		$7.inheritsSet = Mono
+	EndGlobalSection
+EndGlobal
