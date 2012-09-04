@@ -24,5 +24,19 @@ class TestQuery extends PrecogBaseTest {
         $this->assertIsA($value, "Array");
         $this->assertTrue($value[0] == 5);
     }
+
+    function testChildren()
+    {
+        $path = TestQuery::setupPath();    
+
+        sleep(10);
+
+        $value = $this->rg->listChildren("/unit_test/beta");
+
+        $this->assertIsA($value, "Array");
+        $this->assertTrue(in_array("/test/", $value));
+    }
+
+
 }
 ?>

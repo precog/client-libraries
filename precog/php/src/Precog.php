@@ -63,7 +63,10 @@ class PrecogAPI {
      */
     public function listChildren($path)
     {
-        return $this->query(":ls $path");
+        $path = $this->cleanPath($path);
+        $path2  = $this->_baseUrl . "vfs/$path?tokenId=" . $this->_tokenID;
+        $return = $this->restHelper($path2, null, "GET");
+        return $return;
     }
 
     /*********************************
