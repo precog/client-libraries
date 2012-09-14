@@ -218,8 +218,8 @@ throw new SyntaxError('JSON.parse');};}}());
       request.open(method, path);
 
       request.onreadystatechange = function() {
-        if (request.readyState == 4) {
-          if (request.status == 200) {
+        if (request.readyState === 4) {
+          if (request.status === 200 || request.status === "OK") {
             if (request.responseText !== null && request.responseText.length > 0) {
               success(JSON.parse(this.responseText));
             }
@@ -263,7 +263,7 @@ throw new SyntaxError('JSON.parse');};}}());
       var funcName = 'PrecogJsonpCallback' + random.toString();
 
       window[funcName] = function(content, meta) {
-        if (meta.status.code === 200) {
+        if (meta.status.code === 200 || meta.status.code === "OK") {
           success(content);
         }
         else {
