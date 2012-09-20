@@ -464,6 +464,26 @@ throw new SyntaxError('JSON.parse');};}}());
     );
   };
 
+  Precog.delete = function(path, success, failure, options) {
+    path = Util.sanitizePath(path);
+
+    var description = 'Delete path: ' + path,
+        parameters = {
+          tokenId: (options && options.tokenId) || $.Config.tokenId
+        },
+        analyticsService = (options && options.analyticsService) || $.Config.analyticsService;
+
+    if(!parameters.tokenId) throw Error("tokenId not specified");
+    if(!analyticsService) throw Error("analyticsService not specified");
+
+    http.remove(
+      analyticsService + '/vfs' + path.substr(0, path.length - 1),
+      null,
+      Util.createCallbacks(success, failure, description),
+      parameters
+    );
+  };
+
   // CACHE
   Precog.cache = (function(){
     var VALUE_PREFIX = "PRECOG_Q_",
