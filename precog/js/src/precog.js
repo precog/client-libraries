@@ -406,13 +406,24 @@ throw new SyntaxError('JSON.parse');};}}());
 
   var http = $.Http();
 
-  var executeQuery = function(query, success, failure) {
-    var description = 'Precog query ' + query;
+  var executeQuery = function(query, success, failure, options) {
+    options = options || {};
+    var description = 'Precog query ' + query,
+        params = {tokenId : options.tokenId || $.Config.tokenId, q : query };
+
+    if(options.limit)
+      params.limit = options.limit;
+    if(options.basePath)
+      params.basePath = options.basePath;
+    if(options.skip)
+      params.skip = options.skip;
+    if(options.order)
+      params.order = options.order;
 
     http.get(
       $.Config.analyticsService + '/vfs/',
       Util.createCallbacks(success, failure, description),
-      { tokenId: $.Config.tokenId, q : query }
+      params
     );
   };
 
