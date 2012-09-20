@@ -464,7 +464,7 @@ throw new SyntaxError('JSON.parse');};}}());
     );
   };
 
-  Precog.delete = function(path, success, failure, options) {
+  Precog.delete = function(path, success, failure) {
     path = Util.sanitizePath(path);
 
     var description = 'Delete path: ' + path,
@@ -478,7 +478,6 @@ throw new SyntaxError('JSON.parse');};}}());
 
     http.remove(
       analyticsService + '/vfs' + path.substr(0, path.length - 1),
-      null,
       Util.createCallbacks(success, failure, description),
       parameters
     );
