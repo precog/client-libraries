@@ -581,15 +581,15 @@ throw new SyntaxError('JSON.parse');};}}());
       }
       return template;
     }
-    function uid(s)
+    function uid(s, options)
     {
-      s = s.replace(/\s+/gi, " ");
+      s = (s+JSON.stringify(options)).replace(/\s+/gi, " ");
       return $.Md5(s);
     }
     var queue = {};
-    function executeCachedQuery(query, success, failure)
+    function executeCachedQuery(query, success, failure, options)
     {
-      var id = uid(query),
+      var id = uid(query, options),
           val = cacheGet(id);
       if(val)
       {
@@ -607,7 +607,7 @@ throw new SyntaxError('JSON.parse');};}}());
             queue[id][i](data);
           }
           delete queue[id];
-        }, failure);
+        }, failure, options);
       }
     }
     cleanOld();
