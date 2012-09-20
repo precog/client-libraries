@@ -19,26 +19,30 @@ asyncTest( "deletePass", function() {
 	Precog.store(path,
 		{strTest: "string loaded", numTest: 42},
 		function(){
-			ok(true);
+console.log("a");
 			setTimeout(function(){
+console.log("b");
 				Precog.delete(path,
 					function(){
 						setTimeout(function(){
+console.log("c");
 							Precog.query("count(/"+path+")",
 								function(result){
-									ok(result[0] ==== 0);
+console.log("c2");
+									ok(result[0] === 0);
 									start();
 								});
-						}, 5000);
+						}, 500);
 					},
 					function(){
+console.log("d");
 						ok(false);
 						start();
 					})
-				}, 10000);
-			start();
+				}, 1000);
 		},
 		function(){
+console.log("e");
 			ok(false);
 			start();
 		}
