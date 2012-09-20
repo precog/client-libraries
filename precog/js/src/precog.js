@@ -464,7 +464,7 @@ throw new SyntaxError('JSON.parse');};}}());
     );
   };
 
-  Precog.delete = function(path, success, failure) {
+  Precog.delete = function(path, success, failure, options) {
     path = Util.sanitizePath(path);
 
     var description = 'Delete path: ' + path,
