@@ -55,6 +55,14 @@ class PrecogAPI {
         return $return;
     }
 
+     public function delete($path)
+    {
+        $path2  = $this->_baseUrl . "vfs/" . $this->cleanPath($path) . "?tokenId=" . $this->_tokenID;
+        var_dump($path2);
+        $return = $this->restHelper($path2, null, "DELETE");
+        return $return !== false;
+    }
+
     /*
      * Returns an array of sub-paths
      * @params String - path

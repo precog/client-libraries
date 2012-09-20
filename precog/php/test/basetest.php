@@ -20,10 +20,10 @@ function skipgeneration()
 }
 
 abstract class PrecogBaseTest extends UnitTestCase {
-	static $id = '2D36035A-62F6-465E-A64A-0E37BCC5257E';
+	static $id = 'CE1DE42A-D9EA-4494-8240-680230067C7C';
 	public static function createApi()
 	{
-          $HOST  = "beta2012v1.precog.com";
+          $HOST  = "devapi.precog.com";
           $PORT  = 80;
           $PATH  = "/v1/";
           $TOKEN = PrecogBaseTest::$id;

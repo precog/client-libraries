@@ -12,7 +12,7 @@ class TestQuery extends PrecogBaseTest {
 
     function testQueries()
     {
-        $path = TestQuery::setupPath();    
+        $path = $this->setupPath();    
 
         sleep(10);
 

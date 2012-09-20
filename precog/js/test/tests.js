@@ -12,6 +12,38 @@ asyncTest( "storePass", function() {
 		}
 	);
 });
+
+asyncTest( "deletePass", function() {
+	expect(1);
+	var path = "/unit_test/beta/test/js/delete";
+	Precog.store(path,
+		{strTest: "string loaded", numTest: 42},
+		function(){
+			ok(true);
+			setTimeout(function(){
+				Precog.delete(path,
+					function(){
+						setTimeout(function(){
+							Precog.query("count(/"+path+")",
+								function(result){
+									ok(result[0] ==== 0);
+									start();
+								});
+						}, 5000);
+					},
+					function(){
+						ok(false);
+						start();
+					})
+				}, 10000);
+			start();
+		},
+		function(){
+			ok(false);
+			start();
+		}
+	);
+});
 //TODO error code is not sufficient information
 
 asyncTest( "storeFail", function() {
