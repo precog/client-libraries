@@ -87,3 +87,38 @@ asyncTest( "queryPass", function() {
 		}
 	);
 });
+
+asyncTest( "limitPass", function() {
+	expect(1);
+
+	var store1 = {strTest: "string loaded", numTest: 42};
+
+	Precog.store("/unit_test/beta/test/js/store", store1, 
+		function(){
+			Precog.store("/unit_test/beta/test/js/store", store1,
+				function(){
+					var query = "//unit_test/beta/test/js/store";
+					setTimeout(
+						function(){
+							Precog.query(query,
+								function(result){
+									ok(result.length === 1);
+									start();
+								},
+								function(){
+									ok(false);
+									start();
+								},
+								{limit: 1}
+							);
+						}, 5000
+					);
+				}
+			);
+		},
+		function(){
+			ok(false);
+			start();
+		}
+	);
+});
