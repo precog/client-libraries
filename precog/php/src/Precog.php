@@ -98,13 +98,20 @@ class PrecogAPI {
        
     }
 
-    // ***************************
-    // ****** ANALYTICS APIS *****
-    // ***************************
+       public function ingestSync($path, $apiKey, $file $ownerAccountId ) 
+    {
+       if(isset($ownerAccountId)){
+         $url = $this->servicePath("ingest")."sync/fs/".$path."?apiKey=".$apiKey."&ownerAccountId=".$ownerAccountId; 
+        $return = $this->restHelper($url, $file, "POST");
+        return $return !== false;
+       }
+       $url = $this->servicePath("ingest")."sync/fs/".$path."?apiKey=".$apiKey; 
+        $return = $this->restHelper($url, $file, "POST");
+        return $return !== false;
+       
+    }
 
-
-
-     /*
+        /*
      * Record a new event
      *
      * @param String $path The path in which to store this event
@@ -120,16 +127,29 @@ class PrecogAPI {
         return $return !== false;
     }
 
+    // ***************************
+    // ****** METADATA APIS ******
+    // ***************************
+     public function retrieveMetadata($path, $type = array("size", "structure", "children")) 
+    {
+       $url = $this->servicePath("meta")."fs/".$path."#"$type; 
+        $return = $this->restHelper($url, $file, "GET");
+        return $return !== false;  
+    }
+
+
+
+    // ***************************
+    // ****** ANALYTICS APIS *****
+    // ***************************
+
     /*
      * Returns the value of the query
      * @params String - raw Quirrel
      *
      * @return Array - an array of values
      */
-
-    // ***************************
-    // ****** ANALYTICS APIS *****
-    // ***************************
+  
     public function query($quirrel, $options = array())
     {
         $params = array(
@@ -155,13 +175,95 @@ class PrecogAPI {
         return $return;
     }
 
-     public function delete($path)
+  
+
+    // ***************************
+    // ****** SECURITY APIS *****
+    // ***************************
+    public function listKeys($apiKey) 
     {
-        $path2  = $this->servicePath("fs") . $this->cleanPath($path) . "?apiKey=" . $this->_apiKey;
-        var_dump($path2);
-        $return = $this->restHelper($path2, null, "DELETE");
-        return $return !== false;
+       $url = $this->servicePath("security")."apikeys/?apiKey=".$apiKey; 
+        $return = $this->restHelper($url, null, "GET");
+        return $return !== false;  
     }
+
+    public function createKey($apiKey, $grants) 
+    {
+       $url = $this->servicePath("security")."apikeys/?apiKey=".$apiKey; 
+        $return = $this->restHelper($url, $grants, "POST");
+        return $return !== false;  
+    }
+
+    public function describeKey($apiKey, $authorizingKey) 
+    {
+       $url = $this->servicePath("security")."apikeys/".$apiKey."?apiKey=".$authorizingKey; 
+        $return = $this->restHelper($url, null, "GET");
+        return $return !== false;  
+    }
+
+    public function deleteKey($apiKey, $authorizingKey) 
+    {
+       $url = $this->servicePath("security")."apikeys/".$apiKey."?apiKey=".$authorizingKey; 
+        $return = $this->restHelper($url, null, "DELETE");
+        return $return !== false;  
+    }
+
+    public function retrieveGrants($apiKey, $authorizingKey) 
+    {
+       $url = $this->servicePath("security")."apikeys/".$apiKey."/grants/?apiKey=".$authorizingKey; 
+        $return = $this->restHelper($url, null, "GET");
+        return $return !== false;  
+    }
+
+    public function addGrant($apiKey, $authorizingKey, $grant) 
+    {
+       $url = $this->servicePath("security")."apikeys/".$apiKey."/grants/?apiKey=".$authorizingKey; 
+        $return = $this->restHelper($url, $grant, "GET");
+        return $return !== false;  
+    }
+
+    public function removeGrant($apiKey, $authorizingKey, $grantId) 
+    {
+       $url = $this->servicePath("security")."apikeys/".$apiKey."/grants/".$grantId."?apiKey=".$authorizingKey; 
+        $return = $this->restHelper($url, null, "DELETE");
+        return $return !== false;  
+    }
+
+    public function createNewGrant($apiKey, $type) 
+    {
+       $url = $this->servicePath("security")."grants/?apiKey=".$apiKey; 
+        $return = $this->restHelper($url, $type, "POST");
+        return $return !== false;  
+    }
+
+    public function describeGrant($apiKey, $grantId) 
+    {
+       $url = $this->servicePath("security")."grants/".$grantId."?apiKey=".$apiKey; 
+        $return = $this->restHelper($url, null, "GET");
+        return $return !== false;  
+    }
+
+    public function deleteGrant($apiKey, $grantId) 
+    {
+       $url = $this->servicePath("security")."grants/".$grantId."?apiKey=".$apiKey; 
+        $return = $this->restHelper($url, null, "DELETE");
+        return $return !== false;  
+    }
+
+    public function listChildrenGrant($apiKey, $grantId) 
+    {
+       $url = $this->servicePath("security")."grants/".$grantId."/children/?apiKey=".$apiKey; 
+        $return = $this->restHelper($url, null, "GET");
+        return $return !== false;  
+    }
+
+      public function createChildGrant($apiKey, $grantId, $type) 
+    {
+       $url = $this->servicePath("security")."grants/".$grantId."/children/?apiKey=".$apiKey; 
+        $return = $this->restHelper($url, $type, "POST");
+        return $return !== false;  
+    }
+
 
     /*
      * Returns an array of sub-paths
@@ -175,6 +277,14 @@ class PrecogAPI {
         $path2  = $this->servicePath("fs")."$path?apiKey=" . $this->_apiKey;
         $return = $this->restHelper($path2, null, "GET");
         return $return;
+    }
+
+       public function delete($path)
+    {
+        $path2  = $this->servicePath("fs") . $this->cleanPath($path) . "?apiKey=" . $this->_apiKey;
+        var_dump($path2);
+        $return = $this->restHelper($path2, null, "DELETE");
+        return $return !== false;
     }
 
     /*********************************
