@@ -32,9 +32,9 @@ class PrecogAPI {
     // ***************************
     // ****** ACCOUNTS APIS ******
     // ***************************
-    public function listAccounts() 
+    public function listAccounts($id) 
     {
-        $url = $this->servicePath("accounts"); 
+        $url = $this->servicePath("accounts").$id; 
         $return = $this->restHelper($url, null, "GET");
         return $return !== false;
     }
@@ -130,9 +130,9 @@ class PrecogAPI {
     // ***************************
     // ****** METADATA APIS ******
     // ***************************
-     public function retrieveMetadata($path, $type = array("size", "structure", "children")) 
+     public function retrieveMetadata($path, $type = "") 
     {
-       $url = $this->servicePath("meta")."fs/".$path."#"$type; 
+       $url = $this->servicePath("meta")."fs/".$path."#".$type; 
         $return = $this->restHelper($url, $file, "GET");
         return $return !== false;  
     }
