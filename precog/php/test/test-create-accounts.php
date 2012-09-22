@@ -2,7 +2,7 @@
 
 require_once('basetest.php');
 
-class TestListAccounts extends PrecogBaseTest {
+class TestCreateAccount extends PrecogBaseTest {
 
     function setupAccount(){
         
@@ -11,12 +11,11 @@ class TestListAccounts extends PrecogBaseTest {
     }
 
       
-    function listAccountsTest()
+    function createAccountsTest()
     {
         $account = $this->setupAccount();
-        $list = listAccounts($account);
 
-        $this->assertTrue($account === $list);
+        $this->assertTrue($account != null);
     }
 }
 ?>

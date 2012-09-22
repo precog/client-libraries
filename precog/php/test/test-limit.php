@@ -14,15 +14,16 @@ class TestLimit extends PrecogBaseTest {
     function limitTest()
     {
         $path = $this->setupPath();    
+        $options = array("limit"=>1);
 
         sleep(10);
 
-        $value = $this->rg->query("count(/$path)");
-        $this->assertTrue($value[0] > 1);
-        $result = $this->rg->limit($path);
-        var_dump($this->rg->errorMessage);
-        sleep(10);
-        $this->assertTrue($value[0] === 0);
+        $value = $this->rg->query("count(/$path)", $options);
+        $this->assertTrue($value[0] < 2);
+       // $result = $this->rg->limit($path);
+      //  var_dump($this->rg->errorMessage);
+      //  sleep(10);
+      //  $this->assertTrue($value[0] === 0);
     }
 }
 ?>

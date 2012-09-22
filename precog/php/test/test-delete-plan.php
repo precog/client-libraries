@@ -2,21 +2,20 @@
 
 require_once('basetest.php');
 
-class TestListAccounts extends PrecogBaseTest {
+class TestDeletePlan extends PrecogBaseTest {
 
     function setupAccount(){
         
         $accountId = createAccount(fakeEmailAddress@precog.com);
          return $accountId;
     }
-
       
-    function listAccountsTest()
+    function deletePlanTest()
     {
         $account = $this->setupAccount();
-        $list = listAccounts($account);
-
-        $this->assertTrue($account === $list);
+        deletePlan($account);
+       
+        $this->assertTrue($describeAccount($account) == array("plan")=>"starter");
     }
 }
 ?>
