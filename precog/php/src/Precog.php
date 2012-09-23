@@ -292,7 +292,6 @@ class PrecogAPI {
      *********************************/
     private function restHelper($json_endpoint, $params = null, $verb = 'GET') {
         $return = null;
-echo "$verb $json_endpoint\n";
         $http_params = array(
             'http' => array(
                 'method' => $verb,
