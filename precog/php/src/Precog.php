@@ -8,7 +8,7 @@
 define ("BASE_URL", "http://api.precog.com");
 
 class PrecogAPI {
- 
+
     private $_apiKey = null;
     private $_baseUrl = null;
     private $_version = null;
@@ -22,7 +22,7 @@ class PrecogAPI {
      * @param String $baseurl
      *
      */
-    public function __construct($token_id, $baseurl = BASE_URL, $version = 1) 
+    public function __construct($token_id, $baseurl = BASE_URL, $version = 1)
     {
         $this->_apiKey = $token_id;
         $this->_baseUrl = $this->cleanPath($baseurl);
@@ -32,51 +32,51 @@ class PrecogAPI {
     // ***************************
     // ****** ACCOUNTS APIS ******
     // ***************************
-    public function listAccounts($id) 
+    public function listAccounts($id)
     {
-        $url = $this->servicePath("accounts").$id; 
+        $url = $this->actionUrl("accounts").$id;
         $return = $this->restHelper($url, null, "GET");
         return $return !== false;
     }
 
-    public function createAccount($email) 
+    public function createAccount($email)
     {
-        $url = $this->servicePath("accounts"); 
+        $url = $this->actionUrl("accounts");
         $return = $this->restHelper($url, array("email"=>$email), "POST");
         return $return !== false;
     }
 
-    public function describeAccount($id) 
+    public function describeAccount($id)
     {
-        $url = $this->servicePath("accounts").$id."/"; 
+        $url = $this->actionUrl("accounts").$id."/";
         $return = $this->restHelper($url, null, "GET");
         return $return !== false;
     }
 
-    public function addGrantToAccount($id, $grantId) 
+    public function addGrantToAccount($id, $grantId)
     {
-        $url = $this->servicePath("accounts").$id."/"."grants/"; 
+        $url = $this->actionUrl("accounts").$id."/"."grants/";
         $return = $this->restHelper($url, array("grantId"=>$grandId), "POST");
         return $return !== false;
     }
 
-     public function changePlan($id, $plan) 
+     public function changePlan($id, $plan)
     {
-        $url = $this->servicePath("accounts").$id."/"."plan/"; 
+        $url = $this->actionUrl("accounts").$id."/"."plan/";
         $return = $this->restHelper($url, array("type"=>$plan), "PUT");
         return $return !== false;
     }
 
-     public function deletePlan($id) 
+     public function deletePlan($id)
     {
-        $url = $this->servicePath("accounts").$id."/"."plan/"; 
+        $url = $this->actionUrl("accounts").$id."/"."plan/";
         $return = $this->restHelper($url, null, "DELETE");
         return $return !== false;
     }
 
-      public function deleteAccount($id) 
+      public function deleteAccount($id)
     {
-        $url = $this->servicePath("accounts").$id."/"; 
+        $url = $this->actionUrl("accounts").$id."/";
         $return = $this->restHelper($url, null, "DELETE");
         return $return !== false;
     }
@@ -85,30 +85,30 @@ class PrecogAPI {
     // ****** INGEST APIS ********
     // ***************************
 
-     public function ingestAsync($path, $apiKey, $file, $ownerAccountId ) 
+    public function ingestAsync($path, $apiKey, $file, $ownerAccountId )
     {
        if(isset($ownerAccountId)){
-         $url = $this->servicePath("ingest")."async/fs/".$path."?apiKey=".$apiKey."&ownerAccountId=".$ownerAccountId; 
+         $url = $this->actionUrl("ingest")."async/fs/".$path."?apiKey=".$apiKey."&ownerAccountId=".$ownerAccountId;
         $return = $this->restHelper($url, $file, "POST");
         return $return !== false;
        }
-       $url = $this->servicePath("ingest")."async/fs/".$path."?apiKey=".$apiKey; 
+       $url = $this->actionUrl("ingest")."async/fs/".$path."?apiKey=".$apiKey;
         $return = $this->restHelper($url, $file, "POST");
         return $return !== false;
-       
+
     }
 
-       public function ingestSync($path, $apiKey, $file, $ownerAccountId ) 
+    public function ingestSync($path, $apiKey, $file, $ownerAccountId )
     {
        if(isset($ownerAccountId)){
-         $url = $this->servicePath("ingest")."sync/fs/".$path."?apiKey=".$apiKey."&ownerAccountId=".$ownerAccountId; 
+         $url = $this->actionUrl("ingest")."sync/fs/".$path."?apiKey=".$apiKey."&ownerAccountId=".$ownerAccountId;
         $return = $this->restHelper($url, $file, "POST");
         return $return !== false;
        }
-       $url = $this->servicePath("ingest")."sync/fs/".$path."?apiKey=".$apiKey; 
+       $url = $this->actionUrl("ingest")."sync/fs/".$path."?apiKey=".$apiKey;
         $return = $this->restHelper($url, $file, "POST");
         return $return !== false;
-       
+
     }
 
         /*
@@ -120,9 +120,9 @@ class PrecogAPI {
      * @return Bool - success/failure
      */
 
-    public function store($path, $event) 
+    public function store($path, $event)
     {
-        $path2  = $this->servicePath("fs") . $this->cleanPath($path) . "?apiKey=" . $this->_apiKey;
+        $path2  = $this->actionUrl("ingest", "sync/fs") . $this->cleanPath($path) . "?apiKey=" . $this->_apiKey;
         $return = $this->restHelper($path2, $event, "POST");
         return $return !== false;
     }
@@ -130,11 +130,11 @@ class PrecogAPI {
     // ***************************
     // ****** METADATA APIS ******
     // ***************************
-     public function retrieveMetadata($path, $type = "") 
+     public function retrieveMetadata($path, $type = "")
     {
-       $url = $this->servicePath("meta")."fs/".$path."#".$type; 
+       $url = $this->actionUrl("meta")."fs/".$path."#".$type;
         $return = $this->restHelper($url, $file, "GET");
-        return $return !== false;  
+        return $return !== false;
     }
 
 
@@ -149,11 +149,11 @@ class PrecogAPI {
      *
      * @return Array - an array of values
      */
-  
+
     public function query($quirrel, $options = array())
     {
         $params = array(
-            "apiKey=" . $this->_apiKey, 
+            "apiKey=" . $this->_apiKey,
             "q=" . urlencode($quirrel)
         );
         if(isset($options["limit"])){
@@ -170,98 +170,98 @@ class PrecogAPI {
             }
         }
 
-        $path2  = $this->servicePath("fs")."?" .implode("&", $params);
+        $path2  = $this->actionUrl("analytics", "fs")."?" .implode("&", $params);
         $return = $this->restHelper($path2, null, "GET");
         return $return;
     }
 
-  
+
 
     // ***************************
     // ****** SECURITY APIS *****
     // ***************************
-    public function listKeys($apiKey) 
+    public function listKeys($apiKey)
     {
-       $url = $this->servicePath("security")."apikeys/?apiKey=".$apiKey; 
+       $url = $this->actionUrl("security")."apikeys/?apiKey=".$apiKey;
         $return = $this->restHelper($url, null, "GET");
-        return $return !== false;  
+        return $return !== false;
     }
 
-    public function createKey($apiKey, $grants) 
+    public function createKey($apiKey, $grants)
     {
-       $url = $this->servicePath("security")."apikeys/?apiKey=".$apiKey; 
+       $url = $this->actionUrl("security")."apikeys/?apiKey=".$apiKey;
         $return = $this->restHelper($url, $grants, "POST");
-        return $return !== false;  
+        return $return !== false;
     }
 
-    public function describeKey($apiKey, $authorizingKey) 
+    public function describeKey($apiKey, $authorizingKey)
     {
-       $url = $this->servicePath("security")."apikeys/".$apiKey."?apiKey=".$authorizingKey; 
+       $url = $this->actionUrl("security")."apikeys/".$apiKey."?apiKey=".$authorizingKey;
         $return = $this->restHelper($url, null, "GET");
-        return $return !== false;  
+        return $return !== false;
     }
 
-    public function deleteKey($apiKey, $authorizingKey) 
+    public function deleteKey($apiKey, $authorizingKey)
     {
-       $url = $this->servicePath("security")."apikeys/".$apiKey."?apiKey=".$authorizingKey; 
+       $url = $this->actionUrl("security")."apikeys/".$apiKey."?apiKey=".$authorizingKey;
         $return = $this->restHelper($url, null, "DELETE");
-        return $return !== false;  
+        return $return !== false;
     }
 
-    public function retrieveGrants($apiKey, $authorizingKey) 
+    public function retrieveGrants($apiKey, $authorizingKey)
     {
-       $url = $this->servicePath("security")."apikeys/".$apiKey."/grants/?apiKey=".$authorizingKey; 
+       $url = $this->actionUrl("security")."apikeys/".$apiKey."/grants/?apiKey=".$authorizingKey;
         $return = $this->restHelper($url, null, "GET");
-        return $return !== false;  
+        return $return !== false;
     }
 
-    public function addGrantToKey($apiKey, $authorizingKey, $grant) 
+    public function addGrantToKey($apiKey, $authorizingKey, $grant)
     {
-       $url = $this->servicePath("security")."apikeys/".$apiKey."/grants/?apiKey=".$authorizingKey; 
+       $url = $this->actionUrl("security")."apikeys/".$apiKey."/grants/?apiKey=".$authorizingKey;
         $return = $this->restHelper($url, $grant, "GET");
-        return $return !== false;  
+        return $return !== false;
     }
 
-    public function removeGrant($apiKey, $authorizingKey, $grantId) 
+    public function removeGrant($apiKey, $authorizingKey, $grantId)
     {
-       $url = $this->servicePath("security")."apikeys/".$apiKey."/grants/".$grantId."?apiKey=".$authorizingKey; 
+       $url = $this->actionUrl("security")."apikeys/".$apiKey."/grants/".$grantId."?apiKey=".$authorizingKey;
         $return = $this->restHelper($url, null, "DELETE");
-        return $return !== false;  
+        return $return !== false;
     }
 
-    public function createNewGrant($apiKey, $type) 
+    public function createNewGrant($apiKey, $type)
     {
-       $url = $this->servicePath("security")."grants/?apiKey=".$apiKey; 
+       $url = $this->actionUrl("security")."grants/?apiKey=".$apiKey;
         $return = $this->restHelper($url, $type, "POST");
-        return $return !== false;  
+        return $return !== false;
     }
 
-    public function describeGrant($apiKey, $grantId) 
+    public function describeGrant($apiKey, $grantId)
     {
-       $url = $this->servicePath("security")."grants/".$grantId."?apiKey=".$apiKey; 
+       $url = $this->actionUrl("security")."grants/".$grantId."?apiKey=".$apiKey;
         $return = $this->restHelper($url, null, "GET");
-        return $return !== false;  
+        return $return !== false;
     }
 
-    public function deleteGrant($apiKey, $grantId) 
+    public function deleteGrant($apiKey, $grantId)
     {
-       $url = $this->servicePath("security")."grants/".$grantId."?apiKey=".$apiKey; 
+       $url = $this->actionUrl("security")."grants/".$grantId."?apiKey=".$apiKey;
         $return = $this->restHelper($url, null, "DELETE");
-        return $return !== false;  
+        return $return !== false;
     }
 
-    public function listChildrenGrant($apiKey, $grantId) 
+    public function listChildrenGrant($apiKey, $grantId)
     {
-       $url = $this->servicePath("security")."grants/".$grantId."/children/?apiKey=".$apiKey; 
+       $url = $this->actionUrl("security")."grants/".$grantId."/children/?apiKey=".$apiKey;
         $return = $this->restHelper($url, null, "GET");
-        return $return !== false;  
+        return $return !== false;
     }
 
-      public function createChildGrant($apiKey, $grantId, $type) 
+      public function createChildGrant($apiKey, $grantId, $type)
     {
-       $url = $this->servicePath("security")."grants/".$grantId."/children/?apiKey=".$apiKey; 
+       $url = $this->actionUrl("security")."grants/".$grantId."/children/?apiKey=".$apiKey;
         $return = $this->restHelper($url, $type, "POST");
-        return $return !== false;  
+        return $return !== false;
     }
 
 
@@ -274,14 +274,14 @@ class PrecogAPI {
     public function listChildren($path)
     {
         $path = $this->cleanPath($path);
-        $path2  = $this->servicePath("fs")."$path?apiKey=" . $this->_apiKey;
+        $path2  = $this->actionUrl("meta","fs")."$path?apiKey=" . $this->_apiKey."#children";
         $return = $this->restHelper($path2, null, "GET");
-        return $return;
+        return $return ? $return['children'] : $return;
     }
 
-       public function delete($path)
+    public function delete($path)
     {
-        $path2  = $this->servicePath("fs") . $this->cleanPath($path) . "?apiKey=" . $this->_apiKey;
+        $path2  = $this->actionUrl("ingest", "sync/fs") . $this->cleanPath($path) . "?apiKey=" . $this->_apiKey;
         var_dump($path2);
         $return = $this->restHelper($path2, null, "DELETE");
         return $return !== false;
@@ -292,7 +292,7 @@ class PrecogAPI {
      *********************************/
     private function restHelper($json_endpoint, $params = null, $verb = 'GET') {
         $return = null;
-
+echo "$verb $json_endpoint\n";
         $http_params = array(
             'http' => array(
                 'method' => $verb,
@@ -300,8 +300,6 @@ class PrecogAPI {
         ));
         if ($params !== null) {
             if ( ($verb == 'POST') || ($verb == 'PUT') ) {
-
-
                 $header = "Content-Type: application/json";
                 $http_params['http']['content'] = json_encode($params);
                 $http_params['http']['header'] = $header;
@@ -373,8 +371,8 @@ class PrecogAPI {
     {
         return trim($path, '/');
     }
-    private function servicePath($service){
-        return $this->_baseUrl."/".$service."/v".$this->_version."/";
+    private function actionUrl($service, $action){
+        return $this->_baseUrl."/".$service."/v".$this->_version."/".$action."/";
     }
 }
 ?>

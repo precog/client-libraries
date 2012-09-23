@@ -3,7 +3,7 @@
 require_once('basetest.php');
 
 class TestQuery extends PrecogBaseTest {
-    function setupPath() 
+    function setupPath()
     {
         $path = "/unit_test/beta/test/php/query/TEST" . str_replace(".", "", uniqid(rand(), true));
         $this->rg->store($path, array('foo' => 42));
@@ -12,13 +12,13 @@ class TestQuery extends PrecogBaseTest {
 
     function testQueries()
     {
-        $path = $this->setupPath();    
+        $path = $this->setupPath();
 
-        sleep(10);
+        sleep(5);
 
         $value = $this->rg->query("
-            num := count(/$path) 
-            a := 4 
+            num := count(/$path)
+            a := 4
             a + num");
 
         $this->assertIsA($value, "Array");
@@ -27,9 +27,9 @@ class TestQuery extends PrecogBaseTest {
 
     function testChildren()
     {
-        $path = TestQuery::setupPath();    
+        $path = TestQuery::setupPath();
 
-        sleep(10);
+        sleep(5);
 
         $value = $this->rg->listChildren("/unit_test/beta");
 

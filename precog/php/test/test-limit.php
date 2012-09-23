@@ -2,8 +2,8 @@
 
 require_once('basetest.php');
 
-class TestLimit extends PrecogBaseTest {
-    function setupPath() 
+class TestLimitCase extends PrecogBaseTest {
+    function setupPath()
     {
         $path = "/unit_test/beta/test/php/query/TEST" . str_replace(".", "", uniqid(rand(), true));
         $this->rg->store($path, array('foo' => 42));
@@ -11,15 +11,15 @@ class TestLimit extends PrecogBaseTest {
         return $path;
     }
 
-    function limitTest()
+    function testLimit()
     {
-        $path = $this->setupPath();    
+        $path = $this->setupPath();
         $options = array("limit"=>1);
 
-        sleep(10);
+        sleep(5);
 
-        $value = $this->rg->query("count(/$path)", $options);
-        $this->assertTrue($value[0] < 2);
+        $value = $this->rg->query("/$path", $options);
+        $this->assertTrue(count($value), 1);
        // $result = $this->rg->limit($path);
       //  var_dump($this->rg->errorMessage);
       //  sleep(10);

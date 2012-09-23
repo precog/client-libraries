@@ -3,7 +3,7 @@
 require_once('basetest.php');
 
 class TestPathDelete extends PrecogBaseTest {
-    function setupPath() 
+    function setupPath()
     {
         $path = "/unit_test/beta/test/php/query/TEST" . str_replace(".", "", uniqid(rand(), true));
         $this->rg->store($path, array('foo' => 42));
@@ -12,15 +12,16 @@ class TestPathDelete extends PrecogBaseTest {
 
     function testDeletePath()
     {
-        $path = $this->setupPath();    
+        $path = $this->setupPath();
 
-        sleep(10);
+        sleep(5);
 
         $value = $this->rg->query("count(/$path)");
         $this->assertTrue($value[0] > 0);
         $result = $this->rg->delete($path);
-        var_dump($this->rg->errorMessage);
-        sleep(10);
+
+        sleep(5);
+        $value = $this->rg->query("count(/$path)");
         $this->assertTrue($value[0] === 0);
     }
 }
