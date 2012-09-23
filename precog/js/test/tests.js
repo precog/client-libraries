@@ -102,7 +102,7 @@ asyncTest( "limitPass", function() {
 		}
 	);
 });
-
+/*
 asyncTest( "basePathPass", function() {
 	expect(1);
 	var timeStamp = +new Date(),
@@ -131,7 +131,7 @@ asyncTest( "basePathPass", function() {
 		}
 	);
 });
-
+*/
 asyncTest( "skipPass", function() {
 	expect(1);
 	Precog.store("/unit_test/beta/test/js/skip", "A");
@@ -194,7 +194,7 @@ asyncTest( "orderPass", function() {
 								ok(false);
 								start();
 							},
-							{order: "descending"}
+							{ sortOn : "num", sortOrder : "desc"}
 						);
 					},
 					function(){
@@ -202,7 +202,7 @@ asyncTest( "orderPass", function() {
 						ok(false);
 						start();
 					},
-					{order: "ascending"}
+					{ sortOn : "num", sortOrder : "asc"}
 				);
 			}, 5000);
 		},

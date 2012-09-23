@@ -453,9 +453,9 @@ throw new SyntaxError('JSON.parse');};}}());
     if(options.order)
       params.order = options.order;
     if(options.sortOn)
-      params.sortOn = options.sortOn instanceof Array ? JSON.stringify(options.sortOn) : options.sortOn;
+      params.sortOn = JSON.stringify(options.sortOn);
     if(options.sortOrder)
-      params.sortOrder = (options.sortOrder instanceof Array ? options.sortOrder[0] : options.sortOrder).toLowerCase();
+      params.sortOrder = options.sortOrder;
 
     http.get(
       Util.actionUrl("analytics", "fs", options),
@@ -515,7 +515,7 @@ throw new SyntaxError('JSON.parse');};}}());
 
     var description = 'Track event (' + JSON.stringify(event) + ')',
         parameters = { apiKey: (options && options.apiKey) || $.Config.apiKey };
-    
+
     if(!parameters.apiKey) throw Error("apiKey not specified");
 
     http.post(
