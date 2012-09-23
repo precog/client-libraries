@@ -32,9 +32,9 @@ class PrecogAPI {
     // ***************************
     // ****** ACCOUNTS APIS ******
     // ***************************
-    public function listAccounts($id)
+    public function listAccounts()
     {
-        $url = $this->actionUrl("accounts").$id;
+        $url = $this->actionUrl("accounts");
         $return = $this->restHelper($url, null, "GET");
         return $return !== false;
     }
@@ -48,35 +48,35 @@ class PrecogAPI {
 
     public function describeAccount($id)
     {
-        $url = $this->actionUrl("accounts").$id."/";
+        $url = $this->actionUrl("accounts", $id);
         $return = $this->restHelper($url, null, "GET");
         return $return !== false;
     }
 
     public function addGrantToAccount($id, $grantId)
     {
-        $url = $this->actionUrl("accounts").$id."/"."grants/";
+        $url = $this->actionUrl("accounts", $id)."grants/";
         $return = $this->restHelper($url, array("grantId"=>$grandId), "POST");
         return $return !== false;
     }
 
      public function changePlan($id, $plan)
     {
-        $url = $this->actionUrl("accounts").$id."/"."plan/";
+        $url = $this->actionUrl("accounts", $id)."plan/";
         $return = $this->restHelper($url, array("type"=>$plan), "PUT");
         return $return !== false;
     }
 
      public function deletePlan($id)
     {
-        $url = $this->actionUrl("accounts").$id."/"."plan/";
+        $url = $this->actionUrl("accounts", $id)."plan/";
         $return = $this->restHelper($url, null, "DELETE");
         return $return !== false;
     }
 
       public function deleteAccount($id)
     {
-        $url = $this->actionUrl("accounts").$id."/";
+        $url = $this->actionUrl("accounts",$id);
         $return = $this->restHelper($url, null, "DELETE");
         return $return !== false;
     }
@@ -88,11 +88,11 @@ class PrecogAPI {
     public function ingestAsync($path, $apiKey, $file, $ownerAccountId )
     {
        if(isset($ownerAccountId)){
-         $url = $this->actionUrl("ingest")."async/fs/".$path."?apiKey=".$apiKey."&ownerAccountId=".$ownerAccountId;
+         $url = $this->actionUrl("ingest","async/fs/").$path."?apiKey=".$apiKey."&ownerAccountId=".$ownerAccountId;
         $return = $this->restHelper($url, $file, "POST");
         return $return !== false;
        }
-       $url = $this->actionUrl("ingest")."async/fs/".$path."?apiKey=".$apiKey;
+       $url = $this->actionUrl("ingest","async/fs/").$path."?apiKey=".$apiKey;
         $return = $this->restHelper($url, $file, "POST");
         return $return !== false;
 
@@ -101,11 +101,11 @@ class PrecogAPI {
     public function ingestSync($path, $apiKey, $file, $ownerAccountId )
     {
        if(isset($ownerAccountId)){
-         $url = $this->actionUrl("ingest")."sync/fs/".$path."?apiKey=".$apiKey."&ownerAccountId=".$ownerAccountId;
+         $url = $this->actionUrl("ingest","sync/fs/").$path."?apiKey=".$apiKey."&ownerAccountId=".$ownerAccountId;
         $return = $this->restHelper($url, $file, "POST");
         return $return !== false;
        }
-       $url = $this->actionUrl("ingest")."sync/fs/".$path."?apiKey=".$apiKey;
+       $url = $this->actionUrl("ingest", "sync/fs").$path."?apiKey=".$apiKey;
         $return = $this->restHelper($url, $file, "POST");
         return $return !== false;
 
@@ -132,7 +132,7 @@ class PrecogAPI {
     // ***************************
      public function retrieveMetadata($path, $type = "")
     {
-       $url = $this->actionUrl("meta")."fs/".$path."#".$type;
+       $url = $this->actionUrl("meta", "fs").$path."?".$type;
         $return = $this->restHelper($url, $file, "GET");
         return $return !== false;
     }
@@ -182,84 +182,84 @@ class PrecogAPI {
     // ***************************
     public function listKeys($apiKey)
     {
-       $url = $this->actionUrl("security")."apikeys/?apiKey=".$apiKey;
+       $url = $this->actionUrl("security","apikeys" )."?apiKey=".$apiKey;
         $return = $this->restHelper($url, null, "GET");
         return $return !== false;
     }
 
     public function createKey($apiKey, $grants)
     {
-       $url = $this->actionUrl("security")."apikeys/?apiKey=".$apiKey;
+       $url = $this->actionUrl("security","apikeys")."?apiKey=".$apiKey;
         $return = $this->restHelper($url, $grants, "POST");
         return $return !== false;
     }
 
     public function describeKey($apiKey, $authorizingKey)
     {
-       $url = $this->actionUrl("security")."apikeys/".$apiKey."?apiKey=".$authorizingKey;
+       $url = $this->actionUrl("security","apikeys").$apiKey."?apiKey=".$authorizingKey;
         $return = $this->restHelper($url, null, "GET");
         return $return !== false;
     }
 
     public function deleteKey($apiKey, $authorizingKey)
     {
-       $url = $this->actionUrl("security")."apikeys/".$apiKey."?apiKey=".$authorizingKey;
+       $url = $this->actionUrl("security","apikeys").$apiKey."?apiKey=".$authorizingKey;
         $return = $this->restHelper($url, null, "DELETE");
         return $return !== false;
     }
 
     public function retrieveGrants($apiKey, $authorizingKey)
     {
-       $url = $this->actionUrl("security")."apikeys/".$apiKey."/grants/?apiKey=".$authorizingKey;
+       $url = $this->actionUrl("security","apikeys").$apiKey."/grants/?apiKey=".$authorizingKey;
         $return = $this->restHelper($url, null, "GET");
         return $return !== false;
     }
 
     public function addGrantToKey($apiKey, $authorizingKey, $grant)
     {
-       $url = $this->actionUrl("security")."apikeys/".$apiKey."/grants/?apiKey=".$authorizingKey;
+       $url = $this->actionUrl("security","apikeys").$apiKey."/grants/?apiKey=".$authorizingKey;
         $return = $this->restHelper($url, $grant, "GET");
         return $return !== false;
     }
 
     public function removeGrant($apiKey, $authorizingKey, $grantId)
     {
-       $url = $this->actionUrl("security")."apikeys/".$apiKey."/grants/".$grantId."?apiKey=".$authorizingKey;
+       $url = $this->actionUrl("security","apikeys").$apiKey."/grants/".$grantId."?apiKey=".$authorizingKey;
         $return = $this->restHelper($url, null, "DELETE");
         return $return !== false;
     }
 
     public function createNewGrant($apiKey, $type)
     {
-       $url = $this->actionUrl("security")."grants/?apiKey=".$apiKey;
+       $url = $this->actionUrl("security","grants")."?apiKey=".$apiKey;
         $return = $this->restHelper($url, $type, "POST");
         return $return !== false;
     }
 
     public function describeGrant($apiKey, $grantId)
     {
-       $url = $this->actionUrl("security")."grants/".$grantId."?apiKey=".$apiKey;
+       $url = $this->actionUrl("security", "grants").$grantId."?apiKey=".$apiKey;
         $return = $this->restHelper($url, null, "GET");
         return $return !== false;
     }
 
     public function deleteGrant($apiKey, $grantId)
     {
-       $url = $this->actionUrl("security")."grants/".$grantId."?apiKey=".$apiKey;
+       $url = $this->actionUrl("security","grants").$grantId."?apiKey=".$apiKey;
         $return = $this->restHelper($url, null, "DELETE");
         return $return !== false;
     }
 
     public function listChildrenGrant($apiKey, $grantId)
     {
-       $url = $this->actionUrl("security")."grants/".$grantId."/children/?apiKey=".$apiKey;
+       $url = $this->actionUrl("security","grants").$grantId."/children/?apiKey=".$apiKey;
         $return = $this->restHelper($url, null, "GET");
         return $return !== false;
     }
 
       public function createChildGrant($apiKey, $grantId, $type)
     {
-       $url = $this->actionUrl("security")."grants/".$grantId."/children/?apiKey=".$apiKey;
+       $url = $this->actionUrl("security","grants").$grantId."/children/?apiKey=".$apiKey;
         $return = $this->restHelper($url, $type, "POST");
         return $return !== false;
     }
