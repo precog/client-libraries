@@ -6,8 +6,8 @@ class skipCaseTest extends PrecogBaseTest {
     function setupPath()
     {
         $path = "/unit_test/beta/test/php/query/TEST" . str_replace(".", "", uniqid(rand(), true));
-        $this->rg->store($path, "first");
-        $this->rg->store($path, "second");
+        $this->api->store($path, "first");
+        $this->api->store($path, "second");
         return $path;
     }
 
@@ -19,8 +19,8 @@ class skipCaseTest extends PrecogBaseTest {
 
         sleep(5);
 
-        $value1 = $this->rg->query("/$path", $options1);
-        $value2 = $this->rg->query("/$path", $options2);
+        $value1 = $this->api->query("/$path", $options1);
+        $value2 = $this->api->query("/$path", $options2);
 
 
         $this->assertTrue($value1[0] != $value2[0]);

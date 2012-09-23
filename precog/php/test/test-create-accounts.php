@@ -6,7 +6,7 @@ class createAccountCaseTest extends PrecogBaseTest {
 
      function setupAccount(){
         $email = json_encode(array("email"=>"fakeEmailAddress@precog.com"));
-        $accountId = createAccount($email);
+        $accountId = $this->api->createAccount($email);
          return $accountId;
     }
 

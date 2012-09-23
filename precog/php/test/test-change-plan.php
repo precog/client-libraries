@@ -6,7 +6,7 @@ class changePlanCaseTest extends PrecogBaseTest {
 
     function setupAccount(){
         $email = json_encode(array("email"=>"fakeEmailAddress@precog.com"));
-        $accountId = createAccount($email);
+        $accountId = $this->api->createAccount($email);
          return $accountId;
     }
       
@@ -14,7 +14,7 @@ class changePlanCaseTest extends PrecogBaseTest {
     {
         $account = $this->setupAccount();
         $plan = array("plan"=>"bronze");//??
-        $changedPlan = $this->changePlan($account, $plan);
+        $changedPlan = $this->api->changePlan($account, $plan);
 
 
         $this->assertTrue($describeAccount($account) == $grantAdded);

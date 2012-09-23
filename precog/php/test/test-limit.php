@@ -6,8 +6,8 @@ class limitCaseTest extends PrecogBaseTest {
     function setupPath()
     {
         $path = "/unit_test/beta/test/php/query/TEST" . str_replace(".", "", uniqid(rand(), true));
-        $this->rg->store($path, array('foo' => 42));
-        $this->rg->store($path, array('foo' => 42));
+        $this->api->store($path, array('foo' => 42));
+        $this->api->store($path, array('foo' => 42));
         return $path;
     }
 
@@ -18,11 +18,11 @@ class limitCaseTest extends PrecogBaseTest {
 
         sleep(5);
 
-        $value = $this->rg->query("/$path", $options);
+        $value = $this->api->query("/$path", $options);
         var_dump($value);
         $this->assertTrue(count($value), 1);
-       // $result = $this->rg->limit($path);
-      //  var_dump($this->rg->errorMessage);
+       // $result = $this->api->limit($path);
+      //  var_dump($this->api->errorMessage);
       //  sleep(10);
       //  $this->assertTrue($value[0] === 0);
     }

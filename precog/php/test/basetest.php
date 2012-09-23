@@ -53,9 +53,9 @@ abstract class PrecogBaseTest extends UnitTestCase {
 		return new PrecogAPI($APIKEY, $URL, $VERSION);
 	}
 
-	var $rg;
+	var $api;
 	function setUp()
 	{
-		$this->rg = PrecogBaseTest::createApi();
+		$this->api = PrecogBaseTest::createApi();
 	}
 }

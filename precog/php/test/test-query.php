@@ -6,7 +6,7 @@ class queryCaseTest extends PrecogBaseTest {
     function setupPath()
     {
         $path = "/unit_test/beta/test/php/query/TEST" . str_replace(".", "", uniqid(rand(), true));
-        $this->rg->store($path, array('foo' => 42));
+        $this->api->store($path, array('foo' => 42));
         return $path;
     }
 
@@ -16,7 +16,7 @@ class queryCaseTest extends PrecogBaseTest {
 
         sleep(5);
 
-        $value = $this->rg->query("
+        $value = $this->api->query("
             num := count(/$path)
             a := 4
             a + num");
@@ -31,7 +31,7 @@ class queryCaseTest extends PrecogBaseTest {
 
         sleep(5);
 
-        $value = $this->rg->listChildren("/unit_test/beta");
+        $value = $this->api->listChildren("/unit_test/beta");
 
         $this->assertIsA($value, "Array");
         $this->assertTrue(in_array("/test/", $value));

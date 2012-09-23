@@ -6,16 +6,16 @@ class deletePlanCaseTest extends PrecogBaseTest {
 
      function setupAccount(){
         $email = json_encode(array("email"=>"fakeEmailAddress@precog.com"));
-        $accountId = createAccount($email);
+        $accountId = $this->api->createAccount($email);
          return $accountId;
     }
       
     function testDeletePlanCase()
     {
-        $account = $this->setupAccount();
-        deletePlan($account);
+        $account = $this->api->setupAccount();
+        $this->api->deletePlan($account);
        
-        $this->assertTrue($describeAccount($account) == array("plan")=>"starter");
+        $this->assertTrue($this->api->$describeAccount($account) == array("plan")=>"starter");
     }
 }
 ?>

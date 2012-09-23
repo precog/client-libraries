@@ -6,7 +6,7 @@ class deletePathCaseTest extends PrecogBaseTest {
     function setupPath()
     {
         $path = "/unit_test/beta/test/php/query/TEST" . str_replace(".", "", uniqid(rand(), true));
-        $this->rg->store($path, array('foo' => 42));
+        $this->api->store($path, array('foo' => 42));
         return $path;
     }
 
@@ -16,12 +16,12 @@ class deletePathCaseTest extends PrecogBaseTest {
 
         sleep(5);
 
-        $value = $this->rg->query("count(/$path)");
+        $value = $this->api->query("count(/$path)");
         $this->assertTrue($value[0] > 0);
-        $result = $this->rg->delete($path);
+        $result = $this->api->delete($path);
 
         sleep(5);
-        $value = $this->rg->query("count(/$path)");
+        $value = $this->api->query("count(/$path)");
         $this->assertTrue($value[0] === 0);
     }
 }

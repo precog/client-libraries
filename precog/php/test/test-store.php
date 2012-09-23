@@ -6,7 +6,7 @@ class storingCaseTest extends PrecogBaseTest {
     var $path = "/unit_test/beta/test/php/store";
     function testStoreCase()
     {
-    	$this->assertTrue($this->rg->store($this->path, array('impression' => array( 'browser' => 'Chrome' ))));
+    	$this->assertTrue($this->api->store($this->path, array('impression' => array( 'browser' => 'Chrome' ))));
     }
 }
 ?>
