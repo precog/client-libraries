@@ -14,10 +14,10 @@ class addGrantCaseTest extends PrecogBaseTest {
     {
         $account = $this->setupAccount();
         $grantId = array("grant"=> "write");//??
-        $grantAdded = $this->api->addGrant($account, $grantId);
+        $grantAdded = $this->api->addGrantToAccount($account, $grantId);
 
 
-        $this->assertTrue($describeAccount($account) == $grantAdded);
+        $this->assertTrue($this->api->$describeAccount($account) === $grantAdded);
     }
 }
 ?>

@@ -56,7 +56,7 @@ class PrecogAPI {
     public function addGrantToAccount($id, $grantId)
     {
         $url = $this->actionUrl("accounts", $id)."grants/";
-        $return = $this->restHelper($url, array("grantId"=>$grandId), "POST");
+        $return = $this->restHelper($url, array("grantId"=>$grantId), "POST");
         return $return !== false;
     }
 

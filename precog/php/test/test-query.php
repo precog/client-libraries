@@ -27,7 +27,7 @@ class queryCaseTest extends PrecogBaseTest {
 
     function testChildren()
     {
-        $path = TestQuery::setupPath();
+        $path = queryCaseTest::setupPath();
 
         sleep(5);
 
