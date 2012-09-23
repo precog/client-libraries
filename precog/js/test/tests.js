@@ -47,7 +47,7 @@ asyncTest( "deletePass", function() {
 asyncTest( "query", function() {
 	expect(1);
 	var timeStamp = +new Date(),
-		event = {strTest: "string loaded", numTest: 42, time:timeStamp};
+		event = {strTest: "string loaded", numTest: 43, time:timeStamp};
 	Precog.store("/unit_test/beta/test/js/query",
 		event,
 		function(){
@@ -170,28 +170,44 @@ asyncTest( "skipPass", function() {
 });
 
 asyncTest( "orderPass", function() {
-	expect(1);
+	expect(2);
 	var timeStamp = +new Date(),
-		event = {strTest: "string loaded", numTest: 42, time:timeStamp};
-	Precog.store("/unit_test/beta/test/js/store",
-		event,
+		event1 = { num : 1, time : timeStamp },
+		event2 = { num : 2, time : timeStamp };
+	Precog.store("/unit_test/beta/test/js/order", event1);
+	Precog.store("/unit_test/beta/test/js/order", event2,
 		function(){
-			var query = "data := //unit_test/beta/test/js/store count(data where data.time = "+timeStamp+")";
+			var query = "data := //unit_test/beta/test/js/order data where data.time = "+timeStamp;
 			setTimeout(function() {
-				Precog.query(query,
+				Precog.query(
+					query,
 					function(result) {
-					ok(result ===0);
-					start();
-				},
-				function(){
-					ok(false);
-					start();
-				},
-				{order: "ascending"}
+						ok(result[0] && result[0].num === 1);
+						Precog.query(
+							query,
+							function(result) {
+								ok(result[0] && result[0].num === 2);
+								start();
+							},
+							function(){
+								ok(false);
+								ok(false);
+								start();
+							},
+							{order: "descending"}
+						);
+					},
+					function(){
+						ok(false);
+						ok(false);
+						start();
+					},
+					{order: "ascending"}
 				);
-			}, 3000);
+			}, 5000);
 		},
 		function(){
+			ok(false);
 			ok(false);
 			start();
 		}
