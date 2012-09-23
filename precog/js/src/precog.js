@@ -189,6 +189,28 @@ throw new SyntaxError('JSON.parse');};}}());
     sanitizePath: function(path) {
       if (!path) throw Error("path cannot be undefined");
       else return Util.removeDuplicateSlashes("/" + path + "/");
+    },
+
+    parseResponseHeaders: function(headerStr) {
+      var headers = {};
+      if (!headerStr) {
+        return headers;
+      }
+      var headerPairs = headerStr.split('\u000d\u000a');
+      for (var i = 0; i < headerPairs.length; i++) {
+        var headerPair = headerPairs[i];
+        var index = headerPair.indexOf('\u003a\u0020');
+        if (index > 0) {
+          var key = headerPair.substring(0, index);
+          var val = headerPair.substring(index + 2);
+          headers[key] = val;
+        }
+      }
+      return headers;
+    },
+
+    servicePath: function(server, version, service, path) {
+
     }
   };
 
@@ -218,17 +240,18 @@ throw new SyntaxError('JSON.parse');};}}());
       request.open(method, path);
 
       request.onreadystatechange = function() {
+        var headers = request.getAllResponseHeaders && Util.parseResponseHeaders(request.getAllResponseHeaders()) || {};
         if (request.readyState === 4) {
           if (request.status === 200 || request.status === "OK") {
             if (request.responseText !== null && request.responseText.length > 0) {
-              success(JSON.parse(this.responseText));
+              success(JSON.parse(this.responseText), headers);
             }
             else {
-              success(undefined);
+              success(undefined, headers);
             }
           }
           else {
-            failure(request.status, request.responseText ? JSON.parse(request.responseText) : request.statusText);
+            failure(request.status, request.responseText ? JSON.parse(request.responseText) : request.statusText, headers);
           }
         }
       };
@@ -264,10 +287,10 @@ throw new SyntaxError('JSON.parse');};}}());
 
       window[funcName] = function(content, meta) {
         if (meta.status.code === 200 || meta.status.code === "OK") {
-          success(content);
+          success(content, meta.headers);
         }
         else {
-          failure(meta.status.code, content ? content : meta.status.reason);
+          failure(meta.status.code, content ? content : meta.status.reason, meta.headers);
         }
 
         document.head.removeChild(document.getElementById(funcName));
@@ -378,14 +401,15 @@ throw new SyntaxError('JSON.parse');};}}());
 
   $.Util.extend($.Config,
     {
-      analyticsService: Util.getProtocol() + "//api.precog.io/v1",
+      analyticsService: Util.getProtocol() + "//api.precog.io/",
       useJsonp : "true",
-      enableLog : "false"
+      enableLog : "false",
+      version : 1
     }
   );
 
   $.Config.analyticsService = Util.removeTrailingSlash($.PageConfig.analyticsService || $.Config.analyticsService);
-  $.Config.tokenId = $.PageConfig.tokenId || $.Config.tokenId;
+  $.Config.apiKey = $.PageConfig.apiKey || $.Config.apiKey;
 
   $.Http = function() {
     return $.Bool(Precog.$.Config.useJsonp) ? Precog.$.Http.Jsonp : Precog.$.Http.Ajax;
@@ -409,7 +433,7 @@ throw new SyntaxError('JSON.parse');};}}());
   var executeQuery = function(query, success, failure, options) {
     options = options || {};
     var description = 'Precog query ' + query,
-        params = {tokenId : options.tokenId || $.Config.tokenId, q : query };
+        params = {apiKey : options.apiKey || $.Config.apiKey, q : query };
 
     if(options.limit)
       params.limit = options.limit;
@@ -419,6 +443,10 @@ throw new SyntaxError('JSON.parse');};}}());
       params.skip = options.skip;
     if(options.order)
       params.order = options.order;
+    if(options.sortOn)
+      params.sortOn = options.sortOn instanceof Array ? JSON.stringify(options.sortOn) : options.sortOn;
+    if(options.sortOrder)
+      params.sortOrder = (options.sortOrder instanceof Array ? options.sortOrder[0] : options.sortOrder).toLowerCase();
 
     http.get(
       $.Config.analyticsService + '/vfs/',
@@ -453,18 +481,35 @@ throw new SyntaxError('JSON.parse');};}}());
 };
   $.Md5 = function(s) { return new Md5().doEncode(s); };
 
-   Precog.store = function(path, event, success, failure, options) {
+  Precog.children = function(path, success, failure) {
+    path = Util.sanitizePath(path);
+    var description = 'List children path of ' + path,
+        parameters = {
+          apiKey: (options && options.apiKey) || $.Config.apiKey
+        },
+        analyticsService = (options && options.analyticsService) || $.Config.analyticsService;
+    if(!parameters.apiKey) throw Error("apiKey not specified");
+    if(!analyticsService) throw Error("analyticsService not specified");
+    http.get(
+      analyticsService + '/vfs' + path.substr(0, path.length - 1),
+      event,
+      Util.createCallbacks(success, failure, description),
+      parameters
+    );
+  }
+
+  Precog.store = function(path, event, success, failure, options) {
     path = Util.sanitizePath(path);
 
     if (event === null || "undefined" === typeof event) throw Error("argument 'events' cannot be null or undefined");
 
     var description = 'Track event (' + JSON.stringify(event) + ')',
         parameters = {
-          tokenId: (options && options.tokenId) || $.Config.tokenId
+          apiKey: (options && options.apiKey) || $.Config.apiKey
         },
         analyticsService = (options && options.analyticsService) || $.Config.analyticsService;
     
-    if(!parameters.tokenId) throw Error("tokenId not specified");
+    if(!parameters.apiKey) throw Error("apiKey not specified");
     if(!analyticsService) throw Error("analyticsService not specified");
 
     http.post(
@@ -480,11 +525,11 @@ throw new SyntaxError('JSON.parse');};}}());
 
     var description = 'Delete path: ' + path,
         parameters = {
-          tokenId: (options && options.tokenId) || $.Config.tokenId
+          apiKey: (options && options.apiKey) || $.Config.apiKey
         },
         analyticsService = (options && options.analyticsService) || $.Config.analyticsService;
 
-    if(!parameters.tokenId) throw Error("tokenId not specified");
+    if(!parameters.apiKey) throw Error("apiKey not specified");
     if(!analyticsService) throw Error("analyticsService not specified");
 
     http.remove(
