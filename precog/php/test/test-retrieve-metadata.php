@@ -23,7 +23,7 @@ class retrieveMetadataCaseTest extends PrecogBaseTest {
         $result = $this->api->retrieveMetadata($path, "children");
         var_dump($result);
 
-        $this->assertTrue($result  === (array("children"=>"childPath"))); //????;
+        $this->assertTrue($result  === json_encode(array("children"=>"childPath"))); //????;
     }
 }
 ?>

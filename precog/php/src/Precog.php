@@ -133,7 +133,7 @@ class PrecogAPI {
      public function retrieveMetadata($path, $type = "")
     {
        $url = $this->actionUrl("meta", "fs").$path."?".$type;
-        $return = $this->restHelper($url, $file, "GET");
+        $return = $this->restHelper($url, null, "GET");
         return $return !== false;
     }
 
