@@ -8,7 +8,6 @@ class retrieveMetadataCaseTest extends PrecogBaseTest {
     {
         $path = "/unit_test/beta/test/php/query/TEST" . str_replace(".", "", uniqid(rand(), true));
         $this->api->store($path, array('foo' => 42));
-        var_dump($path);
         return $path;
 
     }
@@ -23,7 +22,7 @@ class retrieveMetadataCaseTest extends PrecogBaseTest {
         $result = $this->api->retrieveMetadata($path, "children");
         var_dump($result);
 
-        $this->assertTrue($result  === json_encode(array("children"=>"childPath"))); //????;
+        $this->assertTrue($result  === array("children"=> array("childPath"))); //????;
     }
 }
 ?>
