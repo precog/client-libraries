@@ -2,7 +2,7 @@
 
 require_once('basetest.php');
 
-class TestDescribeAccounts extends PrecogBaseTest {
+class describeAccountsCaseTest extends PrecogBaseTest {
 
      function setupAccount(){
         $email = json_encode(array("email"=>"fakeEmailAddress@precog.com"));
@@ -11,7 +11,7 @@ class TestDescribeAccounts extends PrecogBaseTest {
     }
 
       
-    function describeAccountsTest()
+    function testDescribeAccountsCase()
     {
         $account = $this->setupAccount();
         $description = describeAccount($account);

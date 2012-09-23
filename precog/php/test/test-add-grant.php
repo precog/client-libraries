@@ -2,7 +2,7 @@
 
 require_once('basetest.php');
 
-class TestAddGrant extends PrecogBaseTest {
+class addGrantCaseTest extends PrecogBaseTest {
 
      function setupAccount(){
         $email = json_encode(array("email"=>"fakeEmailAddress@precog.com"));
@@ -10,7 +10,7 @@ class TestAddGrant extends PrecogBaseTest {
          return $accountId;
     }
 
-    function addGrantTest()
+    function testAddGrantCase()
     {
         $account = $this->setupAccount();
         $grantId = array("grant"=> "write");//??

@@ -2,7 +2,7 @@
 
 require_once('basetest.php');
 
-class TestDeletePlan extends PrecogBaseTest {
+class deletePlanCaseTest extends PrecogBaseTest {
 
      function setupAccount(){
         $email = json_encode(array("email"=>"fakeEmailAddress@precog.com"));
@@ -10,7 +10,7 @@ class TestDeletePlan extends PrecogBaseTest {
          return $accountId;
     }
       
-    function deletePlanTest()
+    function testDeletePlanCase()
     {
         $account = $this->setupAccount();
         deletePlan($account);

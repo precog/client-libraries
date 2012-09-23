@@ -2,7 +2,7 @@
 
 require_once('basetest.php');
 
-class TestSkipCase extends PrecogBaseTest {
+class skipCaseTest extends PrecogBaseTest {
     function setupPath()
     {
         $path = "/unit_test/beta/test/php/query/TEST" . str_replace(".", "", uniqid(rand(), true));
@@ -11,7 +11,7 @@ class TestSkipCase extends PrecogBaseTest {
         return $path;
     }
 
-    function testSkip()
+    function testSkipCase()
     {
         $path = $this->setupPath();
         $options1 = array("limit" => 1, "skip" => 0);

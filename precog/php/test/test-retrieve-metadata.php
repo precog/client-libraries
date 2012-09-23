@@ -2,7 +2,7 @@
 
 require_once('basetest.php');
 
-class TestRetrieveMetadata extends PrecogBaseTest {
+class retrieveMetadataCaseTest extends PrecogBaseTest {
 
      function setupPath() 
     {
@@ -13,7 +13,7 @@ class TestRetrieveMetadata extends PrecogBaseTest {
 
     }
       
-    function retrieveMetadataTest()
+    function testRetrieveMetadataCase()
     {
         $path = $this->setupPath();
         $childPath = $path."/childPath";

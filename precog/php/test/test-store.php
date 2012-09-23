@@ -2,9 +2,9 @@
 
 require_once('basetest.php');
 
-class TestStoring extends PrecogBaseTest {
+class storingCaseTest extends PrecogBaseTest {
     var $path = "/unit_test/beta/test/php/store";
-    function testStore()
+    function testStoreCase()
     {
     	$this->assertTrue($this->rg->store($this->path, array('impression' => array( 'browser' => 'Chrome' ))));
     }

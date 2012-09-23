@@ -2,7 +2,7 @@
 
 require_once('basetest.php');
 
-class TestSortCase extends PrecogBaseTest {
+class sortCaseTest extends PrecogBaseTest {
     function setupPath()
     {
         $path = "/unit_test/beta/test/php/query/TEST" . str_replace(".", "", uniqid(rand(), true));
@@ -11,7 +11,7 @@ class TestSortCase extends PrecogBaseTest {
         return $path;
     }
 
-    function testSort()
+    function testSortCase()
     {
         $path = $this->setupPath();
         $options1 = array("limit" => 1, "sortOn" => "foo", "sortOrder" => "asc");

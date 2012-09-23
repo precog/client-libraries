@@ -2,7 +2,7 @@
 
 require_once('basetest.php');
 
-class TestLimitCase extends PrecogBaseTest {
+class limitCaseTest extends PrecogBaseTest {
     function setupPath()
     {
         $path = "/unit_test/beta/test/php/query/TEST" . str_replace(".", "", uniqid(rand(), true));
@@ -11,7 +11,7 @@ class TestLimitCase extends PrecogBaseTest {
         return $path;
     }
 
-    function testLimit()
+    function testLimitCase()
     {
         $path = $this->setupPath();
         $options = array("limit"=>1);

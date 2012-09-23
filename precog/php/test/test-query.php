@@ -2,7 +2,7 @@
 
 require_once('basetest.php');
 
-class TestQuery extends PrecogBaseTest {
+class queryCaseTest extends PrecogBaseTest {
     function setupPath()
     {
         $path = "/unit_test/beta/test/php/query/TEST" . str_replace(".", "", uniqid(rand(), true));

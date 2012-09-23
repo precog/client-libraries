@@ -2,7 +2,7 @@
 
 require_once('basetest.php');
 
-class TestChangePlan extends PrecogBaseTest {
+class changePlanCaseTest extends PrecogBaseTest {
 
     function setupAccount(){
         $email = json_encode(array("email"=>"fakeEmailAddress@precog.com"));
@@ -10,7 +10,7 @@ class TestChangePlan extends PrecogBaseTest {
          return $accountId;
     }
       
-    function changePlanTest()
+    function testChangePlanCase()
     {
         $account = $this->setupAccount();
         $plan = array("plan"=>"bronze");//??

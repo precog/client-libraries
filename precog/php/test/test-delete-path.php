@@ -2,7 +2,7 @@
 
 require_once('basetest.php');
 
-class TestPathDelete extends PrecogBaseTest {
+class deletePathCaseTest extends PrecogBaseTest {
     function setupPath()
     {
         $path = "/unit_test/beta/test/php/query/TEST" . str_replace(".", "", uniqid(rand(), true));
@@ -10,7 +10,7 @@ class TestPathDelete extends PrecogBaseTest {
         return $path;
     }
 
-    function testDeletePath()
+    function testDeletePathCase()
     {
         $path = $this->setupPath();
 
