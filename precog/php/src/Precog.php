@@ -36,21 +36,21 @@ class PrecogAPI {
     {
         $url = $this->actionUrl("accounts");
         $return = $this->restHelper($url, null, "GET");
-        return $return !== false;
+        return $return;
     }
 
     public function createAccount($email)
     {
         $url = $this->actionUrl("accounts");
         $return = $this->restHelper($url, array("email"=>$email), "POST");
-        return $return !== false;
+        return $return;
     }
 
     public function describeAccount($id)
     {
         $url = $this->actionUrl("accounts", $id);
         $return = $this->restHelper($url, null, "GET");
-        return $return !== false;
+        return $return;
     }
 
     public function addGrantToAccount($id, $grantId)
@@ -132,9 +132,9 @@ class PrecogAPI {
     // ***************************
      public function retrieveMetadata($path, $type = "")
     {
-       $url = $this->actionUrl("meta", "fs").$path."?".$type;
+        $url = $this->actionUrl("meta", "fs")."$path?apiKey=".$this->_apiKey."#".$type;
         $return = $this->restHelper($url, null, "GET");
-        return $return !== false;
+        return $return;
     }
 
 
@@ -184,21 +184,21 @@ class PrecogAPI {
     {
        $url = $this->actionUrl("security","apikeys" )."?apiKey=".$apiKey;
         $return = $this->restHelper($url, null, "GET");
-        return $return !== false;
+        return $return;
     }
 
     public function createKey($apiKey, $grants)
     {
        $url = $this->actionUrl("security","apikeys")."?apiKey=".$apiKey;
         $return = $this->restHelper($url, $grants, "POST");
-        return $return !== false;
+        return $return;
     }
 
     public function describeKey($apiKey, $authorizingKey)
     {
        $url = $this->actionUrl("security","apikeys").$apiKey."?apiKey=".$authorizingKey;
         $return = $this->restHelper($url, null, "GET");
-        return $return !== false;
+        return $return;
     }
 
     public function deleteKey($apiKey, $authorizingKey)
@@ -212,7 +212,7 @@ class PrecogAPI {
     {
        $url = $this->actionUrl("security","apikeys").$apiKey."/grants/?apiKey=".$authorizingKey;
         $return = $this->restHelper($url, null, "GET");
-        return $return !== false;
+        return $return;
     }
 
     public function addGrantToKey($apiKey, $authorizingKey, $grant)
@@ -233,14 +233,14 @@ class PrecogAPI {
     {
        $url = $this->actionUrl("security","grants")."?apiKey=".$apiKey;
         $return = $this->restHelper($url, $type, "POST");
-        return $return !== false;
+        return $return;
     }
 
     public function describeGrant($apiKey, $grantId)
     {
        $url = $this->actionUrl("security", "grants").$grantId."?apiKey=".$apiKey;
         $return = $this->restHelper($url, null, "GET");
-        return $return !== false;
+        return $return;
     }
 
     public function deleteGrant($apiKey, $grantId)
@@ -254,14 +254,14 @@ class PrecogAPI {
     {
        $url = $this->actionUrl("security","grants").$grantId."/children/?apiKey=".$apiKey;
         $return = $this->restHelper($url, null, "GET");
-        return $return !== false;
+        return $return;
     }
 
       public function createChildGrant($apiKey, $grantId, $type)
     {
        $url = $this->actionUrl("security","grants").$grantId."/children/?apiKey=".$apiKey;
         $return = $this->restHelper($url, $type, "POST");
-        return $return !== false;
+        return $return;
     }
 
 
