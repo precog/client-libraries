@@ -19,6 +19,7 @@ class TestLimitCase extends PrecogBaseTest {
         sleep(5);
 
         $value = $this->rg->query("/$path", $options);
+        var_dump($value);
         $this->assertTrue(count($value), 1);
        // $result = $this->rg->limit($path);
       //  var_dump($this->rg->errorMessage);

@@ -4,9 +4,9 @@ require_once('basetest.php');
 
 class TestListAccounts extends PrecogBaseTest {
 
-    function setupAccount(){
-        
-        $accountId = createAccount("fakeEmailAddress@precog.com");
+     function setupAccount(){
+        $email = json_encode(array("email"=>"fakeEmailAddress@precog.com"));
+        $accountId = createAccount($email);
          return $accountId;
     }
 

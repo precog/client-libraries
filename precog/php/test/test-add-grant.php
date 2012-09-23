@@ -4,10 +4,10 @@ require_once('basetest.php');
 
 class TestAddGrant extends PrecogBaseTest {
 
-    function setupAccount(){
-
-        $accountId = createAccount("fakeEmailAddress@precog.com");
-        return $accountId;
+     function setupAccount(){
+        $email = json_encode(array("email"=>"fakeEmailAddress@precog.com"));
+        $accountId = createAccount($email);
+         return $accountId;
     }
 
     function addGrantTest()
