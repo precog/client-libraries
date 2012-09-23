@@ -15,10 +15,10 @@ class TestSort extends PrecogBaseTest {
     {
         $path = $this->setupPath(); 
         $options1 = array("limit"=>1, "sortOn" => true, "sortOrder"=>asc);
-        $options2 = array("limit"=>1), "sortOn" => true, "sortOrder"=>desc);
+        $options2 = array("limit"=>1, "sortOn" => true, "sortOrder"=>des);
         sleep(10);
 
-        $value1 = $this->rg->query("count(/$path)", $options1;
+        $value1 = $this->rg->query("count(/$path)", $options1);
         $value2 = $this->rg->query("count(/$path)", $options2);
 
         $this->assertTrue($value1[0] != $value2[0]);

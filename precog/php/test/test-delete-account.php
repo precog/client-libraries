@@ -6,7 +6,7 @@ class TestDeleteAccount extends PrecogBaseTest {
 
     function setupAccount(){
         
-        $accountId = createAccount(fakeEmailAddress@precog.com);
+        $accountId = createAccount("fakeEmailAddress@precog.com");
          return $accountId;
     }
       

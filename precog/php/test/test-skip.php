@@ -15,11 +15,11 @@ class TestSkip extends PrecogBaseTest {
     {
         $path = $this->setupPath(); 
         $options1 = array("limit"=>1, "skip"=>false);
-        $options2 = array("limit"=>1), "skip"=>true);
+        $options2 = array("limit"=>1, "skip"=>true);
 
         sleep(10);
 
-        $value1 = $this->rg->query("count(/$path)", $options1;
+        $value1 = $this->rg->query("count(/$path)", $options1);
         $value2 = $this->rg->query("count(/$path)", $options2);
 
 

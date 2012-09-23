@@ -26,9 +26,9 @@ abstract class PrecogBaseTest extends UnitTestCase {
 		$HOST  = "devapi.precog.com";
 		$PORT  = 80;
 		$VERSION  = 1;
-		$TOKEN = PrecogBaseTest::$id;
+		$APIKEY = PrecogBaseTest::$id;
 
-        $options = getopt("", array("host:", "port:", "version:", "token:"));
+        $options = getopt("", array("host:", "port:", "version:", "APIKEY:"));
 
 		foreach ($options as $option => $value) {
 			switch($option) {
@@ -41,8 +41,8 @@ abstract class PrecogBaseTest extends UnitTestCase {
 				case "version":
 					$VERSION = $value;
 					break;
-				case "token":
-					$TOKEN = $value;
+				case "APIKEY":
+					$APIKEY = $value;
 					break;
 			}
 		}
@@ -50,7 +50,7 @@ abstract class PrecogBaseTest extends UnitTestCase {
 		 $URL = "http://$HOST:$PORT";
 		echo "Starting test against $URL\n";
 
-		return new PrecogAPI($TOKEN, $URL, $VERSION);	
+		return new PrecogAPI($APIKEY, $URL, $VERSION);	
 	}
 
 	var $rg;

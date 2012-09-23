@@ -14,9 +14,10 @@ class TestRetrieveMetadata extends PrecogBaseTest {
     function retrieveMetadataTest()
     {
         $path = $this->setupPath();
-        $result = $this->retrieveMetadata($path)
+        $childPath = $path."/childPath";
+        $result = $this->retrieveMetadata($path, "children");
 
-        $this->assertTrue($result //????;
+        $this->assertTrue($result  === json_encode(array("children"=>"childPath"))); //????;
     }
 }
 ?>
