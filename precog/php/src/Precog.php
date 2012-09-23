@@ -53,17 +53,17 @@ class PrecogAPI {
         return $return !== false;
     }
 
-    public function addGrant($id, $grantId) 
+    public function addGrantToAccount($id, $grantId) 
     {
         $url = $this->servicePath("accounts").$id."/"."grants/"; 
-        $return = $this->restHelper($url, array("grantId"=>$grandId, "POST");
+        $return = $this->restHelper($url, array("grantId"=>$grandId), "POST");
         return $return !== false;
     }
 
      public function changePlan($id, $plan) 
     {
         $url = $this->servicePath("accounts").$id."/"."plan/"; 
-        $return = $this->restHelper($url, array("type"=>$plan, "PUT");
+        $return = $this->restHelper($url, array("type"=>$plan), "PUT");
         return $return !== false;
     }
 
@@ -85,7 +85,7 @@ class PrecogAPI {
     // ****** INGEST APIS ********
     // ***************************
 
-     public function ingestAsync($path, $apiKey, $file $ownerAccountId ) 
+     public function ingestAsync($path, $apiKey, $file, $ownerAccountId ) 
     {
        if(isset($ownerAccountId)){
          $url = $this->servicePath("ingest")."async/fs/".$path."?apiKey=".$apiKey."&ownerAccountId=".$ownerAccountId; 
@@ -98,7 +98,7 @@ class PrecogAPI {
        
     }
 
-       public function ingestSync($path, $apiKey, $file $ownerAccountId ) 
+       public function ingestSync($path, $apiKey, $file, $ownerAccountId ) 
     {
        if(isset($ownerAccountId)){
          $url = $this->servicePath("ingest")."sync/fs/".$path."?apiKey=".$apiKey."&ownerAccountId=".$ownerAccountId; 
@@ -215,7 +215,7 @@ class PrecogAPI {
         return $return !== false;  
     }
 
-    public function addGrant($apiKey, $authorizingKey, $grant) 
+    public function addGrantToKey($apiKey, $authorizingKey, $grant) 
     {
        $url = $this->servicePath("security")."apikeys/".$apiKey."/grants/?apiKey=".$authorizingKey; 
         $return = $this->restHelper($url, $grant, "GET");
