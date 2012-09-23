@@ -122,3 +122,98 @@ asyncTest( "limitPass", function() {
 		}
 	);
 });
+
+asyncTest( "basePathPass", function() {
+	expect(1);
+	var timeStamp = +new Date(),
+		event = {strTest: "string loaded", numTest: 42, time:timeStamp};
+	Precog.store("/unit_test/beta/test/js/store",
+		event, 
+		function(){
+			var query = "data := //js/store data where data.time = "+timeStamp;
+			setTimeout(function() {
+				Precog.query(query, 
+					function(result) {
+					deepEqual(result, [event]);
+					start();
+				},
+						function(){
+							ok(false);
+							start();
+						},
+							{basePath: "unit_test/beta/test/"}
+				)
+			}, 3000);
+		},
+		function(){
+			ok(false);
+			start();
+		}
+	);
+});
+
+asyncTest( "skipPass", function() {
+	expect(1);
+	Precog.store("/unit_test/beta/test/js/skip", "A")
+	Precog.store("/unit_test/beta/test/js/skip", "B",
+		function(){
+			var query = "//unit_test/beta/test/js/skip";
+			setTimeout(function() {
+				Precog.query(query, 
+					function(result1) {
+						Precog.query(query,
+							function(result2){
+								ok(result1 != result2);
+								start();
+							},
+								function(){
+								ok(false);
+								start();
+								},	
+									{limit: 1, skip: 1}
+							
+					)},
+						function(){
+							ok(false);
+							start();
+						},
+						{limit: 1, skip: 0}
+				)
+			}, 3000);
+		},
+		function(){
+			ok(false);
+			start();
+		}
+	);
+});
+
+asyncTest( "orderPass", function() {
+	expect(1);
+	var timeStamp = +new Date(),
+		event = {strTest: "string loaded", numTest: 42, time:timeStamp};
+	Precog.store("/unit_test/beta/test/js/store",
+		event, 
+		function(){
+			var query = "data := //unit_test/beta/test/js/store count(data where data.time = "+timeStamp+")";
+			setTimeout(function() {
+				Precog.query(query, 
+					function(result) {
+					ok(result ===0);
+					start();
+				},
+						function(){
+							ok(false);
+							start();
+						},
+							{order: ascending}
+				)
+			}, 3000);
+		},
+		function(){
+			ok(false);
+			start();
+		}
+	);
+});
+

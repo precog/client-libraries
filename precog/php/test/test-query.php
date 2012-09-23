@@ -22,7 +22,7 @@ class TestQuery extends PrecogBaseTest {
             a + num");
 
         $this->assertIsA($value, "Array");
-        $this->assertTrue($value[0] == 5);
+        $this->assertTrue($value[0] == 5, "should be 5 but is ".$value[0]);
     }
 
     function testChildren()
