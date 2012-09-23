@@ -368,7 +368,7 @@ class PrecogAPI {
     {
         return trim($path, '/');
     }
-    private function actionUrl($service, $action){
+    private function actionUrl($service, $action = FALSE){
        return $this->_baseUrl."/".$service."/v".$this->_version."/".($action ? $action."/" : "");
     }
 }
