@@ -347,13 +347,11 @@ class PrecogAPI {
             }//end middle else
 
         } else {
-
             /*
              * If there's an error message in the response
              * headers...send that back to the user
              */
             if (isset($http_response_header[0])) {
-
                 $this->isError = true;
                 $this->errorMessage = $http_response_header[0];
                 $return = false;

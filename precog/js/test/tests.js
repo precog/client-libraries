@@ -19,67 +19,47 @@ asyncTest( "deletePass", function() {
 	Precog.store(path,
 		{strTest: "string loaded", numTest: 42},
 		function(){
-console.log("a");
 			setTimeout(function(){
-console.log("b");
-				Precog.delete(path,
+				Precog.deletePath(path,
 					function(){
 						setTimeout(function(){
-console.log("c");
 							Precog.query("count(/"+path+")",
 								function(result){
-console.log("c2");
 									ok(result[0] === 0);
 									start();
 								});
 						}, 500);
 					},
 					function(){
-console.log("d");
 						ok(false);
 						start();
-					})
-				}, 1000);
+					}
+				);
+			}, 1000);
 		},
 		function(){
-console.log("e");
 			ok(false);
 			start();
 		}
 	);
 });
-//TODO error code is not sufficient information
 
-asyncTest( "storeFail", function() {
-	expect(1);
-	Precog.store("?",
-		{strTest: "string loaded", numTest: 42},
-		function(){
-			ok(false);
-			start();
-		},
-		function(e){
-			console.log(e);
-			ok(true);
-			start();
-		}
-	);
-});
-
-asyncTest( "queryPass", function() {
+asyncTest( "query", function() {
 	expect(1);
 	var timeStamp = +new Date(),
 		event = {strTest: "string loaded", numTest: 42, time:timeStamp};
-	Precog.store("/unit_test/beta/test/js/store",
-		event, 
+	Precog.store("/unit_test/beta/test/js/query",
+		event,
 		function(){
-			var query = "data := //unit_test/beta/test/js/store data where data.time = "+timeStamp;
+			var query = "data := //unit_test/beta/test/js/query data where data.time = "+timeStamp;
+console.log(query);
 			setTimeout(function() {
 				Precog.query(query, function(result) {
+console.log(result, event);
 					deepEqual(result, [event]);
 					start();
-				})
-			}, 3000);
+				});
+			}, 5000);
 		},
 		function(){
 			ok(false);
@@ -93,7 +73,7 @@ asyncTest( "limitPass", function() {
 
 	var store1 = {strTest: "string loaded", numTest: 42};
 
-	Precog.store("/unit_test/beta/test/js/store", store1, 
+	Precog.store("/unit_test/beta/test/js/store", store1,
 		function(){
 			Precog.store("/unit_test/beta/test/js/store", store1,
 				function(){
@@ -128,11 +108,11 @@ asyncTest( "basePathPass", function() {
 	var timeStamp = +new Date(),
 		event = {strTest: "string loaded", numTest: 42, time:timeStamp};
 	Precog.store("/unit_test/beta/test/js/store",
-		event, 
+		event,
 		function(){
 			var query = "data := //js/store data where data.time = "+timeStamp;
 			setTimeout(function() {
-				Precog.query(query, 
+				Precog.query(query,
 					function(result) {
 					deepEqual(result, [event]);
 					start();
@@ -142,7 +122,7 @@ asyncTest( "basePathPass", function() {
 							start();
 						},
 							{basePath: "unit_test/beta/test/"}
-				)
+				);
 			}, 3000);
 		},
 		function(){
@@ -154,12 +134,12 @@ asyncTest( "basePathPass", function() {
 
 asyncTest( "skipPass", function() {
 	expect(1);
-	Precog.store("/unit_test/beta/test/js/skip", "A")
+	Precog.store("/unit_test/beta/test/js/skip", "A");
 	Precog.store("/unit_test/beta/test/js/skip", "B",
 		function(){
 			var query = "//unit_test/beta/test/js/skip";
 			setTimeout(function() {
-				Precog.query(query, 
+				Precog.query(query,
 					function(result1) {
 						Precog.query(query,
 							function(result2){
@@ -169,16 +149,17 @@ asyncTest( "skipPass", function() {
 								function(){
 								ok(false);
 								start();
-								},	
+								},
 									{limit: 1, skip: 1}
-							
-					)},
-						function(){
-							ok(false);
-							start();
-						},
-						{limit: 1, skip: 0}
-				)
+
+						);
+					},
+					function(){
+						ok(false);
+						start();
+					},
+					{limit: 1, skip: 0}
+				);
 			}, 3000);
 		},
 		function(){
@@ -193,21 +174,21 @@ asyncTest( "orderPass", function() {
 	var timeStamp = +new Date(),
 		event = {strTest: "string loaded", numTest: 42, time:timeStamp};
 	Precog.store("/unit_test/beta/test/js/store",
-		event, 
+		event,
 		function(){
 			var query = "data := //unit_test/beta/test/js/store count(data where data.time = "+timeStamp+")";
 			setTimeout(function() {
-				Precog.query(query, 
+				Precog.query(query,
 					function(result) {
 					ok(result ===0);
 					start();
 				},
-						function(){
-							ok(false);
-							start();
-						},
-							{order: ascending}
-				)
+				function(){
+					ok(false);
+					start();
+				},
+				{order: "ascending"}
+				);
 			}, 3000);
 		},
 		function(){

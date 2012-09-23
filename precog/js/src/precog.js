@@ -186,9 +186,14 @@ throw new SyntaxError('JSON.parse');};}}());
       return path.replace(/[\/]+/g, "/");
     },
 
-    sanitizePath: function(path) {
+    trimPath: function(path) {
       if (!path) throw Error("path cannot be undefined");
-      else return Util.removeDuplicateSlashes("/" + path + "/");
+      path = Util.removeDuplicateSlashes("/" + path + "/");
+      if(path.substr(0, 1) === "/")
+        path = path.substr(1);
+      if(path.substr(-1) === "/")
+        path = path.substr(0, path.length - 1);
+      return path;
     },
 
     parseResponseHeaders: function(headerStr) {
@@ -209,8 +214,12 @@ throw new SyntaxError('JSON.parse');};}}());
       return headers;
     },
 
-    servicePath: function(server, version, service, path) {
+    actionUrl: function(service, action, options) {
+      options = options || {};
+      var host    = options.analyticsService || $.Config.analyticsService,
+          version = options.version || $.Config.version;
 
+      return host + service + "/v" + version + "/" + action + "/";
     }
   };
 
@@ -401,14 +410,14 @@ throw new SyntaxError('JSON.parse');};}}());
 
   $.Util.extend($.Config,
     {
-      analyticsService: Util.getProtocol() + "//api.precog.io/",
-      useJsonp : "true",
+      analyticsService: Util.getProtocol() + "//api.precog.com/",
+      useJsonp  : "true",
       enableLog : "false",
-      version : 1
+      version   : 1
     }
   );
 
-  $.Config.analyticsService = Util.removeTrailingSlash($.PageConfig.analyticsService || $.Config.analyticsService);
+  $.Config.analyticsService = $.PageConfig.analyticsService || $.Config.analyticsService;
   $.Config.apiKey = $.PageConfig.apiKey || $.Config.apiKey;
 
   $.Http = function() {
@@ -436,7 +445,7 @@ throw new SyntaxError('JSON.parse');};}}());
         params = {apiKey : options.apiKey || $.Config.apiKey, q : query };
 
     if(options.limit)
-      params.limit = options.limit;
+      params.limit = options.limit || $.Config.limit;
     if(options.basePath)
       params.basePath = options.basePath;
     if(options.skip)
@@ -449,7 +458,7 @@ throw new SyntaxError('JSON.parse');};}}());
       params.sortOrder = (options.sortOrder instanceof Array ? options.sortOrder[0] : options.sortOrder).toLowerCase();
 
     http.get(
-      $.Config.analyticsService + '/vfs/',
+      Util.actionUrl("analytics", "fs", options),
       Util.createCallbacks(success, failure, description),
       params
     );
@@ -481,59 +490,54 @@ throw new SyntaxError('JSON.parse');};}}());
 };
   $.Md5 = function(s) { return new Md5().doEncode(s); };
 
-  Precog.children = function(path, success, failure) {
-    path = Util.sanitizePath(path);
+  Precog.children = function(path, success, failure, options) {
+    path = Util.trimPath(path);
     var description = 'List children path of ' + path,
-        parameters = {
-          apiKey: (options && options.apiKey) || $.Config.apiKey
-        },
-        analyticsService = (options && options.analyticsService) || $.Config.analyticsService;
+        parameters = { apiKey: (options && options.apiKey) || $.Config.apiKey };
     if(!parameters.apiKey) throw Error("apiKey not specified");
-    if(!analyticsService) throw Error("analyticsService not specified");
     http.get(
-      analyticsService + '/vfs' + path.substr(0, path.length - 1),
-      event,
-      Util.createCallbacks(success, failure, description),
+      Util.actionUrl("meta", "fs") + path,
+      Util.createCallbacks(
+        function(result) {
+          success(result["children"]);
+        },
+        failure,
+        description
+      ),
       parameters
     );
   }
 
   Precog.store = function(path, event, success, failure, options) {
-    path = Util.sanitizePath(path);
+    path = Util.trimPath(path);
 
     if (event === null || "undefined" === typeof event) throw Error("argument 'events' cannot be null or undefined");
 
     var description = 'Track event (' + JSON.stringify(event) + ')',
-        parameters = {
-          apiKey: (options && options.apiKey) || $.Config.apiKey
-        },
-        analyticsService = (options && options.analyticsService) || $.Config.analyticsService;
+        parameters = { apiKey: (options && options.apiKey) || $.Config.apiKey };
     
     if(!parameters.apiKey) throw Error("apiKey not specified");
-    if(!analyticsService) throw Error("analyticsService not specified");
 
     http.post(
-      analyticsService + '/vfs' + path.substr(0, path.length - 1),
+      Util.actionUrl("ingest", "sync/fs", options) + path,
       event,
       Util.createCallbacks(success, failure, description),
       parameters
     );
   };
 
-  Precog.delete = function(path, success, failure, options) {
-    path = Util.sanitizePath(path);
+  Precog.deletePath = function(path, success, failure, options) {
+    path = Util.trimPath(path);
 
     var description = 'Delete path: ' + path,
         parameters = {
           apiKey: (options && options.apiKey) || $.Config.apiKey
-        },
-        analyticsService = (options && options.analyticsService) || $.Config.analyticsService;
+        };
 
     if(!parameters.apiKey) throw Error("apiKey not specified");
-    if(!analyticsService) throw Error("analyticsService not specified");
 
     http.remove(
-      analyticsService + '/vfs' + path.substr(0, path.length - 1),
+      Util.actionUrl("ingest", "sync/fs", options) + path,
       Util.createCallbacks(success, failure, description),
       parameters
     );
