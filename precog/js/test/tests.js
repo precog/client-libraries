@@ -1,15 +1,32 @@
+function callbackIsOk() {
+	ok(true);
+	start();
+}
+
+function callbackIsError() {
+	ok(false);
+	start();
+}
+
+function createCallBackIsError(repetitions) {
+	return function() {
+		for(var i = 0; i < repetitions; i++) ok(false);
+		start();
+	};
+}
+
+function createDelayedAction(f) {
+	return function() {
+		setTimeout(f, 6000);
+	};
+}
+
 asyncTest( "storePass", function() {
 	expect(1);
 	Precog.store("/unit_test/beta/test/js/store",
 		{strTest: "string loaded", numTest: 42},
-		function(){
-			ok(true);
-			start();
-		},
-		function(){
-			ok(false);
-			start();
-		}
+		callbackIsOk,
+		callbackIsError
 	);
 });
 
@@ -18,29 +35,20 @@ asyncTest( "deletePass", function() {
 	var path = "/unit_test/beta/test/js/delete";
 	Precog.store(path,
 		{strTest: "string loaded", numTest: 42},
-		function(){
-			setTimeout(function(){
-				Precog.deletePath(path,
-					function(){
-						setTimeout(function(){
-							Precog.query("count(/"+path+")",
-								function(result){
-									ok(result[0] === 0);
-									start();
-								});
-						}, 500);
-					},
-					function(){
-						ok(false);
-						start();
-					}
-				);
-			}, 1000);
-		},
-		function(){
-			ok(false);
-			start();
-		}
+		createDelayedAction(function(){
+			Precog.deletePath(path,
+				createDelayedAction(function(){
+					Precog.query("count(/"+path+")",
+						function(result){
+							ok(result[0] === 0);
+							start();
+						}
+					);
+				}),
+				callbackIsError
+			);
+		}),
+		callbackIsError
 	);
 });
 
@@ -50,21 +58,14 @@ asyncTest( "query", function() {
 		event = {strTest: "string loaded", numTest: 43, time:timeStamp};
 	Precog.store("/unit_test/beta/test/js/query",
 		event,
-		function(){
+		createDelayedAction(function() {
 			var query = "data := //unit_test/beta/test/js/query data where data.time = "+timeStamp;
-console.log(query);
-			setTimeout(function() {
-				Precog.query(query, function(result) {
-console.log(result, event);
-					deepEqual(result, [event]);
-					start();
-				});
-			}, 5000);
-		},
-		function(){
-			ok(false);
-			start();
-		}
+			Precog.query(query, function(result) {
+				deepEqual(result, [event]);
+				start();
+			});
+		}),
+		callbackIsError
 	);
 });
 
@@ -76,30 +77,20 @@ asyncTest( "limitPass", function() {
 	Precog.store("/unit_test/beta/test/js/store", store1,
 		function(){
 			Precog.store("/unit_test/beta/test/js/store", store1,
-				function(){
+				createDelayedAction(function(){
 					var query = "//unit_test/beta/test/js/store";
-					setTimeout(
-						function(){
-							Precog.query(query,
-								function(result){
-									ok(result.length === 1);
-									start();
-								},
-								function(){
-									ok(false);
-									start();
-								},
-								{limit: 1}
-							);
-						}, 5000
+					Precog.query(query,
+						function(result){
+							ok(result.length === 1);
+							start();
+						},
+						callbackIsError,
+						{limit: 1}
 					);
-				}
+				})
 			);
 		},
-		function(){
-			ok(false);
-			start();
-		}
+		callbackIsError
 	);
 });
 /*
@@ -109,26 +100,18 @@ asyncTest( "basePathPass", function() {
 		event = {strTest: "string loaded", numTest: 42, time:timeStamp};
 	Precog.store("/unit_test/beta/test/js/store",
 		event,
-		function(){
+		createDelayedAction(function() {
 			var query = "data := //js/store data where data.time = "+timeStamp;
-			setTimeout(function() {
-				Precog.query(query,
-					function(result) {
+			Precog.query(query,
+				function(result) {
 					deepEqual(result, [event]);
 					start();
 				},
-						function(){
-							ok(false);
-							start();
-						},
-							{basePath: "unit_test/beta/test/"}
-				);
-			}, 3000);
-		},
-		function(){
-			ok(false);
-			start();
-		}
+				callbackIsError,
+				{basePath: "unit_test/beta/test/"}
+			);
+		}),
+		callbackIsError
 	);
 });
 */
@@ -136,36 +119,24 @@ asyncTest( "skipPass", function() {
 	expect(1);
 	Precog.store("/unit_test/beta/test/js/skip", "A");
 	Precog.store("/unit_test/beta/test/js/skip", "B",
-		function(){
+		createDelayedAction(function() {
 			var query = "//unit_test/beta/test/js/skip";
-			setTimeout(function() {
-				Precog.query(query,
-					function(result1) {
-						Precog.query(query,
-							function(result2){
-								ok(result1 != result2);
-								start();
-							},
-								function(){
-								ok(false);
-								start();
-								},
-									{limit: 1, skip: 1}
-
-						);
-					},
-					function(){
-						ok(false);
-						start();
-					},
-					{limit: 1, skip: 0}
-				);
-			}, 3000);
-		},
-		function(){
-			ok(false);
-			start();
-		}
+			Precog.query(query,
+				function(result1) {
+					Precog.query(query,
+						function(result2){
+							ok(result1 != result2);
+							start();
+						},
+						callbackIsError,
+						{limit: 1, skip: 1}
+					);
+				},
+				callbackIsError,
+				{limit: 1, skip: 0}
+			);
+		}),
+		callbackIsError
 	);
 });
 
@@ -176,41 +147,27 @@ asyncTest( "orderPass", function() {
 		event2 = { num : 2, time : timeStamp };
 	Precog.store("/unit_test/beta/test/js/order", event1);
 	Precog.store("/unit_test/beta/test/js/order", event2,
-		function(){
+		createDelayedAction(function() {
 			var query = "data := //unit_test/beta/test/js/order data where data.time = "+timeStamp;
-			setTimeout(function() {
-				Precog.query(
-					query,
-					function(result) {
-						ok(result[0] && result[0].num === 1);
-						Precog.query(
-							query,
-							function(result) {
-								ok(result[0] && result[0].num === 2);
-								start();
-							},
-							function(){
-								ok(false);
-								ok(false);
-								start();
-							},
-							{ sortOn : "num", sortOrder : "desc"}
-						);
-					},
-					function(){
-						ok(false);
-						ok(false);
-						start();
-					},
-					{ sortOn : "num", sortOrder : "asc"}
-				);
-			}, 5000);
-		},
-		function(){
-			ok(false);
-			ok(false);
-			start();
-		}
+			Precog.query(
+				query,
+				function(result) {
+					ok(result[0] && result[0].num === 1);
+					Precog.query(
+						query,
+						function(result) {
+							ok(result[0] && result[0].num === 2);
+							start();
+						},
+						createCallBackIsError(2),
+						{ sortOn : "num", sortOrder : "desc"}
+					);
+				},
+				createCallBackIsError(2),
+				{ sortOn : "num", sortOrder : "asc"}
+			);
+		}),
+		createCallBackIsError(2)
 	);
 });
 
