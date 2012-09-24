@@ -120,7 +120,7 @@ function removeAccount(id, callack) {
 function createAccount(callack) {
 	Precog.createAccount(email, password, function(r) { setTimeout(function() { callack(r['accountId']); }, ms); });
 }
-
+/*
 asyncTest("describe account", function() {
 	expect(1);
 	createAccount(function(id) {
@@ -131,6 +131,7 @@ asyncTest("describe account", function() {
 		});
 	});
 });
+*/
 
 /*
 asyncTest("create and retrieve key", function() {
