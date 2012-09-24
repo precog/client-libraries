@@ -85,19 +85,6 @@ class PrecogAPI {
     // ****** INGEST APIS ********
     // ***************************
 
-    public function ingestAsync($path, $apiKey, $file, $ownerAccountId )
-    {
-       if(isset($ownerAccountId)){
-         $url = $this->actionUrl("ingest","async/fs/").$path."?apiKey=".$apiKey."&ownerAccountId=".$ownerAccountId;
-        $return = $this->restHelper($url, $file, "POST");
-        return $return !== false;
-       }
-       $url = $this->actionUrl("ingest","async/fs/").$path."?apiKey=".$apiKey;
-        $return = $this->restHelper($url, $file, "POST");
-        return $return !== false;
-
-    }
-
     public function ingestSync($path, $apiKey, $file, $ownerAccountId )
     {
        if(isset($ownerAccountId)){
@@ -111,15 +98,14 @@ class PrecogAPI {
 
     }
 
-        /*
-     * Record a new event
-     *
-     * @param String $path The path in which to store this event
-     * @param Array $events event data
-     *
-     * @return Bool - success/failure
-     */
-
+    /*
+    * Record a new event
+    *
+    * @param String $path The path in which to store this event
+    * @param Array $events event data
+    *
+    * @return Bool - success/failure
+    */
     public function store($path, $event)
     {
         $path2  = $this->actionUrl("ingest", "sync/fs") . $this->cleanPath($path) . "?apiKey=" . $this->_apiKey;
@@ -127,17 +113,44 @@ class PrecogAPI {
         return $return !== false;
     }
 
+    public function asyncStore($path, $event)
+    {
+        $path2  = $this->actionUrl("ingest", "async/fs") . $this->cleanPath($path) . "?apiKey=" . $this->_apiKey;
+        $return = $this->restHelper($path2, $event, "POST");
+        return $return !== false;
+    }
+
+    public function delete($path)
+    {
+        $path2  = $this->actionUrl("ingest", "sync/fs") . $this->cleanPath($path) . "?apiKey=" . $this->_apiKey;
+        var_dump($path2);
+        $return = $this->restHelper($path2, null, "DELETE");
+        return $return !== false;
+    }
+
     // ***************************
     // ****** METADATA APIS ******
     // ***************************
-     public function retrieveMetadata($path, $type = "")
+    public function retrieveMetadata($path, $type = "")
     {
         $url = $this->actionUrl("meta", "fs")."$path?apiKey=".$this->_apiKey."#".$type;
         $return = $this->restHelper($url, null, "GET");
         return $return;
     }
 
-
+    /*
+     * Returns an array of sub-paths
+     * @params String - path
+     *
+     * @return Array - an array of values
+     */
+    public function listChildren($path)
+    {
+        $path = $this->cleanPath($path);
+        $path2  = $this->actionUrl("meta","fs")."$path?apiKey=" . $this->_apiKey."#children";
+        $return = $this->restHelper($path2, null, "GET");
+        return $return ? $return['children'] : $return;
+    }
 
     // ***************************
     // ****** ANALYTICS APIS *****
@@ -257,34 +270,11 @@ class PrecogAPI {
         return $return;
     }
 
-      public function createChildGrant($apiKey, $grantId, $type)
+    public function createChildGrant($apiKey, $grantId, $type)
     {
        $url = $this->actionUrl("security","grants").$grantId."/children/?apiKey=".$apiKey;
         $return = $this->restHelper($url, $type, "POST");
         return $return;
-    }
-
-
-    /*
-     * Returns an array of sub-paths
-     * @params String - path
-     *
-     * @return Array - an array of values
-     */
-    public function listChildren($path)
-    {
-        $path = $this->cleanPath($path);
-        $path2  = $this->actionUrl("meta","fs")."$path?apiKey=" . $this->_apiKey."#children";
-        $return = $this->restHelper($path2, null, "GET");
-        return $return ? $return['children'] : $return;
-    }
-
-    public function delete($path)
-    {
-        $path2  = $this->actionUrl("ingest", "sync/fs") . $this->cleanPath($path) . "?apiKey=" . $this->_apiKey;
-        var_dump($path2);
-        $return = $this->restHelper($path2, null, "DELETE");
-        return $return !== false;
     }
 
     /*********************************

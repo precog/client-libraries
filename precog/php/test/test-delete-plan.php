@@ -2,20 +2,21 @@
 
 require_once('basetest.php');
 
-class deletePlanCaseTest extends PrecogBaseTest {
+class DeletePlanTest extends PrecogBaseTest {
 
-     function setupAccount(){
+    function setupAccount(){
         $email = json_encode(array("email"=>"fakeEmailAddress@precog.com"));
         $accountId = $this->api->createAccount($email);
-         return $accountId;
+        return $accountId;
     }
-      
+
     function testDeletePlanCase()
     {
         $account = $this->api->setupAccount();
         $this->api->deletePlan($account);
-       
-        $this->assertTrue($this->api->$describeAccount($account) == array("plan")=>"starter");
+        sleep(3);
+        $result = $this->api->$describeAccount($account);
+        $this->assertTrue($result["plan"] === "starter");
     }
 }
 ?>

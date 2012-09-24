@@ -2,7 +2,7 @@
 
 require_once('basetest.php');
 
-class storingCaseTest extends PrecogBaseTest {
+class StoreTest extends PrecogBaseTest {
     var $path = "/unit_test/beta/test/php/store";
     function testStoreCase()
     {

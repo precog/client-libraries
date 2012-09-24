@@ -2,12 +2,12 @@
 
 require_once('basetest.php');
 
-class addGrantCaseTest extends PrecogBaseTest {
+class AddGrantTest extends PrecogBaseTest {
 
-     function setupAccount(){
+    function setupAccount(){
         $email = json_encode(array("email"=>"fakeEmailAddress@precog.com"));
         $accountId = $this->api->createAccount($email);
-         return $accountId;
+        return $accountId;
     }
 
     function testAddGrantCase()
@@ -15,9 +15,7 @@ class addGrantCaseTest extends PrecogBaseTest {
         $account = $this->setupAccount();
         $grantId = array("grant"=> "write");//??
         $grantAdded = $this->api->addGrantToAccount($account, $grantId);
-
-
-        $this->assertTrue($this->api->$describeAccount($account) === $grantAdded);
+        $this->assertTrue($this->api->describeAccount($account) === $grantAdded);
     }
 }
 ?>

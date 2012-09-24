@@ -2,7 +2,7 @@
 
 require_once('basetest.php');
 
-class retrieveMetadataCaseTest extends PrecogBaseTest {
+class RetrieveMetadataTest extends PrecogBaseTest {
 
      function setupPath()
     {
