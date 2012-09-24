@@ -2,7 +2,7 @@
 
 require_once('basetest.php');
 
-class ListAccountsTest extends PrecogBaseTest {
+class describeAccountPlanCaseTest extends PrecogBaseTest {
 
      function setupAccount(){
         $email = array("email"=>"fakeEmailAddress@precog.com");
@@ -10,12 +10,14 @@ class ListAccountsTest extends PrecogBaseTest {
          return $accountId;
     }
 
-    function testListAccountsCase()
+      
+    function testDescribeAccountPlanCase()
     {
         $account = $this->setupAccount();
-        $list = $this->api->listAccounts($account);
-        sleep(5);
-        $this->assertTrue($account["accountId"] === $list["accountId"]);
+        $description = $this->api->describeAccountPlan($account["accountId"]);
+
+        $this->assertTrue($description["type"] != null);
+   
     }
 }
 ?>

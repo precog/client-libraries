@@ -13,10 +13,19 @@ class DeletePlanTest extends PrecogBaseTest {
     function testDeletePlanCase()
     {
         $account = $this->api->setupAccount();
+        $plan = array("plan"=>"bronze");//??
+        $changedPlan = $this->api->changePlan($account, $plan);
         $this->api->deletePlan($account);
+<<<<<<< HEAD
         sleep(3);
         $result = $this->api->$describeAccount($account);
         $this->assertTrue($result["plan"] === "starter");
+=======
+
+        sleep(5);
+       
+        $this->assertTrue($this->api->$describeAccount($account["type"]) === "starter");
+>>>>>>> updated some tests and added outlines of some security api tests
     }
 }
 ?>
