@@ -55,6 +55,123 @@ throw new SyntaxError('JSON.parse');};}}());
 (function() {
   var Precog = window.Precog = (window.Precog || {});
   var Util = {
+/**
+*
+*  Base64 encode / decode
+*  http://www.webtoolkit.info/
+*
+**/
+    Base64 : {
+      // private property
+      _keyStr : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+      // public method for encoding
+      encode : function (input) {
+        var output = "";
+        var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+        var i = 0;
+        input = this._utf8_encode(input);
+        while (i < input.length) {
+          chr1 = input.charCodeAt(i++);
+          chr2 = input.charCodeAt(i++);
+          chr3 = input.charCodeAt(i++);
+          enc1 = chr1 >> 2;
+          enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+          enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+          enc4 = chr3 & 63;
+          if (isNaN(chr2)) {
+            enc3 = enc4 = 64;
+          } else if (isNaN(chr3)) {
+            enc4 = 64;
+          }
+          output = output +
+          this._keyStr.charAt(enc1) + this._keyStr.charAt(enc2) +
+          this._keyStr.charAt(enc3) + this._keyStr.charAt(enc4);
+        }
+        return output;
+      },
+
+      // public method for decoding
+      decode : function (input) {
+        var output = "";
+        var chr1, chr2, chr3;
+        var enc1, enc2, enc3, enc4;
+        var i = 0;
+        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+        while (i < input.length) {
+          enc1 = this._keyStr.indexOf(input.charAt(i++));
+          enc2 = this._keyStr.indexOf(input.charAt(i++));
+          enc3 = this._keyStr.indexOf(input.charAt(i++));
+          enc4 = this._keyStr.indexOf(input.charAt(i++));
+          chr1 = (enc1 << 2) | (enc2 >> 4);
+          chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+          chr3 = ((enc3 & 3) << 6) | enc4;
+          output = output + String.fromCharCode(chr1);
+          if (enc3 != 64) {
+            output = output + String.fromCharCode(chr2);
+          }
+          if (enc4 != 64) {
+            output = output + String.fromCharCode(chr3);
+          }
+        }
+        output = this._utf8_decode(output);
+        return output;
+      },
+
+      // private method for UTF-8 encoding
+      _utf8_encode : function (string) {
+        string = string.replace(/\r\n/g,"\n");
+        var utftext = "";
+        for (var n = 0; n < string.length; n++) {
+          var c = string.charCodeAt(n);
+          if (c < 128) {
+            utftext += String.fromCharCode(c);
+          }
+          else if((c > 127) && (c < 2048)) {
+            utftext += String.fromCharCode((c >> 6) | 192);
+            utftext += String.fromCharCode((c & 63) | 128);
+          }
+          else {
+            utftext += String.fromCharCode((c >> 12) | 224);
+            utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+            utftext += String.fromCharCode((c & 63) | 128);
+          }
+        }
+        return utftext;
+      },
+
+      // private method for UTF-8 decoding
+      _utf8_decode : function (utftext) {
+        var string = "",
+            i  = 0;
+            c  = 0,
+            c1 = 0,
+            c2 = 0;
+        while ( i < utftext.length ) {
+          c = utftext.charCodeAt(i);
+          if (c < 128) {
+            string += String.fromCharCode(c);
+            i++;
+          }
+          else if((c > 191) && (c < 224)) {
+            c2 = utftext.charCodeAt(i+1);
+            string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+            i += 2;
+          }
+          else {
+            c2 = utftext.charCodeAt(i+1);
+            c3 = utftext.charCodeAt(i+2);
+            string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+            i += 3;
+          }
+        }
+        return string;
+      }
+    },
+    makeBaseAuth : function(user, password) {
+      var tok = user + ':' + password;
+      var hash = this.Base64.encode(tok);
+      return "Basic " + hash;
+    },
     extend : function(object, extensions) {
       for (var name in extensions) {
         if (object[name] === undefined) {
@@ -121,7 +238,7 @@ throw new SyntaxError('JSON.parse');};}}());
           hash = "";
       if(hashtagpos >= 0) {
         hash = "#" + url.substr(hashtagpos + 1);
-        url  = url.substr(0, hashtagpos); 
+        url  = url.substr(0, hashtagpos);
       }
       var suffix = url.indexOf('?') == -1 ? '?' : '&';
       var queries = [];
@@ -221,11 +338,15 @@ throw new SyntaxError('JSON.parse');};}}());
     },
 
     actionUrl: function(service, action, options) {
+      if("undefined" === typeof options && "object" === typeof action) {
+        options = action;
+        action  = null;
+      }
       options = options || {};
       var host    = options.analyticsService || $.Config.analyticsService,
           version = options.version || $.Config.version;
 
-      return host + service + "/v" + version + "/" + action + "/";
+      return host + service + "/v" + version + "/" + (action ? action + "/" : "");
     }
   };
 
@@ -491,6 +612,242 @@ throw new SyntaxError('JSON.parse');};}}());
 
     http.get(
       Util.actionUrl("analytics", "fs", options),
+      Util.createCallbacks(success, failure, description),
+      parameters
+    );
+  };
+
+  // **********************
+  // ***     ACCOUNT    ***
+  // **********************
+  Precog.createAccount = function(email, password, success, failure, options) {
+    var description = 'Create account for ' + email;
+    http.post(
+      Util.actionUrl("accounts", options),
+      { "email" : email, "password" : password },
+      Util.createCallbacks(success, failure, description),
+      null
+    );
+  };
+
+  Precog.describeAccount = function(email, password, accountId, success, failure, options) {
+    var description = 'Describe account ' + accountId;
+    http.get(
+      Util.actionUrl("accounts", accountId, options),
+      Util.createCallbacks(success, failure, description),
+      null,
+      { "Authentication" : Util.makeBaseAuth(email, password) }
+    );
+  };
+
+  Precog.deleteAccount = function(email, password, accountId, success, failure, options) {
+    var description = 'Delete account ' + accountId;
+    http.remove(
+      Util.actionUrl("accounts", accountId, options),
+      Util.createCallbacks(success, failure, description),
+      null,
+      { "Authentication" : Util.makeBaseAuth(email, password) }
+    );
+  };
+
+  Precog.listAccounts = function(email, password, success, failure, options) {
+    var description = 'List accounts for ' + email;
+    http.get(
+      Util.actionUrl("accounts", options),
+      Util.createCallbacks(success, failure, description),
+      null,
+      { "Authentication" : Util.makeBaseAuth(email, password) }
+    );
+  };
+
+  Precog.addGrantToAccount = function(email, password, accountId, grantId, success, failure, options) {
+    var description = 'Add grant '+grantId+' to account ' + accountId;
+    http.post(
+      Util.actionUrl("accounts", accountId, options) + "grants/",
+      { "grantId" : grantId },
+      Util.createCallbacks(success, failure, description),
+      null,
+      { "Authentication" : Util.makeBaseAuth(email, password) }
+    );
+  };
+
+  Precog.describePlan = function(email, password, accountId, success, failure, options) {
+    var description = 'Describe plan ' + accountId;
+    http.get(
+      Util.actionUrl("accounts", accountId, options) + "plan",
+      Util.createCallbacks(success, failure, description),
+      null,
+      { "Authentication" : Util.makeBaseAuth(email, password) }
+    );
+  };
+
+  Precog.changePlan = function(email, password, accountId, type, success, failure, options) {
+    var description = 'Change plan to '+type+' for account ' + accountId;
+    http.post(
+      Util.actionUrl("accounts", accountId, options) + "plan",
+      { "type" : type },
+      Util.createCallbacks(success, failure, description),
+      null,
+      { "Authentication" : Util.makeBaseAuth(email, password) }
+    );
+  };
+
+  Precog.deletePlan = function(email, password, accountId, success, failure, options) {
+    var description = 'Delete account ' + accountId;
+    http.remove(
+      Util.actionUrl("accounts", accountId, options) + "plan",
+      Util.createCallbacks(success, failure, description),
+      null,
+      { "Authentication" : Util.makeBaseAuth(email, password) }
+    );
+  };
+
+  // **********************
+  // ***    SECURITY    ***
+  // **********************
+  Precog.listKeys = function(success, failure, options) {
+    var description = 'Precog Security List Keys',
+        parameters = { apiKey : options.apiKey || $.Config.apiKey };
+
+    if(!parameters.apiKey) throw Error("apiKey not specified");
+    http.get(
+      Util.actionUrl("security", "apikeys", options),
+      Util.createCallbacks(success, failure, description),
+      parameters
+    );
+  };
+
+  Precog.createKey = function(grants, success, failure, options) {
+    var description = 'Create security Key (' + JSON.stringify(grants) + ')',
+        parameters = { apiKey: (options && options.apiKey) || $.Config.apiKey };
+
+    if(!parameters.apiKey) throw Error("apiKey not specified");
+    http.post(
+      Util.actionUrl("security", "apikeys", options),
+      grants,
+      Util.createCallbacks(success, failure, description),
+      parameters
+    );
+  };
+
+  Precog.describeKey = function(apiKey, success, failure, options) {
+    var description = 'Describe security Key for ' + apiKey,
+        parameters = { apiKey: (options && options.apiKey) || $.Config.apiKey };
+
+    if(!parameters.apiKey) throw Error("apiKey not specified");
+    http.get(
+      Util.actionUrl("security", "apikeys", options) + apiKey,
+      Util.createCallbacks(success, failure, description),
+      parameters
+    );
+  };
+
+  Precog.deleteKey = function(apiKey, success, failure, options) {
+    var description = 'Delete security Key for ' + apiKey,
+        parameters = { apiKey: (options && options.apiKey) || $.Config.apiKey };
+
+    if(!parameters.apiKey) throw Error("apiKey not specified");
+    http.remove(
+      Util.actionUrl("security", "apikeys", options) + apiKey,
+      Util.createCallbacks(success, failure, description),
+      parameters
+    );
+  };
+
+  Precog.retrieveGrants = function(apiKey, success, failure, options) {
+    var description = 'Retrieve security grants for ' + apiKey,
+        parameters = { apiKey: (options && options.apiKey) || $.Config.apiKey };
+
+    if(!parameters.apiKey) throw Error("apiKey not specified");
+    http.get(
+      Util.actionUrl("security", "apikeys", options) + apiKey + "/grants/",
+      Util.createCallbacks(success, failure, description),
+      parameters
+    );
+  };
+
+  Precog.addGrantToKey = function(apiKey, grant, success, failure, options) {
+    var description = 'Add grant '+JSON.stringify(grant)+' to '+apiKey,
+        parameters = { apiKey: (options && options.apiKey) || $.Config.apiKey };
+
+    if(!parameters.apiKey) throw Error("apiKey not specified");
+    http.post(
+      Util.actionUrl("security", "apikeys", options) + "grants/",
+      grant,
+      Util.createCallbacks(success, failure, description),
+      parameters
+    );
+  };
+
+  Precog.removeGrant = function(apiKey, grantId, success, failure, options) {
+    var description = 'Remove grant '+grantId+' from key ' + apiKey,
+        parameters = { apiKey: (options && options.apiKey) || $.Config.apiKey };
+
+    if(!parameters.apiKey) throw Error("apiKey not specified");
+    http.remove(
+      Util.actionUrl("security", "apikeys", options) + apiKey + "/grants/" + grantId,
+      Util.createCallbacks(success, failure, description),
+      parameters
+    );
+  };
+
+  Precog.createNewGrant = function(grant, success, failure, options) {
+    var description = 'Create new grant '+JSON.stringify(grant),
+        parameters = { apiKey: (options && options.apiKey) || $.Config.apiKey };
+
+    if(!parameters.apiKey) throw Error("apiKey not specified");
+    http.post(
+      Util.actionUrl("security", "grants", options),
+      grant,
+      Util.createCallbacks(success, failure, description),
+      parameters
+    );
+  };
+
+  Precog.describeGrant = function(grantId, success, failure, options) {
+    var description = 'Describe grant ' + grantId,
+        parameters = { apiKey: (options && options.apiKey) || $.Config.apiKey };
+
+    if(!parameters.apiKey) throw Error("apiKey not specified");
+    http.get(
+      Util.actionUrl("security", "grants", options) + grantId,
+      Util.createCallbacks(success, failure, description),
+      parameters
+    );
+  };
+
+  Precog.deleteGrant = function(grantId, success, failure, options) {
+    var description = 'Delete grant ' + grantId,
+        parameters = { apiKey: (options && options.apiKey) || $.Config.apiKey };
+
+    if(!parameters.apiKey) throw Error("apiKey not specified");
+    http.remove(
+      Util.actionUrl("security", "grants", options) + grantId,
+      Util.createCallbacks(success, failure, description),
+      parameters
+    );
+  };
+
+  Precog.listChildrenGrant = function(grantId, success, failure, options) {
+    var description = 'List children grant ' + grantId,
+        parameters = { apiKey: (options && options.apiKey) || $.Config.apiKey };
+
+    if(!parameters.apiKey) throw Error("apiKey not specified");
+    http.get(
+      Util.actionUrl("security", "grants", options) + grantId + "/children/",
+      Util.createCallbacks(success, failure, description),
+      parameters
+    );
+  };
+
+  Precog.createChildGrant = function(grantId, child, success, failure, options) {
+    var description = 'Create child grant '+JSON.stringify(child)+" for "+grantId,
+        parameters = { apiKey: (options && options.apiKey) || $.Config.apiKey };
+
+    if(!parameters.apiKey) throw Error("apiKey not specified");
+    http.post(
+      Util.actionUrl("security", "grants", options)+grantId+"/children/",
+      child,
       Util.createCallbacks(success, failure, description),
       parameters
     );

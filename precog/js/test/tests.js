@@ -106,6 +106,64 @@ asyncTest("retrieve metadata", function() {
 		callbackIsError
 	);
 });
+
+// **********************
+// ***     ACCOUNT    ***
+// **********************
+var email     = "testjs@precog.com",
+	password  = "123abc",
+	ms        = 4000;
+function removeAccount(id, callack) {
+	Precog.deleteAccount(email, password, id, function() { setTimeout(callack, ms); });
+}
+
+function createAccount(callack) {
+	Precog.createAccount(email, password, function(r) { setTimeout(function() { callack(r['accountId']); }, ms); });
+}
+
+asyncTest("describe account", function() {
+	expect(1);
+	createAccount(function(id) {
+		Precog.describeAccount(email, password, id, function(result) {
+			console.log(result);
+			ok(false);
+			start();
+		});
+	});
+});
+
+/*
+asyncTest("create and retrieve key", function() {
+	expect(2);
+	var grants = { "grants": [{ "type": "read", "path": "/foo/", "expirationDate": null }] };
+	Precog.createKey(grants,
+		function(result) {
+			console.log(result);
+		},
+		callbackIsError
+	);
+});
+*/
+
+/*
+  Precog.createKey(grants, success, failure, options)
+  Precog.describeKey(apiKey, success, failure, options)
+
+  Precog.listKeys(success, failure, options)
+  Precog.deleteKey(apiKey, success, failure, options)
+
+  Precog.createNewGrant(grant, success, failure, options)
+  Precog.describeGrant(grantId, success, failure, options)
+  Precog.deleteGrant(grantId, success, failure, options)
+  Precog.listChildrenGrant(grantId, success, failure, options)
+  Precog.createChildGrant(grantId, child, success, failure, options)
+
+  Precog.retrieveGrants(apiKey, success, failure, options)
+  Precog.addGrantToKey(apiKey, grant, success, failure, options)
+  Precog.removeGrant(apiKey, grantId, success, failure, options)
+*/
+
+
 /*
 asyncTest( "basePathPass", function() {
 	expect(1);
