@@ -21,7 +21,7 @@ function createDelayedAction(f) {
 	};
 }
 
-asyncTest( "storePass", function() {
+asyncTest( "store event", function() {
 	expect(1);
 	Precog.store("/unit_test/beta/test/js/store",
 		{strTest: "string loaded", numTest: 42},
@@ -30,7 +30,7 @@ asyncTest( "storePass", function() {
 	);
 });
 
-asyncTest( "deletePass", function() {
+asyncTest( "delete path", function() {
 	expect(1);
 	var path = "/unit_test/beta/test/js/delete";
 	Precog.store(path,
@@ -69,11 +69,9 @@ asyncTest( "query", function() {
 	);
 });
 
-asyncTest( "limitPass", function() {
+asyncTest( "query with limit", function() {
 	expect(1);
-
 	var store1 = {strTest: "string loaded", numTest: 42};
-
 	Precog.store("/unit_test/beta/test/js/store", store1,
 		function(){
 			Precog.store("/unit_test/beta/test/js/store", store1,
@@ -90,6 +88,21 @@ asyncTest( "limitPass", function() {
 				})
 			);
 		},
+		callbackIsError
+	);
+});
+
+asyncTest("retrieve metadata", function() {
+	expect(1);
+	var store = { value : 1 },
+		path  = "/unit_test/beta/test/js/metadata/retrieve";
+	Precog.store(path, store,
+		createDelayedAction(function() {
+			Precog.retrieveMetadata(path, function(result) {
+				ok(result['children'].length === 0);
+				start();
+			}, callbackIsError);
+		}),
 		callbackIsError
 	);
 });
@@ -115,7 +128,7 @@ asyncTest( "basePathPass", function() {
 	);
 });
 */
-asyncTest( "skipPass", function() {
+asyncTest( "query with skip", function() {
 	expect(1);
 	Precog.store("/unit_test/beta/test/js/skip", "A");
 	Precog.store("/unit_test/beta/test/js/skip", "B",
@@ -140,7 +153,7 @@ asyncTest( "skipPass", function() {
 	);
 });
 
-asyncTest( "orderPass", function() {
+asyncTest( "query with order field", function() {
 	expect(2);
 	var timeStamp = +new Date(),
 		event1 = { num : 1, time : timeStamp },
