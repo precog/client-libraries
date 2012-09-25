@@ -378,7 +378,7 @@ throw new SyntaxError('JSON.parse');};}}());
       request.onreadystatechange = function() {
         var headers = request.getAllResponseHeaders && Util.parseResponseHeaders(request.getAllResponseHeaders()) || {};
         if (request.readyState === 4) {
-          if (request.status === 200 || request.status === "OK") {
+          if (request.status === 200 || request.status === "OK" || request.code === "NoContent") {
             if (request.responseText !== null && request.responseText.length > 0) {
               success(JSON.parse(this.responseText), headers);
             }
@@ -422,7 +422,7 @@ throw new SyntaxError('JSON.parse');};}}());
       var funcName = 'PrecogJsonpCallback' + random.toString();
 
       window[funcName] = function(content, meta) {
-        if (meta.status.code === 200 || meta.status.code === "OK") {
+        if (meta.status.code === 200 || meta.status.code === "OK" || meta.status.code === "NoContent") {
           success(content, meta.headers);
         }
         else {
@@ -633,20 +633,20 @@ throw new SyntaxError('JSON.parse');};}}());
   Precog.describeAccount = function(email, password, accountId, success, failure, options) {
     var description = 'Describe account ' + accountId;
     http.get(
-      Util.actionUrl("accounts", accountId, options),
+      Util.actionUrl("accounts", options) + accountId,
       Util.createCallbacks(success, failure, description),
       null,
-      { "Authentication" : Util.makeBaseAuth(email, password) }
+      { "Authorization" : Util.makeBaseAuth(email, password) }
     );
   };
 
   Precog.deleteAccount = function(email, password, accountId, success, failure, options) {
     var description = 'Delete account ' + accountId;
     http.remove(
-      Util.actionUrl("accounts", accountId, options),
+      Util.actionUrl("accounts", options) + accountId,
       Util.createCallbacks(success, failure, description),
       null,
-      { "Authentication" : Util.makeBaseAuth(email, password) }
+      { "Authorization" : Util.makeBaseAuth(email, password) }
     );
   };
 
@@ -656,7 +656,7 @@ throw new SyntaxError('JSON.parse');};}}());
       Util.actionUrl("accounts", options),
       Util.createCallbacks(success, failure, description),
       null,
-      { "Authentication" : Util.makeBaseAuth(email, password) }
+      { "Authorization" : Util.makeBaseAuth(email, password) }
     );
   };
 
@@ -667,7 +667,7 @@ throw new SyntaxError('JSON.parse');};}}());
       { "grantId" : grantId },
       Util.createCallbacks(success, failure, description),
       null,
-      { "Authentication" : Util.makeBaseAuth(email, password) }
+      { "Authorization" : Util.makeBaseAuth(email, password) }
     );
   };
 
@@ -677,7 +677,7 @@ throw new SyntaxError('JSON.parse');};}}());
       Util.actionUrl("accounts", accountId, options) + "plan",
       Util.createCallbacks(success, failure, description),
       null,
-      { "Authentication" : Util.makeBaseAuth(email, password) }
+      { "Authorization" : Util.makeBaseAuth(email, password) }
     );
   };
 
@@ -688,7 +688,7 @@ throw new SyntaxError('JSON.parse');};}}());
       { "type" : type },
       Util.createCallbacks(success, failure, description),
       null,
-      { "Authentication" : Util.makeBaseAuth(email, password) }
+      { "Authorization" : Util.makeBaseAuth(email, password) }
     );
   };
 
@@ -698,7 +698,7 @@ throw new SyntaxError('JSON.parse');};}}());
       Util.actionUrl("accounts", accountId, options) + "plan",
       Util.createCallbacks(success, failure, description),
       null,
-      { "Authentication" : Util.makeBaseAuth(email, password) }
+      { "Authorization" : Util.makeBaseAuth(email, password) }
     );
   };
 
@@ -707,7 +707,7 @@ throw new SyntaxError('JSON.parse');};}}());
   // **********************
   Precog.listKeys = function(success, failure, options) {
     var description = 'Precog Security List Keys',
-        parameters = { apiKey : options.apiKey || $.Config.apiKey };
+        parameters = { apiKey : (options && options.apiKey) || $.Config.apiKey };
 
     if(!parameters.apiKey) throw Error("apiKey not specified");
     http.get(
