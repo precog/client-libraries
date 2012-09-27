@@ -200,7 +200,7 @@ asyncTest("remove grant", function() {
   	Precog.addGrantToKey(apiKey, grant, success, failure, options)
 */
 
-
+/*
 asyncTest("list keys", function() {
 	ensureAccount(function(id) {
 		Precog.listKeys(
@@ -212,6 +212,7 @@ asyncTest("list keys", function() {
 		);
 	});
 });
+*/
 
 asyncTest( "query with skip", function() {
 	Precog.store("/unit_test/beta/test/js/skip", "A");
@@ -276,6 +277,36 @@ asyncTest( "store event", function() {
 			ok(true);
 			start();
 		}
+	);
+});
+
+asyncTest( "ingest csv", function() {
+	var path = "/unit_test/beta/test/js/csv",
+		now  = +new Date();
+	Precog.ingest(path,
+		"timestamp,index\n"+now+",1\n"+now+",2\n"+now+",3",
+		"csv",
+		createDelayedAction(function() {
+			Precog.query("ds := /"+path+" ds where ds.timestamp = "+now, function(result) {
+				equal(result.length, 3);
+				start();
+			});
+		})
+	);
+});
+
+asyncTest( "ingest json", function() {
+	var path = "/unit_test/beta/test/js/json",
+		now  = +new Date();
+	Precog.ingest(path,
+		"{ timestamp : "+now+", index : 1 }\n{ timestamp : "+now+", index : 2 }\n{ timestamp : "+now+", index : 3 }",
+		"json",
+		createDelayedAction(function() {
+			Precog.query("ds := /"+path+" ds where ds.timestamp = "+now, function(result) {
+				equal(result.length, 3);
+				start();
+			});
+		})
 	);
 });
 

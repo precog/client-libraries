@@ -398,9 +398,12 @@ throw new SyntaxError('JSON.parse');};}}());
       }
 
       if (content !== undefined) {
-        request.setRequestHeader('Content-Type', 'application/json');
-
-        request.send(JSON.stringify(content));
+        if(headers['Content-Type']) {
+          request.send(content);
+        } else {
+          request.setRequestHeader('Content-Type', 'application/json');
+          request.send(JSON.stringify(content));
+        }
       }
       else {
         request.send(null);
@@ -886,21 +889,77 @@ throw new SyntaxError('JSON.parse');};}}());
     );
   };
 
+  function occursAtLeast(needle, haystack, times) {
+    var pos = 0,
+        len = needle.length || 1;
+    while((pos = haystack.indexOf(needle, pos)) >= 0) {
+      pos+=len;
+      times--;
+      if(times === 0) return true;
+    }
+    return false;
+  }
+
   // **********************
   // ***     INGEST     ***
   // **********************
+  /**
+    Note that ingest doesn't support JSONP and might not work on legacy browsers due to their missing of support
+    for cross domain handling.
+  */
+  Precog.ingest = function(path, content, type, success, failure, options) {
+    options = options || {};
+    path = Util.trimPath(path);
+    if(!content) throw Error("argument 'content' must contain a non empty value formatted as described by type");
+    var description = 'Ingest events in ' + type + ' format',
+        parameters = { apiKey: (options.apiKey) || $.Config.apiKey };
+    if(!parameters.apiKey) throw Error("apiKey not specified");
+
+    switch(type.toLowerCase()) {
+      case 'application/json':
+      case 'json':
+        type = 'application/json';
+        break;
+      case 'text/csv':
+      case 'csv':
+        type = 'text/csv';
+        if(options.delimiter)
+          parameters.delimiter = options.delimiter;
+        if(options.quote)
+          parameters.quote = options.quote;
+        if(options.escape)
+          parameters.escape = options.escape;
+        break;
+      default:
+        throw Error("argument 'type' must be 'json' or 'csv'");
+    }
+
+    if(options.ownerAccountId)
+        parameters.ownerAccountId = options.ownerAccountId;
+
+    $.Http.Ajax.post(
+      Util.actionUrl("ingest", (options.async ? "async" : "sync") + "/fs", options) + path,
+      content,
+      Util.createCallbacks(success, failure, description),
+      parameters,
+      { "Content-Type" : type }
+    );
+  };
+
   Precog.store = function(path, event, success, failure, options) {
     path = Util.trimPath(path);
 
     if (event === null || "undefined" === typeof event) throw Error("argument 'events' cannot be null or undefined");
 
-    var description = 'Track event (' + JSON.stringify(event) + ')',
+    var description = 'Store event (' + JSON.stringify(event) + ')',
         parameters = { apiKey: (options && options.apiKey) || $.Config.apiKey };
+    if(options && options.ownerAccountId)
+        parameters.ownerAccountId = options.ownerAccountId;
 
     if(!parameters.apiKey) throw Error("apiKey not specified");
 
     http.post(
-      Util.actionUrl("ingest", "sync/fs", options) + path,
+      Util.actionUrl("ingest", (options && options.async ? "async" : "sync") + "/fs", options) + path,
       event,
       Util.createCallbacks(success, failure, description),
       parameters
