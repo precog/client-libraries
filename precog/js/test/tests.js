@@ -10,10 +10,6 @@ function createDelayedAction(f) {
 
 var email    = "testjs@precog.com",
 	password = "123abc";
-function removeAccount(id, callack) {
-	Precog.deleteAccount(email, password, id, callack);
-}
-
 function ensureAccount(callack) {
 	Precog.createAccount(email, password, function(r) { callack(r['accountId']); });
 }
@@ -50,14 +46,6 @@ asyncTest("describe plan", function() {
 	});
 });
 
-asyncTest("delete account", function() {
-	ensureAccount(function(id) {
-		Precog.deleteAccount(email, password, id, function() {
-			ok(true);
-			start();
-		});
-	});
-});
 /*
 	// TESTABLE WITH NO ADMIN ACCOUNT?
 	Precog.addGrantToAccount(email, password, accountId, grantId, success, failure, options)

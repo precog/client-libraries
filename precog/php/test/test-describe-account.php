@@ -3,19 +3,13 @@
 require_once('basetest.php');
 
 class DescribeAccountsTest extends PrecogBaseTest {
-
-    function setupAccount(){
-        $email = json_encode(array("email"=>"fakeEmailAddress@precog.com"));
-        $accountId = $this->api->createAccount($email);
-        return $accountId;
-    }
-
     function testDescribeAccountsCase()
     {
-        $account = $this->setupAccount();
-        $description = $this->api->describeAccount($account);
+        $pg = PrecogBaseTest::ensureAccount();
+        $result = PrecogAPI::describeAccount($pg['user'], $pg['password'], $pg['accountId'], $pg['baseUrl'], $pg['version']);
 
-        $this->assertTrue($this->api->$description != null);
+        $this->assertTrue(isset($result['data']['apiKey']));
+        $this->assertTrue(isset($result['data']['rootPath']));
     }
 }
 ?>

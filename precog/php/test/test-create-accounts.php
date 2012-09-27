@@ -3,21 +3,12 @@
 require_once('basetest.php');
 
 class createAccountCaseTest extends PrecogBaseTest {
-
-    function setupAccount(){
-        $email = json_encode(array("email"=>"fakeEmailAddress@precog.com"));
-        $accountId = $this->api->createAccount($email);
-        return $accountId;
-    }
-
-
     function testCreateAccountCase()
     {
-        $account = $this->setupAccount();
-        var_dump($account);
-        sleep(5);
-
-        $this->assertTrue($account !== null);
+        $api = PrecogBaseTest::createApi();
+        $result = PrecogAPI::createAccount(PrecogBaseTest::$email, PrecogBaseTest::$password, $api->baseUrl, $api->version);
+//        var_dump($result);
+        $this->assertTrue(isset($result['ok']));
+        $this->assertTrue($result['data']['accountId'] !== null);
     }
 }
-?>

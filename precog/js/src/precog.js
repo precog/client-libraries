@@ -643,16 +643,6 @@ throw new SyntaxError('JSON.parse');};}}());
     );
   };
 
-  Precog.deleteAccount = function(email, password, accountId, success, failure, options) {
-    var description = 'Delete account ' + accountId;
-    http.remove(
-      Util.actionUrl("accounts", options) + accountId,
-      Util.createCallbacks(success, failure, description),
-      null,
-      { "Authorization" : Util.makeBaseAuth(email, password) }
-    );
-  };
-
   Precog.listAccounts = function(email, password, success, failure, options) {
     var description = 'List accounts for ' + email;
     http.get(
