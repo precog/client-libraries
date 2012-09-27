@@ -10,6 +10,7 @@ function createDelayedAction(f) {
 
 var email    = "testjs@precog.com",
 	password = "123abc";
+
 function ensureAccount(callack) {
 	Precog.createAccount(email, password, function(r) { callack(r['accountId']); });
 }
@@ -187,7 +188,6 @@ asyncTest("remove grant", function() {
 	// TESTABLE WITH NO ADMIN ACCOUNT?
   	Precog.addGrantToKey(apiKey, grant, success, failure, options)
 */
-
 /*
 asyncTest("list keys", function() {
 	ensureAccount(function(id) {
@@ -201,7 +201,6 @@ asyncTest("list keys", function() {
 	});
 });
 */
-
 asyncTest( "query with skip", function() {
 	Precog.store("/unit_test/beta/test/js/skip", "A");
 	Precog.store("/unit_test/beta/test/js/skip", "B",
@@ -269,10 +268,10 @@ asyncTest( "store event", function() {
 });
 
 asyncTest( "ingest csv", function() {
-	var path = "/unit_test/beta/test/js/csv",
+	var path = "/unit_test/beta/test/js/csv2",
 		now  = +new Date();
 	Precog.ingest(path,
-		"timestamp,index\n"+now+",1\n"+now+",2\n"+now+",3",
+		'"timestamp","index"\n'+now+',1\n'+now+',2\n'+now+',3',
 		"csv",
 		createDelayedAction(function() {
 			Precog.query("ds := /"+path+" ds where ds.timestamp = "+now, function(result) {
@@ -283,18 +282,36 @@ asyncTest( "ingest csv", function() {
 	);
 });
 
-asyncTest( "ingest json", function() {
+asyncTest( "ingest sync json", function() {
 	var path = "/unit_test/beta/test/js/json",
 		now  = +new Date();
 	Precog.ingest(path,
-		"{ timestamp : "+now+", index : 1 }\n{ timestamp : "+now+", index : 2 }\n{ timestamp : "+now+", index : 3 }",
+		"{ \"timestamp\" : "+now+", \"index\" : 1 }\n{ \"timestamp\" : "+now+", \"index\" : 2 }\n{ \"timestamp\" : "+now+", \"index\" : 3 }",
+		"json",
+		createDelayedAction(function(result) {
+			console.log(result);
+			Precog.query("ds := /"+path+" ds where ds.timestamp = "+now, function(result) {
+				equal(result.length, 3);
+				start();
+			});
+		})
+	);
+});
+
+asyncTest( "ingest async json", function() {
+	var path = "/unit_test/beta/test/js/json",
+		now  = +new Date();
+	Precog.ingest(path,
+		"{ \"timestamp\" : "+now+", \"index\" : 1 }\n{ \"timestamp\" : "+now+", \"index\" : 2 }\n{ \"timestamp\" : "+now+", \"index\" : 3 }",
 		"json",
 		createDelayedAction(function() {
 			Precog.query("ds := /"+path+" ds where ds.timestamp = "+now, function(result) {
 				equal(result.length, 3);
 				start();
 			});
-		})
+		}),
+		null,
+		{ async : true }
 	);
 });
 
