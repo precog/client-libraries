@@ -25,63 +25,59 @@ class PrecogAPI {
     public function __construct($api_key, $baseurl = BASE_URL, $version = 1)
     {
         $this->_apiKey  = $token_id;
-        $this->_baseUrl = $this->cleanPath($baseurl);
+        $this->_baseUrl = self::cleanPath($baseurl);
         $this->_version = $version;
     }
 
     // ***************************
     // ****** ACCOUNTS APIS ******
     // ***************************
-    public function listAccounts()
+    public static function listAccounts($email, $password, $baseurl = BASE_URL, $version = 1)
     {
-        $url = $this->actionUrl("accounts");
-        $return = $this->restHelper($url, null, "GET");
-        return $return;
+        $url = self::baseActionUrl($baseurl, $version, "accounts");
+        return self::baseRestHelper($url, null, "GET", array("Authorization" => self::baseAuth($email, $password)));
     }
 
-    public function createAccount($email, $password)
+    public static function createAccount($email, $password, $baseurl = BASE_URL, $version = 1)
     {
-        $url = $this->actionUrl("accounts");
-        $return = $this->restHelper($url, array("email"=>$email, "password"=>$password), "POST");
-        return $return;
+        $url = self::baseActionUrl($baseurl, $version, "accounts");
+        return self::baseRestHelper($url, array("email"=>$email, "password"=>$password), "POST");
     }
 
-    public function describeAccount($accountId)
+    public static function describeAccount($email, $password, $accountId, $baseurl = BASE_URL, $version = 1)
     {
-        $url = $this->actionUrl("accounts", $accountId);
-        $return = $this->restHelper($url, null, "GET");
-        return $return;
+        $url = self::baseActionUrl($baseurl, $version, "accounts").$accountId;
+        return self::baseRestHelper($url, null, "GET", array("Authorization" => self::baseAuth($email, $password)));
     }
 
-    public function addGrantToAccount($accountId, $grantId)
+    public static function addGrantToAccount($email, $password, $accountId, $grantId, $baseurl = BASE_URL, $version = 1)
     {
-        $url = $this->actionUrl("accounts", $accountId)."grants/";
-        $return = $this->restHelper($url, array("grantId"=>$grantId), "POST");
-        return $return !== false;
+        $url = self::baseActionUrl($baseurl, $version, "accounts", $accountId)."grants/";
+        return self::baseRestHelper($url, array("grantId"=>$grantId), "POST", array("Authorization" => self::baseAuth($email, $password)));
     }
 
-    public function describePlan($accountId)
+    public static function describePlan($accountId)
     {
         $url = $this->actionUrl("accounts", $accountId) . "plan";
         $return = $this->restHelper($url, null, "GET");
         return $return;
     }
 
-    public function changePlan($accountId, $plan)
+    public static function changePlan($accountId, $plan)
     {
         $url = $this->actionUrl("accounts", $accountId)."plan";
         $return = $this->restHelper($url, array("type"=>$plan), "PUT");
         return $return !== false;
     }
 
-    public function deletePlan($accountId)
+    public static function deletePlan($accountId)
     {
         $url = $this->actionUrl("accounts", $accountId)."plan";
         $return = $this->restHelper($url, null, "DELETE");
         return $return !== false;
     }
 
-    public function deleteAccount($accountId)
+    public static function deleteAccount($accountId)
     {
         $url = $this->actionUrl("accounts",$accountId);
         $return = $this->restHelper($url, null, "DELETE");
@@ -94,7 +90,7 @@ class PrecogAPI {
 
     public function ingestSync($path, $file, $ownerAccountId )
     {
-       if(isset($ownerAccountId)){
+       if(isset($ownerAccountId)) {
          $url = $this->actionUrl("ingest","sync/fs/").$path."?apiKey=".$this->_apiKey."&ownerAccountId=".$ownerAccountId;
         $return = $this->restHelper($url, $file, "POST");
         return $return !== false;
@@ -115,21 +111,21 @@ class PrecogAPI {
     */
     public function store($path, $event)
     {
-        $path2  = $this->actionUrl("ingest", "sync/fs") . $this->cleanPath($path) . "?apiKey=" . $this->_apiKey;
+        $path2  = $this->actionUrl("ingest", "sync/fs") . self::cleanPath($path) . "?apiKey=" . $this->_apiKey;
         $return = $this->restHelper($path2, $event, "POST");
         return $return !== false;
     }
 
     public function asyncStore($path, $event)
     {
-        $path2  = $this->actionUrl("ingest", "async/fs") . $this->cleanPath($path) . "?apiKey=" . $this->_apiKey;
+        $path2  = $this->actionUrl("ingest", "async/fs") . self::cleanPath($path) . "?apiKey=" . $this->_apiKey;
         $return = $this->restHelper($path2, $event, "POST");
         return $return !== false;
     }
 
     public function delete($path)
     {
-        $path2  = $this->actionUrl("ingest", "sync/fs") . $this->cleanPath($path) . "?apiKey=" . $this->_apiKey;
+        $path2  = $this->actionUrl("ingest", "sync/fs") . self::cleanPath($path) . "?apiKey=" . $this->_apiKey;
         var_dump($path2);
         $return = $this->restHelper($path2, null, "DELETE");
         return $return !== false;
@@ -140,7 +136,7 @@ class PrecogAPI {
     // ***************************
     public function retrieveMetadata($path, $type = "")
     {
-        $url = $this->actionUrl("meta", "fs") . $this->cleanPath($path) . "?apiKey=".$this->_apiKey."#".$type;
+        $url = $this->actionUrl("meta", "fs") . self::cleanPath($path) . "?apiKey=".$this->_apiKey."#".$type;
         $return = $this->restHelper($url, null, "GET");
         return $return;
     }
@@ -153,7 +149,7 @@ class PrecogAPI {
      */
     public function listChildren($path)
     {
-        $path = $this->cleanPath($path);
+        $path = self::cleanPath($path);
         $path2  = $this->actionUrl("meta","fs")."$path?apiKey=" . $this->_apiKey."#children";
         $return = $this->restHelper($path2, null, "GET");
         return $return ? $return['children'] : $return;
@@ -176,16 +172,16 @@ class PrecogAPI {
             "apiKey=" . $this->_apiKey,
             "q=" . urlencode($quirrel)
         );
-        if(isset($options["limit"])){
+        if(isset($options["limit"])) {
             $params[] = "limit=" . $options["limit"];
         }
 
-        if(isset($options["skip"])){
+        if(isset($options["skip"])) {
             $params[] = "skip=" . $options["skip"];
         }
-        if(isset($options["sortOn"])){
+        if(isset($options["sortOn"])) {
             $params[] = "sortOn=" . urlencode(json_encode($options["sortOn"]));
-            if(isset($options["sortOrder"])){
+            if(isset($options["sortOrder"])) {
                 $params[] = "sortOrder=" . $options["sortOrder"];
             }
         }
@@ -285,8 +281,21 @@ class PrecogAPI {
     /*********************************
      **** PRIVATE helper function ****
      *********************************/
-    private function restHelper($json_endpoint, $params = null, $verb = 'GET') {
-        $return = null;
+    private function restHelper($json_endpoint, $params = null, $verb = 'GET', $headers = false) {
+        $result = self::baseRestHelper($json_endpoint, $params, $verb, $headers);
+        if($result['ok']) {
+            $this->isError = false;
+            $this->errorMessage = null;
+            return $result['data'];
+        } else {
+            $this->isError = true;
+            $this->errorMessage = $result['error'];
+            return false;
+        }
+    }
+
+    private static function baseRestHelper($json_endpoint, $params = null, $verb = 'GET', $headers = false) {
+        $return = array('ok' => true);
         $http_params = array(
             'http' => array(
                 'method' => $verb,
@@ -294,12 +303,12 @@ class PrecogAPI {
         ));
         if ($params !== null) {
             if ( ($verb == 'POST') || ($verb == 'PUT') ) {
-                $header = "Content-Type: application/json";
+                $headerString = self::getHeaderString($headers);
                 $http_params['http']['content'] = json_encode($params);
-                $http_params['http']['header'] = $header;
+                $http_params['http']['header'] = $headerString;
                 // workaround for php bug where http headers don't get sent in php 5.2
-                if(version_compare(PHP_VERSION, '5.2.14') < 0){
-                    ini_set('user_agent', 'PHP-SOAP/' . PHP_VERSION . "\r\n" . $header);
+                if(version_compare(PHP_VERSION, '5.2.14') < 0) {
+                    ini_set('user_agent', 'PHP-SOAP/' . PHP_VERSION . "\r\n" . $headerString);
                 }
             }//end if
         }//end if ($params !== null)
@@ -319,13 +328,12 @@ class PrecogAPI {
              * json decode it here.
              */
             if (strlen($stream_contents) > 0) {
-
                 $result = json_decode($stream_contents, true);
 
                 if ($result === null) {
                     error_log("Exception:  " . $stream_contents);
                 } else {
-                    $return = $result;
+                    $return['data'] = $result;
                 }
             /*
              * In the case of posting data (recordEvent) the API will return a 0
@@ -333,11 +341,10 @@ class PrecogAPI {
              * header code to indicate the data was successfully received.
              */
             } else {
-
                 if (stripos($stream_meta_data['wrapper_data'][0], "200") !== false) {
-                    $return = true;
+                    $return['data'] = true;
                 } else {
-                    $return = false;
+                    $return['ok'] = false;
                 }//end inner else
             }//end middle else
 
@@ -347,10 +354,8 @@ class PrecogAPI {
              * headers...send that back to the user
              */
             if (isset($http_response_header[0])) {
-                $this->isError = true;
-                $this->errorMessage = $http_response_header[0];
-                $return = false;
-
+                $return['ok'] = false;
+                $return['error'] = $http_response_header[0];
             } else {
                 throw new Exception("$verb $json_endpoint failed");
             }
@@ -359,12 +364,33 @@ class PrecogAPI {
         return $return;
     }//end restHelper
 
-    private function cleanPath($path)
+    private function actionUrl($service, $action = false) {
+       return self::baseActionUrl($this->_baseUrl, $this->_version, $service, $action);
+    }
+
+    private static function getHeaderString($headers) {
+        if(!$headers)
+            return "Content-Type: application/json";
+        $result = array();
+        foreach ($headers as $key => $value) {
+            $result[] = "$key: $value";
+        }
+        return implode("\r\n", $result);
+    }
+
+    private static function baseAuth($user, $password)
+    {
+        $tok = "$user:$password";
+        return "Basic ".base64_encode($tok);
+    }
+
+    private static function cleanPath($path)
     {
         return trim($path, '/');
     }
-    private function actionUrl($service, $action = FALSE){
-       return $this->_baseUrl."/".$service."/v".$this->_version."/".($action ? $action."/" : "");
+
+    private static function baseActionUrl($baseUrl, $version, $service, $action = false) {
+        return $baseUrl."/".$service."/v".$version."/".($action ? $action."/" : "");
     }
 }
 ?>
