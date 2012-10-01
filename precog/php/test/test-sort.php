@@ -3,11 +3,13 @@
 require_once('basetest.php');
 
 class SortTest extends PrecogBaseTest {
+    var $api;
     function setupPath()
     {
-        $path = "/unit_test/beta/test/php/query/TEST" . str_replace(".", "", uniqid(rand(), true));
-        $this->api->store($path, array('foo' => 1));
-        $this->api->store($path, array('foo' => 2));
+        $this->api = PrecogBaseTest::createApi($this->info);
+        $path = $this->info['path']."test/php/query/T" . str_replace(".", "", uniqid(rand(), true));
+        $r = $this->api->store($path, array('foo' => 2));
+        $r = $this->api->store($path, array('foo' => 1));
         return $path;
     }
 

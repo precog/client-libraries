@@ -33,12 +33,6 @@ class PrecogAPI {
     // ***************************
     // ****** ACCOUNTS APIS ******
     // ***************************
-    public static function listAccounts($email, $password, $baseUrl = BASE_URL, $version = DEFAULT_VERSION)
-    {
-        $url = self::baseActionUrl($baseUrl, $version, "accounts");
-        return self::baseRestHelper($url, null, "GET", self::authHeaders($email, $password));
-    }
-
     public static function createAccount($email, $password, $baseUrl = BASE_URL, $version = DEFAULT_VERSION)
     {
         $url = self::baseActionUrl($baseUrl, $version, "accounts");
@@ -51,16 +45,16 @@ class PrecogAPI {
         return self::baseRestHelper($url, null, "GET", self::authHeaders($email, $password));
     }
 
-    public static function addGrantToAccount($email, $password, $accountId, $grantId, $baseUrl = BASE_URL, $version = DEFAULT_VERSION)
-    {
-        $url = self::baseActionUrl($baseUrl, $version, "accounts", $accountId)."grants/";
-        return self::baseRestHelper($url, array("grantId"=>$grantId), "POST", self::authHeaders($email, $password));
-    }
-
     public static function describePlan($email, $password, $accountId, $baseUrl = BASE_URL, $version = DEFAULT_VERSION)
     {
         $url = self::baseActionUrl($baseUrl, $version, "accounts", $accountId)."plan";
         return self::baseRestHelper($url, null, "GET", self::authHeaders($email, $password));
+    }
+
+    public static function deletePlan($email, $password, $accountId, $baseUrl = BASE_URL, $version = DEFAULT_VERSION)
+    {
+        $url = self::baseActionUrl($baseUrl, $version, "accounts", $accountId)."plan";
+        return self::baseRestHelper($url, null, "DELETE", self::authHeaders($email, $password));
     }
 
     public static function changePlan($email, $password, $accountId, $plan, $baseUrl = BASE_URL, $version = DEFAULT_VERSION)
@@ -76,11 +70,11 @@ class PrecogAPI {
     public function ingestSync($path, $file, $ownerAccountId )
     {
        if(isset($ownerAccountId)) {
-         $url = $this->actionUrl("ingest","sync/fs/").$path."?apiKey=".$this->apiKey."&ownerAccountId=".$ownerAccountId;
+        $url = $this->actionUrl("ingest","sync/fs/").$path."?apiKey=".$this->apiKey."&ownerAccountId=".$ownerAccountId;
         $return = $this->restHelper($url, $file, "POST");
         return $return !== false;
        }
-       $url = $this->actionUrl("ingest", "sync/fs").$path."?apiKey=".$this->apiKey;
+        $url = $this->actionUrl("ingest", "sync/fs").$path."?apiKey=".$this->apiKey;
         $return = $this->restHelper($url, $file, "POST");
         return $return !== false;
 
@@ -101,7 +95,7 @@ class PrecogAPI {
         return $return !== false;
     }
 
-    public function asyncStore($path, $event)
+    public function ingestAsync($path, $event)
     {
         $path2  = $this->actionUrl("ingest", "async/fs") . self::cleanPath($path) . "?apiKey=" . $this->apiKey;
         $return = $this->restHelper($path2, $event, "POST");
@@ -180,84 +174,84 @@ class PrecogAPI {
     // ***************************
     public function listKeys()
     {
-       $url = $this->actionUrl("security","apikeys" )."?apiKey=".$this->apiKey;
+        $url = $this->actionUrl("security","apikeys" )."?apiKey=".$this->apiKey;
         $return = $this->restHelper($url, null, "GET");
         return $return;
     }
 
     public function createKey($grants)
     {
-       $url = $this->actionUrl("security","apikeys")."?apiKey=".$this->apiKey;
+        $url = $this->actionUrl("security","apikeys")."?apiKey=".$this->apiKey;
         $return = $this->restHelper($url, $grants, "POST");
         return $return;
     }
 
     public function describeKey($apiKey)
     {
-       $url = $this->actionUrl("security","apikeys").$apiKey."?apiKey=".$this->apiKey;
+        $url = $this->actionUrl("security","apikeys").$apiKey."?apiKey=".$this->apiKey;
         $return = $this->restHelper($url, null, "GET");
         return $return;
     }
 
     public function deleteKey($apiKey)
     {
-       $url = $this->actionUrl("security","apikeys").$apiKey."?apiKey=".$this->apiKey;
+        $url = $this->actionUrl("security","apikeys").$apiKey."?apiKey=".$this->apiKey;
         $return = $this->restHelper($url, null, "DELETE");
         return $return !== false;
     }
 
     public function retrieveGrants($apiKey)
     {
-       $url = $this->actionUrl("security","apikeys").$apiKey."/grants/?apiKey=".$this->apiKey;
+        $url = $this->actionUrl("security","apikeys").$apiKey."/grants/?apiKey=".$this->apiKey;
         $return = $this->restHelper($url, null, "GET");
         return $return;
     }
 
     public function addGrantToKey($apiKey, $grant)
     {
-       $url = $this->actionUrl("security","apikeys").$apiKey."/grants/?apiKey=".$this->apiKey;
+        $url = $this->actionUrl("security","apikeys").$apiKey."/grants/?apiKey=".$this->apiKey;
         $return = $this->restHelper($url, $grant, "GET");
         return $return !== false;
     }
 
     public function removeGrant($apiKey, $grantId)
     {
-       $url = $this->actionUrl("security","apikeys").$apiKey."/grants/".$grantId."?apiKey=".$this->apiKey;
+        $url = $this->actionUrl("security","apikeys").$apiKey."/grants/".$grantId."?apiKey=".$this->apiKey;
         $return = $this->restHelper($url, null, "DELETE");
         return $return !== false;
     }
 
     public function createNewGrant($type)
     {
-       $url = $this->actionUrl("security","grants")."?apiKey=".$this->apiKey;
+        $url = $this->actionUrl("security","grants")."?apiKey=".$this->apiKey;
         $return = $this->restHelper($url, $type, "POST");
         return $return;
     }
 
     public function describeGrant($grantId)
     {
-       $url = $this->actionUrl("security", "grants").$grantId."?apiKey=".$this->apiKey;
+        $url = $this->actionUrl("security", "grants").$grantId."?apiKey=".$this->apiKey;
         $return = $this->restHelper($url, null, "GET");
         return $return;
     }
 
     public function deleteGrant($grantId)
     {
-       $url = $this->actionUrl("security","grants").$grantId."?apiKey=".$this->apiKey;
+        $url = $this->actionUrl("security","grants").$grantId."?apiKey=".$this->apiKey;
         $return = $this->restHelper($url, null, "DELETE");
         return $return !== false;
     }
 
     public function listChildrenGrant($grantId)
     {
-       $url = $this->actionUrl("security","grants").$grantId."/children/?apiKey=".$this->apiKey;
+        $url = $this->actionUrl("security","grants").$grantId."/children/?apiKey=".$this->apiKey;
         $return = $this->restHelper($url, null, "GET");
         return $return;
     }
 
     public function createChildGrant($grantId, $type)
     {
-       $url = $this->actionUrl("security","grants").$grantId."/children/?apiKey=".$this->apiKey;
+        $url = $this->actionUrl("security","grants").$grantId."/children/?apiKey=".$this->apiKey;
         $return = $this->restHelper($url, $type, "POST");
         return $return;
     }
@@ -273,13 +267,13 @@ class PrecogAPI {
             return $result['data'];
         } else {
             $this->isError = true;
-            $this->errorMessage = $result['error'];
+            $this->errorMessage = isset($result['error']) ? $result['error'] : "an error occurred";
             return false;
         }
     }
 
     private static function baseRestHelper($resturl, $params = null, $verb = 'GET', $headers = false) {
-//echo("$verb $resturl\n");
+echo("$verb $resturl\n");
 //if($params) var_dump($params);
         $return = array('ok' => true);
         $http_params = array(
@@ -310,7 +304,9 @@ class PrecogAPI {
         }
 //if(isset($stream_contents)) var_dump($stream_contents);
 //if(isset($stream_meta_data)) var_dump($stream_meta_data);
-        if ($stream_contents !== false) {
+
+
+        if ($verb==="DELETE" || $stream_contents !== false) {
 
             /*
              * In the case of we're receiving stream data back from the API,
@@ -330,7 +326,7 @@ class PrecogAPI {
              * header code to indicate the data was successfully received.
              */
             } else {
-                if (stripos($stream_meta_data['wrapper_data'][0], "200") !== false) {
+                if (self::checkOkResponse($stream_meta_data['wrapper_data'][0])) {
                     $return['data'] = true;
                 } else {
                     $return['ok'] = false;
@@ -351,6 +347,15 @@ class PrecogAPI {
 
         }
         return $return;
+    }
+
+    static private function checkOkResponse($response) {
+        return 
+               stripos($response, "200") !== false
+            || stripos($response, "201") !== false
+            || stripos($response, "202") !== false
+            || stripos($response, "204") !== false
+        ;
     }
 
     private function actionUrl($service, $action = false) {

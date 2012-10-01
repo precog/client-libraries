@@ -3,13 +3,13 @@
 require_once('basetest.php');
 
 class RetrieveMetadataTest extends PrecogBaseTest {
-
-     function setupPath()
+    var $api;
+    function setupPath()
     {
-        $path = "/unit_test/beta/test/php/query/TEST" . str_replace(".", "", uniqid(rand(), true));
-        $this->api->store($path, array('foo' => 42));
+        $this->api = PrecogBaseTest::createApi($this->info);
+        $path = $this->info['path']."test/php/metadata/T" . str_replace(".", "", uniqid(rand(), true));
+        $r = $this->api->store($path, array('foo' => 42));
         return $path;
-
     }
 
     function testRetrieveMetadataCase()
@@ -21,7 +21,21 @@ class RetrieveMetadataTest extends PrecogBaseTest {
         sleep(5);
         $result = $this->api->retrieveMetadata($path, "children");
 
-        $this->assertTrue($result["children"][0] === "/childPath/");
+        $this->assertTrue(in_array("/childPath/", $result["children"]));
+    }
+
+    function testChildren()
+    {
+        $path = $this->setupPath();
+        $childPath = $path."/childPath";
+        $this->api->store($childPath, array('foo'=> 43));
+
+        sleep(5);
+
+        $value = $this->api->listChildren($path);
+
+        $this->assertIsA($value, "Array");
+        $this->assertTrue(in_array("/childPath/", $value));
     }
 }
 ?>

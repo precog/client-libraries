@@ -2,33 +2,16 @@
 
 require_once('basetest.php');
 
-class changePlanCaseTest extends PrecogBaseTest {
-
-<<<<<<< HEAD
-    function setupAccount()
+class ChangePlanTest extends PrecogBaseTest {
+    function testChangePlan()
     {
-        $email = json_encode(array("email"=>"fakeEmailAddress@precog.com"));
-=======
-    function setupAccount(){
-        $email = array("email"=>"fakeEmailAddress@precog.com");
->>>>>>> updated some tests and added outlines of some security api tests
-        $accountId = $this->api->createAccount($email);
-         return $accountId;
-    }
-
-    function testChangePlanCase()
-    {
-        $account = $this->setupAccount();
-        $plan = array("plan"=>"bronze");//??
-        $changedPlan = $this->api->changePlan($account, $plan);
-
-<<<<<<< HEAD
-        $this->assertTrue($describeAccount($account) == $grantAdded);
-=======
-        sleep(5);
-        $this->assertTrue($this->api->$describeAccountPlan($account)["type"] === "bronze");
-        
->>>>>>> updated some tests and added outlines of some security api tests
+        $pg = PrecogBaseTest::ensureAccount($this->info);
+        $result = PrecogAPI::describePlan($pg['user'], $pg['password'], $pg['accountId'], $pg['baseUrl'], $pg['version']);
+        $oldPlan = $result['data']['type'];
+        $newPlan = $oldPlan == "bronze"? "Free":"bronze";
+        $changePlan =PrecogAPI::changePlan($pg['user'], $pg['password'], $pg['accountId'],$newPlan, $pg['baseUrl'], $pg['version']);
+        $result = PrecogAPI::describePlan($pg['user'], $pg['password'], $pg['accountId'], $pg['baseUrl'], $pg['version']);
+        $this->assertTrue($result['data']['type'] == $newPlan);
     }
 }
 ?>

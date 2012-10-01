@@ -3,14 +3,16 @@
 require_once('basetest.php');
 
 class QueryTest extends PrecogBaseTest {
+    var $api;
     function setupPath()
     {
-        $path = "/unit_test/beta/test/php/query/TEST" . str_replace(".", "", uniqid(rand(), true));
-        $this->api->store($path, array('foo' => 42));
+        $this->api = PrecogBaseTest::createApi($this->info);
+        $path = $this->info['path']."test/php/query/T" . str_replace(".", "", uniqid(rand(), true));
+        $r = $this->api->store($path, array('foo' => 42));
         return $path;
     }
 
-    function testQueries()
+    function testQuery()
     {
         $path = $this->setupPath();
 
@@ -24,19 +26,6 @@ class QueryTest extends PrecogBaseTest {
         $this->assertIsA($value, "Array");
         $this->assertTrue($value[0] == 5, "should be 5 but is ".$value[0]);
     }
-
-    function testChildren()
-    {
-        $path = queryCaseTest::setupPath();
-
-        sleep(5);
-
-        $value = $this->api->listChildren("/unit_test/beta");
-
-        $this->assertIsA($value, "Array");
-        $this->assertTrue(in_array("/test/", $value));
-    }
-
 
 }
 ?>

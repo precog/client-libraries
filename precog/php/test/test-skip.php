@@ -3,11 +3,14 @@
 require_once('basetest.php');
 
 class SkipTest extends PrecogBaseTest {
+    var $api;
+    var $testPath;
     function setupPath()
     {
-        $path = "/unit_test/beta/test/php/query/TEST" . str_replace(".", "", uniqid(rand(), true));
-        $this->api->store($path, "first");
-        $this->api->store($path, "second");
+        $this->api = PrecogBaseTest::createApi($this->info);
+        $path = $this->info['path']."test/php/query/T" . str_replace(".", "", uniqid(rand(), true));
+        $r = $this->api->store($path, "a");
+        $r = $this->api->store($path, "b");
         return $path;
     }
 
@@ -21,7 +24,6 @@ class SkipTest extends PrecogBaseTest {
 
         $value1 = $this->api->query("/$path", $options1);
         $value2 = $this->api->query("/$path", $options2);
-
 
         $this->assertTrue($value1[0] != $value2[0]);
     }
