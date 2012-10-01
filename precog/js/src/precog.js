@@ -378,7 +378,7 @@ throw new SyntaxError('JSON.parse');};}}());
       request.onreadystatechange = function() {
         var headers = request.getAllResponseHeaders && Util.parseResponseHeaders(request.getAllResponseHeaders()) || {};
         if (request.readyState === 4) {
-          if (request.status === 200 || request.status === 202 || request.status === "OK" || request.code === "NoContent") {
+          if (request.status === 200 || request.status === 202 || request.status === 204 || request.status === "OK" || request.code === "NoContent") {
             if (request.responseText !== null && request.responseText.length > 0) {
               success(JSON.parse(this.responseText), headers);
             }
