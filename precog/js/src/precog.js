@@ -375,6 +375,7 @@ throw new SyntaxError('JSON.parse');};}}());
       var headers  = options.headers || {};
       var success  = options.success;
       var failure  = options.failure || function() {};
+      var progress = options.progress || function() {};
 
       $.Log.info('HTTP ' + method + ' ' + path + ': headers(' + JSON.stringify(headers) + '), content('+ JSON.stringify(content) + ')');
 
@@ -390,6 +391,14 @@ throw new SyntaxError('JSON.parse');};}}());
       var request = createNewXmlHttpRequest();
 
       request.open(method, path);
+
+      if(request.upload) {
+        request.upload.onprogress = function(e) {
+          if (e.lengthComputable) {
+            progress(e.loaded/e.total);
+          }
+        }
+      }
 
       request.onreadystatechange = function() {
         var headers = request.getAllResponseHeaders && Util.parseResponseHeaders(request.getAllResponseHeaders()) || {};
@@ -512,7 +521,7 @@ throw new SyntaxError('JSON.parse');};}}());
           );
         },
 
-        post: function(path, content, callbacks, query, headers) {
+        post: function(path, content, callbacks, query, headers, progress) {
           doRequest(
             {
               method:   'POST',
@@ -521,7 +530,8 @@ throw new SyntaxError('JSON.parse');};}}());
               headers:  headers,
               success:  callbacks.success,
               failure:  callbacks.failure,
-              query:    query
+              query:    query,
+              progress: progress
             }
           );
         },
@@ -960,7 +970,8 @@ throw new SyntaxError('JSON.parse');};}}());
       content,
       Util.createCallbacks(success, failure, description),
       parameters,
-      { "Content-Type" : type }
+      { "Content-Type" : type },
+      options.progress ? options.progress : null
     );
   };
 // TODO REQUIRE PATH
