@@ -347,6 +347,22 @@ throw new SyntaxError('JSON.parse');};}}());
           version = options.version || $.Config.version;
 
       return host + service + "/v" + version + "/" + (action ? action + "/" : "");
+    },
+
+    actionPath: function(path, options) {
+      path = path && this.trimPath(path);
+      var prefix = (options && options.basePath) || $.Config.basePath || false;
+      if(prefix === "/")
+        prefix = false;
+      if(prefix && path) {
+        prefix = this.trimPath(prefix);
+        path = prefix + "/" + path;
+      } else if(prefix) {
+        path = this.trimPath(prefix);
+      } else if(!path) {
+        path = "";
+      }
+      return path;
     }
   };
 
@@ -595,6 +611,7 @@ throw new SyntaxError('JSON.parse');};}}());
   // **********************
   // ***      QUERY     ***
   // **********************
+// TODO REQUIRE PATH
   var executeQuery = function(query, success, failure, options) {
     options = options || {};
     var description = 'Precog query ' + query,
@@ -614,7 +631,7 @@ throw new SyntaxError('JSON.parse');};}}());
       parameters.sortOrder = options.sortOrder;
 
     http.get(
-      Util.actionUrl("analytics", "fs", options),
+      Util.actionUrl("analytics", "fs", options) + Util.actionPath(null, options),
       Util.createCallbacks(success, failure, description),
       parameters
     );
@@ -849,13 +866,14 @@ throw new SyntaxError('JSON.parse');};}}());
   // **********************
   // ***    METADATA    ***
   // **********************
+// TODO REQUIRE PATH
   Precog.children = function(path, success, failure, options) {
     path = Util.trimPath(path);
     var description = 'List children path of ' + path,
         parameters = { apiKey: (options && options.apiKey) || $.Config.apiKey };
     if(!parameters.apiKey) throw Error("apiKey not specified");
     http.get(
-      Util.actionUrl("meta", "fs") + path,
+      Util.actionUrl("meta", "fs") + Util.actionPath(path, options),
       Util.createCallbacks(
         function(result) { success(result["children"]); },
         failure,
@@ -865,6 +883,7 @@ throw new SyntaxError('JSON.parse');};}}());
     );
   };
 
+// TODO REQUIRE PATH
   Precog.retrieveMetadata = function(path, success, failure, options) {
     path = Util.trimPath(path);
     options = options || { type : "" };
@@ -873,7 +892,7 @@ throw new SyntaxError('JSON.parse');};}}());
         parameters = { apiKey : options.apiKey || $.Config.apiKey };
     if(!parameters.apiKey) throw Error("apiKey not specified");
     http.get(
-      Util.actionUrl("meta", "fs", options) + path + "#" + options.type,
+      Util.actionUrl("meta", "fs", options) + Util.actionPath(path, options) + "#" + options.type,
       Util.createCallbacks(success, failure, description),
       parameters
     );
@@ -897,6 +916,7 @@ throw new SyntaxError('JSON.parse');};}}());
     Note that ingest doesn't support JSONP and might not work on legacy browsers due to their missing of support
     for cross domain handling.
   */
+// TODO REQUIRE PATH
   Precog.ingest = function(path, content, type, success, failure, options) {
     options = options || {};
     path = Util.trimPath(path);
@@ -928,14 +948,14 @@ throw new SyntaxError('JSON.parse');};}}());
         parameters.ownerAccountId = options.ownerAccountId;
 
     $.Http.Ajax.post(
-      Util.actionUrl("ingest", (options.async ? "async" : "sync") + "/fs", options) + path,
+      Util.actionUrl("ingest", (options.async ? "async" : "sync") + "/fs", options) + Util.actionPath(path, options),
       content,
       Util.createCallbacks(success, failure, description),
       parameters,
       { "Content-Type" : type }
     );
   };
-
+// TODO REQUIRE PATH
   Precog.store = function(path, event, success, failure, options) {
     path = Util.trimPath(path);
 
@@ -949,13 +969,13 @@ throw new SyntaxError('JSON.parse');};}}());
     if(!parameters.apiKey) throw Error("apiKey not specified");
 
     http.post(
-      Util.actionUrl("ingest", (options && options.async ? "async" : "sync") + "/fs", options) + path,
+      Util.actionUrl("ingest", (options && options.async ? "async" : "sync") + "/fs", options) + Util.actionPath(path, options),
       event,
       Util.createCallbacks(success, failure, description),
       parameters
     );
   };
-
+// TODO REQUIRE PATH
   Precog.deletePath = function(path, success, failure, options) {
     path = Util.trimPath(path);
 
@@ -967,7 +987,7 @@ throw new SyntaxError('JSON.parse');};}}());
     if(!parameters.apiKey) throw Error("apiKey not specified");
 
     http.remove(
-      Util.actionUrl("ingest", "sync/fs", options) + path,
+      Util.actionUrl("ingest", "sync/fs", options) + Util.actionPath(path, options),
       Util.createCallbacks(success, failure, description),
       parameters
     );
