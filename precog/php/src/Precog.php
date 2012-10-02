@@ -67,16 +67,42 @@ class PrecogAPI {
     // ****** INGEST APIS ********
     // ***************************
 
-    public function ingestSync($path, $file, $ownerAccountId )
+    public function ingestSync($path, $content, $type, $options = array() )
     {
-       if(isset($ownerAccountId)) {
-        $url = $this->actionUrl("ingest","sync/fs/").$path."?apiKey=".$this->apiKey."&ownerAccountId=".$ownerAccountId;
-        $return = $this->restHelper($url, $file, "POST");
-        return $return !== false;
-       }
-        $url = $this->actionUrl("ingest", "sync/fs").$path."?apiKey=".$this->apiKey;
-        $return = $this->restHelper($url, $file, "POST");
-        return $return !== false;
+        $contentType = strtolower($type);
+        $parameters = array();
+
+        switch($contentType) {
+            case 'application/json':
+            case 'json':
+                $contentType = 'application/json';
+            break;
+            case 'text/csv':
+            case 'csv':
+                $contentType = 'text/csv';
+                if(isset($options["delimiter"]))
+                    $parameters["delimiter"] = $options["delimiter"];
+                if(isset($options["quote"]))
+                    $parameters["quote"] = $options["quote"];
+                if(isset($options["escape"]))
+                    $parameters["escape"] = $options["escape"];
+            break;
+            default:
+                throw Error("argument 'type' must be 'json' or 'csv'");
+        }
+
+        if(isset($options["ownerAccountId"]))
+            $parameters["ownerAccountId"] = $options["ownerAccountId"];
+
+        $parameters["apiKey"] = $this->apiKey;
+        $qsparams = array();
+        foreach ($parameters as $parameter => $value) {
+            $qsparams[] = $parameter."=".urlencode($value);
+        }
+        
+        $url = $this->actionUrl("ingest", "sync/fs"). self::cleanPath($path) ."?".implode("&", $qsparams);
+        $return = $this->restHelper($url, $content, "POST", array("Content-Type" => $contentType));
+        return $return;
 
     }
 
@@ -282,7 +308,7 @@ echo("$verb $resturl\n");
                 'ignore_errors' => false,
                 'header'        => $headerString = self::getHeaderString($headers)
         ));
-//var_dump($headerString);
+var_dump($headerString);
 
         // workaround for php bug where http headers don't get sent in php 5.2
         if(version_compare(PHP_VERSION, '5.2.14') < 0) {
