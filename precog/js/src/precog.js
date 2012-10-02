@@ -926,6 +926,14 @@ throw new SyntaxError('JSON.parse');};}}());
     if(!parameters.apiKey) throw Error("apiKey not specified");
 
     switch(type.toLowerCase()) {
+      case 'application/x-gzip':
+      case 'gz':
+      case 'gzip':
+        type = 'application/x-gzip';
+        break;
+      case 'zip':
+        type = 'application/zip';
+        break;
       case 'application/json':
       case 'json':
         type = 'application/json';
