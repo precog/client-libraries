@@ -2,21 +2,28 @@ QUnit.config = {
 //	autostart : false
 };
 
-var email    = "testjs@precog.com",
+var email    = "test-js@precog.com",
 	password = "123abc";
 
 function ensureAccount(callack) {
+	Precog.cache.disable();
 	Precog.createAccount(email, password, function(r) {
 		Precog.describeAccount(email, password, r['accountId'], function(d) {
 			Precog.$.Config.apiKey = d.apiKey;
+			Precog.$.Config.basePath = d.rootPath;
+
+//		Precog.$.Config.apiKey = "A1C62105-691B-4D77-9372-36A693E5D905";
+//		Precog.$.Config.basePath = "/0000000024";
+
+console.log(Precog.$.Config);
 			callack(r['accountId'], d.apiKey, d.rootPath);
 		});
 	});
 }
 
 function createDelayedAction(f) {
-	return function() {
-		setTimeout(f, 6000);
+	return function(r) {
+		setTimeout(function() { f(r); }, 6000);
 	};
 }
 
@@ -92,10 +99,10 @@ ensureAccount(function(id, apiKey, rootPath) {
 
 	asyncTest("create and describe new grant", function() {
 		var grant = { "type": "read", "path": rootPath+"foo/", "ownerAccountId": id, "expirationDate": null };
-		Precog.createNewGrant(grant, function(grantId) {
-			ok(grantId);
-			Precog.describeGrant(grantId, function(result) {
-				equal(result.grantId, grantId);
+		Precog.createNewGrant(grant, function(g) {
+			ok(g.grantId);
+			Precog.describeGrant(g.grantId, function(result) {
+				equal(result.grantId, g.grantId);
 				equal(result.ownerAccountId, id);
 				equal(result.path, grant.path);
 				equal(result.type, grant.type);
@@ -107,8 +114,8 @@ ensureAccount(function(id, apiKey, rootPath) {
 
 	asyncTest("delete grant", function() {
 		var grant = { "type": "read", "path": rootPath+"foo/", "ownerAccountId": id, "expirationDate": null };
-		Precog.createNewGrant(grant, function(grantId) {
-			Precog.deleteGrant(grantId, function(result) {
+		Precog.createNewGrant(grant, function(g) {
+			Precog.deleteGrant(g.grantId, function(result) {
 				ok(true);
 				start();
 			});
@@ -119,8 +126,8 @@ ensureAccount(function(id, apiKey, rootPath) {
 		var grant1 = { "type": "read", "path": rootPath+"foo/",     "ownerAccountId": id, "expirationDate": null },
 			grant2 = { "type": "read", "path": rootPath+"foo/bar/", "ownerAccountId": id, "expirationDate": null };
 		Precog.createNewGrant(grant1, function(g1) {
-			Precog.createChildGrant(g1, grant2, function(g2) {
-				Precog.listChildrenGrant(g1, function(result) {
+			Precog.createChildGrant(g1.grantId, grant2, function(g2) {
+				Precog.listChildrenGrant(g1.grantId, function(result) {
 					ok(result instanceof Array);
 					equal(result.length, 1);
 					equal(result[0].ownerAccountId, id);
@@ -135,7 +142,7 @@ ensureAccount(function(id, apiKey, rootPath) {
 		var grant1 = { "type": "read", "path": rootPath+"foo/",     "ownerAccountId": id, "expirationDate": null },
 			grant2 = { "type": "read", "path": rootPath+"foo/bar/", "ownerAccountId": id, "expirationDate": null };
 		Precog.createNewGrant(grant1, function(g1) {
-			Precog.createChildGrant(g1, grant2, function(g2) {
+			Precog.createChildGrant(g1.grantId, grant2, function(g2) {
 				Precog.retrieveGrants(Precog.$.Config.apiKey, function(result) {
 					ok(result instanceof Array);
 					ok(result.length > 0);
@@ -230,11 +237,11 @@ ensureAccount(function(id, apiKey, rootPath) {
 			})
 		);
 	});
-
+*/
 	// **********************
 	// ***     INGEST     ***
 	// **********************
-
+/*
 	asyncTest( "store event", function() {
 		Precog.store(rootPath+"test/js/store",
 			{strTest: "string loaded", numTest: 42},
@@ -259,23 +266,38 @@ ensureAccount(function(id, apiKey, rootPath) {
 			})
 		);
 	});
-
+*/
 	asyncTest( "ingest sync json", function() {
-		var path = rootPath+"test/js/json",
+		var path = "/test/js/json",
 			now  = +new Date();
-		Precog.ingest(path,
-			"{ \"timestamp\" : "+now+", \"index\" : 1 }\n{ \"timestamp\" : "+now+", \"index\" : 2 }\n{ \"timestamp\" : "+now+", \"index\" : 3 }",
-			"json",
+/*
+
+		Precog.store(path, { name : "franco" },
 			createDelayedAction(function(result) {
-				console.log(result);
-				Precog.query("ds := /"+path+" ds where ds.timestamp = "+now, function(result) {
+				console.log("A", result);
+				Precog.query("/"+path, function(result) {
+					console.log("B", result);
 					equal(result.length, 3);
 					start();
 				});
 			})
 		);
+*/
+//			/*
+		Precog.ingest(path,
+			"{ \"timestamp\" : \""+now+"\", \"index\" : 1 }\n{ \"timestamp\" : \""+now+"\", \"index\" : 2 }\n{ \"timestamp\" : \""+now+"\", \"index\" : 3 }",
+			"json",
+			createDelayedAction(function(result) {
+				console.log(result);
+				Precog.query("ds := /"+path+" ds where ds.timestamp = \""+now+"\"", function(result) {
+					equal(result.length, 3);
+					start();
+				});
+			})
+		);
+//*/
 	});
-
+/*
 	asyncTest( "ingest async json", function() {
 		var path = rootPath+"test/js/json",
 			now  = +new Date();
@@ -311,7 +333,8 @@ ensureAccount(function(id, apiKey, rootPath) {
 			})
 		);
 	});
-
+*/
+/*
 	// **********************
 	// ***      QUERY     ***
 	// **********************
