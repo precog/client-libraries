@@ -22,6 +22,8 @@ class SortTest extends PrecogBaseTest {
 
         $value1 = $this->api->query("/$path", $options1);
         $value2 = $this->api->query("/$path", $options2);
+        var_dump($value1[0]["foo"]);
+        var_dump($value2[0]);
 
         $this->assertTrue($value1[0]["foo"] === 1);
         $this->assertTrue($value2[0]["foo"] === 2);

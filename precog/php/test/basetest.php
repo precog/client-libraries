@@ -24,7 +24,7 @@ abstract class PrecogBaseTest extends UnitTestCase {
 	static $password  = "test123";
 	public static function serviceInfo()
 	{
-		$HOST  = "beta.precog.com";
+		$HOST  = "nebula.precog.com";
 		$PORT  = null;
 		$VERSION  = 1;
 

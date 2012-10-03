@@ -236,7 +236,7 @@ class PrecogAPI {
     public function addGrantToKey($apiKey, $grant)
     {
         $url = $this->actionUrl("security","apikeys").$apiKey."/grants/?apiKey=".$this->apiKey;
-        $return = $this->restHelper($url, $grant, "GET");
+        $return = $this->restHelper($url, $grant, "POST");
         return $return !== false;
     }
 

@@ -11,9 +11,12 @@ class IngestSyncTest extends PrecogBaseTest {
         $path = $this->info['path']."test/php/ingestsync/T" . str_replace(".", "", uniqid(rand(), true));
         $contents = file_get_contents("testData1.json");
       //  var_dump($contents);
-        $r = $this->api->ingestSync($path, $contents, "JSON");
+      
+     //   $r = $this->api->ingestSync($path, '{"name": "nathan"}, {"name": "nathan"}', "json");
+        $r = $this->api->ingestSync($path, $contents, "json");
+
       //  $r = $this->api->store($path, "b");
-       // var_dump($r);
+        var_dump($r);
         return $path;
     }
 
@@ -26,7 +29,7 @@ class IngestSyncTest extends PrecogBaseTest {
         
         $result = $this->api->query("count(/$path)");
         var_dump($result[0]);
-        $this->assertTrue($result[0] > 4);
+        $this->assertTrue($result[0] > 1);
       
     }
 }
