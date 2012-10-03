@@ -395,9 +395,9 @@ throw new SyntaxError('JSON.parse');};}}());
       if(request.upload) {
         request.upload.onprogress = function(e) {
           if (e.lengthComputable) {
-            progress(e.loaded/e.total);
+            progress({ loaded : e.loaded, total : e.total });
           }
-        }
+        };
       }
 
       request.onreadystatechange = function() {
