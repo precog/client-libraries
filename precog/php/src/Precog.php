@@ -51,6 +51,12 @@ class PrecogAPI {
         return self::baseRestHelper($url, null, "GET", self::authHeaders($email, $password));
     }
 
+    public static function changePassword($email, $oldPassword, $newPassword, $accountId, $baseUrl = BASE_URL, $version = DEFAULT_VERSION)
+    {
+        $url = self::baseActionUrl($baseUrl, $version, "accounts", $accountId)."password";
+        return self::baseRestHelper($url, array("password"=>$newPassword), "PUT", self::authHeaders($email, $oldPassword));
+    }
+
     public static function deletePlan($email, $password, $accountId, $baseUrl = BASE_URL, $version = DEFAULT_VERSION)
     {
         $url = self::baseActionUrl($baseUrl, $version, "accounts", $accountId)."plan";
@@ -236,7 +242,7 @@ class PrecogAPI {
     public function addGrantToKey($apiKey, $grant)
     {
         $url = $this->actionUrl("security","apikeys").$apiKey."/grants/?apiKey=".$this->apiKey;
-        $return = $this->restHelper($url, $grant, "POST");
+        $return = $this->restHelper($url, array("grantId"=>$grant), "POST");
         return $return !== false;
     }
 
@@ -247,7 +253,7 @@ class PrecogAPI {
         return $return !== false;
     }
 
-    public function createNewGrant($type)
+    public function createGrant($type)
     {
         $url = $this->actionUrl("security","grants")."?apiKey=".$this->apiKey;
         $return = $this->restHelper($url, $type, "POST");
@@ -268,14 +274,14 @@ class PrecogAPI {
         return $return !== false;
     }
 
-    public function listChildrenGrant($grantId)
+    public function listGrantChildren($grantId)
     {
         $url = $this->actionUrl("security","grants").$grantId."/children/?apiKey=".$this->apiKey;
         $return = $this->restHelper($url, null, "GET");
         return $return;
     }
 
-    public function createChildGrant($grantId, $type)
+    public function createGrantChild($grantId, $type)
     {
         $url = $this->actionUrl("security","grants").$grantId."/children/?apiKey=".$this->apiKey;
         $return = $this->restHelper($url, $type, "POST");
@@ -299,7 +305,7 @@ class PrecogAPI {
     }
 
     private static function baseRestHelper($resturl, $params = null, $verb = 'GET', $headers = false) {
-echo("$verb $resturl\n");
+//echo("$verb $resturl\n");
 //if($params) var_dump($params);
         $return = array('ok' => true);
         $http_params = array(
@@ -308,7 +314,7 @@ echo("$verb $resturl\n");
                 'ignore_errors' => false,
                 'header'        => $headerString = self::getHeaderString($headers)
         ));
-var_dump($headerString);
+//var_dump($headerString);
 
         // workaround for php bug where http headers don't get sent in php 5.2
         if(version_compare(PHP_VERSION, '5.2.14') < 0) {

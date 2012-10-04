@@ -11,8 +11,7 @@ class AddGrantToKeyTest extends PrecogBaseTest {
  	    $apiKey2 = $result["apiKey"];
     	$result = $api->describeKey($apiKey2);
  		$grantId = $result["grants"][0]["grantId"];
-        var_dump($grantId);
- 		$this->assertTrue($api->addGrantToKey($apiKey1, $grantId));
+ 		$api->addGrantToKey($apiKey1, $grantId);
         $result = $api->describeKey($apiKey1);
         $this->assertEqual(2, count($result["grants"]));
     }

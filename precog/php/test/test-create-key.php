@@ -6,7 +6,6 @@ class CreateAPIkeyTest extends PrecogBaseTest {
         function testCreateAPIkey() {
             $api = PrecogBaseTest::createApi($this->info);
             $result = $api->createKey(array("grants"=>array(array("type"=>"read", "path"=>$this->info["path"]."foo/", "ownerAccountId"=> $this->info["accountId"], "expirationDate"=> null))));
-            var_dump($this->info["path"]);
             $this->assertTrue(isset($result) && strlen($result["apiKey"]) == 36);
         }
 }

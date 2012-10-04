@@ -3,33 +3,31 @@
 require_once('basetest.php');
 
 class IngestSyncTest extends PrecogBaseTest {
-    var $api;
-    var $testPath;
-    function setupPath()
-    {
-        $this->api = PrecogBaseTest::createApi($this->info);
-        $path = $this->info['path']."test/php/ingestsync/T" . str_replace(".", "", uniqid(rand(), true));
-        $contents = file_get_contents("testData1.json");
-      //  var_dump($contents);
-      
-     //   $r = $this->api->ingestSync($path, '{"name": "nathan"}, {"name": "nathan"}', "json");
-        $r = $this->api->ingestSync($path, $contents, "json");
-
-      //  $r = $this->api->store($path, "b");
-        var_dump($r);
-        return $path;
-    }
-
     function testIngestSync()
     {
-        $path = $this->setupPath();
-        var_dump($path);
+        $api = PrecogBaseTest::createApi($this->info);
+        $path = $this->info['path']."test/php/ingestsync/T" . str_replace(".", "", uniqid(rand(), true));
+        $r = $api->ingestSync($path, file_get_contents("testData1.json"), "json");
+       
+        sleep(5);
+        
+        $result = $api->query("count(/$path)");
+        var_dump($result);
+        $this->assertTrue($result[0] === 6);
+      
+    }
+
+    function testIngestAsync()
+    {
+        $api = PrecogBaseTest::createApi($this->info);
+        $path = $this->info['path']."test/php/ingestasync/T" . str_replace(".", "", uniqid(rand(), true));
+        $r = $api->ingestAsync($path, file_get_contents("testData1.json"), "json");
 
         sleep(5);
         
-        $result = $this->api->query("count(/$path)");
-        var_dump($result[0]);
-        $this->assertTrue($result[0] > 1);
+        $result = $api->query("count(/$path)");
+        var_dump($result);
+        $this->assertTrue($result[0] === 6);
       
     }
 }
