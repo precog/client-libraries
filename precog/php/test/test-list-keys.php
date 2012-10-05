@@ -10,9 +10,7 @@ class ListAPIkeyTest extends PrecogBaseTest {
            // var_dump($result);
            // var_dump($result["apiKey"]);
             $apiKey = $result["apiKey"];
-            var_dump($apiKey);
             $result = $api->listKeys();
-            var_dump($result);
             $this->assertTrue(count($result) > 0);
             $found = false;
             foreach ($result as $key => $value) {
