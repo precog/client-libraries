@@ -401,7 +401,7 @@ ensureAccount(function(id, apiKey, rootPath) {
 	// **********************
 	// ***    METADATA    ***
 	// **********************
-/*
+
 	asyncTest("retrieve metadata", function() {
 		var store = { value : 1 },
 			path  = rootPath+"test/js/metadata/retrieve";
@@ -414,5 +414,5 @@ ensureAccount(function(id, apiKey, rootPath) {
 			})
 		);
 	});
-*/
+
 });

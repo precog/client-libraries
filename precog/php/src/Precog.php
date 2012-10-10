@@ -5,7 +5,7 @@
  * Author: Alissa Pajer
  **/
 
-define ("BASE_URL", "https://api.precog.com");
+define ("BASE_URL", "https://beta.precog.com");
 define ("DEFAULT_VERSION", 1);
 
 class PrecogAPI {
@@ -43,6 +43,12 @@ class PrecogAPI {
     {
         $url = self::baseActionUrl($baseUrl, $version, "accounts", "accounts").$accountId;
         return self::baseRestHelper($url, null, "GET", self::authHeaders($email, $password));
+    }
+
+       public static function addGrantToAccount($email, $password, $accountId, $grants, $baseUrl = BASE_URL, $version = DEFAULT_VERSION)
+    {
+        $url = self::baseActionUrl($baseUrl, $version, "accounts", "accounts/$accountId")."grants";
+        return self::baseRestHelper($url, json_encode(array("grantId"=>$grants)), "POST", self::authHeaders($email, $password));
     }
 
     public static function describePlan($email, $password, $accountId, $baseUrl = BASE_URL, $version = DEFAULT_VERSION)
@@ -296,7 +302,7 @@ class PrecogAPI {
     }
 
     private static function baseRestHelper($resturl, $params = null, $verb = 'GET', $headers = false) {
-//echo("$verb $resturl\n");
+echo("$verb $resturl\n");
 //if($params) var_dump($params);
         $return = array('ok' => true);
         $http_params = array(
