@@ -663,7 +663,7 @@ throw new SyntaxError('JSON.parse');};}}());
   Precog.createAccount = function(email, password, success, failure, options) {
     var description = 'Create account for ' + email;
     http.post(
-      Util.actionUrl("accounts", options),
+      Util.actionUrl("accounts","accounts", options),
       { "email" : email, "password" : password },
       Util.createCallbacks(success, failure, description),
       null
@@ -673,7 +673,7 @@ throw new SyntaxError('JSON.parse');};}}());
   Precog.describeAccount = function(email, password, accountId, success, failure, options) {
     var description = 'Describe account ' + accountId;
     http.get(
-      Util.actionUrl("accounts", options) + accountId,
+      Util.actionUrl("accounts", "accounts",options) + accountId,
       Util.createCallbacks(success, failure, description),
       null,
       { "Authorization" : Util.makeBaseAuth(email, password) }
@@ -683,7 +683,7 @@ throw new SyntaxError('JSON.parse');};}}());
   Precog.listAccounts = function(email, password, success, failure, options) {
     var description = 'List accounts for ' + email;
     http.get(
-      Util.actionUrl("accounts", options),
+      Util.actionUrl("accounts", "accounts",options),
       Util.createCallbacks(success, failure, description),
       null,
       { "Authorization" : Util.makeBaseAuth(email, password) }
@@ -693,7 +693,7 @@ throw new SyntaxError('JSON.parse');};}}());
   Precog.addGrantToAccount = function(email, password, accountId, grantId, success, failure, options) {
     var description = 'Add grant '+grantId+' to account ' + accountId;
     http.post(
-      Util.actionUrl("accounts", accountId, options) + "grants/",
+      Util.actionUrl("accounts", "accounts",accountId, options) + "grants/",
       { "grantId" : grantId },
       Util.createCallbacks(success, failure, description),
       null,
@@ -704,7 +704,7 @@ throw new SyntaxError('JSON.parse');};}}());
   Precog.describePlan = function(email, password, accountId, success, failure, options) {
     var description = 'Describe plan ' + accountId;
     http.get(
-      Util.actionUrl("accounts", accountId, options) + "plan",
+      Util.actionUrl("accounts", "accounts",accountId, options) + "plan",
       Util.createCallbacks(success, failure, description),
       null,
       { "Authorization" : Util.makeBaseAuth(email, password) }
@@ -714,7 +714,7 @@ throw new SyntaxError('JSON.parse');};}}());
   Precog.changePlan = function(email, password, accountId, type, success, failure, options) {
     var description = 'Change plan to '+type+' for account ' + accountId;
     http.post(
-      Util.actionUrl("accounts", accountId, options) + "plan",
+      Util.actionUrl("accounts", "accounts",accountId, options) + "plan",
       { "type" : type },
       Util.createCallbacks(success, failure, description),
       null,
@@ -725,7 +725,7 @@ throw new SyntaxError('JSON.parse');};}}());
   Precog.deletePlan = function(email, password, accountId, success, failure, options) {
     var description = 'Delete account ' + accountId;
     http.remove(
-      Util.actionUrl("accounts", accountId, options) + "plan",
+      Util.actionUrl("accounts", "accounts",accountId, options) + "plan",
       Util.createCallbacks(success, failure, description),
       null,
       { "Authorization" : Util.makeBaseAuth(email, password) }
