@@ -275,22 +275,31 @@ throw new SyntaxError('JSON.parse');};}}());
 
     createCallbacks: function(success, failure, msg) {
       var successFn = function(fn, msg) {
-        if (fn) return fn;
-        else return function(result) {
-          if (result !== undefined) {
-            $.Log.debug('Success: ' + msg + ': ' + JSON.stringify(result));
-          }
-          else {
-            $.Log.debug('Success: ' + msg);
-          }
-        };
+        if($.Config.enableLog) {
+          return function(result) {
+            if (result !== undefined) {
+              $.Log.info('Success: ' + msg + ': ' + JSON.stringify(result));
+            } else {
+              $.Log.info('Success: ' + msg);
+            }
+            if(fn)
+              fn(result);
+          };
+        } else {
+          return fn ? fn : function(){};
+        }
       };
 
       var failureFn = function(fn, msg) {
-        if (fn) return fn;
-        else return function(code, reason) {
-          $.Log.error('Failure: ' + msg + ': code = ' + code + ', reason = ' + reason);
-        };
+        if($.Config.enableLog) {
+          return function(code, reason) {
+            $.Log.error('Failure: ' + msg + ': code = ' + code + ', reason = ' + reason);
+            if(fn)
+              fn(code, reason);
+          };
+        } else {
+          return fn ? fn : function(){};
+        }
       };
 
       return {
@@ -345,7 +354,8 @@ throw new SyntaxError('JSON.parse');};}}());
       options = options || {};
       var host    = options.analyticsService || $.Config.analyticsService,
           version = options.version || $.Config.version;
-
+ //     console.log("in action URL");
+ //     console.log(host + service + "/v" + version + "/" + (action ? action + "/" : ""));
       return host + service + "/v" + version + "/" + (action ? action + "/" : "");
     },
 
@@ -362,6 +372,7 @@ throw new SyntaxError('JSON.parse');};}}());
       } else if(!path) {
         path = "";
       }
+//           console.log(path);
       return path;
     }
   };
@@ -377,7 +388,7 @@ throw new SyntaxError('JSON.parse');};}}());
       var failure  = options.failure || function() {};
       var progress = options.progress || function() {};
 
-      $.Log.info('HTTP ' + method + ' ' + path + ': headers(' + JSON.stringify(headers) + '), content('+ JSON.stringify(content) + ')');
+      $.Log.warn('HTTP ' + method + ' ' + path + ': headers(' + JSON.stringify(headers) + '), content('+ JSON.stringify(content) + ')');
 
       var createNewXmlHttpRequest = function() {
         if (window.XMLHttpRequest) {
@@ -444,7 +455,7 @@ throw new SyntaxError('JSON.parse');};}}());
       var success  = options.success;
       var failure  = options.failure || function() {};
 
-      $.Log.info('HTTP ' + method + ' ' + path + ': headers(' + JSON.stringify(headers) + '), content('+ JSON.stringify(content) + ')');
+      $.Log.warn('HTTP ' + method + ' ' + path + ': headers(' + JSON.stringify(headers) + '), content('+ JSON.stringify(content) + ')');
 
       var random   = Math.floor(Math.random() * 214748363);
       var funcName = 'PrecogJsonpCallback' + random.toString();
@@ -566,7 +577,7 @@ throw new SyntaxError('JSON.parse');};}}());
 
   $.Util.extend($.Config,
     {
-      analyticsService: Util.getProtocol() + "//api.precog.com/",
+      analyticsService: Util.getProtocol() + "//beta.precog.com/",
       useJsonp  : "true",
       enableLog : "false",
       version   : 1
@@ -680,16 +691,6 @@ throw new SyntaxError('JSON.parse');};}}());
     );
   };
 
-  Precog.listAccounts = function(email, password, success, failure, options) {
-    var description = 'List accounts for ' + email;
-    http.get(
-      Util.actionUrl("accounts", "accounts",options),
-      Util.createCallbacks(success, failure, description),
-      null,
-      { "Authorization" : Util.makeBaseAuth(email, password) }
-    );
-  };
-
   Precog.addGrantToAccount = function(email, password, accountId, grantId, success, failure, options) {
     var description = 'Add grant '+grantId+' to account ' + accountId;
     http.post(
@@ -703,18 +704,20 @@ throw new SyntaxError('JSON.parse');};}}());
 
   Precog.describePlan = function(email, password, accountId, success, failure, options) {
     var description = 'Describe plan ' + accountId;
+    console.log(accountId);
     http.get(
-      Util.actionUrl("accounts", "accounts",accountId, options) + "plan",
+      Util.actionUrl("accounts", "accounts", options) +accountId + "/plan",
       Util.createCallbacks(success, failure, description),
       null,
       { "Authorization" : Util.makeBaseAuth(email, password) }
     );
+    console.log( Util.actionUrl("accounts", "accounts", accountId, options) + "plan");
   };
 
   Precog.changePlan = function(email, password, accountId, type, success, failure, options) {
     var description = 'Change plan to '+type+' for account ' + accountId;
-    http.post(
-      Util.actionUrl("accounts", "accounts",accountId, options) + "plan",
+    http.put(
+      Util.actionUrl("accounts", "accounts", options) + accountId + "/plan",
       { "type" : type },
       Util.createCallbacks(success, failure, description),
       null,
@@ -725,7 +728,7 @@ throw new SyntaxError('JSON.parse');};}}());
   Precog.deletePlan = function(email, password, accountId, success, failure, options) {
     var description = 'Delete account ' + accountId;
     http.remove(
-      Util.actionUrl("accounts", "accounts",accountId, options) + "plan",
+      Util.actionUrl("accounts", "accounts", options) +accountId + "/plan",
       Util.createCallbacks(success, failure, description),
       null,
       { "Authorization" : Util.makeBaseAuth(email, password) }
