@@ -6,6 +6,7 @@ class AllTests extends TestSuite {
     function AllTests() {
         $this->TestSuite('All tests');
         $this->addFile('test-create-account.php');
+        $this->addFile('test-add-grant-to-account.php');
         $this->addFile('test-describe-account.php');
         $this->addFile('test-describe-plan.php');
         $this->addFile('test-change-password.php');

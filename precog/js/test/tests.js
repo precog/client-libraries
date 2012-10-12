@@ -27,9 +27,19 @@ function createDelayedAction(f) {
 	};
 }
 
+
+//TODO refactor into a single function that takes an optional argument
 function isApiKeyInArray(arr, val) { 
 	for (i = 0; i < arr.length; i++) 
 		if (val == arr[i]["apiKey"]){
+			return true; 
+		} 
+			return false; 
+}
+
+function isGrantIdInArray(arr, val) { 
+	for (i = 0; i < arr.length; i++) 
+		if (val == arr[i]["grantId"]){
 			return true; 
 		} 
 			return false; 
@@ -70,9 +80,45 @@ ensureAccount(function(id, apiKey, rootPath) {
 			start();
 		});
 	});
-/*  TODO not working in PHP either, not written here yet (just copied decribe account and change name)
+
 	asyncTest("add grant to account", function() {
-		Precog.addGrantToAccount(email, password, id, function(result) {
+		var random = Math.floor((Math.random()*1000000)+1); 
+		Precog.createAccount("test-js"+random+"@precog.com", password, function(result) {
+			Precog.describeAccount("test-js"+random+"@precog.com", password, result.accountId,
+				function(description){
+					var accountId = description.accountId;
+					var grants = { "grants": [{ "type": "read", "path": rootPath+"foo/", "expirationDate": null, "ownerAccountId" : id }] };
+					Precog.createKey(grants,
+						function(result) {
+							console.log(result);
+							var ak = result['apiKey'];
+							console.log(ak);
+							Precog.describeKey(ak,
+								function(description){
+									console.log(description);
+									console.log(description.grants[0].grantId);
+									var grantId = description.grants[0].grantId;
+									Precog.addGrantToAccount(email, password, accountId, grantId,
+										function() {
+											Precog.retrieveGrants(ak, 
+												function(grantArray){
+													ok(isGrantIdInArray(grantArray, grantId));
+													start();
+												})
+											
+									});
+								})
+								
+							}
+					);
+				})
+
+			
+		});
+//	});
+
+/*
+		Precog.addGrantToAccount(email, password, accountId, grantId function(result) {
 			equal(result.accountId, id);
 			equal(result.email, email);
 			ok(result.accountCreationDate);
@@ -81,11 +127,11 @@ ensureAccount(function(id, apiKey, rootPath) {
 			ok(result.plan);
 			start();
 		});
+	*/
 	});
-*/
+
 	asyncTest("describe plan", function() {
 		Precog.describePlan(email, password, id, function(result) {
-		//	console.log("describe plan result: " +result);
 			ok(result.type);
 			start();
 		});
@@ -94,7 +140,6 @@ ensureAccount(function(id, apiKey, rootPath) {
 	asyncTest("change plan", function() {
 		var random = Math.floor((Math.random()*1000000)+1); 
 		Precog.changePlan(email, password, id, "bronze"+random, function(result) {
-		//	console.log("change plan result: " +result);
 			Precog.describePlan(email, password, id, function(result){
 				equal(result.type, "bronze"+random);
 				start();
@@ -105,7 +150,6 @@ ensureAccount(function(id, apiKey, rootPath) {
 
 	asyncTest("delete plan", function() {
 		Precog.deletePlan(email, password, id, function(result) {
-		//	console.log("delete plan result: " +result);
 			Precog.describePlan(email, password, id, function(result){
 				equal(result.type, "Free");
 				start();
@@ -153,7 +197,6 @@ ensureAccount(function(id, apiKey, rootPath) {
 				var ak = result['apiKey'];
 				console.log(ak);
 				Precog.listKeys(function(details) {
-				//	console.log(details[1]["apiKey"]);
 					ok(isApiKeyInArray(details, ak));
 					start();
 				});
@@ -199,7 +242,7 @@ ensureAccount(function(id, apiKey, rootPath) {
 			});
 		});
 	});
-// TODO return format is inconsistent
+
 	asyncTest("create child grant and list", function() {
 		var grant1 = { "type": "read", "path": rootPath+"foo/",     "ownerAccountId": id, "expirationDate": null },
 			grant2 = { "type": "read", "path": rootPath+"foo/bar/", "ownerAccountId": id, "expirationDate": null };
@@ -230,7 +273,7 @@ ensureAccount(function(id, apiKey, rootPath) {
 		});
 	});
 
-	// TODO check test validity
+	
 	asyncTest("remove grant", function() {
 		var grant1 = { "type": "read", "path": rootPath+"foo/",     "ownerAccountId": id, "expirationDate": null },
 			grant2 = { "type": "read", "path": rootPath+"foo/bar/", "ownerAccountId": id, "expirationDate": null };
@@ -253,6 +296,40 @@ ensureAccount(function(id, apiKey, rootPath) {
 	/*
 	  	Precog.addGrantToKey(apiKey, grant, success, failure, options);
 	*/
+
+	asyncTest("add grant to key", function() {
+		var grants1 = { "grants": [{ "type": "read", "path": rootPath+"foo/", "expirationDate": null, "ownerAccountId" : id }] };
+			grants2 = { "grants": [{ "type": "read", "path": rootPath+"foo/bar/", "ownerAccountId": id, "expirationDate": null }] };
+			Precog.createKey(grants1,
+				function(result) {
+					var ak = result['apiKey'];
+					Precog.createKey(grants2,
+						function(details) {
+						var ak2 = (details['apiKey']);
+							Precog.describeKey(ak,
+								function(description){
+									var grantId = description.grants[0].grantId;
+									var wrapper = { "grantId": grantId };
+								Precog.addGrantToKey(ak2, wrapper,
+									function() {
+										Precog.describeKey(ak2,
+											function(result){
+												var grantArray = result.grants;
+												console.log(grantArray);
+												//console.log(result.grants);
+												ok(isGrantIdInArray(grantArray, grantId));
+												start();
+											}
+										)	
+									}
+								);
+								}
+							)	
+						}	
+					);
+				}
+			);
+	});
 	/*
 	asyncTest("list keys", function() {
 		Precog.listKeys(
@@ -264,60 +341,6 @@ ensureAccount(function(id, apiKey, rootPath) {
 		);
 	});
 	*/
-
-	asyncTest( "query with skip", function() {
-		var path = rootPath+"test/js/skip";
-		Precog.store(path, "A");
-		Precog.store(path, "B",
-			createDelayedAction(function() {
-				var query = "/"+path;
-				Precog.query(query,
-					function(result1) {
-						Precog.query(query,
-							function(result2){
-								ok(result1 != result2);
-								start();
-							},
-							null,
-							{limit: 1, skip: 1}
-						);
-					},
-					null,
-					{limit: 1, skip: 0}
-				);
-			})
-		);
-	});
-
-	asyncTest( "query with order field", function() {
-		var path      = rootPath+"test/js/order",
-			timeStamp = +new Date(),
-			event1    = { num : 1, time : timeStamp },
-			event2    = { num : 2, time : timeStamp };
-		Precog.store(path, event1);
-		Precog.store(path, event2,
-			createDelayedAction(function() {
-				var query = "data := /"+path+" data where data.time = "+timeStamp;
-				Precog.query(
-					query,
-					function(result) {
-						ok(result[0] && result[0].num === 1);
-						Precog.query(
-							query,
-							function(result) {
-								ok(result[0] && result[0].num === 2);
-								start();
-							},
-							null,
-							{ sortOn : "num", sortOrder : "desc"}
-						);
-					},
-					null,
-					{ sortOn : "num", sortOrder : "asc"}
-				);
-			})
-		);
-	});
 
 	// **********************
 	// ***     INGEST     ***
@@ -477,6 +500,60 @@ ensureAccount(function(id, apiKey, rootPath) {
 					null,
 					{basePath: rootPath+"/test"}
 				); 
+			})
+		);
+	});
+
+	asyncTest( "query with skip", function() {
+		var path = rootPath+"test/js/skip";
+		Precog.store(path, "A");
+		Precog.store(path, "B",
+			createDelayedAction(function() {
+				var query = "/"+path;
+				Precog.query(query,
+					function(result1) {
+						Precog.query(query,
+							function(result2){
+								ok(result1 != result2);
+								start();
+							},
+							null,
+							{limit: 1, skip: 1}
+						);
+					},
+					null,
+					{limit: 1, skip: 0}
+				);
+			})
+		);
+	});
+
+	asyncTest( "query with order field", function() {
+		var path      = rootPath+"test/js/order",
+			timeStamp = +new Date(),
+			event1    = { num : 1, time : timeStamp },
+			event2    = { num : 2, time : timeStamp };
+		Precog.store(path, event1);
+		Precog.store(path, event2,
+			createDelayedAction(function() {
+				var query = "data := /"+path+" data where data.time = "+timeStamp;
+				Precog.query(
+					query,
+					function(result) {
+						ok(result[0] && result[0].num === 1);
+						Precog.query(
+							query,
+							function(result) {
+								ok(result[0] && result[0].num === 2);
+								start();
+							},
+							null,
+							{ sortOn : "num", sortOrder : "desc"}
+						);
+					},
+					null,
+					{ sortOn : "num", sortOrder : "asc"}
+				);
 			})
 		);
 	});

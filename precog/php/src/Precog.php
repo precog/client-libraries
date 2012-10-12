@@ -47,7 +47,7 @@ class PrecogAPI {
 
        public static function addGrantToAccount($email, $password, $accountId, $grants, $baseUrl = BASE_URL, $version = DEFAULT_VERSION)
     {
-        $url = self::baseActionUrl($baseUrl, $version, "accounts", "accounts/$accountId")."grants";
+        $url = self::baseActionUrl($baseUrl, $version, "accounts", "accounts/$accountId")."grants/";
         return self::baseRestHelper($url, json_encode(array("grantId"=>$grants)), "POST", self::authHeaders($email, $password));
     }
 

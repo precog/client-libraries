@@ -461,7 +461,7 @@ throw new SyntaxError('JSON.parse');};}}());
       var funcName = 'PrecogJsonpCallback' + random.toString();
 
       window[funcName] = function(content, meta) {
-        if (meta.status.code === 200 || meta.status.code === "OK" || meta.status.code === "NoContent") {
+        if (meta.status.code === 200 || meta.status.code === "OK" || meta.status.code === "NoContent" || meta.status.code === "Created") {
           success(content, meta.headers);
         }
         else {
@@ -694,7 +694,7 @@ throw new SyntaxError('JSON.parse');};}}());
   Precog.addGrantToAccount = function(email, password, accountId, grantId, success, failure, options) {
     var description = 'Add grant '+grantId+' to account ' + accountId;
     http.post(
-      Util.actionUrl("accounts", "accounts",accountId, options) + "grants/",
+      Util.actionUrl("accounts", "accounts", options) + accountId + "/grants/",
       { "grantId" : grantId },
       Util.createCallbacks(success, failure, description),
       null,
@@ -805,7 +805,7 @@ throw new SyntaxError('JSON.parse');};}}());
 
     if(!parameters.apiKey) throw Error("apiKey not specified");
     http.post(
-      Util.actionUrl("security", "apikeys", options) + "grants/",
+      Util.actionUrl("security", "apikeys", options) +apiKey+ "/grants/",
       grant,
       Util.createCallbacks(success, failure, description),
       parameters
