@@ -2,8 +2,8 @@ QUnit.config = {
 //	autostart : false
 };
 
-var email    = "test-js@precog.com",
-	password = "123abc";
+var email    = "test-js2@precog.com",
+	password = "1234abc";
 
 function ensureAccount(callack) {
 	Precog.cache.disable();
