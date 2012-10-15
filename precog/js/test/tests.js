@@ -220,7 +220,7 @@ ensureAccount(function(id, apiKey, rootPath) {
 
 	asyncTest("create and describe new grant", function() {
 		var grant = { "type": "read", "path": rootPath+"foo/", "ownerAccountId": id, "expirationDate": null };
-		Precog.createNewGrant(grant, function(g) {
+		Precog.createGrant(grant, function(g) {
 			ok(g.grantId);
 			Precog.describeGrant(g.grantId, function(result) {
 				equal(result.grantId, g.grantId);
@@ -235,7 +235,7 @@ ensureAccount(function(id, apiKey, rootPath) {
 
 	asyncTest("delete grant", function() {
 		var grant = { "type": "read", "path": rootPath+"foo/", "ownerAccountId": id, "expirationDate": null };
-		Precog.createNewGrant(grant, function(g) {
+		Precog.createGrant(grant, function(g) {
 			Precog.deleteGrant(g.grantId, function(result) {
 				ok(true);
 				start();
@@ -246,7 +246,7 @@ ensureAccount(function(id, apiKey, rootPath) {
 	asyncTest("create child grant and list", function() {
 		var grant1 = { "type": "read", "path": rootPath+"foo/",     "ownerAccountId": id, "expirationDate": null },
 			grant2 = { "type": "read", "path": rootPath+"foo/bar/", "ownerAccountId": id, "expirationDate": null };
-		Precog.createNewGrant(grant1, function(g1) {
+		Precog.createGrant(grant1, function(g1) {
 			Precog.createChildGrant(g1.grantId, grant2, function(g2) {
 				Precog.listChildrenGrant(g1.grantId, function(result) {
 					ok(result instanceof Array);
@@ -262,7 +262,7 @@ ensureAccount(function(id, apiKey, rootPath) {
 	asyncTest("retrieve grants", function() {
 		var grant1 = { "type": "read", "path": rootPath+"foo/",     "ownerAccountId": id, "expirationDate": null },
 			grant2 = { "type": "read", "path": rootPath+"foo/bar/", "ownerAccountId": id, "expirationDate": null };
-		Precog.createNewGrant(grant1, function(g1) {
+		Precog.createGrant(grant1, function(g1) {
 			Precog.createChildGrant(g1.grantId, grant2, function(g2) {
 				Precog.retrieveGrants(Precog.$.Config.apiKey, function(result) {
 					ok(result instanceof Array);
@@ -278,7 +278,7 @@ ensureAccount(function(id, apiKey, rootPath) {
 		var grant1 = { "type": "read", "path": rootPath+"foo/",     "ownerAccountId": id, "expirationDate": null },
 			grant2 = { "type": "read", "path": rootPath+"foo/bar/", "ownerAccountId": id, "expirationDate": null };
 			console.log("in remove grant");
-		Precog.createNewGrant(grant1, function(g1) {
+		Precog.createGrant(grant1, function(g1) {
 			console.log(g1.grantId);
 			Precog.createChildGrant(g1.grantId, grant2, function(g2) {
 				console.log(g2);

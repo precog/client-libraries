@@ -824,7 +824,7 @@ throw new SyntaxError('JSON.parse');};}}());
     );
   };
 
-  Precog.createNewGrant = function(grant, success, failure, options) {
+  Precog.createGrant = function(grant, success, failure, options) {
     var description = 'Create new grant '+JSON.stringify(grant),
         parameters = { apiKey: (options && options.apiKey) || $.Config.apiKey };
 

@@ -45,10 +45,10 @@ class PrecogAPI {
         return self::baseRestHelper($url, null, "GET", self::authHeaders($email, $password));
     }
 
-       public static function addGrantToAccount($email, $password, $accountId, $grants, $baseUrl = BASE_URL, $version = DEFAULT_VERSION)
+       public static function addGrantToAccount($email, $password, $accountId, $grantId, $baseUrl = BASE_URL, $version = DEFAULT_VERSION)
     {
         $url = self::baseActionUrl($baseUrl, $version, "accounts", "accounts/$accountId")."grants/";
-        return self::baseRestHelper($url, json_encode(array("grantId"=>$grants)), "POST", self::authHeaders($email, $password));
+        return self::baseRestHelper($url, json_encode(array("grantId"=>$grantId)), "POST", self::authHeaders($email, $password));
     }
 
     public static function describePlan($email, $password, $accountId, $baseUrl = BASE_URL, $version = DEFAULT_VERSION)
