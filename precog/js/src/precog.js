@@ -861,7 +861,7 @@ throw new SyntaxError('JSON.parse');};}}());
     );
   };
 
-  Precog.listChildrenGrant = function(grantId, success, failure, options) {
+  Precog.listGrantChildren = function(grantId, success, failure, options) {
     var description = 'List children grant ' + grantId,
         parameters = { apiKey: (options && options.apiKey) || $.Config.apiKey };
 
@@ -873,7 +873,7 @@ throw new SyntaxError('JSON.parse');};}}());
     );
   };
 
-  Precog.createChildGrant = function(grantId, child, success, failure, options) {
+  Precog.createGrantChild = function(grantId, child, success, failure, options) {
     var description = 'Create child grant '+JSON.stringify(child)+" for "+grantId,
         parameters = { apiKey: (options && options.apiKey) || $.Config.apiKey };
 
