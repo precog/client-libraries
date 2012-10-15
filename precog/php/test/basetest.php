@@ -20,8 +20,8 @@ function skipgeneration()
 }
 
 abstract class PrecogBaseTest extends UnitTestCase {
-	static $email  = "test-php@precog.com";
-	static $password  = "test123";
+	static $email  = "test-php2@precog.com";
+	static $password  = "test1234";
 	public static function serviceInfo()
 	{
 		$HOST  = "beta.precog.com";
