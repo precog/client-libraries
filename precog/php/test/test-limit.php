@@ -2,7 +2,7 @@
 
 require_once('basetest.php');
 
-class QueryTest extends PrecogBaseTest {
+class LimitTest extends PrecogBaseTest {
     var $api;
     function setupPath()
     {
@@ -12,17 +12,15 @@ class QueryTest extends PrecogBaseTest {
         return $path;
     }
 
-    function testQuery()
+    function testLimitCase()
     {
         $path = $this->setupPath();
+        $options = array("limit"=>1);
 
         sleep(5);
 
-        $value = $this->api->query("count(/$path)");
-
-        $this->assertIsA($value, "Array");
-        $this->assertTrue($value[0] == 1, "should be 1 but is ".$value[0]);
+        $value = $this->api->query("/$path", $options);
+        $this->assertTrue(count($value), 1);
     }
-
 }
 ?>

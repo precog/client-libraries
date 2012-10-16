@@ -22,7 +22,9 @@
 # THE SOFTWARE.
 #
 
+require 'cgi'
 require 'test/unit'
+require 'uri'
 
 class ReportGridClientTest < Test::Unit::TestCase
   class << self
@@ -54,12 +56,13 @@ class ReportGridClientTest < Test::Unit::TestCase
       api = build_test_client
       api.track('/', 'test', {'test' => 123}, :rollup => true)
       api.track('/rg-client/subdir/subsub', 'test', {'test' => 456}, :rollup => true)
-      sleep(20)
+      sleep(10)
     end
 
     def shutdown
       api = ReportGrid::ReportGrid.new(@root_token_id, @test_host, @test_port, @test_path)
       api.delete_token(@test_token_id)
+      sleep(5) # Allow for backend propagation
       raise "Token failed to delete correctly." unless !api.tokens.include?(@test_token_id)
     end
 
@@ -183,8 +186,10 @@ class ReportGridClientTest < Test::Unit::TestCase
 
   def test_gif_url
     api = ReportGridClientTest.build_test_client
-    url = api.gif_url('/test/ruby/giftrack', 'conversion', {'browser' => "Chrome"}, :rollup => 1)
+    url_params = CGI.parse(URI.parse(api.gif_url('/test/ruby/giftrack', 'conversion', {'browser' => "Chrome"}, :rollup => 1)).query)
 
-    assert_equal "http://api.reportgrid.com/services/viz/gif/transparent.gif?path=%2Ftest%2Fruby%2Fgiftrack&service=http%3A%2F%2Fdevapi.reportgrid.com%3A80%2Fservices%2Fanalytics%2Fv1&rollup=1&tokenId=#{ReportGridClientTest.test_token_id}&event=%7B%22conversion%22%3A%7B%22browser%22%3A%22Chrome%22%7D%7D", url
+    expected_url_params = CGI.parse(URI.parse("http://api.reportgrid.com/services/viz/gif/transparent.gif?path=%2Ftest%2Fruby%2Fgiftrack&service=http%3A%2F%2Fdevapi.reportgrid.com%3A80%2Fservices%2Fanalytics%2Fv1&tokenId=#{ReportGridClientTest.test_token_id}&event=%7B%22conversion%22%3A%7B%22browser%22%3A%22Chrome%22%7D%7D&rollup=1").query)
+
+    assert_equal url_params, expected_url_params
   end
 end

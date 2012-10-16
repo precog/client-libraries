@@ -20,42 +20,56 @@ function skipgeneration()
 }
 
 abstract class PrecogBaseTest extends UnitTestCase {
-	static $id = '2D36035A-62F6-465E-A64A-0E37BCC5257E';
-	public static function createApi()
+	static $email  = "test-php2@precog.com";
+	static $password  = "test1234";
+	public static function serviceInfo()
 	{
-          $HOST  = "beta2012v1.precog.io";
-          $PORT  = 80;
-          $PATH  = "/v1/";
-          $TOKEN = PrecogBaseTest::$id;
+		$HOST  = "beta.precog.com";
+		$PORT  = null;
+		$VERSION  = 1;
 
-	        $options = getopt("", array("host:", "port:", "path:", "token:"));
+        $options = getopt("", array("host:", "port:", "version:"));
 
-                foreach ($options as $option => $value) {
-                  switch($option) {
-                  case "host":
-                    $HOST = $value;
-                    break;
-                  case "port":
-                    $PORT = $value;
-                    break;
-                  case "path":
-                    $PATH = $value;
-                    break;
-                  case "token":
-                    $TOKEN = $value;
-                    break;
-                  }
-                }
-		
-                 	 $URL = "http://$HOST:$PORT$PATH";
-                  echo "Starting test against $URL\n";
+		foreach ($options as $option => $value) {
+			switch($option) {
+				case "host":
+					$HOST = $value;
+					break;
+				case "port":
+					$PORT = $value;
+					break;
+				case "version":
+					$VERSION = $value;
+					break;
+			}
+		}
 
-		return new PrecogAPI($TOKEN, $URL);	
+		$URL = "http://$HOST" . ($PORT ? ":$PORT" : "");
+		return array("baseUrl"=>$URL, "version"=>$VERSION);
 	}
 
-	var $rg;
+	public static function ensureAccount($info) {
+        $result = PrecogAPI::createAccount(PrecogBaseTest::$email, PrecogBaseTest::$password, $info["baseUrl"], $info["version"]);
+        return array(
+        	'accountId' => $result['data']['accountId'],
+        	'user'      => PrecogBaseTest::$email,
+        	'password'  => PrecogBaseTest::$password,
+        	'baseUrl'   => $info["baseUrl"],
+        	'version'   => $info["version"]
+        );
+	}
+
+	public static function createApi(&$info) {
+        $result = PrecogAPI::createAccount(PrecogBaseTest::$email, PrecogBaseTest::$password, $info["baseUrl"], $info["version"]);
+        $info['accountId'] = $result["data"]["accountId"];
+        $description = PrecogAPI::describeAccount(PrecogBaseTest::$email, PrecogBaseTest::$password, $result["data"]["accountId"], $info["baseUrl"], $info["version"]);
+        $info['path'] = $description["data"]["rootPath"];
+        return new PrecogAPI($description["data"]["apiKey"], $info["baseUrl"], $info["version"]);
+	}
+	var $info;
+	var $path;
 	function setUp()
 	{
-		$this->rg = PrecogBaseTest::createApi();
+		$this->info = PrecogBaseTest::serviceInfo();
 	}
 }

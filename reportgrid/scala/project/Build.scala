@@ -21,7 +21,7 @@ object ScalaClientBuild extends Build {
         "org.apache.httpcomponents" %  "httpclient"          % "4.1.1",
         "net.databinder"            %% "dispatch-http-json"  % "0.8.5"   % "provided",
         "net.liftweb"               %% "lift-json"           % "2.4-M4"  % "provided" intransitive(),
-        "org.specs2"                %% "specs2"              % "1.7-SNAPSHOT"  % "test")),
+        "org.specs2"                %% "specs2"              % "1.8"  % "test")),
       
       resolvers ++= Seq("ReportGrid repo" at                   "http://nexus.reportgrid.com/content/repositories/releases",
                         "ReportGrid snapshot repo" at          "http://nexus.reportgrid.com/content/repositories/snapshots",

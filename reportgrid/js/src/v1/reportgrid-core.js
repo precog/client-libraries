@@ -262,7 +262,8 @@ var ReportGrid = window.ReportGrid || {};
       {
         q.start = start || ReportGrid.Zero;
         q.end = end || ReportGrid.Inf;
-        if("undefined" === typeof(q.tzoffset))
+        q.tzoffset = o.tzoffset;
+        if("undefined" === typeof(q.tzoffset) && o.periodicity !== 'hour' && o.periodicity !== 'minute')
         {
           q.tzoffset = -(new Date().getTimezoneOffset()) * 60000;
         }
@@ -278,6 +279,10 @@ var ReportGrid = window.ReportGrid || {};
       if(o.timeZone)
       {
         q.timeZone = o.timeZone;
+      }
+      if(o.disablecache)
+      {
+        q.disablecache = o.disablecache;
       }
       return q;
     },
@@ -709,7 +714,6 @@ var ReportGrid = window.ReportGrid || {};
     var property = Util.sanitizeProperty(options.property);
     var peri     = options.periodicity || "eternity";
     var query    = Util.groupQuery(options);
-
     var description = 'Get series for property ' + path + property + ' (periodicity = ' + peri + ')';
 
     http.get(
@@ -918,7 +922,6 @@ var ReportGrid = window.ReportGrid || {};
   ReportGrid.searchSeries = function(path_, options, success, failure) {
     var path  = Util.sanitizePath(path_);
     var peri  = options.periodicity || "eternity";
-
     var description = 'Select series/' + peri + ' from ' + path + ' where ' + JSON.stringify(options.where);
 
     var ob = {

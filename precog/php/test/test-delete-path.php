@@ -2,7 +2,7 @@
 
 require_once('basetest.php');
 
-class QueryTest extends PrecogBaseTest {
+class DeletePathTest extends PrecogBaseTest {
     var $api;
     function setupPath()
     {
@@ -12,17 +12,19 @@ class QueryTest extends PrecogBaseTest {
         return $path;
     }
 
-    function testQuery()
+    function testDeletePathCase()
     {
         $path = $this->setupPath();
 
         sleep(5);
 
         $value = $this->api->query("count(/$path)");
+        $this->assertTrue($value[0] > 0);
+        $result = $this->api->delete($path);
 
-        $this->assertIsA($value, "Array");
-        $this->assertTrue($value[0] == 1, "should be 1 but is ".$value[0]);
+        sleep(5);
+        $value = $this->api->query("count(/$path)");
+        $this->assertTrue($value[0] === 0);
     }
-
 }
 ?>
