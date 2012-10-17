@@ -6950,7 +6950,7 @@ $hxClasses["dhx.SizzleEngine"] = dhx.SizzleEngine;
 dhx.SizzleEngine.__name__ = ["dhx","SizzleEngine"];
 dhx.SizzleEngine.__interfaces__ = [dhx.ISelectorEngine];
 dhx.SizzleEngine.supported = function() {
-	return false != dhx.SizzleEngine.getSizzle();
+	return null != dhx.SizzleEngine.getSizzle();
 }
 dhx.SizzleEngine.getSizzle = function() {
 	return (('undefined' != typeof Sizzle && Sizzle) || (('undefined' != typeof jQuery) && jQuery.find) || (('undefined' != typeof $) && $.find));
@@ -10651,7 +10651,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.app.charts.JSBridge.createQuery();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.237.8922"};
+	r.info.charts = { version : "1.4.238.8923"};
 }
 rg.app.charts.JSBridge.createQuery = function() {
 	var inst = rg.query.Query.create();
