@@ -10892,17 +10892,7 @@ rg.app.charts.JSBridge.main = function() {
 		var copt = rg.app.charts.JSBridge.chartopt(options,type);
 		copt.options.a = false;
 		rg.app.charts.MVPOptions.complete(copt,function(opt) {
-			try {
-				app.visualization(rg.app.charts.JSBridge.select(el),opt);
-			} catch( $e0 ) {
-				if( js.Boot.__instanceof($e0,thx.error.Error) ) {
-					var e = $e0;
-					rg.app.charts.JSBridge.log(e.toString());
-				} else {
-				var e = $e0;
-				rg.app.charts.JSBridge.log(haxe.Json.stringify(e));
-				}
-			}
+			app.visualization(rg.app.charts.JSBridge.select(el),opt);
 		});
 	};
 	r.barChart = function(el,options) {
