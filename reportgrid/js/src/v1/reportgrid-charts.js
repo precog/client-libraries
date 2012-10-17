@@ -7876,6 +7876,326 @@ haxe.Int32.ucompare = function(a,b) {
 	if(a < 0) return b < 0?~b - ~a:1;
 	return b < 0?-1:a - b;
 }
+haxe.Json = function() {
+};
+$hxClasses["haxe.Json"] = haxe.Json;
+haxe.Json.__name__ = ["haxe","Json"];
+haxe.Json.parse = function(text) {
+	return new haxe.Json().doParse(text);
+}
+haxe.Json.stringify = function(value) {
+	return new haxe.Json().toString(value);
+}
+haxe.Json.prototype = {
+	parseNumber: function(c) {
+		var start = this.pos - 1;
+		var minus = c == 45, digit = !minus, zero = c == 48;
+		var point = false, e = false, pm = false, end = false;
+		while(true) {
+			c = HxOverrides.cca(this.str,this.pos++);
+			switch(c) {
+			case 48:
+				if(zero && !point) this.invalidNumber(start);
+				if(minus) {
+					minus = false;
+					zero = true;
+				}
+				digit = true;
+				break;
+			case 49:case 50:case 51:case 52:case 53:case 54:case 55:case 56:case 57:
+				if(zero && !point) this.invalidNumber(start);
+				if(minus) minus = false;
+				digit = true;
+				zero = false;
+				break;
+			case 46:
+				if(minus || point) this.invalidNumber(start);
+				digit = false;
+				point = true;
+				break;
+			case 101:case 69:
+				if(minus || zero || e) this.invalidNumber(start);
+				digit = false;
+				e = true;
+				break;
+			case 43:case 45:
+				if(!e || pm) this.invalidNumber(start);
+				digit = false;
+				pm = true;
+				break;
+			default:
+				if(!digit) this.invalidNumber(start);
+				this.pos--;
+				end = true;
+			}
+			if(end) break;
+		}
+		var f = Std.parseFloat(HxOverrides.substr(this.str,start,this.pos - start));
+		var i = f | 0;
+		return i == f?i:f;
+	}
+	,invalidNumber: function(start) {
+		throw "Invalid number at position " + start + ": " + HxOverrides.substr(this.str,start,this.pos - start);
+	}
+	,parseString: function() {
+		var start = this.pos;
+		var buf = new StringBuf();
+		while(true) {
+			var c = HxOverrides.cca(this.str,this.pos++);
+			if(c == 34) break;
+			if(c == 92) {
+				buf.b += HxOverrides.substr(this.str,start,this.pos - start - 1);
+				c = HxOverrides.cca(this.str,this.pos++);
+				switch(c) {
+				case 114:
+					buf.b += "\r";
+					break;
+				case 110:
+					buf.b += "\n";
+					break;
+				case 116:
+					buf.b += "\t";
+					break;
+				case 98:
+					buf.b += "";
+					break;
+				case 102:
+					buf.b += "";
+					break;
+				case 47:case 92:case 34:
+					buf.b += String.fromCharCode(c);
+					break;
+				case 117:
+					var uc = Std.parseInt("0x" + HxOverrides.substr(this.str,this.pos,4));
+					this.pos += 4;
+					buf.b += String.fromCharCode(uc);
+					break;
+				default:
+					throw "Invalid escape sequence \\" + String.fromCharCode(c) + " at position " + (this.pos - 1);
+				}
+				start = this.pos;
+			} else if(c != c) throw "Unclosed string";
+		}
+		buf.b += HxOverrides.substr(this.str,start,this.pos - start - 1);
+		return buf.b;
+	}
+	,parseRec: function() {
+		while(true) {
+			var c = HxOverrides.cca(this.str,this.pos++);
+			switch(c) {
+			case 32:case 13:case 10:case 9:
+				break;
+			case 123:
+				var obj = { }, field = null, comma = null;
+				while(true) {
+					var c1 = HxOverrides.cca(this.str,this.pos++);
+					switch(c1) {
+					case 32:case 13:case 10:case 9:
+						break;
+					case 125:
+						if(field != null || comma == false) this.invalidChar();
+						return obj;
+					case 58:
+						if(field == null) this.invalidChar();
+						obj[field] = this.parseRec();
+						field = null;
+						comma = true;
+						break;
+					case 44:
+						if(comma) comma = false; else this.invalidChar();
+						break;
+					case 34:
+						if(comma) this.invalidChar();
+						field = this.parseString();
+						break;
+					default:
+						this.invalidChar();
+					}
+				}
+				break;
+			case 91:
+				var arr = [], comma = null;
+				while(true) {
+					var c1 = HxOverrides.cca(this.str,this.pos++);
+					switch(c1) {
+					case 32:case 13:case 10:case 9:
+						break;
+					case 93:
+						if(comma == false) this.invalidChar();
+						return arr;
+					case 44:
+						if(comma) comma = false; else this.invalidChar();
+						break;
+					default:
+						if(comma) this.invalidChar();
+						this.pos--;
+						arr.push(this.parseRec());
+						comma = true;
+					}
+				}
+				break;
+			case 116:
+				var save = this.pos;
+				if(HxOverrides.cca(this.str,this.pos++) != 114 || HxOverrides.cca(this.str,this.pos++) != 117 || HxOverrides.cca(this.str,this.pos++) != 101) {
+					this.pos = save;
+					this.invalidChar();
+				}
+				return true;
+			case 102:
+				var save = this.pos;
+				if(HxOverrides.cca(this.str,this.pos++) != 97 || HxOverrides.cca(this.str,this.pos++) != 108 || HxOverrides.cca(this.str,this.pos++) != 115 || HxOverrides.cca(this.str,this.pos++) != 101) {
+					this.pos = save;
+					this.invalidChar();
+				}
+				return false;
+			case 110:
+				var save = this.pos;
+				if(HxOverrides.cca(this.str,this.pos++) != 117 || HxOverrides.cca(this.str,this.pos++) != 108 || HxOverrides.cca(this.str,this.pos++) != 108) {
+					this.pos = save;
+					this.invalidChar();
+				}
+				return null;
+			case 34:
+				return this.parseString();
+			case 48:case 49:case 50:case 51:case 52:case 53:case 54:case 55:case 56:case 57:case 45:
+				return this.parseNumber(c);
+			default:
+				this.invalidChar();
+			}
+		}
+	}
+	,nextChar: function() {
+		return HxOverrides.cca(this.str,this.pos++);
+	}
+	,invalidChar: function() {
+		this.pos--;
+		throw "Invalid char " + HxOverrides.cca(this.str,this.pos) + " at position " + this.pos;
+	}
+	,doParse: function(str) {
+		this.str = str;
+		this.pos = 0;
+		return this.parseRec();
+	}
+	,quote: function(s) {
+		this.buf.b += "\"";
+		var i = 0;
+		while(true) {
+			var c = HxOverrides.cca(s,i++);
+			if(c != c) break;
+			switch(c) {
+			case 34:
+				this.buf.b += "\\\"";
+				break;
+			case 92:
+				this.buf.b += "\\\\";
+				break;
+			case 10:
+				this.buf.b += "\\n";
+				break;
+			case 13:
+				this.buf.b += "\\r";
+				break;
+			case 9:
+				this.buf.b += "\\t";
+				break;
+			case 8:
+				this.buf.b += "\\b";
+				break;
+			case 12:
+				this.buf.b += "\\f";
+				break;
+			default:
+				this.buf.b += String.fromCharCode(c);
+			}
+		}
+		this.buf.b += "\"";
+	}
+	,toStringRec: function(v) {
+		var $e = (Type["typeof"](v));
+		switch( $e[1] ) {
+		case 8:
+			this.buf.b += "\"???\"";
+			break;
+		case 4:
+			this.objString(v);
+			break;
+		case 1:
+			this.buf.b += Std.string(v);
+			break;
+		case 2:
+			this.buf.b += Std.string(v + 1 == v?null:v);
+			break;
+		case 5:
+			this.buf.b += "\"<fun>\"";
+			break;
+		case 6:
+			var c = $e[2];
+			if(c == String) this.quote(v); else if(c == Array) {
+				var v1 = v;
+				this.buf.b += "[";
+				var len = v1.length;
+				if(len > 0) {
+					this.toStringRec(v1[0]);
+					var i = 1;
+					while(i < len) {
+						this.buf.b += ",";
+						this.toStringRec(v1[i++]);
+					}
+				}
+				this.buf.b += "]";
+			} else if(c == Hash) {
+				var v1 = v;
+				var o = { };
+				var $it0 = v1.keys();
+				while( $it0.hasNext() ) {
+					var k = $it0.next();
+					o[k] = v1.get(k);
+				}
+				this.objString(o);
+			} else this.objString(v);
+			break;
+		case 7:
+			var e = $e[2];
+			var i = v[1];
+			this.buf.b += Std.string(i);
+			break;
+		case 3:
+			this.buf.b += Std.string(v);
+			break;
+		case 0:
+			this.buf.b += "null";
+			break;
+		}
+	}
+	,objString: function(v) {
+		this.fieldsString(v,Reflect.fields(v));
+	}
+	,fieldsString: function(v,fields) {
+		var first = true;
+		this.buf.b += "{";
+		var _g = 0;
+		while(_g < fields.length) {
+			var f = fields[_g];
+			++_g;
+			var value = Reflect.field(v,f);
+			if(Reflect.isFunction(value)) continue;
+			if(first) first = false; else this.buf.b += ",";
+			this.quote(f);
+			this.buf.b += ":";
+			this.toStringRec(value);
+		}
+		this.buf.b += "}";
+	}
+	,toString: function(v) {
+		this.buf = new StringBuf();
+		this.toStringRec(v);
+		return this.buf.b;
+	}
+	,pos: null
+	,str: null
+	,buf: null
+	,__class__: haxe.Json
+}
 haxe.Log = function() { }
 $hxClasses["haxe.Log"] = haxe.Log;
 haxe.Log.__name__ = ["haxe","Log"];
@@ -10580,7 +10900,7 @@ rg.app.charts.JSBridge.main = function() {
 					rg.app.charts.JSBridge.log(e.toString());
 				} else {
 				var e = $e0;
-				rg.app.charts.JSBridge.log(Std.string(e));
+				rg.app.charts.JSBridge.log(haxe.Json.stringify(e));
 				}
 			}
 		});
@@ -10651,7 +10971,7 @@ rg.app.charts.JSBridge.main = function() {
 	}};
 	r.query = null != r.query?r.query:rg.app.charts.JSBridge.createQuery();
 	r.info = null != r.info?r.info:{ };
-	r.info.charts = { version : "1.4.238.8923"};
+	r.info.charts = { version : "1.4.239.8924"};
 }
 rg.app.charts.JSBridge.createQuery = function() {
 	var inst = rg.query.Query.create();
@@ -27239,6 +27559,7 @@ window.requestAnimationFrame = window.requestAnimationFrame
     || window.oRequestAnimationFrame
     || window.msRequestAnimationFrame
     || function(callback) { setTimeout(callback, 1000 / 60); } ;
+if(typeof(JSON) != "undefined") haxe.Json = JSON;
 js.XMLHttpRequest = window.XMLHttpRequest?XMLHttpRequest:window.ActiveXObject?function() {
 	try {
 		return new ActiveXObject("Msxml2.XMLHTTP");
