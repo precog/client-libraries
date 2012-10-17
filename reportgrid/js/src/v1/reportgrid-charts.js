@@ -6960,6 +6960,11 @@ dhx.SizzleEngine.prototype = {
 		return dhx.Sizzle.uniqueSort(dhx.Sizzle.select(selector,node));
 	}
 	,select: function(selector,node) {
+alert(dhx.Sizzle);
+alert(dhx.Sizzle.select);
+alert("selector");
+alert(node);
+alert(dhx.Sizzle.select(selector,node));
 		return dhx.Sizzle.select(selector,node)[0];
 	}
 	,__class__: dhx.SizzleEngine
