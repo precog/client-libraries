@@ -1,1 +1,1 @@
-../../precog/js/src/precog.js
+../../Precog/js/src/precog.js
