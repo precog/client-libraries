@@ -30,7 +30,7 @@ require 'uri'
 
 require 'rubygems'
 require 'json'
-
+require 'base64'
 
 module Precog
   #log          = Logger.new(STDOUT)
@@ -46,6 +46,7 @@ module Precog
   module Paths
     TOKENS = '/auth/tokens'
     VFS    = '/vfs/'
+    ACCOUNTS = '/accounts'
   end
 
   class Token 
@@ -143,12 +144,16 @@ module Precog
   class HttpClient
 
     # Initialize an HTTP connection
-    def initialize(token_id, host, port, path_prefix)
-      @token_id    = token_id
+    def initialize(api_key, host, port, path_prefix)
+      @api_key    = api_key
       @host        = host
       @port        = port
       @path_prefix = path_prefix || 'v1'
       @conn        = Net::HTTP.new(host, port)
+    end
+
+    def basic_auth(user, password)
+      { "Authorization" => "Basic " + Base64.encode64(user + ':' + password).chomp }
     end
 
     # Send an HTTP request
@@ -157,8 +162,14 @@ module Precog
       options[:headers] ||= {}
       options[:parameters] ||= {}
 
-      # Add token id to path and set headers
-      path = "#{@path_prefix}#{path}?tokenId=#{@token_id}"
+      # Add api key to path and set headers
+      path = "#{@path_prefix}#{path}"
+
+      # ???
+      # if (!@api_key.nil? && !@api_key.empty?)
+      #   path +="?apiKey=#{@api_key}"
+      # end
+
       options[:parameters].each do |k, v|
         path += "&#{k}=#{v}"
       end
@@ -208,8 +219,8 @@ module Precog
   class Precog
 
     # Initialize an API client
-    def initialize(token_id, host = API::HOST, port = API::PORT, service_path = API::PATH)
-      @api = HttpClient.new(token_id, host, port, service_path)
+    def initialize(api_key, host = API::HOST, port = API::PORT, service_path = API::PATH)
+      @api = HttpClient.new(api_key, host, port, service_path)
     end
 
     # Create a new token
@@ -224,8 +235,8 @@ module Precog
     end
 
     # Delete a token
-    def delete_token(token_id)
-      @api.delete("#{Paths::TOKENS}", :parameters => { :delete => token_id })
+    def delete_token(api_key)
+      @api.delete("#{Paths::TOKENS}", :parameters => { :delete => api_key })
     end
 
     # Store a record at the specified path
@@ -252,6 +263,59 @@ module Precog
 
       @api.get(path)
     end
+
+    # ACCOUNTS
+
+    #Creates a new account ID, accessible by the specified email address and password, or returns the existing account ID.
+    def create_account(email, password)
+      path = "#{Paths::ACCOUNTS}/"
+      path = sanitize_path(path)
+      @api.post(path,:body => { :email=> email, :password=> password } )
+    end
+    
+    #Retrieves the details about a particular account. This call is the primary mechanism by which you can retrieve your master API key.
+    def describe_account(email, password, accountId)
+      path = "#{Paths::ACCOUNTS}/#{accountId}"
+      path = sanitize_path(path)
+      @api.get(path,:headers =>  @api.basic_auth(email, password) )
+    end
+
+    #Adds a grant to an account's API key.
+    def add_grant_to_account(email, password, accountId, grantId)
+      path = "#{Paths::ACCOUNTS}/grants/"
+      path = sanitize_path(path)
+      @api.post(path,{ :headers =>  @api.basic_auth(email, password),:body => { :grantId => grantId  } })
+    end
+
+    #Describe Plan
+    def describe_plan(email, password, accountId)
+      path = "#{Paths::ACCOUNTS}/#{accountId}/plan"
+      path = sanitize_path(path)
+      @api.get(path,:headers =>  @api.basic_auth(email, password))
+    end
+
+    #Changes an account's plan (only the plan type itself may be changed). Billing for the new plan, if appropriate, will be prorated.
+    def change_plan(email, password, accountId, type)
+      path = "#{Paths::ACCOUNTS}/#{accountId}/plan"
+      path = sanitize_path(path)
+      @api.put(path,{ :headers =>  @api.basic_auth(email, password), :body => { :type => type } })
+    end
+
+    #Changes your account access password. This call requires HTTP Basic authentication using the current password.
+    def change_password(email, password, accountId, newPassword)
+      path = "#{Paths::ACCOUNTS}/#{accountId}/password"
+      path = sanitize_path(path)
+      @api.put(path,{ :headers =>  @api.basic_auth(email, password), :body => { :password => newPassword  } })
+    end
+
+    #Deletes an account's plan. This is the same as switching a plan to the free plan.
+    def delete_plan(email, password, accountId)
+      path = "#{Paths::ACCOUNTS}/#{accountId}/plan"
+      path = sanitize_path(path)
+      @api.delete(path,{ :headers =>  @api.basic_auth(email, password) })
+    end
+
+    ##
 
     private
 
