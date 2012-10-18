@@ -1182,9 +1182,9 @@ throw new SyntaxError('JSON.parse');};}}());
   if(window.ReportGrid && window.ReportGrid.query)
   {
     var r = window.ReportGrid;
-    r.query.precog = function(q) {
+    r.query.precog = function(q, options) {
       return r.query.load(function(handler) {
-        Precog.query(q, handler);
+        Precog.query(q, handler, null, options);
       });
     };
 
