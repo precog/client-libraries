@@ -165,10 +165,10 @@ module Precog
       # Add api key to path and set headers
       path = "#{@path_prefix}#{path}"
 
-      # ???
-      # if (!@api_key.nil? && !@api_key.empty?)
-      #   path +="?apiKey=#{@api_key}"
-      # end
+      
+      if (!@api_key.nil? && !@api_key.empty?)
+        path +="?apiKey=#{@api_key}"
+      end
 
       options[:parameters].each do |k, v|
         path += "&#{k}=#{v}"
