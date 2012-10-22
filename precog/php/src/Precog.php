@@ -2,7 +2,7 @@
 /**
  * Provides access to the Precog API platform.
  *
- * Author: Alissa Pajer
+ * Authors: Alissa Pajer, Nathan Lubchenco
  **/
 
 define ("BASE_URL", "https://beta.precog.com");
@@ -19,16 +19,12 @@ class PrecogAPI {
 
     /*
      * Initialize a new PrecogAPI object
-     *
-     * @param String $apiKey
-     * @param String $baseUrl
-     *
      */
     public function __construct($apiKey, $basePath, $baseUrl = BASE_URL, $version = DEFAULT_VERSION)
     {
         $this->setApiKey($apiKey);
         $this->setBasePath($basePath);
-        $this->setBaseURL($baseUrl);
+        $this->setBaseUrl($baseUrl);
         $this->setVersion($version);
 
     }
@@ -115,20 +111,12 @@ class PrecogAPI {
             $qsparams[] = $parameter."=".urlencode($value);
         }
 
-        $url = $this->actionUrl("ingest", (isset($options["async"]) && $options["async"] ? "a" : "")."sync/fs"). $this->basePath.self::cleanPath($path) ."?".implode("&", $qsparams);
+        $url = $this->actionUrl("ingest", (isset($options["async"]) && $options["async"] ? "a" : "")."sync/fs"). $this->basePath . self::cleanPath($path) ."?".implode("&", $qsparams);
         $return = $this->restHelper($url, $content, "POST", array("Content-Type" => $contentType));
         return $return;
 
     }
 
-    /*
-    * Record a new event
-    *
-    * @param String $path The path in which to store this event
-    * @param Array $events event data
-    *
-    * @return Bool - success/failure
-    */
     public function store($path, $event, $options = array())
     {
         return $this->ingest($path, json_encode($event), "application/json", $options);
@@ -136,7 +124,7 @@ class PrecogAPI {
 
     public function delete($path)
     {
-        $path2  = $this->actionUrl("ingest", "sync/fs") . self::cleanPath($path) . "?apiKey=" . $this->apiKey;
+        $path2  = $this->actionUrl("ingest", "sync/fs") . $this->basePath . self::cleanPath($path) . "?apiKey=" . $this->apiKey;
         $return = $this->restHelper($path2, null, "DELETE");
         return $return !== false;
     }
@@ -146,21 +134,15 @@ class PrecogAPI {
     // ***************************
     public function retrieveMetadata($path, $type = "")
     {
-        $url = $this->actionUrl("meta", "fs") . self::cleanPath($path) . "?apiKey=".$this->apiKey."#".$type;
+        $url = $this->actionUrl("meta", "fs") . $this->basePath . self::cleanPath($path) . "?apiKey=".$this->apiKey."#".$type;
         $return = $this->restHelper($url, null, "GET");
         return $return;
     }
 
-    /*
-     * Returns an array of sub-paths
-     * @params String - path
-     *
-     * @return Array - an array of values
-     */
     public function listChildren($path)
     {
         $path = self::cleanPath($path);
-        $path2  = $this->actionUrl("meta","fs")."$path?apiKey=" . $this->apiKey."#children";
+        $path2  = $this->actionUrl("meta","fs"). $this->basePath ."$path?apiKey=" . $this->apiKey."#children";
         $return = $this->restHelper($path2, null, "GET");
         return $return ? $return['children'] : $return;
     }
@@ -168,13 +150,6 @@ class PrecogAPI {
     // ***************************
     // ****** ANALYTICS APIS *****
     // ***************************
-
-    /*
-     * Returns the value of the query
-     * @params String - raw Quirrel
-     *
-     * @return Array - an array of values
-     */
 
     public function query($quirrel, $options = array())
     {
@@ -196,7 +171,7 @@ class PrecogAPI {
             }
         }
 
-        $path2  = $this->actionUrl("analytics", "fs")."?" .implode("&", $params);
+        $path2  = $this->actionUrl("analytics", "fs"). $this->basePath ."?" .implode("&", $params);
         $return = $this->restHelper($path2, null, "GET");
         return $return;
     }
@@ -301,12 +276,12 @@ class PrecogAPI {
         $this->apiKey = $value;
     }
 
-    public function getBaseURL(){
-        return $this->baseURL;
+    public function getBaseUrl(){
+        return $this->baseUrl;
     }
 
-    public function setBaseURL($value){
-        $this->baseURL = self::cleanPath($value);
+    public function setBaseUrl($value){
+        $this->baseUrl = self::cleanPath($value);
     }
 
     public function getVersion(){
@@ -464,4 +439,3 @@ echo("$verb $resturl\n");
         return array("Authorization" => self::baseAuth($user, $password));
     }
 }
-?>

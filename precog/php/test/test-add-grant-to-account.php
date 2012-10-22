@@ -9,7 +9,7 @@ class AddGrantToAccountTest extends PrecogBaseTest {
  		$apiKey1 = $result["apiKey"];
 
 		$randomemail = "testphp.".rand(0, 100000000)."@precog.com";
-        $account2 = $api->createAccount($randomemail, PrecogBaseTest::$password, $api->baseUrl, $api->version);
+        $account2 = $api->createAccount($randomemail, PrecogBaseTest::$password, $api->getBaseUrl(), $api->getVersion());
         $account2Id = $account2["data"]["accountId"];
 
         $result = $api->describeKey($apiKey1);
@@ -20,7 +20,7 @@ class AddGrantToAccountTest extends PrecogBaseTest {
 
  		$result = PrecogAPI::describeAccount($randomemail, PrecogBaseTest::$password, $account2Id, $this->info["baseUrl"], $this->info["version"]);
 
- 		$api2 = new PrecogAPI($result["data"]["apiKey"], $this->info["baseUrl"], $this->info["version"]);
+ 		$api2 = new PrecogAPI($result["data"]["apiKey"], $this->info['path'], $this->info["baseUrl"], $this->info["version"]);
 
  		$result = $api2->describeKey($result["data"]["apiKey"]);
 
