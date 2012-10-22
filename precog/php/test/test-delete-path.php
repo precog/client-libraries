@@ -7,7 +7,7 @@ class DeletePathTest extends PrecogBaseTest {
     function setupPath()
     {
         $this->api = PrecogBaseTest::createApi($this->info);
-        $path = $this->info['path']."test/php/query/T" . str_replace(".", "", uniqid(rand(), true));
+        $path = "/test/php/query/T" . str_replace(".", "", uniqid(rand(), true));
         $r = $this->api->store($path, array('foo' => 42));
         return $path;
     }
@@ -16,13 +16,14 @@ class DeletePathTest extends PrecogBaseTest {
     {
         $path = $this->setupPath();
 
-        sleep(5);
+        sleep(10);
 
         $value = $this->api->query("count(/$path)");
+    
         $this->assertTrue($value[0] > 0);
         $result = $this->api->delete($path);
 
-        sleep(5);
+        sleep(10);
         $value = $this->api->query("count(/$path)");
         $this->assertTrue($value[0] === 0);
     }

@@ -20,7 +20,7 @@ function skipgeneration()
 }
 
 abstract class PrecogBaseTest extends UnitTestCase {
-	static $email  = "test-php2@precog.com";
+	static $email  = "test-php3@precog.com";
 	static $password  = "test1234";
 	public static function serviceInfo()
 	{
@@ -64,7 +64,7 @@ abstract class PrecogBaseTest extends UnitTestCase {
         $info['accountId'] = $result["data"]["accountId"];
         $description = PrecogAPI::describeAccount(PrecogBaseTest::$email, PrecogBaseTest::$password, $result["data"]["accountId"], $info["baseUrl"], $info["version"]);
         $info['path'] = $description["data"]["rootPath"];
-        return new PrecogAPI($description["data"]["apiKey"], $info["baseUrl"], $info["version"]);
+        return new PrecogAPI($description["data"]["apiKey"],$info['path'], $info["baseUrl"], $info["version"]);
 	}
 	var $info;
 	var $path;
