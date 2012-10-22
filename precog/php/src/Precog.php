@@ -10,11 +10,12 @@ define ("DEFAULT_VERSION", 1);
 
 class PrecogAPI {
 
-    public $apiKey = null;
-    public $baseUrl = null;
-    public $version = null;
-    public $isError = false;
-    public $errorMessage = null;
+    private $apiKey = null;
+    private $baseUrl = null;
+    private $version = null;
+    private $isError = false;
+    private $errorMessage = null;
+    private $basePath = null;
 
     /*
      * Initialize a new PrecogAPI object
@@ -23,11 +24,13 @@ class PrecogAPI {
      * @param String $baseUrl
      *
      */
-    public function __construct($apiKey, $baseUrl = BASE_URL, $version = DEFAULT_VERSION)
+    public function __construct($apiKey, $basePath, $baseUrl = BASE_URL, $version = DEFAULT_VERSION)
     {
-        $this->apiKey  = $apiKey;
-        $this->baseUrl = self::cleanPath($baseUrl);
-        $this->version = $version;
+        $this->setApiKey($apiKey);
+        $this->setBasePath($basePath);
+        $this->setBaseURL($baseUrl);
+        $this->setVersion($version);
+
     }
 
     // ***************************
@@ -112,7 +115,7 @@ class PrecogAPI {
             $qsparams[] = $parameter."=".urlencode($value);
         }
 
-        $url = $this->actionUrl("ingest", (isset($options["async"]) && $options["async"] ? "a" : "")."sync/fs"). self::cleanPath($path) ."?".implode("&", $qsparams);
+        $url = $this->actionUrl("ingest", (isset($options["async"]) && $options["async"] ? "a" : "")."sync/fs"). $this->basePath.self::cleanPath($path) ."?".implode("&", $qsparams);
         $return = $this->restHelper($url, $content, "POST", array("Content-Type" => $contentType));
         return $return;
 
@@ -283,6 +286,41 @@ class PrecogAPI {
         $url = $this->actionUrl("security","grants").$grantId."/children/?apiKey=".$this->apiKey;
         $return = $this->restHelper($url, json_encode($type), "POST");
         return $return;
+    }
+
+    public function getApiKey(){
+        return $this->apiKey;
+    }
+
+    public function setApiKey($value){
+        $this->apiKey = $value;
+    }
+
+       public function getBaseURL(){
+        return $this->baseURL;
+    }
+
+    public function setBaseURL($value){
+        $this->baseURL = self::cleanPath($value);
+    }
+
+    public function getVersion(){
+        return $this->version;
+    }
+
+    public function setVersion($value){
+        $this->version = $value;
+    }
+
+    public function getBasePath(){
+        return $this->basePath;
+    }
+
+    public function setBasePath($value){
+        $this->basePath = self::cleanPath($value);
+        if($this->basePath){
+            $this->basePath .= "/";
+        }
     }
 
     /*********************************
