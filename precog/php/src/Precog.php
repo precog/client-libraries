@@ -202,7 +202,7 @@ class PrecogAPI {
     }
 
     // ***************************
-    // ****** SECURITY APIS *****
+    // ****** SECURITY APIS ******
     // ***************************
     public function listKeys()
     {
@@ -288,6 +288,11 @@ class PrecogAPI {
         return $return;
     }
 
+    
+
+    // ***************************
+    // ***** GETTERS/SETTERS *****
+    // ***************************
     public function getApiKey(){
         return $this->apiKey;
     }
@@ -296,7 +301,7 @@ class PrecogAPI {
         $this->apiKey = $value;
     }
 
-       public function getBaseURL(){
+    public function getBaseURL(){
         return $this->baseURL;
     }
 
