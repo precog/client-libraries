@@ -42,7 +42,6 @@ module Precog
   end
 
   module Paths
-    #TOKENS = '/auth/tokens'
     FS = '/fs'
   end
 
@@ -58,7 +57,6 @@ module Precog
   # Base exception for all Precog errors
   class PrecogError < StandardError
     def intialize(message)
-      #log.error(message)
       super
     end
   end
@@ -80,7 +78,7 @@ module Precog
       @api_key    = api_key
       @host       = host
       @port       = port
-      @version    = API::VERSION #version
+      @version    = API::VERSION 
       @conn       = Net::HTTP.new(host, port)
     end
 
