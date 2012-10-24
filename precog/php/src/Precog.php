@@ -268,35 +268,43 @@ class PrecogAPI {
     // ***************************
     // ***** GETTERS/SETTERS *****
     // ***************************
-    public function getApiKey(){
+    public function getApiKey()
+    {
         return $this->apiKey;
     }
 
-    public function setApiKey($value){
+    public function setApiKey($value)
+    {
         $this->apiKey = $value;
     }
 
-    public function getBaseUrl(){
+    public function getBaseUrl()
+    {
         return $this->baseUrl;
     }
 
-    public function setBaseUrl($value){
+    public function setBaseUrl($value)
+    {
         $this->baseUrl = self::cleanPath($value);
     }
 
-    public function getVersion(){
+    public function getVersion()
+    {
         return $this->version;
     }
 
-    public function setVersion($value){
+    public function setVersion($value)
+    {
         $this->version = $value;
     }
 
-    public function getBasePath(){
+    public function getBasePath()
+    {
         return $this->basePath;
     }
 
-    public function setBasePath($value){
+    public function setBasePath($value)
+    {
         $this->basePath = self::cleanPath($value);
         if($this->basePath){
             $this->basePath .= "/";
@@ -306,7 +314,8 @@ class PrecogAPI {
     /*********************************
      **** PRIVATE helper function ****
      *********************************/
-    private function restHelper($resturl, $params = null, $verb = 'GET', $headers = false) {
+    private function restHelper($resturl, $params = null, $verb = 'GET', $headers = false) 
+    {
         $result = self::baseRestHelper($resturl, $params, $verb, $headers);
         if($result['ok']) {
             $this->isError = false;
@@ -319,8 +328,9 @@ class PrecogAPI {
         }
     }
 
-    private static function baseRestHelper($resturl, $params = null, $verb = 'GET', $headers = false) {
-echo("$verb $resturl\n");
+    private static function baseRestHelper($resturl, $params = null, $verb = 'GET', $headers = false) 
+    {
+//echo("$verb $resturl\n");
 //if($params) var_dump($params);
         $return = array('ok' => true);
         $http_params = array(

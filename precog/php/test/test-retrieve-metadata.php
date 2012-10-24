@@ -7,7 +7,7 @@ class RetrieveMetadataTest extends PrecogBaseTest {
     function setupPath()
     {
         $this->api = PrecogBaseTest::createApi($this->info);
-        $path = $this->info['path']."test/php/metadata/T" . str_replace(".", "", uniqid(rand(), true));
+        $path = "test/php/metadata/T" . str_replace(".", "", uniqid(rand(), true));
         $r = $this->api->store($path, array('foo' => 42));
         return $path;
     }
