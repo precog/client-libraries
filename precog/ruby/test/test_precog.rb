@@ -1,4 +1,4 @@
-# Copyright (C) 2011 by Precog, Inc. All rights reserved.
+# Copyright (C) 2012 by Precog, Inc. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,6 @@ class PrecogClientTest < Test::Unit::TestCase
 
     HOST = 'beta.precog.com'
     PORT = 80
-    VERSION = '/v1'
     ROOT_API_KEY = '2D36035A-62F6-465E-A64A-0E37BCC5257E'
 
   class << self

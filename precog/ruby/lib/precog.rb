@@ -1,4 +1,4 @@
-# Copyright (C) 2011 by ReportGrid, Inc. All rights reserved.
+# Copyright (C) 2012 by Precog, Inc. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,6 @@ require 'json'
 require 'base64'
 
 module Precog
-  #log          = Logger.new(STDOUT)
 
   # API server constants
   module API
@@ -49,87 +48,13 @@ module Precog
 
   # Services constants
   module Services
-    #TOKENS = '/auth/tokens'
     ANALYTICS = '/analytics'
     ACCOUNTS = '/accounts'
     INGEST = '/ingest'
   end
 
   
-  class Token 
-    attr_reader :path_permissions, :query_permissions, :grants, :expiration
-
-    class << self
-      def readwrite(path) 
-        Token.new(
-          [PathPermissions.new(path, PathPermissions::READ), PathPermissions.new(path, PathPermissions::WRITE)],
-          [QueryPermissions.new(path)]
-        )
-      end
-
-      def readonly(path) 
-        Token.new(
-          [PathPermissions.new(path, PathPermissions::READ)],
-          [QueryPermissions.new(path)]
-        )
-      end
-    end
-
-    def initialize(path_permissions = [], query_permissions = [], grants = [], expiration = nil)
-      @permissions = {}
-      @permissions[:path] = path_permissions unless path_permissions.nil? || path_permissions.empty?
-      @permissions[:data] = query_permissions unless query_permissions.nil? || query_permissions.empty?
-      @grants = grants || []
-      @expiration = expiration
-    end
-    
-    def to_json(*a)
-      {
-        'permissions' => @permissions,
-        'grants' => @grants,
-        'expired' => !@expiration.nil? && @expiration < Time.now
-      }.to_json(*a)
-    end
-  end
-
-  class PathPermissions
-    READ = 'PATH_READ'
-    WRITE = 'PATH_WRITE'
-
-    attr_reader :path, :access_type
-
-    def initialize(path, access_type) 
-      @path = path
-      @access_type = access_type
-    end
-
-    def to_json(*a)
-      {
-        'pathSpec' => { 'subtree' => @path },
-        'pathAccess' => @access_type,
-        'mayShare' => true
-      }.to_json(*a)
-    end
-  end
-
-  class QueryPermissions
-    attr_reader :path, :owner
-
-    def initialize(path, owner = "[HOLDER]")
-      @path = path
-      @owner = owner
-    end
-
-    def to_json(*a)
-      {
-        'pathSpec' => { 'subtree' => @path },
-        'ownershipSpec' => { 'ownerRestriction' => @owner },
-        'dataAccess' => 'DATA_QUERY',
-        'mayShare' => true
-      }.to_json(*a)
-    end
-  end
-
+  
   # Base exception for all Precog errors
   class PrecogError < StandardError
     def intialize(message)
@@ -255,26 +180,9 @@ module Precog
       @api = HttpClient.new(api_key, host, port)
     end
 
-    #TODO replace with Api Key
-    # Create a new token
-    def new_token(token)
-      puts(token.to_json)
-      @api.post("#{Paths::TOKENS}", :body => token)
-    end
-
-    # Return information about a token
-    def token
-      @api.get("#{Paths::TOKENS}")
-    end
-
-    # Delete a token
-    def delete_token(api_key)
-      @api.delete("#{Paths::TOKENS}", :parameters => { :delete => api_key })
-    end
-
-  
-
-    # ACCOUNTS
+    ######################
+    ###    ACCOUNTS    ###
+    ######################
 
     #Creates a new account ID, accessible by the specified email address and password, or returns the existing account ID.
     def create_account(email, password)
@@ -372,8 +280,6 @@ module Precog
     def query(path, query)
       path = "#{Paths::FS}/#{path}" unless path.start_with?(Paths::FS)
       path = @api.sanitize_path(path)
-      email=""
-      password=""
       options={  :parameters => { :q => query } } 
       @api.get(Services::ANALYTICS, path, options)
     end
