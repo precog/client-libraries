@@ -1,4 +1,4 @@
-package io.precog.api.dto;
+package com.precog.api.dto;
 
 import java.util.Map;
 

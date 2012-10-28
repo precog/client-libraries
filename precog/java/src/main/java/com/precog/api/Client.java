@@ -1,8 +1,8 @@
-package io.precog.api;
+package com.precog.api;
 
-import io.precog.api.Request.ContentType;
-import io.precog.api.options.IngestOptions;
-import io.precog.json.ToJson;
+import com.precog.api.Request.ContentType;
+import com.precog.api.options.IngestOptions;
+import com.precog.json.ToJson;
 
 import java.io.IOException;
 

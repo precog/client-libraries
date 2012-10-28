@@ -1,17 +1,17 @@
-package io.precog.api;
+package com.precog.api;
 
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
-import io.precog.api.Request.ContentType;
-import io.precog.api.dto.AccountInfo;
-import io.precog.api.dto.IngestResult;
-import io.precog.api.options.CSVIngestOptions;
-import io.precog.api.options.IngestOptions;
-import io.precog.json.RawStringToJson;
-import io.precog.json.ToJson;
-import io.precog.json.gson.GsonFromJson;
-import io.precog.json.gson.GsonToJson;
-import io.precog.json.gson.RawJson;
+import com.precog.api.Request.ContentType;
+import com.precog.api.dto.AccountInfo;
+import com.precog.api.dto.IngestResult;
+import com.precog.api.options.CSVIngestOptions;
+import com.precog.api.options.IngestOptions;
+import com.precog.json.RawStringToJson;
+import com.precog.json.ToJson;
+import com.precog.json.gson.GsonFromJson;
+import com.precog.json.gson.GsonToJson;
+import com.precog.json.gson.RawJson;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

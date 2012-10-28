@@ -1,6 +1,6 @@
-package io.precog.api.options;
+package com.precog.api.options;
 
-import io.precog.api.Request.ContentType;
+import com.precog.api.Request.ContentType;
 
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package io.precog.api;
+package com.precog.api;
 
 import java.io.*;
 import java.net.HttpURLConnection;

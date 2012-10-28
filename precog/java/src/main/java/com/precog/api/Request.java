@@ -1,4 +1,4 @@
-package io.precog.api;
+package com.precog.api;
 
 import java.util.HashMap;
 import java.util.Map;
