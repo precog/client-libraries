@@ -1019,7 +1019,7 @@ throw new SyntaxError('JSON.parse');};}}());
     if(!parameters.apiKey) throw Error("apiKey not specified");
 
     http.remove(
-      Util.actionUrl("ingest", "sync/fs", options) + Util.actionPath(path, options),
+      Util.actionUrl("ingest", "async/fs", options) + Util.actionPath(path, options),
       Util.createCallbacks(success, failure, description),
       parameters
     );
@@ -1182,9 +1182,9 @@ throw new SyntaxError('JSON.parse');};}}());
   if(window.ReportGrid && window.ReportGrid.query)
   {
     var r = window.ReportGrid;
-    r.query.precog = function(q) {
+    r.query.precog = function(q, options) {
       return r.query.load(function(handler) {
-        Precog.query(q, handler);
+        Precog.query(q, handler, null, options);
       });
     };
 

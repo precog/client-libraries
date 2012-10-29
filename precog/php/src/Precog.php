@@ -2,7 +2,7 @@
 /**
  * Provides access to the Precog API platform.
  *
- * Author: Alissa Pajer
+ * Authors: Alissa Pajer, Nathan Lubchenco
  **/
 
 define ("BASE_URL", "https://beta.precog.com");
@@ -10,24 +10,23 @@ define ("DEFAULT_VERSION", 1);
 
 class PrecogAPI {
 
-    public $apiKey = null;
-    public $baseUrl = null;
-    public $version = null;
-    public $isError = false;
-    public $errorMessage = null;
+    private $apiKey = null;
+    private $baseUrl = null;
+    private $version = null;
+    private $isError = false;
+    private $errorMessage = null;
+    private $basePath = null;
 
     /*
      * Initialize a new PrecogAPI object
-     *
-     * @param String $apiKey
-     * @param String $baseUrl
-     *
      */
-    public function __construct($apiKey, $baseUrl = BASE_URL, $version = DEFAULT_VERSION)
+    public function __construct($apiKey, $basePath, $baseUrl = BASE_URL, $version = DEFAULT_VERSION)
     {
-        $this->apiKey  = $apiKey;
-        $this->baseUrl = self::cleanPath($baseUrl);
-        $this->version = $version;
+        $this->setApiKey($apiKey);
+        $this->setBasePath($basePath);
+        $this->setBaseUrl($baseUrl);
+        $this->setVersion($version);
+
     }
 
     // ***************************
@@ -112,20 +111,12 @@ class PrecogAPI {
             $qsparams[] = $parameter."=".urlencode($value);
         }
 
-        $url = $this->actionUrl("ingest", (isset($options["async"]) && $options["async"] ? "a" : "")."sync/fs"). self::cleanPath($path) ."?".implode("&", $qsparams);
+        $url = $this->actionUrl("ingest", (isset($options["async"]) && $options["async"] ? "a" : "")."sync/fs"). $this->basePath . self::cleanPath($path) ."?".implode("&", $qsparams);
         $return = $this->restHelper($url, $content, "POST", array("Content-Type" => $contentType));
         return $return;
 
     }
 
-    /*
-    * Record a new event
-    *
-    * @param String $path The path in which to store this event
-    * @param Array $events event data
-    *
-    * @return Bool - success/failure
-    */
     public function store($path, $event, $options = array())
     {
         return $this->ingest($path, json_encode($event), "application/json", $options);
@@ -133,7 +124,7 @@ class PrecogAPI {
 
     public function delete($path)
     {
-        $path2  = $this->actionUrl("ingest", "sync/fs") . self::cleanPath($path) . "?apiKey=" . $this->apiKey;
+        $path2  = $this->actionUrl("ingest", "async/fs") . $this->basePath . self::cleanPath($path) . "?apiKey=" . $this->apiKey;
         $return = $this->restHelper($path2, null, "DELETE");
         return $return !== false;
     }
@@ -143,21 +134,15 @@ class PrecogAPI {
     // ***************************
     public function retrieveMetadata($path, $type = "")
     {
-        $url = $this->actionUrl("meta", "fs") . self::cleanPath($path) . "?apiKey=".$this->apiKey."#".$type;
+        $url = $this->actionUrl("meta", "fs") . $this->basePath . self::cleanPath($path) . "?apiKey=".$this->apiKey."#".$type;
         $return = $this->restHelper($url, null, "GET");
         return $return;
     }
 
-    /*
-     * Returns an array of sub-paths
-     * @params String - path
-     *
-     * @return Array - an array of values
-     */
     public function listChildren($path)
     {
         $path = self::cleanPath($path);
-        $path2  = $this->actionUrl("meta","fs")."$path?apiKey=" . $this->apiKey."#children";
+        $path2  = $this->actionUrl("meta","fs"). $this->basePath ."$path?apiKey=" . $this->apiKey."#children";
         $return = $this->restHelper($path2, null, "GET");
         return $return ? $return['children'] : $return;
     }
@@ -165,13 +150,6 @@ class PrecogAPI {
     // ***************************
     // ****** ANALYTICS APIS *****
     // ***************************
-
-    /*
-     * Returns the value of the query
-     * @params String - raw Quirrel
-     *
-     * @return Array - an array of values
-     */
 
     public function query($quirrel, $options = array())
     {
@@ -193,13 +171,13 @@ class PrecogAPI {
             }
         }
 
-        $path2  = $this->actionUrl("analytics", "fs")."?" .implode("&", $params);
+        $path2  = $this->actionUrl("analytics", "fs"). $this->basePath ."?" .implode("&", $params);
         $return = $this->restHelper($path2, null, "GET");
         return $return;
     }
 
     // ***************************
-    // ****** SECURITY APIS *****
+    // ****** SECURITY APIS ******
     // ***************************
     public function listKeys()
     {
@@ -285,10 +263,59 @@ class PrecogAPI {
         return $return;
     }
 
+    
+
+    // ***************************
+    // ***** GETTERS/SETTERS *****
+    // ***************************
+    public function getApiKey()
+    {
+        return $this->apiKey;
+    }
+
+    public function setApiKey($value)
+    {
+        $this->apiKey = $value;
+    }
+
+    public function getBaseUrl()
+    {
+        return $this->baseUrl;
+    }
+
+    public function setBaseUrl($value)
+    {
+        $this->baseUrl = self::cleanPath($value);
+    }
+
+    public function getVersion()
+    {
+        return $this->version;
+    }
+
+    public function setVersion($value)
+    {
+        $this->version = $value;
+    }
+
+    public function getBasePath()
+    {
+        return $this->basePath;
+    }
+
+    public function setBasePath($value)
+    {
+        $this->basePath = self::cleanPath($value);
+        if($this->basePath){
+            $this->basePath .= "/";
+        }
+    }
+
     /*********************************
      **** PRIVATE helper function ****
      *********************************/
-    private function restHelper($resturl, $params = null, $verb = 'GET', $headers = false) {
+    private function restHelper($resturl, $params = null, $verb = 'GET', $headers = false) 
+    {
         $result = self::baseRestHelper($resturl, $params, $verb, $headers);
         if($result['ok']) {
             $this->isError = false;
@@ -301,8 +328,9 @@ class PrecogAPI {
         }
     }
 
-    private static function baseRestHelper($resturl, $params = null, $verb = 'GET', $headers = false) {
-echo("$verb $resturl\n");
+    private static function baseRestHelper($resturl, $params = null, $verb = 'GET', $headers = false) 
+    {
+//echo("$verb $resturl\n");
 //if($params) var_dump($params);
         $return = array('ok' => true);
         $http_params = array(
@@ -421,4 +449,3 @@ echo("$verb $resturl\n");
         return array("Authorization" => self::baseAuth($user, $password));
     }
 }
-?>
