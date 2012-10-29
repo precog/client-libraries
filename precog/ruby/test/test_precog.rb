@@ -1,4 +1,4 @@
-# Copyright (C) 2011 by Precog, Inc. All rights reserved.
+# Copyright (C) 2012 by Precog, Inc. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -25,8 +25,13 @@
 require 'test/unit'
 
 class PrecogClientTest < Test::Unit::TestCase
+
+    HOST = 'beta.precog.com'
+    PORT = 80
+    ROOT_API_KEY = '2D36035A-62F6-465E-A64A-0E37BCC5257E'
+
   class << self
-    attr_reader :root_token_id, :test_token_id, :test_host, :test_port, :test_path, :test_root
+    attr_reader :account_id, :api_key, :no_key_api, :api
     def suite
       mysuite = super
       def mysuite.run(*args)
@@ -39,44 +44,17 @@ class PrecogClientTest < Test::Unit::TestCase
 
     def startup
       require 'precog'
-      @root_token_id = '2D36035A-62F6-465E-A64A-0E37BCC5257E'
+      @no_key_api=Precog::Precog.new(nil, HOST, PORT)
 
-      @test_host = 'beta2012v1.precog.io'
-      @test_port = 80
-      @test_path = '/v1'
-      @test_root = '/unit_test/beta/ruby_test'
-
-      api = build_root_client
-      token = Precog::Token.readwrite(@test_root)
-      response = api.new_token(token)
-
-      puts(response['uid'])
-      raise "Did not obtain a new test token." unless response['uid'].length == @root_token_id.length
-
-      @test_token_id = response['uid']
-
-      api = build_test_client
-      api.store("#{@test_root}/", {'test' => 123})
-      api.store("#{@test_root}/rg-client/subdir/subsub", {'test' => 456})
-      sleep(20)
+      #create test user and extract key
+      response = @no_key_api.create_account("test-rb@precog.com","password")
+      @account_id=response['accountId']
+      response =@no_key_api.describe_account("test-rb@precog.com","password",account_id)
+      @api_key=response['apiKey']
+      @api=Precog::Precog.new(@api_key, HOST, PORT)
     end
 
     def shutdown
-      api = Precog::Precog.new(@root_token_id, @test_host, @test_port, @test_path)
-      response = api.delete_token(@test_token_id)
-      begin
-        api.token
-      rescue Precog::HttpResponseError => e
-        raise e unless e.code == 404 
-      end
-    end
-
-    def build_root_client
-      Precog::Precog.new(@root_token_id, @test_host, @test_port, @test_path)  
-    end
-
-    def build_test_client
-      Precog::Precog.new(@test_token_id, @test_host, @test_port, @test_path)  
     end
   end
 
@@ -84,34 +62,100 @@ class PrecogClientTest < Test::Unit::TestCase
     assert collection.include?(value), "#{collection.inspect} does not include the value #{value.inspect}"
   end
 
-  def test_token
-    api = PrecogClientTest.build_test_client
-    response = api.token
-    assert_equal response.class, Hash
-    assert_include response, 'uid'
-    assert_equal response['uid'], PrecogClientTest.test_token_id
+  # ACCOUNTS 
+  
+  def test_create_account_existing
+    response = PrecogClientTest.no_key_api.create_account("test-rb@precog.com","password")
+    assert_equal Hash, response.class
+    assert_include response, 'accountId'
+    assert_equal PrecogClientTest.account_id, response['accountId']
+  end
+  
+  def test_create_account_new
+    email= "test-rb#{rand(1000000)}@precog.com"
+    response = PrecogClientTest.no_key_api.create_account(email,"password")
+    assert_equal Hash, response.class
+    assert_include response, 'accountId'
+  end
+
+  def test_describe_account
+    response = PrecogClientTest.no_key_api.describe_account("test-rb@precog.com","password","0000000305")
+    assert_equal Hash, response.class
+    assert_include response, 'accountId'
+    assert_equal '0000000305', response['accountId']
+    assert_include response, 'email'
+    assert_equal 'test-rb@precog.com', response['email']
+  end
+
+
+  # def test_add_grant_to_account
+  #   #   TODO once security API is complete
+  #   #   PrecogClientTest.no_key_api.add_grant_to_account("test-rb@precog.com","password","0000000305", xxxxxx)
+  # end
+
+  def test_describe_plan
+    response=PrecogClientTest.no_key_api.describe_plan("test-rb@precog.com","password","0000000305")
+    assert_equal Hash, response.class
+    assert_include response, 'type'
+    assert_equal 'Free', response['type']
+  end
+
+  #Changes an account's plan (only the plan type itself may be changed). Billing for the new plan, if appropriate, will be prorated.
+  def test_change_plan
+    response=PrecogClientTest.no_key_api.change_plan("test-rb@precog.com","password","0000000305", "Bronze")
+    
+    response=PrecogClientTest.no_key_api.describe_plan("test-rb@precog.com","password","0000000305")
+    assert_include response, 'type'
+    assert_equal 'Bronze', response['type']
+
+    response=PrecogClientTest.no_key_api.change_plan("test-rb@precog.com","password","0000000305", "Free")
+  end
+
+  #Changes your account access password. This call requires HTTP Basic authentication using the current password.
+  def test_change_password
+    response=PrecogClientTest.no_key_api.change_password("test-rb@precog.com","password","0000000305", "xyzzy")
+    response=PrecogClientTest.no_key_api.change_password("test-rb@precog.com","xyzzy","0000000305", "password")
+  end
+
+  #Deletes an account's plan. This is the same as switching a plan to the free plan.
+  def test_delete_plan
+    response=PrecogClientTest.no_key_api.change_plan("test-rb@precog.com","password","0000000305", "Bronze")
+    response=PrecogClientTest.no_key_api.delete_plan("test-rb@precog.com","password","0000000305")
+    #test it's free after delete
+    response=PrecogClientTest.no_key_api.describe_plan("test-rb@precog.com","password","0000000305")
+    assert_equal Hash, response.class
+    assert_include response, 'type'
+    assert_equal 'Free', response['type']
+  end
+
+  def test_ingest_csv
+    response=PrecogClientTest.api.ingest(PrecogClientTest.account_id,  "blah,\n\n", "csv")
+    assert_equal 1, response['ingested']
+  end
+
+  def test_ingest_json
+    json_data = "{ 'user': 'something' 'json_dta': { 'nested': 'blah'} }"
+    response=PrecogClientTest.api.ingest(PrecogClientTest.account_id, json_data, "json")
+    assert_equal 1, response['ingested']
+  end
+
+  def test_ingest_async
+    options = {:delimiter => ",", :quote =>"'", :escape => "\\", :async => true }
+    response=PrecogClientTest.api.ingest(PrecogClientTest.account_id, "blah,blah\n", "csv", options)
+    #async just returns 202 result code
+    assert_equal "", response
+  end
+
+  def test_store
+    response=PrecogClientTest.api.store(PrecogClientTest.account_id, { :user => 'something' })
+    assert_equal 1, response['ingested']
   end
 
   def test_query
-    api = PrecogClientTest.build_test_client
-    response = api.query('/', "/#{PrecogClientTest.test_root}")
-    assert_equal response.class, Array
-    assert_equal response[0].class, Hash
-    assert_include response[0], 'test'
-    assert_equal response[0]['test'], 123
+    #just test the query was sent and executed sucessfully
+    response=PrecogClientTest.api.query(PrecogClientTest.account_id, "count(//"+PrecogClientTest.account_id+")")
+    assert_equal Array, response.class
+    assert_equal 0, response[0]
   end
 
-  # def test_children
-  #   api = PrecogClientTest.build_test_client
-  #   response = api.children('/')
-  #   assert_equal response.class, Array
-  #   assert_include response, '.test'
-  # end
-
-  # def test_deep_children
-  #   api = PrecogClientTest.build_test_client
-  #   response = api.children('/rg-client/subdir', :type => :path)
-  #   assert_equal response.class, Array
-  #   assert_include response, 'subsub'
-  # end
 end
