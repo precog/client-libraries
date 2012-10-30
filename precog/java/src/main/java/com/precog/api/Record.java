@@ -1,7 +1,6 @@
-package io.precog.api;
+package com.precog.api;
 
-import io.precog.json.ToJson;
-import java.util.Date;
+import com.precog.json.ToJson;
 
 /**
  * A record to be stored in the precog database. 
