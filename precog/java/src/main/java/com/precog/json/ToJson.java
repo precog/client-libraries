@@ -1,4 +1,4 @@
-package io.precog.json;
+package com.precog.json;
 
 /**
  * A simple strategy interface that can be implemented to provide JSON serialization

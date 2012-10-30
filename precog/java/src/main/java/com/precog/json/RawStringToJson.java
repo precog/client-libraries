@@ -1,4 +1,4 @@
-package io.precog.json;
+package com.precog.json;
 
 /**
  *
