@@ -57,7 +57,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="ServiceStack.Text">
-      <HintPath>..\..\..\..\..\..\ServiceStack-ServiceStack.Text\out\ServiceStack.Text.dll</HintPath>
+      <HintPath>..\ServiceStack.Text\net35\ServiceStack.Text.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>
