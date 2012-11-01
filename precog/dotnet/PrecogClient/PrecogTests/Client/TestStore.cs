@@ -34,6 +34,8 @@ namespace Precog.Client
 	    public string testAccountId;
 	    public string testApiKey;
 
+		public IJson Json= new JsonServiceStack();
+
 		[SetUp()]
 		public void Setup()
 		{
@@ -42,12 +44,12 @@ namespace Precog.Client
 			testId = ""+ new Random().Next (0,10000);
 
 	        AccountInfo res = noKeyClient.CreateAccount("java-test@precog.com", "password");
-	        testAccountId = res.AccountId;
+	        testAccountId = res.accountId;
 	        res = noKeyClient.DescribeAccount("java-test@precog.com", "password", testAccountId);
 	        testApiKey = res.ApiKey;
 
 	        testPath = "/test" + testId;
-			storePath = testAccountId+"/"+testPath;
+			storePath = testAccountId+testPath;
 		}
 
 		[Test()]
@@ -55,8 +57,6 @@ namespace Precog.Client
 		{
 			PrecogClient client = ServiceStack.CreatePrecogClient(SERVICE, testApiKey);
 			var query = String.Format("count(load(\"{0}\"))", testPath);
-
-			Console.WriteLine("q: "+query);
 
 			int count = (int) client.Query<List<float>>(testAccountId,query)[0];
 
@@ -82,7 +82,7 @@ namespace Precog.Client
 		{
 	        PrecogClient noKeyClient = ServiceStack.CreatePrecogClient(SERVICE, null);
 	        AccountInfo res = noKeyClient.CreateAccount("java-test@precog.com", "password");
-	        string accountId = res.AccountId;
+	        string accountId = res.accountId;
 	        Assert.IsNotNullOrEmpty(accountId);
 	        Assert.AreEqual(testAccountId, accountId);
     	}
@@ -92,7 +92,7 @@ namespace Precog.Client
 		{
 	        PrecogClient noKeyClient = ServiceStack.CreatePrecogClient(SERVICE, null);
 	        AccountInfo res = noKeyClient.DescribeAccount("java-test@precog.com", "password", testAccountId);
-	        Assert.AreEqual(testAccountId, res.AccountId);
+	        Assert.AreEqual(testAccountId, res.accountId);
 	    }
 
 	    [Test()]
@@ -164,7 +164,8 @@ namespace Precog.Client
 	    }
 
 	    [Test()]
-	    public void testIngestAsync()  {
+	    public void testIngestAsync()
+		{
 	        PrecogClient testClient = ServiceStack.CreatePrecogClient(SERVICE, testApiKey);
 	        IngestOptions options = new CSVIngestOptions();
 	        options.Async=true;
@@ -172,6 +173,17 @@ namespace Precog.Client
 	        //is async, so we don't expect results
 	        Assert.IsFalse(result.Completed);
 	    }
+
+		[Test()]
+		public void testFromJson()
+		{	string json = "{\"total\":1.0,\"Ingested\":1.0,\"Failed\":0.0,\"Skipped\":0.0,\"Errors\":[]}";
+			IngestResult result=Json.Decode<IngestResult>(json);
+			Assert.AreEqual(1,result.Total);
+			Assert.AreEqual(1,result.Ingested);
+			Assert.AreEqual(0,result.Failed);
+		}
+
 	}
+
 }
 

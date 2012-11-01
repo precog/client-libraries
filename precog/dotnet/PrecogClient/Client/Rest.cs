@@ -154,7 +154,6 @@ namespace Precog.Client
 	        }
 
 			Uri fullUri= new Uri(uri,path);
-			Console.WriteLine("path: "+ fullUri);
 	        HttpWebRequest webRequest = (HttpWebRequest)HttpWebRequest.Create(fullUri);
 
 	        webRequest.Method=Enum.GetName(typeof(Method),method);

@@ -5,7 +5,7 @@ namespace Precog.Client
 {
 	public enum ContentType
 	{
-        XZIP, ZIP,JSON,CSV
+        XZIP, ZIP, JSON, CSV
     }
 
 	public class Request

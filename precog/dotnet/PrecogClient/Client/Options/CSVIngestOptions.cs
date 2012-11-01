@@ -16,7 +16,7 @@ namespace Precog.Client.Options
 
 	    public CSVIngestOptions(): base(ContentType.CSV)
 		{
-
+			
 	    }
 
 	    public override Dictionary<string, string> asMap()

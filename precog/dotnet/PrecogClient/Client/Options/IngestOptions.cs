@@ -13,7 +13,7 @@ namespace Precog.Client.Options
 	    public bool Async { get; set;}
 
 	    public IngestOptions(ContentType dataType) {
-	        this.DataType = DataType;
+	        this.DataType = dataType;
 	    }
 
 	    public virtual Dictionary<string, string> asMap() {
