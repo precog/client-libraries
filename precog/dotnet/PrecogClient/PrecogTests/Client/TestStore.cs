@@ -3,44 +3,70 @@ using System.Collections.Generic;
 using System.Text;
 using NUnit.Framework;
 using Precog.Client;
+using Precog.Client.Dto;
+using Precog.Client.Options;
+using Precog.Client.Json;
 
 namespace Precog.Client
 {
+	 class TestData
+	{
+        public int testInt {get; set; }
+        public string testStr;
+        public string rawJson;
+
+        public TestData(int testInt, string testStr, string rawJson) {
+            this.testInt = testInt;
+            this.testStr = testStr;
+            this.rawJson = rawJson;
+        }
+    }
+
 	[TestFixture()]
 	public class TestStore
 	{
-		const string TEST_TOKEN_ID = "2D36035A-62F6-465E-A64A-0E37BCC5257E";
-		const string PATH = "/unit_test/beta/";
-		static Uri SERVICE = new Uri("http://beta2012v1.precog.io/v1/");
+		static Uri SERVICE = new Uri("http://beta.precog.com");
 
-		PrecogClient client;
+		private string testId;
+	    private string testPath;
+		private string storePath;
+
+	    public string testAccountId;
+	    public string testApiKey;
+
 		[SetUp()]
 		public void Setup()
 		{
-			client = ServiceStack.CreatePrecogClient(SERVICE, TEST_TOKEN_ID);
+			PrecogClient noKeyClient = ServiceStack.CreatePrecogClient(SERVICE, null);
+
+			testId = ""+ new Random().Next (0,10000);
+
+	        AccountInfo res = noKeyClient.CreateAccount("java-test@precog.com", "password");
+	        testAccountId = res.AccountId;
+	        res = noKeyClient.DescribeAccount("java-test@precog.com", "password", testAccountId);
+	        testApiKey = res.ApiKey;
+
+	        testPath = "/test" + testId;
+			storePath = testAccountId+"/"+testPath;
 		}
-		
-		[Test()]
-		public void TestSimpleStore ()
-		{
-			var path = Path();
-			Assert.IsTrue(client.Store(path, "test"));
-		}
-		
+
 		[Test()]
 		public void TestStoreAndQuery ()
 		{
-			var path = Path();
-			var query = String.Format("count(load(\"{0}\"))", path);
-			int count = (int) client.Query<List<float>>(query)[0];
+			PrecogClient client = ServiceStack.CreatePrecogClient(SERVICE, testApiKey);
+			var query = String.Format("count(load(\"{0}\"))", testPath);
 
-			client.Store(path, "test");
+			Console.WriteLine("q: "+query);
+
+			int count = (int) client.Query<List<float>>(testAccountId,query)[0];
+
+			client.Store(storePath,  "{\"test\":[{\"v\": 1}, {\"v\": 2}]}" );
 
 			var retry = 0;
 			var success = false;
 			while(retry++ < RETRIES)
 			{
-				var newcount = (int) client.Query<List<float>>(query)[0];
+				var newcount = (int) client.Query<List<float>>(testAccountId,query)[0];
 				if(newcount > count)
 				{
 					success = true;
@@ -51,14 +77,101 @@ namespace Precog.Client
 			Assert.IsTrue(success);
 		}
 
+		[Test()]
+		public void testCreateAccount()
+		{
+	        PrecogClient noKeyClient = ServiceStack.CreatePrecogClient(SERVICE, null);
+	        AccountInfo res = noKeyClient.CreateAccount("java-test@precog.com", "password");
+	        string accountId = res.AccountId;
+	        Assert.IsNotNullOrEmpty(accountId);
+	        Assert.AreEqual(testAccountId, accountId);
+    	}
+
+	    [Test()]
+	    public void testDescribeAccount()
+		{
+	        PrecogClient noKeyClient = ServiceStack.CreatePrecogClient(SERVICE, null);
+	        AccountInfo res = noKeyClient.DescribeAccount("java-test@precog.com", "password", testAccountId);
+	        Assert.AreEqual(testAccountId, res.AccountId);
+	    }
+
+	    [Test()]
+	    public void testQuery()
+		{
+	        //just test the query was sent and executed successfully
+	        PrecogClient testClient = ServiceStack.CreatePrecogClient(SERVICE, testApiKey);
+	        string[] result = testClient.Query<string[]>(testAccountId+"/", "count(//" + testAccountId + ")");
+	        Assert.IsNotNull(result);
+	        Assert.AreEqual("0", result[0]);
+	    }
+
 		const int DELAY = 500;
 		const int RETRIES = 40;
-		
-		const string BASE_PATH = "/unit_test/beta/dotnet/";
-	    static string Path()
+
+		[Test()]
+    	public void testStore()
 		{
-			return BASE_PATH + Guid.NewGuid();
-		}
+	        PrecogClient testClient = ServiceStack.CreatePrecogClient(SERVICE, testApiKey);
+
+	        TestData testData = new TestData(42, "Hello\" World", "{\"test\":[{\"v\": 1}, {\"v\": 2}]}");
+	        IngestResult response =testClient.Store(storePath, testData);
+			Assert.AreEqual(1, response.Ingested);
+	    }
+
+	    [Test()]
+	    public void testStoreRawString()
+		{
+	        PrecogClient testClient = ServiceStack.CreatePrecogClient(SERVICE, testApiKey);
+	        IngestResult response =testClient.Store(storePath, "{\"test\":[{\"v\": 1}, {\"v\": 2}]}");
+			Assert.AreEqual(1, response.Ingested);
+	    }
+
+	    [Test()]
+	    public void testStoreRawUTF8()  {
+	        PrecogClient testClient = ServiceStack.CreatePrecogClient(SERVICE, testApiKey);
+	        string rawJson = "{\"test\":[{\"ดีลลิเชียส\": 1}, {\"v\": 2}]}";
+	        IngestResult response =testClient.Store(storePath, rawJson);
+			Assert.AreEqual(1, response.Ingested);
+	    }
+
+
+	    [Test()]
+	    public void testIngestCSV()  {
+	        PrecogClient testClient = ServiceStack.CreatePrecogClient(SERVICE, testApiKey);
+	        IngestOptions options = new CSVIngestOptions();
+	        IngestResult response = testClient.Ingest(storePath, "blah,\n\n", options);
+	        Assert.AreEqual(1, response.Ingested);
+	    }
+
+	    [Test()]
+	    public void testIngestJSON()  {
+	        PrecogClient testClient = ServiceStack.CreatePrecogClient(SERVICE, testApiKey);
+	        IngestOptions options = new IngestOptions(ContentType.JSON);
+	        string rawJson = "{\"test\":[{\"v\": 1}, {\"v\": 2}]}";
+	        IngestResult response = testClient.Ingest(storePath, rawJson, options);
+	        Assert.AreEqual(1, response.Ingested);
+	    }
+
+	    [Test()]
+	    public void testIngestCsvWithOptions()  {
+	        PrecogClient testClient = ServiceStack.CreatePrecogClient(SERVICE, testApiKey);
+	        CSVIngestOptions options = new CSVIngestOptions();
+	        options.delimiter=",";
+	        options.quote="'";
+	        options.escape="\\";
+	        IngestResult response = testClient.Ingest(storePath, "blah,\n\n", options);
+	        Assert.AreEqual(1, response.Ingested);
+	    }
+
+	    [Test()]
+	    public void testIngestAsync()  {
+	        PrecogClient testClient = ServiceStack.CreatePrecogClient(SERVICE, testApiKey);
+	        IngestOptions options = new CSVIngestOptions();
+	        options.Async=true;
+	        IngestResult result = testClient.Ingest(storePath, "blah,\n\n", options);
+	        //is async, so we don't expect results
+	        Assert.IsFalse(result.Completed);
+	    }
 	}
 }
 
