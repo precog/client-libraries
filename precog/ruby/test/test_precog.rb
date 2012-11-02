@@ -30,33 +30,25 @@ class PrecogClientTest < Test::Unit::TestCase
     PORT = 80
     ROOT_API_KEY = '2D36035A-62F6-465E-A64A-0E37BCC5257E'
 
-  class << self
     attr_reader :account_id, :api_key, :no_key_api, :api
-    def suite
-      mysuite = super
-      def mysuite.run(*args)
-        PrecogClientTest.startup()
-        super
-        PrecogClientTest.shutdown()
-      end
-      mysuite
-    end
 
-    def startup
+
+  def setup
       require 'precog'
+      #connection without api key
       @no_key_api=Precog::Precog.new(nil, HOST, PORT)
-
       #create test user and extract key
       response = @no_key_api.create_account("test-rb@precog.com","password")
       @account_id=response['accountId']
       response =@no_key_api.describe_account("test-rb@precog.com","password",account_id)
       @api_key=response['apiKey']
+      #connection with api key
       @api=Precog::Precog.new(@api_key, HOST, PORT)
     end
 
-    def shutdown
+    def teardown
+      #nothing :)
     end
-  end
 
   def assert_include(collection, value)
     assert collection.include?(value), "#{collection.inspect} does not include the value #{value.inspect}"
@@ -65,21 +57,21 @@ class PrecogClientTest < Test::Unit::TestCase
   # ACCOUNTS 
   
   def test_create_account_existing
-    response = PrecogClientTest.no_key_api.create_account("test-rb@precog.com","password")
+    response = @no_key_api.create_account("test-rb@precog.com","password")
     assert_equal Hash, response.class
     assert_include response, 'accountId'
-    assert_equal PrecogClientTest.account_id, response['accountId']
+    assert_equal @account_id, response['accountId']
   end
   
   def test_create_account_new
     email= "test-rb#{rand(1000000)}@precog.com"
-    response = PrecogClientTest.no_key_api.create_account(email,"password")
+    response = @no_key_api.create_account(email,"password")
     assert_equal Hash, response.class
     assert_include response, 'accountId'
   end
 
   def test_describe_account
-    response = PrecogClientTest.no_key_api.describe_account("test-rb@precog.com","password","0000000305")
+    response = @no_key_api.describe_account("test-rb@precog.com","password","0000000305")
     assert_equal Hash, response.class
     assert_include response, 'accountId'
     assert_equal '0000000305', response['accountId']
@@ -90,11 +82,11 @@ class PrecogClientTest < Test::Unit::TestCase
 
   # def test_add_grant_to_account
   #   #   TODO once security API is complete
-  #   #   PrecogClientTest.no_key_api.add_grant_to_account("test-rb@precog.com","password","0000000305", xxxxxx)
+  #   #   @no_key_api.add_grant_to_account("test-rb@precog.com","password","0000000305", xxxxxx)
   # end
 
   def test_describe_plan
-    response=PrecogClientTest.no_key_api.describe_plan("test-rb@precog.com","password","0000000305")
+    response=@no_key_api.describe_plan("test-rb@precog.com","password","0000000305")
     assert_equal Hash, response.class
     assert_include response, 'type'
     assert_equal 'Free', response['type']
@@ -102,58 +94,58 @@ class PrecogClientTest < Test::Unit::TestCase
 
   #Changes an account's plan (only the plan type itself may be changed). Billing for the new plan, if appropriate, will be prorated.
   def test_change_plan
-    response=PrecogClientTest.no_key_api.change_plan("test-rb@precog.com","password","0000000305", "Bronze")
+    response=@no_key_api.change_plan("test-rb@precog.com","password","0000000305", "Bronze")
     
-    response=PrecogClientTest.no_key_api.describe_plan("test-rb@precog.com","password","0000000305")
+    response=@no_key_api.describe_plan("test-rb@precog.com","password","0000000305")
     assert_include response, 'type'
     assert_equal 'Bronze', response['type']
 
-    response=PrecogClientTest.no_key_api.change_plan("test-rb@precog.com","password","0000000305", "Free")
+    response=@no_key_api.change_plan("test-rb@precog.com","password","0000000305", "Free")
   end
 
   #Changes your account access password. This call requires HTTP Basic authentication using the current password.
   def test_change_password
-    response=PrecogClientTest.no_key_api.change_password("test-rb@precog.com","password","0000000305", "xyzzy")
-    response=PrecogClientTest.no_key_api.change_password("test-rb@precog.com","xyzzy","0000000305", "password")
+    response=@no_key_api.change_password("test-rb@precog.com","password","0000000305", "xyzzy")
+    response=@no_key_api.change_password("test-rb@precog.com","xyzzy","0000000305", "password")
   end
 
   #Deletes an account's plan. This is the same as switching a plan to the free plan.
   def test_delete_plan
-    response=PrecogClientTest.no_key_api.change_plan("test-rb@precog.com","password","0000000305", "Bronze")
-    response=PrecogClientTest.no_key_api.delete_plan("test-rb@precog.com","password","0000000305")
+    response=@no_key_api.change_plan("test-rb@precog.com","password","0000000305", "Bronze")
+    response=@no_key_api.delete_plan("test-rb@precog.com","password","0000000305")
     #test it's free after delete
-    response=PrecogClientTest.no_key_api.describe_plan("test-rb@precog.com","password","0000000305")
+    response=@no_key_api.describe_plan("test-rb@precog.com","password","0000000305")
     assert_equal Hash, response.class
     assert_include response, 'type'
     assert_equal 'Free', response['type']
   end
 
   def test_ingest_csv
-    response=PrecogClientTest.api.ingest(PrecogClientTest.account_id,  "blah,\n\n", "csv")
+    response=@api.ingest(@account_id,  "blah,\n\n", "csv")
     assert_equal 1, response['ingested']
   end
 
   def test_ingest_json
     json_data = "{ 'user': 'something' 'json_dta': { 'nested': 'blah'} }"
-    response=PrecogClientTest.api.ingest(PrecogClientTest.account_id, json_data, "json")
+    response=@api.ingest(@account_id, json_data, "json")
     assert_equal 1, response['ingested']
   end
 
   def test_ingest_async
     options = {:delimiter => ",", :quote =>"'", :escape => "\\", :async => true }
-    response=PrecogClientTest.api.ingest(PrecogClientTest.account_id, "blah,blah\n", "csv", options)
+    response=@api.ingest(@account_id, "blah,blah\n", "csv", options)
     #async just returns 202 result code
     assert_equal "", response
   end
 
   def test_store
-    response=PrecogClientTest.api.store(PrecogClientTest.account_id, { :user => 'something' })
+    response=@api.store(@account_id, { :user => 'something' })
     assert_equal 1, response['ingested']
   end
 
   def test_query
     #just test the query was sent and executed sucessfully
-    response=PrecogClientTest.api.query(PrecogClientTest.account_id, "count(//"+PrecogClientTest.account_id+")")
+    response=@api.query(@account_id, "count(//"+@account_id+")")
     assert_equal Array, response.class
     assert_equal 0, response[0]
   end
