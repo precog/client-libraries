@@ -234,13 +234,13 @@ module Precog
 
       parameters={}
       case(type.downcase) 
-        when 'application/x-gzip','gz','gzip':
+        when 'application/x-gzip','gz','gzip' then
           type = 'application/x-gzip'
-        when 'zip':
+        when 'zip' then 
           type = 'application/zip'
-        when 'application/json','json':
+        when 'application/json','json' then
           type = 'application/json'
-        when 'text/csv','csv':
+        when 'text/csv','csv' then
           type = 'text/csv';
           if(options[:delimiter])
             parameters['delimiter'] = options[:delimiter]
