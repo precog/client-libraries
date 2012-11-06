@@ -354,7 +354,7 @@ throw new SyntaxError('JSON.parse');};}}());
       options = options || {};
       var host    = options.analyticsService || $.Config.analyticsService,
           version = options.version || $.Config.version;
-      return host + service + (version === "false" ? "/" : "/v" + version) + "/" + (action ? action + "/" : "");
+      return host + service + (version === "false" ? "" : "/v" + version) + "/" + (action ? action + "/" : "");
     },
 
     actionPath: function(path, options) {
@@ -569,6 +569,7 @@ throw new SyntaxError('JSON.parse');};}}());
 
   $.PageConfig = Util.getPageConfiguration();
   $.Config = Util.getConfiguration();
+
   $.Bool = function(v) {
     return v === true || v === 1 || (v = (""+v).toLowerCase()) == "true" || v == "on" || v == "1";
   };
@@ -584,6 +585,9 @@ throw new SyntaxError('JSON.parse');};}}());
 
   $.Config.analyticsService = $.PageConfig.analyticsService || $.Config.analyticsService;
   $.Config.apiKey = $.PageConfig.apiKey || $.Config.apiKey;
+  $.Config.version = $.PageConfig.version || $.Config.version;
+  $.Config.useJsonp = ($.PageConfig.useJsonp || $.Config.useJsonp) === "true";
+  $.Config.enableLog = $.PageConfig.enableLog || $.Config.enableLog;
 
   $.Http = function() {
     return $.Bool(Precog.$.Config.useJsonp) ? Precog.$.Http.Jsonp : Precog.$.Http.Ajax;
