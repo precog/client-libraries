@@ -1,8 +1,8 @@
-package io.precog.json.gson;
+package com.precog.json.gson;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import io.precog.json.FromJson;
+import com.precog.json.FromJson;
 import java.lang.reflect.Type;
 
 /**

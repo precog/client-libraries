@@ -124,7 +124,7 @@ class PrecogAPI {
 
     public function delete($path)
     {
-        $path2  = $this->actionUrl("ingest", "sync/fs") . $this->basePath . self::cleanPath($path) . "?apiKey=" . $this->apiKey;
+        $path2  = $this->actionUrl("ingest", "async/fs") . $this->basePath . self::cleanPath($path) . "?apiKey=" . $this->apiKey;
         $return = $this->restHelper($path2, null, "DELETE");
         return $return !== false;
     }

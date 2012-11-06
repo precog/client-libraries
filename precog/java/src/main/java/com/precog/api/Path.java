@@ -1,4 +1,4 @@
-package io.precog.api;
+package com.precog.api;
 
 /**
  * A simple path representation that conforms to the path syntax

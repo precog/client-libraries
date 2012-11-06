@@ -354,9 +354,7 @@ throw new SyntaxError('JSON.parse');};}}());
       options = options || {};
       var host    = options.analyticsService || $.Config.analyticsService,
           version = options.version || $.Config.version;
- //     console.log("in action URL");
- //     console.log(host + service + "/v" + version + "/" + (action ? action + "/" : ""));
-      return host + service + "/v" + version + "/" + (action ? action + "/" : "");
+      return host + service + (version === "false" ? "/" : "/v" + version) + "/" + (action ? action + "/" : "");
     },
 
     actionPath: function(path, options) {
@@ -1019,7 +1017,7 @@ throw new SyntaxError('JSON.parse');};}}());
     if(!parameters.apiKey) throw Error("apiKey not specified");
 
     http.remove(
-      Util.actionUrl("ingest", "sync/fs", options) + Util.actionPath(path, options),
+      Util.actionUrl("ingest", "async/fs", options) + Util.actionPath(path, options),
       Util.createCallbacks(success, failure, description),
       parameters
     );

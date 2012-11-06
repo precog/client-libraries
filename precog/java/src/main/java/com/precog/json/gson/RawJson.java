@@ -1,4 +1,4 @@
-package io.precog.json.gson;
+package com.precog.json.gson;
 
 /**
  * A type wrapper for raw JSON strings to make it easier to embed such strings in 
