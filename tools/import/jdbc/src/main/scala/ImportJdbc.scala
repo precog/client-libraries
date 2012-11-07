@@ -4,8 +4,6 @@ import java.sql.{ Connection, DriverManager, ResultSet}
 //admin admin
 object ImportJdbc {
 
-  Class.forName("com.mysql.jdbc.Driver")
-
   def main(args:Array[String])= args match {
     
 		case Array(url,user,password) => importJdbc(url,user,password)
