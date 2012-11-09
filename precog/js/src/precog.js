@@ -442,6 +442,8 @@ throw new SyntaxError('JSON.parse');};}}());
       else {
         request.send(null);
       }
+
+      return request;
     },
 
     doJsonpRequest: function(options) {
@@ -504,7 +506,7 @@ throw new SyntaxError('JSON.parse');};}}());
     createHttpInterface: function(doRequest) {
       return {
         get: function(path, callbacks, query, headers) {
-          doRequest(
+          return doRequest(
             {
               method:   'GET',
               path:     path,
@@ -517,7 +519,7 @@ throw new SyntaxError('JSON.parse');};}}());
         },
 
         put: function(path, content, callbacks, query, headers) {
-          doRequest(
+          return doRequest(
             {
               method:   'PUT',
               path:     path,
@@ -531,7 +533,7 @@ throw new SyntaxError('JSON.parse');};}}());
         },
 
         post: function(path, content, callbacks, query, headers, progress) {
-          doRequest(
+          return doRequest(
             {
               method:   'POST',
               path:     path,
@@ -546,7 +548,7 @@ throw new SyntaxError('JSON.parse');};}}());
         },
 
         remove: function(path, callbacks, query, headers) {
-          doRequest(
+          return doRequest(
             {
               method:   'DELETE',
               path:     path,
@@ -663,7 +665,7 @@ throw new SyntaxError('JSON.parse');};}}());
     if(options.sortOrder)
       parameters.sortOrder = options.sortOrder;
 
-    http.get(
+    return http.get(
       Util.actionUrl("analytics", "fs", options) + Util.actionPath(null, options),
       Util.createCallbacks(success, failure, description),
       parameters
@@ -916,7 +918,7 @@ throw new SyntaxError('JSON.parse');};}}());
     var description = 'Precog retrieve metadata ' + options.type,
         parameters = { apiKey : options.apiKey || $.Config.apiKey };
     if(!parameters.apiKey) throw Error("apiKey not specified");
-    http.get(
+    return http.get(
       Util.actionUrl("meta", "fs", options) + Util.actionPath(path, options) + "#" + options.type,
       Util.createCallbacks(success, failure, description),
       parameters
