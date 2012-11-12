@@ -354,7 +354,9 @@ throw new SyntaxError('JSON.parse');};}}());
       options = options || {};
       var host    = options.analyticsService || $.Config.analyticsService,
           version = options.version || $.Config.version;
-      return host + service + (version === "false" ? "" : "/v" + version) + "/" + (action ? action + "/" : "");
+ //     console.log("in action URL");
+ //     console.log(host + service + "/v" + version + "/" + (action ? action + "/" : ""));
+      return host + service + "/v" + version + "/" + (action ? action + "/" : "");
     },
 
     actionPath: function(path, options) {
@@ -442,8 +444,6 @@ throw new SyntaxError('JSON.parse');};}}());
       else {
         request.send(null);
       }
-
-      return request;
     },
 
     doJsonpRequest: function(options) {
@@ -506,7 +506,7 @@ throw new SyntaxError('JSON.parse');};}}());
     createHttpInterface: function(doRequest) {
       return {
         get: function(path, callbacks, query, headers) {
-          return doRequest(
+          doRequest(
             {
               method:   'GET',
               path:     path,
@@ -519,7 +519,7 @@ throw new SyntaxError('JSON.parse');};}}());
         },
 
         put: function(path, content, callbacks, query, headers) {
-          return doRequest(
+          doRequest(
             {
               method:   'PUT',
               path:     path,
@@ -533,7 +533,7 @@ throw new SyntaxError('JSON.parse');};}}());
         },
 
         post: function(path, content, callbacks, query, headers, progress) {
-          return doRequest(
+          doRequest(
             {
               method:   'POST',
               path:     path,
@@ -548,7 +548,7 @@ throw new SyntaxError('JSON.parse');};}}());
         },
 
         remove: function(path, callbacks, query, headers) {
-          return doRequest(
+          doRequest(
             {
               method:   'DELETE',
               path:     path,
@@ -571,7 +571,6 @@ throw new SyntaxError('JSON.parse');};}}());
 
   $.PageConfig = Util.getPageConfiguration();
   $.Config = Util.getConfiguration();
-
   $.Bool = function(v) {
     return v === true || v === 1 || (v = (""+v).toLowerCase()) == "true" || v == "on" || v == "1";
   };
@@ -587,9 +586,6 @@ throw new SyntaxError('JSON.parse');};}}());
 
   $.Config.analyticsService = $.PageConfig.analyticsService || $.Config.analyticsService;
   $.Config.apiKey = $.PageConfig.apiKey || $.Config.apiKey;
-  $.Config.version = $.PageConfig.version || $.Config.version;
-  $.Config.useJsonp = ($.PageConfig.useJsonp || $.Config.useJsonp) === "true";
-  $.Config.enableLog = $.PageConfig.enableLog || $.Config.enableLog;
 
   $.Http = function() {
     return $.Bool(Precog.$.Config.useJsonp) ? Precog.$.Http.Jsonp : Precog.$.Http.Ajax;
@@ -665,7 +661,7 @@ throw new SyntaxError('JSON.parse');};}}());
     if(options.sortOrder)
       parameters.sortOrder = options.sortOrder;
 
-    return http.get(
+    http.get(
       Util.actionUrl("analytics", "fs", options) + Util.actionPath(null, options),
       Util.createCallbacks(success, failure, description),
       parameters
@@ -918,7 +914,7 @@ throw new SyntaxError('JSON.parse');};}}());
     var description = 'Precog retrieve metadata ' + options.type,
         parameters = { apiKey : options.apiKey || $.Config.apiKey };
     if(!parameters.apiKey) throw Error("apiKey not specified");
-    return http.get(
+    http.get(
       Util.actionUrl("meta", "fs", options) + Util.actionPath(path, options) + "#" + options.type,
       Util.createCallbacks(success, failure, description),
       parameters
