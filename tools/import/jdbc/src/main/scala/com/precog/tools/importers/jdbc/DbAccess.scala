@@ -9,17 +9,20 @@ import java.sql._
 object DbAccess {
   def columnCount(stmt:PreparedStatement)=stmt.getMetaData.getColumnCount
 
-  def getColumns(conn:Connection, query:String):IndexedSeq[String]={
+  def getColumns(conn:Connection, table:Table):IndexedSeq[Column]={
+    getColumns(conn,"select * from %s".format(table.name))
+  }
+
+  def getColumns(conn:Connection, query:String):IndexedSeq[Column]={
     //use a prepared statement to get the metadata
-    //might have to revert back to query & result set
     val stmt = conn.prepareStatement(query)
     getColumns(stmt)
   }
 
-  def getColumns(stmt:PreparedStatement):IndexedSeq[String]={
+  def getColumns(stmt:PreparedStatement):IndexedSeq[Column]={
     val tblMetaData = stmt.getMetaData
     val count=columnCount(stmt)
-    for ( i <- 1 to count) yield ( tblMetaData.getColumnName(i))
+    for ( i <- 1 to count) yield Column(tblMetaData.getColumnName(i),Table(tblMetaData.getTableName(i)))
   }
 
   def rsIterator[T](rs:ResultSet)(f:ResultSet => T) = new Iterator[T] {

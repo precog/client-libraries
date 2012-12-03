@@ -15,13 +15,13 @@ object ImportJdbcConsole {
 
   def main(args:Array[String]){
     println("Welcome to Precog JDBC import wizard")
-    lazy val dbUrl=readLine("Enter database URL:")
-    lazy val user=readLine("DB User:")
-    lazy val password = readLine("DB Password:")
+    lazy val dbUrl="jdbc:mysql://localhost:3306/" //readLine("Enter database URL:")
+    lazy val user="root" //"admin" //readLine("User:"))
+    lazy val password = "root"//"admin" //readLine("Password:")
     // use api key and dispatch to call ingest
-    lazy val host="http://beta.precog.com" //readLine("ingestion host")
-    lazy val apiKey=readLine("API KEY for ingestion")
-    lazy val basePath=readLine("Base ingestion path ( /{userId}/....)")
+    lazy val host="http://beta.precog.com" //readLine("ingestion host")   //TODO move to trait ?
+    lazy val apiKey="43AB865E-BB86-4F74-A57E-7E8BBD77F2B5"//readLine("API KEY for ingestion")
+    lazy val basePath="/0000000457/data" //readLine("Base ingestion path ( /{userId}/....)")
     importJdbc(dbUrl,user,password, host, apiKey, basePath)
   }
 
@@ -37,7 +37,8 @@ object ImportJdbcConsole {
 
     tqs.map( tqs => {
       val (table,tDesc,q) = tqs
-      ingest(connDb,table, q, tDesc,basePath, table, host, apiKey)
+      val path= "%/%".format(basePath, table)
+      println(ingest(connDb,table, q, tDesc, path, host, apiKey))
     })
   }
 
@@ -49,32 +50,33 @@ object ImportJdbcConsole {
   }
 
   def selectColumns(connDb: Connection, table: Table): List[String] = {
-    val labels = getColumns(connDb, "select * from %s".format(table.name))
+    val labels = names(getColumns(connDb, "select * from %s".format(table.name)))
     //column selection
     println("table: %s".format(table.name))
     selectSet("column", labels).toList
   }
 
-  def getQuery(connDb: Connection, metadata: DatabaseMetaData, cat: String): Seq[(String,Option[TableDesc],String)] = {
+  def getQuery(connDb: Connection, metadata: DatabaseMetaData, cat: String): Seq[(String,Option[IngestInfo],String)] = {
     if (readLine("Do you have a SQL query to select the data? (y/N)").toLowerCase == "y") {
       List((readLine("table/object name: "),None,readLine("Query=")))
     } else createQueries(connDb, metadata, cat, selectedTables(findTables(metadata, cat, readTableName())), readLine("Denormalize related tables? (y/n)").toLowerCase == "y")
   }
 
-  def createQueries(conn:Connection, metadata: DatabaseMetaData, cat: String, selected: Seq[Table],denormalize: => Boolean): Seq[(String,Option[TableDesc],String)] = {
+  def createQueries(conn:Connection, metadata: DatabaseMetaData, cat: String, selected: Seq[Table],denormalize: => Boolean): Seq[(String,Option[IngestInfo],String)] = {
     selected.map( table =>{
 
       val allRelationships = relationships( conn, metadata, cat,table).toSeq
       val relations= selectSet("relation",allRelationships).toList
 
-      val tblDesc=((table,false) :: (relations.map(r  =>(r.refKey.table,r.exported)))).map( tm=> {
-        val (t,multiple) = tm
-        val tableName=t.name //readLine("table %s import name: ".format(t.name))
-        val selectedCols=selectColumns(conn, t)
-        (tableName,selectedCols,multiple)
-      })
-      (table.name,Some(tblDesc), buildQuery(table, tblDesc,relations))
+      val tblDesc=buildIngestInfo(table, conn, relations)
+      (table.name,Some(tblDesc), buildQuery(tblDesc))
     })
+  }
+
+
+  def buildIngestInfo(table: Table, conn: Connection, relations: List[Join]): ImportJdbc.IngestInfo = {
+    IngestInfo(ImportTable(table.name, selectColumns(conn, table), Left(table)) ::
+      relations.map(r => ImportTable(r.refKey.table.name, selectColumns(conn, r.refKey.table), Right(r))))
   }
 
   def relationships(conn: Connection, metadata: DatabaseMetaData, cat: String, table:Table): Set[Join] = {
@@ -91,6 +93,10 @@ object ImportJdbcConsole {
     }
 
   }
+
+  //case class ImportTable(name:String, columns:Seq[String], baseOrJoin:Either[Table,Join]){ val isCollection = baseOrJoin.right.toOption.map(_.exported).getOrElse(false) }
+  //case class IngestInfo(tables:Seq[ImportTable])
+
 
   def selectedTables(tablesList: Array[Table]): Seq[Table] = {
     selectSet("table", tablesList)

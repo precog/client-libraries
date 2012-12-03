@@ -6,6 +6,7 @@ import java.sql.{Connection, DatabaseMetaData, DriverManager}
 import DbAccess._
 import DbAnalysis._
 import blueeyes.json.JsonAST.{JArray, JString, JField, JObject}
+import com.precog.tools.importers.jdbc.ImportJdbc.{IngestInfo, ImportTable}
 
 
 //import ImportJdbc
@@ -140,30 +141,30 @@ class ImportJdbcTest extends Specification {
   val cCols= List("A_ID","B_ID","name")
   val dCols= List("ID","name")
 
-  val tblADesc =List(("a",aCols, false))
-  val tblABDesc=List(("a",aCols, false),("b",bCols, false))
-  val tblCABDesc = List(("c",cCols, false),("a",aCols, false),("b",bCols, false))
-  val tblDDesc=List(("dparent",List("ID","D_ID","name"),false),("dchild",List("ID","name"), true))
+  val tblADesc =IngestInfo(List(ImportTable("a",aCols,Left(tA))))
+  val tblABDesc=IngestInfo(List(ImportTable("a",aCols, Left(tA)),ImportTable("b",bCols, Right(Join(pkA.columnName,fkBtoA,true)))))
+  val tblCABDesc = IngestInfo(List(ImportTable("c",cCols, Left(tC)),ImportTable("a",aCols, Right(Join(fkCtoA.columnName,pkA,false))),ImportTable("b",bCols, Right(Join(fkCtoB.columnName,pkB,false)))))
+  val tblDDesc=IngestInfo(List(ImportTable("dparent",List("ID","D_ID","name"),Left(tD)),ImportTable("dchild",List("ID","name"), Right(Join(pkD.columnName,fkDtoD,true)))))
 
   "build queries" should {
     //buildQuery(base:Table, tblNames:List[String], columns:List[Seq[Column]], relations:List[Join])
   	"single table query" in {
-  		ImportJdbc.buildQuery(tA,tblADesc,List()) must_== "select a.ID, a.name from A a order by a.ID, a.name"// order by 1,2"
+  		ImportJdbc.buildQuery(tblADesc) must_== "select a.ID, a.name from A a order by a.ID, a.name"// order by 1,2"
   	}
   	"one to many query" in {
-  		ImportJdbc.buildQuery(tA,tblABDesc,relationAtoB.toList) must_==
+  		ImportJdbc.buildQuery(tblABDesc) must_==
       "select a.ID, a.name, b.ID, b.A_ID, b.name from A a left join B b on a.ID=b.A_ID order by a.ID, a.name, b.ID, b.A_ID, b.name"// order by 1,2,3,4,5"
   	}
 
     "many to many query" in {
-      ImportJdbc.buildQuery(tC,tblCABDesc,relationsCtoAB.toList) must_==
+      ImportJdbc.buildQuery(tblCABDesc) must_==
         "select c.A_ID, c.B_ID, c.name, a.ID, a.name, b.ID, b.A_ID, b.name "+
         "from C c left join A a on c.A_ID=a.ID left join B b on c.B_ID=b.ID " +
         "order by c.A_ID, c.B_ID, c.name, a.ID, a.name, b.ID, b.A_ID, b.name"// order by 1,2,3,4,5"
     }
 
     "circular query" in {
-      ImportJdbc.buildQuery(tD,tblDDesc, relationsDtoD.toList) must_==
+      ImportJdbc.buildQuery(tblDDesc) must_==
         "select dparent.ID, dparent.D_ID, dparent.name, dchild.ID, dchild.name " +
         "from D dparent left join D dchild on dparent.ID=dchild.D_ID " +
         "order by dparent.ID, dparent.D_ID, dparent.name, dchild.ID, dchild.name"
@@ -176,7 +177,7 @@ class ImportJdbcTest extends Specification {
 
   val jA = JObject(JField("ID",JString("1"))::JField("name",JString("aaa"))::Nil)
   val jB =JObject(JField("ID",JString("2"))::JField("A_ID",JString("1"))::JField("name",JString("bbb"))::Nil)
-  val jAB = JObject(JField("ID",JString("1"))::JField("name",JString("aaa"))::JField("b",jB)::Nil)
+  val jAB = JObject(JField("ID",JString("1"))::JField("name",JString("aaa"))::JField("b",JArray(jB::Nil))::Nil)
   val jC = JObject(JField("A_ID",JString("1"))::JField("B_ID",JString("2"))::JField("name",JString("ccc"))::JField("a",jA)::JField("b",JObject(JField("ID",JString("2"))::JField("A_ID",JString("1"))::JField("name",JString("bbb"))::Nil))::Nil)
 
   "Json build from data" should {
@@ -185,7 +186,7 @@ class ImportJdbcTest extends Specification {
     }
 
     "build a composite Json" in {
-      ImportJdbc.mkPartialJson("b",tblABDesc,aData++bData)._1 must_== jB
+      ImportJdbc.mkPartialJson("a",tblABDesc,aData++bData)._1 must_== jAB
     }
 
     "build a relation Json" in {
@@ -193,7 +194,7 @@ class ImportJdbcTest extends Specification {
     }
 
     "build a JArray for multiple values" in {
-      val tblDesc = List(("parent",List("ID","name"), false),("child",List("ID","name","P_ID"), true))
+      val tblDesc = IngestInfo(List(ImportTable("parent",List("ID","name"), Left(Table("Parent"))),ImportTable("child",List("ID","name","P_ID"), Right(Join("id",Key(Table("child"),"parent_id"),true)))))
       val dataChld1 = List("1","parent","1","child1","1")
       val dataNoChld = List("1","parent",null,null,null)
       val dataChld2 = List("1","parent","2","child2","1")

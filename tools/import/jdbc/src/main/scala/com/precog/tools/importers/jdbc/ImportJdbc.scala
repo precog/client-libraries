@@ -2,7 +2,7 @@ package com.precog.tools.importers.jdbc
 
 import java.sql._
 import blueeyes.json.JsonAST._
-import blueeyes.core.data.BijectionsChunkJson.JValueToChunk
+import blueeyes.core.data.BijectionsChunkJson.{JValueToChunk,ChunkToJValue}
 import scala.Some
 import blueeyes.core.service.engines.HttpClientXLightWeb
 
@@ -14,26 +14,22 @@ object ImportJdbc {
 
   import DbAccess._
 
-  def buildUnion(tbaseName:String, r: Join,tblName:String): String = {
-    val endTable=r.refKey.table.name
-    " left join %s %s on %s.%s=%s.%s".format(endTable,tblName,tbaseName, r.baseColName,tblName,r.refKey.columnName)
-  }
-
-  def buildJoins(table:Table,relations: Seq[Join],tblNames:Seq[String]) ={
-    val baseTblName=tblNames.head
-    val joinBase = "%s %s".format(table,baseTblName)
-    relations.zip(tblNames.tail).foldLeft(joinBase)( (q,r)=> q + buildUnion(baseTblName,r._1,r._2) )
-  }
-
-  def buildSort(tblDesc:TableDesc) =tblDesc.flatMap(
-    (tce) => {
-      val (tname,cols,_) =tce
-      cols.map("%s.%s".format(tname,_))
-    }
+  def buildUnion(tbaseName:String, t:ImportTable): Option[String]=
+    t.baseOrJoin.right.toOption.map( j =>
+    " left join %s %s on %s.%s=%s.%s".format(j.refKey.table.name,t.name,tbaseName, j.baseColName,t.name,j.refKey.columnName)
   )
 
+  def buildJoins(tblDesc:IngestInfo)={
+    val baseTblDesc=tblDesc.tables.head
+    val joinBase = "%s %s".format(tblDesc.tables.head.baseOrJoin.left.get,baseTblDesc.name)
+    val joins = tblDesc.tables.tail.flatMap( t=> buildUnion(baseTblDesc.name,t) )
+    "%s%s".format(joinBase,joins.mkString )
+  }
 
-  def mkPartialJson(baseName:String, tblDesc:TableDesc, s: Seq[String], prevMap:Map[String,JValue]=Map())= {
+  def buildSort(ingestInfo:IngestInfo) =ingestInfo.tables.flatMap( t => t.columns.map("%s.%s".format(t.name,_)) )
+
+
+  def mkPartialJson(baseName:String, ingestInfo:IngestInfo, s: Seq[String], prevMap:Map[String,JValue]=Map())= {
 
     def getElements(o:Option[JValue]):List[JValue]= o match {
       case Some(l:JArray) => l.elements
@@ -44,15 +40,15 @@ object ImportJdbc {
       case _ => sys.error("base value is not jobject!")
     }
 
-    def buildJValues( ms:(Map[String,JValue],Seq[String]), tblDesc: (String,Seq[String], Boolean) ):(Option[(String,JValue)],Seq[String])={
+    def buildJValues( ms:(Map[String,JValue],Seq[String]), tblDesc: ImportTable ):(Option[(String,JValue)],Seq[String])={
       val (m,s)=ms
-      val (tblName,cols,multiple) = tblDesc
-      val (tblColValues,rest)=s.splitAt(cols.length)
-      val objValues =(cols.zip(tblColValues)).flatMap(buildField(_) ).toList
-      val keyValue=if (objValues.isEmpty) if (multiple) Some(tblName->JArray.empty) else None
+      val (tblColValues,rest)=s.splitAt(tblDesc.columns.length)
+      val objValues =(tblDesc.columns.zip(tblColValues)).flatMap(buildField(_) ).toList
+      val tblName = tblDesc.name
+      val keyValue=if (objValues.isEmpty) if (tblDesc.isCollection) Some(tblName->JArray.empty) else None
       else {
         val data=JObject(objValues)
-        val obj= if (multiple) JArray(data:: getElements(m.get(tblName)) ) else data
+        val obj= if (tblDesc.isCollection) JArray(data:: getElements(m.get(tblName)) ) else data
         Some(tblName->obj)
       }
       (keyValue,rest)
@@ -60,8 +56,7 @@ object ImportJdbc {
 
     def buildField( nm: (String,String)) =Option(nm._2).map( s=>JField(nm._1,JString(s)))
 
-
-    val jsonMap:Map[String,JValue]=tblDesc.foldLeft( (prevMap,s) )(
+    val jsonMap:Map[String,JValue]=ingestInfo.tables.foldLeft( (prevMap,s) )(
       (ms,v) =>{
         val (opt,r)= buildJValues(ms,v)
         val (m,_)=ms
@@ -80,21 +75,20 @@ object ImportJdbc {
     (JObject(base.fields ++ values),jsonMap)
   }
 
-  type TableDesc = Seq[(String,Seq[String],Boolean)]
+  case class ImportTable(name:String, columns:Seq[String], baseOrJoin:Either[Table,Join]){ val isCollection = baseOrJoin.right.toOption.map(_.exported).getOrElse(false) }
+  case class IngestInfo(tables:Seq[ImportTable])
 
-  def buildQuery(base:Table, tblDesc:TableDesc, relations:Seq[Join]) = {
-    val columnNames= tblDesc.flatMap(ncols =>{
-      val (name,cols, _) = ncols
-      cols.map( c=> "%s.%s".format(name, c))
-    } )
-    val tblNames = tblDesc.map(_._1)
-    val join=buildJoins(base,relations,tblNames)
+  def names(cs:Seq[Column])=cs.map(_.name)
+
+  def buildQuery(tblsDesc:IngestInfo) = {
+    val columnNames= tblsDesc.tables.flatMap( t=>t.columns.map( c=> "%s.%s".format(t.name, c)) )
+    val join=buildJoins(tblsDesc)
     val colSelect=columnNames.mkString(", ")
-    val sort=colSelect // for now, the selected columns will suffice, otherwise use buildSort(tblDesc).mkString(", ")
+    val sort=colSelect // for now, the selected columns will suffice, otherwise use buildSort(ingestInfo).mkString(", ")
     "select %s from %s order by %s".format(colSelect,join,sort)
   }
 
-  def executeQuery(connDb: Connection, query: String ): (Iterator[IndexedSeq[String]],IndexedSeq[String]) = {
+  def executeQuery(connDb: Connection, query: String ): (Iterator[IndexedSeq[String]],IndexedSeq[Column]) = {
     val stmt = connDb.prepareStatement(query)
     val columns = getColumns(stmt)
     val rs = stmt.executeQuery()
@@ -105,24 +99,23 @@ object ImportJdbc {
     DriverManager.getConnection(dbUrl, user, password)
   }
 
-  def ingest(connDb: Connection, objName:String, query: String, oTblDesc:Option[TableDesc], basePath: String, ingestPath: String, host: String, apiKey: String) = {
+  def ingest(connDb: Connection, objName:String, query: String, oTblDesc:Option[IngestInfo], ingestPath: String, host: String, apiKey: String) = {
     println(query)
     val (data,columns) = executeQuery(connDb, query)
-    val tblDesc= oTblDesc.getOrElse(Seq((objName,columns.toSeq,false)))
-    val path = "%s/%s".format(basePath, ingestPath)
-    //def ingest(host: String, path: String, apiKey: String, baseTable:String, tblDesc: TableDesc, data: Iterator[IndexedSeq[String]]) = {
+    val tblDesc= oTblDesc.getOrElse(IngestInfo(Seq(ImportTable(objName,names(columns),Left(Table("base"))))))
+    //val path = "%s/%s".format(basePath, ingestPath)
+    //def ingest(host: String, path: String, apiKey: String, baseTable:String, ingestInfo: TableDesc, data: Iterator[IndexedSeq[String]]) = {
     val body = buildBody(data, objName, tblDesc)
-    val fullPath = "%s/ingest/v1/sync/fs%s/".format(host, path)
+    val fullPath = "%s/ingest/v1/sync/fs%s/".format(host, ingestPath)
     println(fullPath)
     val httpClient=new HttpClientXLightWeb()
-    httpClient.parameters('apiKey -> apiKey).post(fullPath)(JValueToChunk(body)).onComplete{case r =>println(r)}
+    httpClient.parameters('apiKey -> apiKey).post(fullPath)(JValueToChunk(body)).onSuccess{case r =>(r.content.map(ChunkToJValue(_)))}
   }
 
-
-  def buildBody(data: Iterator[IndexedSeq[String]], baseTable: String, tblDesc: ImportJdbc.TableDesc): JArray =
+  def buildBody(data: Iterator[IndexedSeq[String]], baseTable: String, i: IngestInfo): JArray =
     JArray(data.foldLeft((List[JValue](), Map[String, JValue]()))((lm, r) => {
       val (l, m) = lm
-      val (values, map) = mkPartialJson(baseTable, tblDesc, r, m)
+      val (values, map) = mkPartialJson(baseTable, i, r, m)
       (values :: l, map)
     })._1)
 }
