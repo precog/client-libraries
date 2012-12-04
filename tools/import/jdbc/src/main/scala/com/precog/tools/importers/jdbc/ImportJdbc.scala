@@ -14,6 +14,9 @@ object ImportJdbc {
 
   import DbAccess._
 
+  case class ImportTable(name:String, columns:Seq[String], baseOrJoin:Either[Table,Join]){ val isCollection = baseOrJoin.right.toOption.map(_.exported).getOrElse(false) }
+  case class IngestInfo(tables:Seq[ImportTable])
+
   def buildUnion(tbaseName:String, t:ImportTable): Option[String]=
     t.baseOrJoin.right.toOption.map( j =>
     " left join %s %s on %s.%s=%s.%s".format(j.refKey.table.name,t.name,tbaseName, j.baseColName,t.name,j.refKey.columnName)
@@ -75,8 +78,6 @@ object ImportJdbc {
     (JObject(base.fields ++ values),jsonMap)
   }
 
-  case class ImportTable(name:String, columns:Seq[String], baseOrJoin:Either[Table,Join]){ val isCollection = baseOrJoin.right.toOption.map(_.exported).getOrElse(false) }
-  case class IngestInfo(tables:Seq[ImportTable])
 
   def names(cs:Seq[Column])=cs.map(_.name)
 
@@ -99,7 +100,7 @@ object ImportJdbc {
     DriverManager.getConnection(dbUrl, user, password)
   }
 
-  def ingest(connDb: Connection, objName:String, query: String, oTblDesc:Option[IngestInfo], ingestPath: String, host: String, apiKey: String) = {
+  def ingest(connDb: Connection, objName:String, query: String, oTblDesc:Option[IngestInfo], ingestPath: =>String, host: =>String, apiKey: =>String) = {
     println(query)
     val (data,columns) = executeQuery(connDb, query)
     val tblDesc= oTblDesc.getOrElse(IngestInfo(Seq(ImportTable(objName,names(columns),Left(Table("base"))))))

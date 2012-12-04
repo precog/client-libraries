@@ -25,7 +25,7 @@ object ImportJdbcConsole {
     importJdbc(dbUrl,user,password, host, apiKey, basePath)
   }
 
-  def importJdbc(dbUrl:String, user:String, password: String, host:String, apiKey:String, basePath:String) {
+  def importJdbc(dbUrl: =>String, user: =>String, password: =>String, host: =>String, apiKey: =>String, basePath: =>String) {
 
     val conn= getConnection(dbUrl, user, password)
     val metadata= conn.getMetaData
@@ -37,7 +37,7 @@ object ImportJdbcConsole {
 
     tqs.map( tqs => {
       val (table,tDesc,q) = tqs
-      val path= "%/%".format(basePath, table)
+      val path= "%s/%s".format(basePath, table)
       println(ingest(connDb,table, q, tDesc, path, host, apiKey))
     })
   }

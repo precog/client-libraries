@@ -6,11 +6,11 @@ import blueeyes.BlueEyesServiceBuilder
 import blueeyes.core.http.{HttpRequest, HttpResponse, HttpStatus}
 import blueeyes.core.http.HttpStatusCodes._
 import blueeyes.core.data.{ByteChunk, BijectionsChunkString, BijectionsChunkJson}
-import blueeyes.json.JsonParser._
 import DbAccess._
 import DbAnalysis._
 import ImportJdbc._
-import blueeyes.core.http.HttpHeaders.Connection
+import JsonImplicits._
+import java.sql.{DatabaseMetaData, Connection}
 
 
 /**
@@ -34,6 +34,16 @@ trait ImportJdbcService extends BlueEyesServiceBuilder with BijectionsChunkJson 
 
 
   }*/
+
+  def getJoins(infer: Boolean, conn: Connection, metadata: DatabaseMetaData, cat: String, table: Table, idPattern: String, sample: Boolean): Set[Join] = {
+      val inferred = if (infer) getInferredRelationships(conn, metadata, cat, table, idPattern, sample) else Set()
+      (getDeclaredRelationships(metadata, cat, table) ++ inferred)
+  }
+
+  def buildIngestInfo(conn: Connection, table: Table, relations: Set[Join]): IngestInfo = {
+    IngestInfo(ImportTable(table.name, names(getColumns(conn, table)), Left(table)) ::
+      relations.map(r => ImportTable(r.refKey.table.name, names(getColumns(conn, r.refKey.table)), Right(r))).toList)
+  }
 
 
   def getConnectionFromRequest(r:HttpRequest[ByteChunk])= {
@@ -78,16 +88,15 @@ trait ImportJdbcService extends BlueEyesServiceBuilder with BijectionsChunkJson 
                 handleRequest( (request: HttpRequest[ByteChunk]) => {
                   val conn= getConnectionFromRequest(request)
                   val cat = request.parameters('database)
-                  val table = request.parameters('table)
+                  val table = Table(request.parameters('table))
                   val infer = request.parameters.get('infer).map(_.toLowerCase == "y" ).getOrElse(false)
                   val sample = request.parameters.get('sample).map( _.toLowerCase == "y").getOrElse(false)
                   val idPattern=request.parameters.get('pattern).getOrElse("%id")
                   Future {
-                    val columns= getColumns(conn,Table(table))
                     val metadata = conn.getMetaData
-                    val inferred= if (infer) getInferredRelationships(conn,metadata,cat,Table(table),idPattern,sample) else Set()
-                    val references= relationshipDesc(metadata.getExportedKeys(cat, null, table)).toSet ++ inferred
-                    HttpResponse[ByteChunk](content = Option(parse("{ columns: [%s] references: [%s] }".format(columns.mkString(","),references.mkString(",")))))
+                    val joins= getJoins(infer,conn,metadata,cat,table,idPattern,sample)
+                    val ingestInfo=buildIngestInfo(conn, table, joins)
+                    HttpResponse[ByteChunk](content = Option(JValueToChunk(ingestInfo)))
                   }
                 })
               }
@@ -118,24 +127,11 @@ trait ImportJdbcService extends BlueEyesServiceBuilder with BijectionsChunkJson 
                   val infer = request.parameters('infer) == "y"
                   val idPattern=request.parameters.get('pattern).getOrElse("%id")
                   val sample = request.parameters('sample) == "y"
-                  Future {
-                    val metadata = conn.getMetaData
-                    val relations:Set[Join]=if (denormalize) {
-                      val inferred= if (infer) getInferredRelationships(conn,metadata,cat,table,idPattern,sample) else Set()
-                      (getDeclaredRelationships(metadata,cat,table) ++ inferred)
-                    } else Set()
-                    //case class ImportTable(name:String, columns:Seq[String], baseOrJoin:Either[Table,Join]){ val isCollection = baseOrJoin.right.toOption.map(_.exported).getOrElse(false) }
-                    //case class IngestInfo(tables:Seq[ImportTable])
-
-                    //def buildQuery(tblsDesc:IngestInfo) = {
-                    val ingestInfo=IngestInfo(ImportTable(table.name, names(getColumns(conn, table)), Left(table)) ::
-                      relations.map(r => ImportTable(r.refKey.table.name, names(getColumns(conn, r.refKey.table)), Right(r))).toList)
-                    val query=buildQuery(ingestInfo)
-
-                    //def ingest(connDb: Connection, objName:String, query: String, oTblDesc:Option[IngestInfo], basePath: String, ingestPath: String, host: String, apiKey: String) = {
-                    val response=ingest(conn,table.name, query, Some(ingestInfo), path, host, apiKey)
-                    HttpResponse[ByteChunk](content = Option(new ByteChunk(Array()) ))//JValueToChunk(response) ))
-                  }
+                  val metadata = conn.getMetaData
+                  val relations:Set[Join]= if (denormalize) getJoins(infer, conn, metadata, cat, table, idPattern, sample) else Set()
+                  val ingestInfo=buildIngestInfo(conn, table, relations)
+                  val query=buildQuery(ingestInfo)
+                  ingest(conn,table.name, query, Some(ingestInfo), path, host, apiKey)
                 })
               }
           }
