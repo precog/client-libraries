@@ -15,13 +15,13 @@ object ImportJdbcConsole {
 
   def main(args:Array[String]){
     println("Welcome to Precog JDBC import wizard")
-    lazy val dbUrl="jdbc:mysql://localhost:3306/" //readLine("Enter database URL:")
-    lazy val user="root" //"admin" //readLine("User:"))
-    lazy val password = "root"//"admin" //readLine("Password:")
+    lazy val dbUrl=readLine("Enter database URL:")
+    lazy val user=readLine("User:")
+    lazy val password = readLine("Password:")
     // use api key and dispatch to call ingest
     lazy val host="http://beta.precog.com" //readLine("ingestion host")   //TODO move to trait ?
-    lazy val apiKey="43AB865E-BB86-4F74-A57E-7E8BBD77F2B5"//readLine("API KEY for ingestion")
-    lazy val basePath="/0000000457/data" //readLine("Base ingestion path ( /{userId}/....)")
+    lazy val apiKey=readLine("API KEY for ingestion")
+    lazy val basePath=readLine("Base ingestion path ( /{userId}/....)")
     importJdbc(dbUrl,user,password, host, apiKey, basePath)
   }
 

@@ -104,8 +104,7 @@ object ImportJdbc {
     println(query)
     val (data,columns) = executeQuery(connDb, query)
     val tblDesc= oTblDesc.getOrElse(IngestInfo(Seq(ImportTable(objName,names(columns),Left(Table("base"))))))
-    //val path = "%s/%s".format(basePath, ingestPath)
-    //def ingest(host: String, path: String, apiKey: String, baseTable:String, ingestInfo: TableDesc, data: Iterator[IndexedSeq[String]]) = {
+
     val body = buildBody(data, objName, tblDesc)
     val fullPath = "%s/ingest/v1/sync/fs%s/".format(host, ingestPath)
     println(fullPath)
