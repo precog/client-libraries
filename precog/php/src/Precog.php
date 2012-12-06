@@ -263,7 +263,7 @@ class PrecogAPI {
         return $return;
     }
 
-    
+
 
     // ***************************
     // ***** GETTERS/SETTERS *****
@@ -314,7 +314,7 @@ class PrecogAPI {
     /*********************************
      **** PRIVATE helper function ****
      *********************************/
-    private function restHelper($resturl, $params = null, $verb = 'GET', $headers = false) 
+    private function restHelper($resturl, $params = null, $verb = 'GET', $headers = false)
     {
         $result = self::baseRestHelper($resturl, $params, $verb, $headers);
         if($result['ok']) {
@@ -328,7 +328,7 @@ class PrecogAPI {
         }
     }
 
-    private static function baseRestHelper($resturl, $params = null, $verb = 'GET', $headers = false) 
+    private static function baseRestHelper($resturl, $params = null, $verb = 'GET', $headers = false)
     {
 //echo("$verb $resturl\n");
 //if($params) var_dump($params);
