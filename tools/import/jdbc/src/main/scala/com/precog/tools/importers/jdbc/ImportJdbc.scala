@@ -1,10 +1,13 @@
 package com.precog.tools.importers.jdbc
 
 import java.sql._
-import blueeyes.json.JsonAST._
-import blueeyes.core.data.BijectionsChunkJson.{JValueToChunk,ChunkToJValue}
+import blueeyes.json._
+import blueeyes.core.data.DefaultBijections._
+import blueeyes.core.service._
+import blueeyes.bkka.AkkaDefaults.defaultFutureDispatch
 import scala.Some
 import blueeyes.core.service.engines.HttpClientXLightWeb
+import Datatypes._
 
 /**
  * User: gabriel
@@ -101,15 +104,13 @@ object ImportJdbc {
   }
 
   def ingest(connDb: Connection, objName:String, query: String, oTblDesc:Option[IngestInfo], ingestPath: =>String, host: =>String, apiKey: =>String) = {
-    println(query)
     val (data,columns) = executeQuery(connDb, query)
     val tblDesc= oTblDesc.getOrElse(IngestInfo(Seq(ImportTable(objName,names(columns),Left(Table("base"))))))
-
     val body = buildBody(data, objName, tblDesc)
-    val fullPath = "%s/ingest/v1/sync/fs%s/".format(host, ingestPath)
-    println(fullPath)
-    val httpClient=new HttpClientXLightWeb()
-    httpClient.parameters('apiKey -> apiKey).post(fullPath)(JValueToChunk(body)).onSuccess{case r =>(r.content.map(ChunkToJValue(_)))}
+    val fullPath = "%s/ingest/v1/sync/fs%s/%s".format(host, ingestPath,objName)
+    val httpClient=new HttpClientXLightWeb()(defaultFutureDispatch)
+    //TODO add owner account id
+    httpClient.parameters('apiKey -> apiKey).post(fullPath)(jvalueToChunk(body))
   }
 
   def buildBody(data: Iterator[IndexedSeq[String]], baseTable: String, i: IngestInfo): JArray =

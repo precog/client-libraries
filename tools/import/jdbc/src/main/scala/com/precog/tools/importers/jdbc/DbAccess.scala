@@ -1,6 +1,7 @@
 package com.precog.tools.importers.jdbc
 
 import java.sql._
+import Datatypes._
 
 /**
  * User: gabriel
@@ -10,7 +11,7 @@ object DbAccess {
   def columnCount(stmt:PreparedStatement)=stmt.getMetaData.getColumnCount
 
   def getColumns(conn:Connection, table:Table):IndexedSeq[Column]={
-    getColumns(conn,"select * from %s".format(table.name))
+    getColumns(conn,"select * from %s".format(table.name.toUpperCase))
   }
 
   def getColumns(conn:Connection, query:String):IndexedSeq[Column]={

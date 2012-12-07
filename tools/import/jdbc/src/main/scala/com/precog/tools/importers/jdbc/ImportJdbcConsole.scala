@@ -5,7 +5,7 @@ import java.sql.{Connection, DatabaseMetaData, DriverManager}
 import DbAccess._
 import DbAnalysis._
 import ImportJdbc._
-
+import Datatypes._
 
 /**
  * User: gabriel
@@ -59,13 +59,13 @@ object ImportJdbcConsole {
   def getQuery(connDb: Connection, metadata: DatabaseMetaData, cat: String): Seq[(String,Option[IngestInfo],String)] = {
     if (readLine("Do you have a SQL query to select the data? (y/N)").toLowerCase == "y") {
       List((readLine("table/object name: "),None,readLine("Query=")))
-    } else createQueries(connDb, metadata, cat, selectedTables(findTables(metadata, cat, readTableName())), readLine("Denormalize related tables? (y/n)").toLowerCase == "y")
+    } else createQueries(connDb, metadata, cat, selectedTables(findTables(metadata, Some(cat), readTableName())), readLine("Denormalize related tables? (y/n)").toLowerCase == "y")
   }
 
   def createQueries(conn:Connection, metadata: DatabaseMetaData, cat: String, selected: Seq[Table],denormalize: => Boolean): Seq[(String,Option[IngestInfo],String)] = {
     selected.map( table =>{
 
-      val allRelationships = relationships( conn, metadata, cat,table).toSeq
+      val allRelationships = relationships( conn, metadata, Some(cat),table).toSeq
       val relations= selectSet("relation",allRelationships).toList
 
       val tblDesc=buildIngestInfo(table, conn, relations)
@@ -79,7 +79,7 @@ object ImportJdbcConsole {
       relations.map(r => ImportTable(r.refKey.table.name, selectColumns(conn, r.refKey.table), Right(r))))
   }
 
-  def relationships(conn: Connection, metadata: DatabaseMetaData, cat: String, table:Table): Set[Join] = {
+  def relationships(conn: Connection, metadata: DatabaseMetaData, cat: Option[String], table:Table): Set[Join] = {
     val declaredRelationships=getDeclaredRelationships(metadata,cat,table)
     println("Declared relationsips found: ")
     println(declaredRelationships.mkString(","))
@@ -138,7 +138,7 @@ object ImportJdbcConsole {
 
   def readTableName()= {
     val tableName = readLine("Enter table name (blank to show all tables, %% for wildcard )")
-    if (tableName == "") null else tableName
+    if (tableName == "") None else Some(tableName)
   }
 
   object ParseInt{

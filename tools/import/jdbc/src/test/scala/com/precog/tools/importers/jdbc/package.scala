@@ -4,16 +4,23 @@ import java.sql.{DriverManager, Connection}
 import jdbc.ImportJdbc.{ImportTable, IngestInfo}
 import org.specs2.mutable.After
 import org.specs2.specification.Scope
-import blueeyes.json.JsonAST.{JArray, JString, JField, JObject}
+import blueeyes.json.{JArray, JString, JField, JObject}
+import scala.Left
+import scala.Right
 
 /**
  * User: gabriel
  * Date: 12/4/12
  */
 package object jdbc {
+  import Datatypes._
 
   Class.forName("org.h2.Driver")
 
+  // use api key and dispatch to call ingest
+  val host="http://beta.precog.com"
+  val apiKey="43AB865E-BB86-4F74-A57E-7E8BBD77F2B5"
+  val basePath="/0000000457/data"
 
   def tblA(implicit conn:Connection) = conn.createStatement().execute(" create table A( id int primary key, name varchar(10) ) ")
   def tblB(implicit conn:Connection) = conn.createStatement().execute(" create table B( id int primary key, a_id int, name varchar(10)) ")
@@ -45,17 +52,14 @@ package object jdbc {
   val tD = Table("D")
   val pkD = Key(tD,"ID")
   val fkDtoD = Key(tD,"D_ID")
-
-  val exported=true
-  val imported=false
   
-  val relationAtoB= Set(Join(pkA.columnName,fkBtoA,exported))
-  val relationBtoA= Set(Join(fkBtoA.columnName,pkA,imported))
-  val relationsCtoAB= Set(Join(fkCtoA.columnName,pkA,imported),Join(fkCtoB.columnName,pkB,imported))
-  val relationsAtoC= Set(Join(pkA.columnName,fkCtoA,exported))
-  val relationsBtoC= Set(Join(pkB.columnName,fkCtoB,exported))
+  val relationAtoB= Set(Join(pkA.columnName,fkBtoA,ExportedKey))
+  val relationBtoA= Set(Join(fkBtoA.columnName,pkA,ImportedKey))
+  val relationsCtoAB= Set(Join(fkCtoA.columnName,pkA,ImportedKey),Join(fkCtoB.columnName,pkB,ImportedKey))
+  val relationsAtoC= Set(Join(pkA.columnName,fkCtoA,ExportedKey))
+  val relationsBtoC= Set(Join(pkB.columnName,fkCtoB,ExportedKey))
 
-  val relationsDtoD= Set(Join(pkD.columnName,fkDtoD,exported),Join(fkDtoD.columnName,pkD,imported))
+  val relationsDtoD= Set(Join(pkD.columnName,fkDtoD,ExportedKey),Join(fkDtoD.columnName,pkD,ImportedKey))
 
   val aCols= List("ID","name")
   val bCols= List("ID","A_ID","name")
@@ -63,9 +67,9 @@ package object jdbc {
   val dCols= List("ID","name")
 
   val tblADesc =IngestInfo(List(ImportTable("a",aCols,Left(tA))))
-  val tblABDesc=IngestInfo(List(ImportTable("a",aCols, Left(tA)),ImportTable("b",bCols, Right(Join(pkA.columnName,fkBtoA,exported)))))
-  val tblCABDesc = IngestInfo(List(ImportTable("c",cCols, Left(tC)),ImportTable("a",aCols, Right(Join(fkCtoA.columnName,pkA,imported))),ImportTable("b",bCols, Right(Join(fkCtoB.columnName,pkB,imported)))))
-  val tblDDesc=IngestInfo(List(ImportTable("dparent",List("ID","D_ID","name"),Left(tD)),ImportTable("dchild",List("ID","name"), Right(Join(pkD.columnName,fkDtoD,exported)))))
+  val tblABDesc=IngestInfo(List(ImportTable("a",aCols, Left(tA)),ImportTable("b",bCols, Right(Join(pkA.columnName,fkBtoA,ExportedKey)))))
+  val tblCABDesc = IngestInfo(List(ImportTable("c",cCols, Left(tC)),ImportTable("a",aCols, Right(Join(fkCtoA.columnName,pkA,ImportedKey))),ImportTable("b",bCols, Right(Join(fkCtoB.columnName,pkB,ImportedKey)))))
+  val tblDDesc=IngestInfo(List(ImportTable("dparent",List("ID","D_ID","name"),Left(tD)),ImportTable("dchild",List("ID","name"), Right(Join(pkD.columnName,fkDtoD,ExportedKey)))))
 
   val aData =List("1","aaa")
   val bData =List("2","1","bbb")
@@ -76,16 +80,20 @@ package object jdbc {
   val jAB = JObject(JField("ID",JString("1"))::JField("name",JString("aaa"))::JField("b",JArray(jB::Nil))::Nil)
   val jC = JObject(JField("A_ID",JString("1"))::JField("B_ID",JString("2"))::JField("name",JString("ccc"))::JField("a",jA)::JField("b",JObject(JField("ID",JString("2"))::JField("A_ID",JString("1"))::JField("name",JString("bbb"))::Nil))::Nil)
 
-  def getConn(db:String)=DriverManager.getConnection("jdbc:h2:~/%s".format(db))
+  //def getConn(db:String)=DriverManager.getConnection("jdbc:h2:~/%s".format(db))
 
-  case class Conn(s:String) extends After with Scope {
+  trait Conn extends After with Scope {
 
-    implicit lazy val conn= DriverManager.getConnection("jdbc:h2:~/%s".format(s))
+    def dbName:String
+
+    implicit lazy val conn= DriverManager.getConnection("jdbc:h2:~/%s".format(dbName))
 
     def after{
       conn.createStatement().execute(" drop all objects delete files ")
       conn.close()
     }
   }
+
+  def manageConn(s:String)= new Conn{ val dbName=s }
 
 }

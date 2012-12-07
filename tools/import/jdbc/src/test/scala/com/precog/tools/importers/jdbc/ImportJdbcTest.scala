@@ -1,30 +1,44 @@
 package com.precog.tools.importers.jdbc
 
 import org.specs2.mutable.Specification
-import blueeyes.json.JsonAST.{JArray, JString, JField, JObject}
-import com.precog.tools.importers.jdbc.ImportJdbc.{IngestInfo, ImportTable}
+import blueeyes.json._
+import Datatypes._
+import ImportJdbc.{IngestInfo, ImportTable}
+import akka.dispatch.Await
+import akka.util.Duration
+import blueeyes.core.data.DefaultBijections._
+import blueeyes.akka_testing.FutureMatchers
+import blueeyes.core.http.test.HttpRequestMatchers
+import blueeyes.core.data._
+import scala.Left
+import com.precog.tools.importers.jdbc.ImportJdbc.IngestInfo
+import scala.Right
+import scala.Some
+import com.precog.tools.importers.jdbc.ImportJdbc.ImportTable
+import blueeyes.bkka.AkkaDefaults._
+import blueeyes.core.http.{HttpStatus, HttpResponse}
+import blueeyes.core.http.HttpStatusCodes.OK
 
 /**
  * User: gabriel
  * Date: 11/22/12
  */
-class ImportJdbcTest extends Specification {
+class ImportJdbcTest extends Specification with FutureMatchers with HttpRequestMatchers{
 
   "build queries" should {
-    //buildQuery(base:Table, tblNames:List[String], columns:List[Seq[Column]], relations:List[Join])
   	"single table query" in {
-  		ImportJdbc.buildQuery(tblADesc) must_== "select a.ID, a.name from A a order by a.ID, a.name"// order by 1,2"
+  		ImportJdbc.buildQuery(tblADesc) must_== "select a.ID, a.name from A a order by a.ID, a.name"
   	}
   	"one to many query" in {
   		ImportJdbc.buildQuery(tblABDesc) must_==
-      "select a.ID, a.name, b.ID, b.A_ID, b.name from A a left join B b on a.ID=b.A_ID order by a.ID, a.name, b.ID, b.A_ID, b.name"// order by 1,2,3,4,5"
+      "select a.ID, a.name, b.ID, b.A_ID, b.name from A a left join B b on a.ID=b.A_ID order by a.ID, a.name, b.ID, b.A_ID, b.name"
   	}
 
     "many to many query" in {
       ImportJdbc.buildQuery(tblCABDesc) must_==
         "select c.A_ID, c.B_ID, c.name, a.ID, a.name, b.ID, b.A_ID, b.name "+
         "from C c left join A a on c.A_ID=a.ID left join B b on c.B_ID=b.ID " +
-        "order by c.A_ID, c.B_ID, c.name, a.ID, a.name, b.ID, b.A_ID, b.name"// order by 1,2,3,4,5"
+        "order by c.A_ID, c.B_ID, c.name, a.ID, a.name, b.ID, b.A_ID, b.name"
     }
 
     "circular query" in {
@@ -49,7 +63,7 @@ class ImportJdbcTest extends Specification {
     }
 
     "build a JArray for multiple values" in {
-      val tblDesc = IngestInfo(List(ImportTable("parent",List("ID","name"), Left(Table("Parent"))),ImportTable("child",List("ID","name","P_ID"), Right(Join("id",Key(Table("child"),"parent_id"),exported)))))
+      val tblDesc = IngestInfo(List(ImportTable("parent",List("ID","name"), Left(Table("Parent"))),ImportTable("child",List("ID","name","P_ID"), Right(Join("id",Key(Table("child"),"parent_id"),ExportedKey)))))
       val dataChld1 = List("1","parent","1","child1","1")
       val dataNoChld = List("1","parent",null,null,null)
       val dataChld2 = List("1","parent","2","child2","1")
@@ -79,34 +93,33 @@ class ImportJdbcTest extends Specification {
         JField("child",JArray(
           JObject(JField("ID",JString("2"))::JField("name",JString("child2"))::JField("P_ID",JString("1"))::Nil)::Nil)
         )::Nil)
-
     }
-
-
   }
 
   "Ingest data" should {
 
-    lazy val dbUrl="jdbc:mysql://localhost:3306/" //readLine("Enter database URL:")
-    lazy val user="root" //"admin" //readLine("User:"))
-    lazy val password = "root"//"admin" //readLine("Password:")
-    // use api key and dispatch to call ingest
-    lazy val host="http://beta.precog.com" //readLine("ingestion host")   //TODO move to trait ?
-    lazy val apiKey="43AB865E-BB86-4F74-A57E-7E8BBD77F2B5"//readLine("API KEY for ingestion")
-    lazy val basePath="/0000000457/data" //readLine("Base ingestion path ( /{userId}/....)")
+    implicit val executionContext = defaultFutureDispatch
 
-    "ingest a single table" in new Conn("single_ingest"){
+
+    "ingest a single table" in new Conn{ val dbName ="single_ingest"
       tblA
       dataA
-      ImportJdbc.ingest(conn,"a",ImportJdbc.buildQuery(tblADesc),Some(tblADesc),basePath,host,apiKey)
-
+      val r=ImportJdbc.ingest(conn,"a",ImportJdbc.buildQuery(tblADesc),Some(tblADesc),basePath,host,apiKey)
+      Await.result(r,1 minute) must beLike {
+        case HttpResponse(_ ,_,Some(Left(buffer)),_) => { new String(buffer.array(), "UTF-8") must_== """{"failed":0,"skipped":0,"errors":[],"total":1,"ingested":1}"""}
+      }
     }
 
+    "ingest composite tables" in new Conn{ val dbName ="composite_ingest"
+      tblA; tblB
+      dataA; dataB
+      cnstrBfkA
 
-  }
-
-
+      val r=ImportJdbc.ingest(conn,"a",ImportJdbc.buildQuery(tblABDesc),Some(tblABDesc),basePath,host,apiKey)
+      Await.result(r,1 minute) must beLike {
+        case HttpResponse(_ ,_,Some(Left(buffer)),_) => { new String(buffer.array(), "UTF-8") must_== """{"failed":0,"skipped":0,"errors":[],"total":1,"ingested":1}"""}
+        }
+      }
+    }
 }
-
- 
 
