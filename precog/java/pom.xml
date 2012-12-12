@@ -19,8 +19,13 @@
     <repository>
       <id>nexus.reportgrid.com</id>
       <name>reportgrid public Nexus repo</name>
-      <url>http://nexus.reportgrid.com/content/repositories/public-snapshots</url>
+      <url>http://nexus.reportgrid.com/content/repositories/public-releases</url>
     </repository>
+    <snapshotRepository>
+      <id>nexus.reportgrid.com</id>
+      <name>reportgrid public SNAPSHOT Nexus repo</name>
+      <url>http://nexus.reportgrid.com/content/repositories/public-snapshots</url>
+    </snapshotRepository>
   </distributionManagement>
 
   <dependencies>
