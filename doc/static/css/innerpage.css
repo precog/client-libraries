@@ -160,6 +160,7 @@ h1 {
 
 .section>h2>a {
     padding-top: 60px;
+    display: block;
 }
 
 .terms-pricing-text {
