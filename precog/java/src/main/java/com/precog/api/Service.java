@@ -15,7 +15,9 @@ public interface Service {
 
 	/**
 	 * The default production http service.
+     * Deprecated, use https
 	 */
+    @Deprecated
 	public static final Service ProductionHttp = new Service() {
 		@Override public URL serviceUrl() {
 			try {
@@ -31,15 +33,11 @@ public interface Service {
 	/**
 	 * The default production https service.
 	 */
-	public static final Service ProductionHttps = new Service() {
-		@Override public URL serviceUrl() {
-			try {
-				return new URL("https", "api.precog.com", 443, "/v1/");
-			} catch (MalformedURLException ex) {
-				Logger.getLogger(Service.class.getName()).log(Level.SEVERE, "Invalid client URL", ex);
-			}
+	public static final Service ProductionHttps = ServiceBuilder.service("api.precog.com");
 
-			return null;
-		}
-	};
+    /**
+     * The default production https service.
+     */
+    public static final Service BetaPrecogHttps = ServiceBuilder.service("beta.precog.com");
+
 }

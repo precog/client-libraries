@@ -41,7 +41,7 @@ public class Client {
      *               virtual filesystem path to be used
      */
     public Client(String apiKey) {
-        this.service = Service.ProductionHttp;
+        this.service = Service.ProductionHttps;
         this.apiKey = apiKey;
         this.rest = new Rest(service, apiKey);
     }
