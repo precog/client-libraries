@@ -5,7 +5,16 @@ require_once('basetest.php');
 class RetrieveGrantsTest extends PrecogBaseTest {
     function testRetrieveGrants() {
         $api = PrecogBaseTest::createApi($this->info);
-        $result = $api->createKey(array("grants"=>array(array("type"=>"read", "path"=>$this->info["path"]."foo/", "ownerAccountId"=> $this->info["accountId"], "expirationDate"=> null))));
+
+		$grant= array("name"=>"php-test","description"=>"",
+	    	"grants"=>array(array(
+	    			"parentIds"=> array(), 
+	    			"expirationDate"=> null,
+	    			"permissions"=>array(array("accessType"=>"read", "path"=>$this->info["path"]."foo/","ownerAccountId"=> $this->info["accountId"]))
+	    		))
+	    	);
+
+        $result = $api->createKey($grant);
  		$apiKey = $result["apiKey"];
  		$result = $api->retrieveGrants($apiKey);
  		$this->assertTrue(is_array($result));

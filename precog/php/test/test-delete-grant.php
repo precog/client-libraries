@@ -5,7 +5,16 @@ require_once('basetest.php');
 class DeleteGrantTest extends PrecogBaseTest {
     function testDeleteGrant() {
         $api = PrecogBaseTest::createApi($this->info);
-        $result = $api->createGrant(array("type"=>"read", "path"=>$this->info["path"]."foo/", "ownerAccountId"=> $this->info["accountId"], "expirationDate"=> null));
+
+		$grant= array(
+                    "parentIds"=> array(), 
+                    "expirationDate"=> null,
+                    "permissions"=>array(
+                        array("accessType"=>"read", "path"=>$this->info["path"]."foo/","ownerAccountId"=> $this->info["accountId"])
+                  	)
+                );
+
+        $result = $api->createGrant($grant);
  		$grantId = $result["grantId"];
  		$result = $api->deleteGrant($grantId);
  		$this->assertTrue($result);
