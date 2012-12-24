@@ -7,7 +7,7 @@
 
 
 class PrecogAPI {
-    const BASE_URL = "https://beta.precog.com";
+    const BASE_URL = "https://api.precog.com";
     const DEFAULT_VERSION = 1;
 
     private $apiKey = null;

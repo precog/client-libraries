@@ -21,7 +21,7 @@ public interface Service {
 	public static final Service ProductionHttp = new Service() {
 		@Override public URL serviceUrl() {
 			try {
-				return new URL("http", "api.precog.com", 80, "/v1/");
+				return new URL("https", "api.precog.com", 443, "/v1/");
 			} catch (MalformedURLException ex) {
 				Logger.getLogger(Service.class.getName()).log(Level.SEVERE, "Invalid client URL", ex);
 			}
@@ -36,8 +36,13 @@ public interface Service {
 	public static final Service ProductionHttps = ServiceBuilder.service("api.precog.com");
 
     /**
-     * The default production https service.
+     * The default beta https service.
      */
     public static final Service BetaPrecogHttps = ServiceBuilder.service("beta.precog.com");
+
+    /**
+     * Dev https service.
+     */
+    public static final Service DevPrecogHttps = ServiceBuilder.service("devapi.precog.com");
 
 }
