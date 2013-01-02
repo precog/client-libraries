@@ -374,7 +374,9 @@ The ``lineChart`` can be used to build standard line charts, area charts stacked
 	 * "gradient:{lightness}:{levels}" :
 		The ``lightness`` parameter is used to state how brigther (or darker) the end of the gradient will be and the ``levels`` parameterd states the number of steps that form the gradient.
 ``symbol`` : string OR function(object datapoint, object stats) string
-	Each datapoint in the line charts can be associated to an optional symbol. The symbol can be described statically using a string or using a function. The symbol must be expressed in SVG PATH format. There is a practical function ``ReportGrid.symbol.get()`` to quickly build symbols.
+	Each datapoint in the line charts can be associated to an optional symbol. The symbol can be described statically using a string or using a function. The symbol must be expressed in one of the 2 following formats:
+	* SVG PATH format. There is a practical function ``ReportGrid.symbol.get()`` to quickly build symbols.
+	* "image:urltoimage". This second format allows to embed raster images instead of vecorial symbols. The URL part must be an absolute path to an image. It is also possible to specify the size of the image this way: "image,40x50:urltoimage". The images are by default aligned so that their center will match the underlying datapoint. Other alignments are possible using this syntax: "image,left top:imageurl". The horizontal position must be expressed first (center, left, right), the vertical alignment must be separated by a white space (center, top, bottom). Size and alignment can be specified together by separating them with a comma.
 ``symbolstyle`` : function(object datapoint, object stats) string
 	If symbols are added to the lines you can use ``symbolstyle`` to render a custom style for each of them. The style produced by the custom function must be a string in CSS format.
 ``y0property`` : string
@@ -575,8 +577,10 @@ The scatter graph requires two axes, one for the X axis and one for the Y axis.
 
 **options:**
 
-``symbol`` : string OR function(object datapoint, object stats) : string
-	Each point in a scatter graph should be associated to a symbol. Each symbol can be rendered indivisually to have a distinct shape or not. The ``symbol`` can be a static string or a function that returns such string. The string represents a SVG path. You can easily create a SVG path using `ReportGrid.symbol`_.
+``symbol`` : string OR function(object datapoint, object stats) string
+	Each datapoint in the line charts can be associated to an optional symbol. The symbol can be described statically using a string or using a function. The symbol must be expressed in one of the 2 following formats:
+	* SVG PATH format. There is a practical function ``ReportGrid.symbol.get()`` to quickly build symbols.
+	* "image:urltoimage". This second format allows to embed raster images instead of vecorial symbols. The URL part must be an absolute path to an image. It is also possible to specify the size of the image this way: "image,40x50:urltoimage". The images are by default aligned so that their center will match the underlying datapoint. Other alignments are possible using this syntax: "image,left top:imageurl". The horizontal position must be expressed first (center, left, right), the vertical alignment must be separated by a white space (center, top, bottom). Size and alignment can be specified together by separating them with a comma.
 ``symbolstyle`` : string OR function(object datapoint, object stats) : string
 	As much as you can control the sy,bol shape, you can control its style returning a custom style string. The style must be expressed in the CSS format.
 ``segment`` : object segmentoptions
