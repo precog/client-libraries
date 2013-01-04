@@ -1133,19 +1133,28 @@ throw new SyntaxError('JSON.parse');};}}());
       {
         success(val);
       } else if(queue[id]) {
-        queue[id].push(success);
+        queue[id].push({success: success, failure: failure});
       } else {
-        queue[id] = [];
+        queue[id] = [{success: success, failure: failure}];
         executeQuery(query, function(data) {
-          cacheSet(id, data);
-          delayedCleanup(id);
-          success(data);
+          try{
+            cacheSet(id, data);
+            delayedCleanup(id);
+          } catch(e){
+            Precog.cache.disable();
+          }
           for(var i = 0; i < queue[id].length; i++)
           {
-            queue[id][i](data);
+            queue[id][i].success(data);
           }
           delete queue[id];
-        }, failure, options);
+        }, function(){
+          for(var i = 0; i < queue[id].length; i++)
+          {
+            queue[id][i].failure.apply(null, arguments);
+          }
+          delete queue[id];
+        }, options);
       }
     }
     cleanOld();
