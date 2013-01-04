@@ -7,7 +7,7 @@
 
 
 class PrecogAPI {
-    const BASE_URL = "https://beta.precog.com";
+    const BASE_URL = "https://api.precog.com";
     const DEFAULT_VERSION = 1;
 
     private $apiKey = null;
@@ -359,12 +359,9 @@ class PrecogAPI {
             $stream_contents = stream_get_contents($file_pointer);
             fclose($file_pointer);
         }
-//if(isset($stream_contents)) var_dump($stream_contents);
-//if(isset($stream_meta_data)) var_dump($stream_meta_data);
-
 
         if ($verb==="DELETE" || $stream_contents !== false) {
-
+            
             /*
              * In the case of we're receiving stream data back from the API,
              * json decode it here.

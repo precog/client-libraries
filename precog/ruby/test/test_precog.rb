@@ -26,8 +26,8 @@ require 'test/unit'
 
 class PrecogClientTest < Test::Unit::TestCase
 
-    HOST = 'beta.precog.com'
-    PORT = 80
+    HOST = 'devapi.precog.com'
+    PORT = 443
     ROOT_API_KEY = '2D36035A-62F6-465E-A64A-0E37BCC5257E'
 
     attr_reader :account_id, :api_key, :no_key_api, :api
@@ -71,10 +71,10 @@ class PrecogClientTest < Test::Unit::TestCase
   end
 
   def test_describe_account
-    response = @no_key_api.describe_account("test-rb@precog.com","password","0000000305")
+    response = @no_key_api.describe_account("test-rb@precog.com","password",@account_id)
     assert_equal Hash, response.class
     assert_include response, 'accountId'
-    assert_equal '0000000305', response['accountId']
+    assert_equal @account_id, response['accountId']
     assert_include response, 'email'
     assert_equal 'test-rb@precog.com', response['email']
   end
@@ -82,11 +82,11 @@ class PrecogClientTest < Test::Unit::TestCase
 
   # def test_add_grant_to_account
   #   #   TODO once security API is complete
-  #   #   @no_key_api.add_grant_to_account("test-rb@precog.com","password","0000000305", xxxxxx)
+  #   #   @no_key_api.add_grant_to_account("test-rb@precog.com","password",@account_id, xxxxxx)
   # end
 
   def test_describe_plan
-    response=@no_key_api.describe_plan("test-rb@precog.com","password","0000000305")
+    response=@no_key_api.describe_plan("test-rb@precog.com","password",@account_id)
     assert_equal Hash, response.class
     assert_include response, 'type'
     assert_equal 'Free', response['type']
@@ -94,27 +94,27 @@ class PrecogClientTest < Test::Unit::TestCase
 
   #Changes an account's plan (only the plan type itself may be changed). Billing for the new plan, if appropriate, will be prorated.
   def test_change_plan
-    response=@no_key_api.change_plan("test-rb@precog.com","password","0000000305", "Bronze")
+    response=@no_key_api.change_plan("test-rb@precog.com","password",@account_id, "Bronze")
     
-    response=@no_key_api.describe_plan("test-rb@precog.com","password","0000000305")
+    response=@no_key_api.describe_plan("test-rb@precog.com","password",@account_id)
     assert_include response, 'type'
     assert_equal 'Bronze', response['type']
 
-    response=@no_key_api.change_plan("test-rb@precog.com","password","0000000305", "Free")
+    response=@no_key_api.change_plan("test-rb@precog.com","password",@account_id, "Free")
   end
 
   #Changes your account access password. This call requires HTTP Basic authentication using the current password.
   def test_change_password
-    response=@no_key_api.change_password("test-rb@precog.com","password","0000000305", "xyzzy")
-    response=@no_key_api.change_password("test-rb@precog.com","xyzzy","0000000305", "password")
+    response=@no_key_api.change_password("test-rb@precog.com","password",@account_id, "xyzzy")
+    response=@no_key_api.change_password("test-rb@precog.com","xyzzy",@account_id, "password")
   end
 
   #Deletes an account's plan. This is the same as switching a plan to the free plan.
   def test_delete_plan
-    response=@no_key_api.change_plan("test-rb@precog.com","password","0000000305", "Bronze")
-    response=@no_key_api.delete_plan("test-rb@precog.com","password","0000000305")
+    response=@no_key_api.change_plan("test-rb@precog.com","password",@account_id, "Bronze")
+    response=@no_key_api.delete_plan("test-rb@precog.com","password",@account_id)
     #test it's free after delete
-    response=@no_key_api.describe_plan("test-rb@precog.com","password","0000000305")
+    response=@no_key_api.describe_plan("test-rb@precog.com","password",@account_id)
     assert_equal Hash, response.class
     assert_include response, 'type'
     assert_equal 'Free', response['type']

@@ -15,10 +15,7 @@ import com.precog.json.gson.RawJson;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Map;
+import java.io.IOException;import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -32,6 +29,7 @@ public class ClientTest {
 
     public static String testAccountId;
     public static String testApiKey;
+    public static Client testClient;
 
     private static class TestData {
         public final int testInt;
@@ -51,23 +49,31 @@ public class ClientTest {
     public static void beforeAll() throws Exception {
         testId = "" + Double.valueOf(java.lang.Math.random() * 10000).intValue();
 
-        Client testClient = new Client(Service.BetaPrecogHttps, null);
-        String result = testClient.createAccount("java-test@precog.com", "password");
+        String host=System.getProperty("host");
+        Service svc;
+        if (host == null){
+            svc=Service.DevPrecogHttps;
+        } else {
+            svc= ServiceBuilder.service(host);
+        }
+
+        Client noApiKeyClient = new Client(svc, null);
+        String result = noApiKeyClient.createAccount("java-test@precog.com", "password");
         AccountInfo res = GsonFromJson.of(new TypeToken<AccountInfo>() {
         }).deserialize(result);
         testAccountId = res.getAccountId();
-        result = testClient.describeAccount("java-test@precog.com", "password", testAccountId);
+        result = noApiKeyClient.describeAccount("java-test@precog.com", "password", testAccountId);
         res = GsonFromJson.of(new TypeToken<AccountInfo>() {
         }).deserialize(result);
         testApiKey = res.getApiKey();
-
         testPath = new Path(testAccountId).append(new Path("/test" + testId));
+        testClient =new Client(svc, testApiKey);
     }
 
     @Test
     public void testStore() throws IOException {
         ToJson<Object> toJson = new GsonToJson();
-        Client testClient = new Client(Service.BetaPrecogHttps, testApiKey);
+
 
         RawJson testJson = new RawJson("{\"test\":[{\"v\": 1}, {\"v\": 2}]}");
         TestData testData = new TestData(42, "Hello\" World", testJson);
@@ -79,7 +85,7 @@ public class ClientTest {
     @Test
     public void testStoreStrToJson() throws IOException {
         ToJson<String> toJson = new RawStringToJson();
-        Client testClient = new Client(Service.BetaPrecogHttps, testApiKey);
+
 
         Record<String> testRecord = new Record<String>("{\"test\":[{\"v\": 1}, {\"v\": 2}]}");
         testClient.store(testPath, testRecord, toJson);
@@ -87,7 +93,7 @@ public class ClientTest {
 
     @Test
     public void testStoreRawString() throws IOException {
-        Client testClient = new Client(Service.BetaPrecogHttps, testApiKey);
+
 
         String rawJson = "{\"test\":[{\"v\": 1}, {\"v\": 2}]}";
         testClient.store(testPath, rawJson);
@@ -95,19 +101,14 @@ public class ClientTest {
 
     @Test
     public void testStoreRawUTF8() throws IOException {
-        Client testClient = new Client(Service.BetaPrecogHttps, testApiKey);
+
         String rawJson = "{\"test\":[{\"ดีลลิเชียส\": 1}, {\"v\": 2}]}";
         testClient.store(testPath, rawJson);
     }
 
-    public static Map<String, String> jsonToStrMap(String json) {
-        return GsonFromJson.of(new TypeToken<Map<String, String>>() {
-        }).deserialize(json);
-    }
-
     @Test
     public void testIngestCSV() throws IOException {
-        Client testClient = new Client(Service.BetaPrecogHttps, testApiKey);
+
         IngestOptions options = new CSVIngestOptions();
         String response = testClient.ingest(testPath, "blah,\n\n", options);
         IngestResult result = GsonFromJson.of(new TypeToken<IngestResult>() {
@@ -117,7 +118,7 @@ public class ClientTest {
 
     @Test
     public void testIngestJSON() throws IOException {
-        Client testClient = new Client(Service.BetaPrecogHttps, testApiKey);
+
         IngestOptions options = new IngestOptions(ContentType.JSON);
         String rawJson = "{\"test\":[{\"v\": 1}, {\"v\": 2}]}";
         String response = testClient.ingest(testPath, rawJson, options);
@@ -128,7 +129,7 @@ public class ClientTest {
 
     @Test
     public void testIngestCsvWithOptions() throws IOException {
-        Client testClient = new Client(Service.BetaPrecogHttps, testApiKey);
+
         CSVIngestOptions options = new CSVIngestOptions();
         options.setDelimiter(",");
         options.setQuote("'");
@@ -141,7 +142,7 @@ public class ClientTest {
 
     @Test
     public void testIngestAsync() throws IOException {
-        Client testClient = new Client(Service.BetaPrecogHttps, testApiKey);
+
         IngestOptions options = new CSVIngestOptions();
         options.setAsync(true);
         String response = testClient.ingest(testPath, "blah,\n\n", options);
@@ -190,7 +191,6 @@ public class ClientTest {
 
     @Test
     public void testCreateAccount() throws IOException {
-        Client testClient = new Client(Service.BetaPrecogHttps, null);
         String result = testClient.createAccount("java-test@precog.com", "password");
         assertNotNull(result);
         AccountInfo res = GsonFromJson.of(new TypeToken<AccountInfo>() {
@@ -203,7 +203,6 @@ public class ClientTest {
 
     @Test
     public void testDescribeAccount() throws IOException {
-        Client testClient = new Client(Service.BetaPrecogHttps, null);
         String result = testClient.describeAccount("java-test@precog.com", "password", testAccountId);
         assertNotNull(result);
         AccountInfo res = GsonFromJson.of(new TypeToken<AccountInfo>() {
@@ -214,7 +213,7 @@ public class ClientTest {
     @Test
     public void testQuery() throws IOException {
         //just test the query was sent and executed successfully
-        Client testClient = new Client(Service.BetaPrecogHttps, testApiKey);
+
         String result = testClient.query(new Path(testAccountId), "count(//" + testAccountId + ")");
         assertNotNull(result);
         String[] res = GsonFromJson.of(String[].class).deserialize(result);
