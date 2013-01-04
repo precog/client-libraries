@@ -5,7 +5,17 @@ require_once('basetest.php');
 class AddGrantToAccountTest extends PrecogBaseTest {
     function testAddGrantToAccount() {
         $api = PrecogBaseTest::createApi($this->info);
-        $result = $api->createKey(array("grants"=>array(array("type"=>"read", "path"=>$this->info["path"]."foo/", "ownerAccountId"=> $this->info["accountId"], "expirationDate"=> null))));
+
+        $grant= array("name"=>"php-test","description"=>"",
+        	"grants"=>array(array(
+        			"parentIds"=> array(), 
+        			"expirationDate"=> null,
+        			"permissions"=>array(array("accessType"=>"read", "path"=>$this->info["path"]."foo/","ownerAccountId"=> $this->info["accountId"]))
+        		))
+        	);
+
+        $result = $api->createKey($grant);
+ 		
  		$apiKey1 = $result["apiKey"];
 
 		$randomemail = "testphp.".rand(0, 100000000)."@precog.com";
@@ -13,6 +23,7 @@ class AddGrantToAccountTest extends PrecogBaseTest {
         $account2Id = $account2["data"]["accountId"];
 
         $result = $api->describeKey($apiKey1);
+
  		$grantId = $result["grants"][0]["grantId"];
 
  		$result = $api->addGrantToAccount(PrecogBaseTest::$email, PrecogBaseTest::$password, $account2Id, $grantId);
