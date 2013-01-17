@@ -201,7 +201,7 @@ public class Client {
      * @throws IOException
      */
     public String query(Path path, String q) throws IOException {
-        if (!path.getPrefix().equals(Paths.FS)) {
+        if (!Paths.FS.equals(path.getPrefix())) {
             path = Paths.FS.append(path);
         }
         Request request = new Request();
