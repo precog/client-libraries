@@ -79,7 +79,7 @@ public class ClientTest {
         TestData testData = new TestData(42, "Hello\" World", testJson);
 
         Record<TestData> testRecord = new Record<TestData>(testData);
-        testClient.store(testPath, testRecord, toJson);
+        testClient.store(accountTestPath, testRecord, toJson);
     }
 
     @Test
@@ -88,7 +88,7 @@ public class ClientTest {
 
 
         Record<String> testRecord = new Record<String>("{\"test\":[{\"v\": 1}, {\"v\": 2}]}");
-        testClient.store(testPath, testRecord, toJson);
+        testClient.store(accountTestPath, testRecord, toJson);
     }
 
     @Test
@@ -96,21 +96,21 @@ public class ClientTest {
 
 
         String rawJson = "{\"test\":[{\"v\": 1}, {\"v\": 2}]}";
-        testClient.store(testPath, rawJson);
+        testClient.store(accountTestPath, rawJson);
     }
 
     @Test
     public void testStoreRawUTF8() throws IOException {
 
         String rawJson = "{\"test\":[{\"ดีลลิเชียส\": 1}, {\"v\": 2}]}";
-        testClient.store(testPath, rawJson);
+        testClient.store(accountTestPath, rawJson);
     }
 
     @Test
     public void testIngestCSV() throws IOException {
 
         IngestOptions options = new CSVIngestOptions();
-        String response = testClient.ingest(testPath, "blah,\n\n", options);
+        String response = testClient.ingest(accountTestPath, "blah,\n\n", options);
         IngestResult result = GsonFromJson.of(new TypeToken<IngestResult>() {
         }).deserialize(response);
         assertEquals(1, result.getIngested());
@@ -121,7 +121,7 @@ public class ClientTest {
 
         IngestOptions options = new IngestOptions(ContentType.JSON);
         String rawJson = "{\"test\":[{\"v\": 1}, {\"v\": 2}]}";
-        String response = testClient.ingest(testPath, rawJson, options);
+        String response = testClient.ingest(accountTestPath, rawJson, options);
         IngestResult result = GsonFromJson.of(new TypeToken<IngestResult>() {
         }).deserialize(response);
         assertEquals(1, result.getIngested());
@@ -134,7 +134,7 @@ public class ClientTest {
         options.setDelimiter(",");
         options.setQuote("'");
         options.setEscape("\\");
-        String response = testClient.ingest(testPath, "blah\n\n", options);
+        String response = testClient.ingest(accountTestPath, "blah\n\n", options);
         IngestResult result = GsonFromJson.of(new TypeToken<IngestResult>() {
         }).deserialize(response);
         assertEquals(1, result.getIngested());
@@ -145,7 +145,7 @@ public class ClientTest {
 
         IngestOptions options = new CSVIngestOptions();
         options.setAsync(true);
-        String response = testClient.ingest(testPath, "blah,\n\n", options);
+        String response = testClient.ingest(accountTestPath, "blah,\n\n", options);
         //is async, so we don't expect results
         assertEquals("", response);
     }
@@ -221,11 +221,12 @@ public class ClientTest {
     }
 
     @Test
-    public void testQueryA() throws IOException {
-
+    public void testQueryLoad() throws IOException {
+        Path path=testPath.append(new Path("load"));
+        String rawJson = "{\"test\":[{\"v\": 1}, {\"v\": 2}]}";
+        testClient.store(accountTestPath.append(new Path("load")), rawJson);
         //just test the query was sent and executed successfully
-        Client testClient = new Client(Service.BetaPrecogHttps, testApiKey);
-        String result = testClient.query(new Path(testAccountId), "load(\"//"+ testPath +"\")");
+        String result = testClient.query(new Path(testAccountId), "load(\"//"+ path +"\")");
         assertNotNull(result);
         System.out.println(result);
         //String[] res = GsonFromJson.of(String[].class).deserialize(result);
