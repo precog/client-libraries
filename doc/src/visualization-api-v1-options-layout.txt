@@ -9,7 +9,5 @@
 	The padding object controls how the chart is spaced from its margins.
 ``titleontop`` : bool
 	Set if the title (assuming that one exists) is set on top of the visualization.
-``yscaleposition`` : string
-	("alternating", "left", "right")
 ``width`` : float
 	Width of the visualization. If not specified it is assumed from the HTML container.

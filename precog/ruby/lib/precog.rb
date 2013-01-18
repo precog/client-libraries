@@ -37,7 +37,7 @@ module Precog
   # API server constants
   module API
     HOST = 'api.precog.io'
-    PORT = 80
+    PORT = 443
     VERSION = '1'
   end
 
@@ -80,6 +80,7 @@ module Precog
       @port       = port
       @version    = API::VERSION 
       @conn       = Net::HTTP.new(host, port)
+      @conn.use_ssl = (@port == 443)
     end
 
     def basic_auth(user, password)

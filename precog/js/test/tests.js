@@ -87,7 +87,7 @@ ensureAccount(function(id, apiKey, rootPath) {
 			Precog.describeAccount("test-js"+random+"@precog.com", password, result.accountId,
 				function(description){
 					var accountId = description.accountId;
-					var grants = { "grants": [{ "type": "read", "path": rootPath+"foo/", "expirationDate": null, "ownerAccountId" : id }] };
+					var grants = {"name":"js-test","description":"","grants":[{"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountId":id}]}]};
 					Precog.createKey(grants,
 						function(result) {
 							console.log(result);
@@ -163,7 +163,7 @@ ensureAccount(function(id, apiKey, rootPath) {
 	// **********************
 
 	asyncTest("create and delete key", function() {
-		var grants = { "grants": [{ "type": "read", "path": rootPath+"foo/", "expirationDate": null, "ownerAccountId" : id }] };
+		var grants = {"name":"js-test","description":"","grants":[{"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountId":id}]}]};
 		Precog.createKey(grants,
 			function(result) {
 				var ak = result['apiKey'];
@@ -191,7 +191,7 @@ ensureAccount(function(id, apiKey, rootPath) {
 	});
 
 	asyncTest("list keys", function() {
-		var grants = { "grants": [{ "type": "read", "path": rootPath+"foo/", "expirationDate": null, "ownerAccountId" : id }] };
+		var grants = {"name":"js-test","description":"","grants":[{"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountId":id}]}]};
 		Precog.createKey(grants,
 			function(result) {
 				var ak = result['apiKey'];
@@ -205,7 +205,7 @@ ensureAccount(function(id, apiKey, rootPath) {
 	});
 
 	asyncTest("describe key", function() {
-		var grants = { "grants": [{ "type": "read", "path": rootPath+"foo/", "expirationDate": null, "ownerAccountId" : id }] };
+		var grants = {"name":"js-test","description":"","grants":[{"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountId":id}]}]};
 		Precog.createKey(grants,
 			function(result) {
 				var ak = result['apiKey'];
@@ -219,12 +219,14 @@ ensureAccount(function(id, apiKey, rootPath) {
 	});
 
 	asyncTest("create and describe new grant", function() {
-		var grant = { "type": "read", "path": rootPath+"foo/", "ownerAccountId": id, "expirationDate": null };
+		var grant = {"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountId":id}]};
+		console.log("initial grant "+JSON.stringify(grant));
 		Precog.createGrant(grant, function(g) {
 			ok(g.grantId);
+			console.log("create grant "+JSON.stringify(g));
 			Precog.describeGrant(g.grantId, function(result) {
+				console.log("desc grant "+JSON.stringify(result));
 				equal(result.grantId, g.grantId);
-				equal(result.ownerAccountId, id);
 				equal(result.path, grant.path);
 				equal(result.type, grant.type);
 				equal(result.expirationDate, null);
@@ -234,7 +236,7 @@ ensureAccount(function(id, apiKey, rootPath) {
 	});
 
 	asyncTest("delete grant", function() {
-		var grant = { "type": "read", "path": rootPath+"foo/", "ownerAccountId": id, "expirationDate": null };
+		var grant = {"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountId":id}]};
 		Precog.createGrant(grant, function(g) {
 			Precog.deleteGrant(g.grantId, function(result) {
 				ok(true);
@@ -244,8 +246,11 @@ ensureAccount(function(id, apiKey, rootPath) {
 	});
 
 	asyncTest("create child grant and list", function() {
-		var grant1 = { "type": "read", "path": rootPath+"foo/",     "ownerAccountId": id, "expirationDate": null },
-			grant2 = { "type": "read", "path": rootPath+"foo/bar/", "ownerAccountId": id, "expirationDate": null };
+		// var grant1 = { "type": "read", "path": rootPath+"foo/",     "ownerAccountId": id, "expirationDate": null },
+		// 	grant2 = { "type": "read", "path": rootPath+"foo/bar/", "ownerAccountId": id, "expirationDate": null };
+
+		var grant1 = {"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountId":id}]},
+			grant2 = {"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/bar/","ownerAccountId":id}]};	
 		Precog.createGrant(grant1, function(g1) {
 			Precog.createGrantChild(g1.grantId, grant2, function(g2) {
 				Precog.listGrantChildren(g1.grantId, function(result) {
@@ -260,8 +265,8 @@ ensureAccount(function(id, apiKey, rootPath) {
 	});
 
 	asyncTest("retrieve grants", function() {
-		var grant1 = { "type": "read", "path": rootPath+"foo/",     "ownerAccountId": id, "expirationDate": null },
-			grant2 = { "type": "read", "path": rootPath+"foo/bar/", "ownerAccountId": id, "expirationDate": null };
+		var grant1 = {"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountId":id}]},
+			grant2 = {"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/bar/","ownerAccountId":id}]};	
 		Precog.createGrant(grant1, function(g1) {
 			Precog.createGrantChild(g1.grantId, grant2, function(g2) {
 				Precog.retrieveGrants(Precog.$.Config.apiKey, function(result) {
@@ -275,8 +280,8 @@ ensureAccount(function(id, apiKey, rootPath) {
 
 	
 	asyncTest("remove grant", function() {
-		var grant1 = { "type": "read", "path": rootPath+"foo/",     "ownerAccountId": id, "expirationDate": null },
-			grant2 = { "type": "read", "path": rootPath+"foo/bar/", "ownerAccountId": id, "expirationDate": null };
+		var grant1 = {"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountId":id}]},
+			grant2 = {"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/bar/","ownerAccountId":id}]};	
 			console.log("in remove grant");
 		Precog.createGrant(grant1, function(g1) {
 			console.log(g1.grantId);
@@ -298,8 +303,8 @@ ensureAccount(function(id, apiKey, rootPath) {
 	*/
 
 	asyncTest("add grant to key", function() {
-		var grants1 = { "grants": [{ "type": "read", "path": rootPath+"foo/", "expirationDate": null, "ownerAccountId" : id }] };
-			grants2 = { "grants": [{ "type": "read", "path": rootPath+"foo/bar/", "ownerAccountId": id, "expirationDate": null }] };
+		var grants1 = {"name":"js-test","description":"","grants":[{"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountId":id}]}]},
+		    grants2 = {"name":"js-test","description":"","grants":[{"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/bar/","ownerAccountId":id}]}]};
 			Precog.createKey(grants1,
 				function(result) {
 					var ak = result['apiKey'];
