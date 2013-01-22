@@ -17,9 +17,13 @@ resolvers ++= Seq(
 
 scalacOptions ++= Seq("-unchecked", "-deprecation")
 
+seq(com.github.retronym.SbtOneJar.oneJarSettings: _*)
+
 libraryDependencies ++= Seq(
   "com.reportgrid" % "blueeyes-core_2.9.2" % "1.0.0-M6",
   "com.reportgrid" % "blueeyes-json_2.9.2" % "1.0.0-M6",
+  "org.scalaz"             % "scalaz-core_2.9.2"        % "7.0.0-M3" ,
   "org.specs2" %% "specs2" % "1.12.2" ,
+  //sbtVersion(v => "com.github.siasia" %% "xsbt-proguard-plugin" % (v+"-0.1.1")),
   "com.h2database" % "h2" % "1.2.134" % "test"
 )

@@ -23,7 +23,7 @@ import Datatypes._
 trait ImportJdbcService extends BlueEyesServiceBuilder {
 
 
-  val host="http://beta.precog.com" //TODO move to trait
+  val host="https://beta.precog.com" // "https://devapi.precog.com" //TODO move to trait
 
   def handleRequest[T](f: HttpRequest[T]=> Future[HttpResponse[T]])=
     (request: HttpRequest[T]) =>
@@ -35,11 +35,10 @@ trait ImportJdbcService extends BlueEyesServiceBuilder {
 
   def withConnectionFromRequest[T](r:HttpRequest[T])(f: (Connection,HttpRequest[T])=> Future[HttpResponse[T]])= {
     val dbUrl = r.parameters('dbUrl)
-    val database= r.parameters.get('database).getOrElse("")
+    val database= r.parameters.get('database)
     val user = r.parameters.get('user).getOrElse(null)
     val pwd = r.parameters.get('password).getOrElse(null)
-    val uri= if (dbUrl.endsWith(database)) dbUrl else "%s%s".format(dbUrl,database)
-    val c=getConnection(uri, user, pwd)
+    val c=getConnection(dbUrl, user, pwd,database)
     try {
       f(c,r)
     } finally {
@@ -150,15 +149,17 @@ trait ImportJdbcService extends BlueEyesServiceBuilder {
         }~
           path('database / "table" / 'table / "config") {
             post {
-              handleRequestWithConnection( (conn:Connection,request:HttpRequest[ByteChunk]) => {
+              handleRequest( (request:HttpRequest[ByteChunk]) => {
                 val apiKey= request.parameters('apiKey)
                 val path= request.parameters('path)
                 val table= Table(request.parameters('table))
                 val cToJ=chunkToFutureJValue
                 request.content.map(cToJ(_)).map(_.flatMap( ingestInfo =>{
+                  withConnectionFromRequest(request)( (conn:Connection,_)=>{
                   val query = buildQuery(ingestInfo)
                   ingest(conn,table.name, query, Some(ingestInfo), path, host, apiKey)
-                })).get
+                  })
+                })).getOrElse(Future{ HttpResponse[ByteChunk](content = None) })
               })
             }
           }

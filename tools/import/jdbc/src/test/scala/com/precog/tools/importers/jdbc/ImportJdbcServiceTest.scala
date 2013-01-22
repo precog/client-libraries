@@ -115,7 +115,7 @@ class ImportJdbcServiceTest extends BlueEyesServiceSpecification with ImportJdbc
         'dbUrl-> dbUrl(dbName),
         'denormalize->"y",
         'apiKey->apiKey,
-        'path -> basePath                                            //path('database / "table" / 'table / "auto") {
+        'path -> basePath
       ).post[ByteChunk]("/ingest/%s/table/%s/auto".format(dbName,"A"))(Array.empty[Byte])
       Await.result(r,1 minute) must beLike {
         case HttpResponse(_ ,_,Some(Left(buffer)),_) => new String(buffer.array(), "UTF-8") must_==
@@ -123,19 +123,20 @@ class ImportJdbcServiceTest extends BlueEyesServiceSpecification with ImportJdbc
       }
     }
 
-    //TODO: fix the closed connection issue with the test
-    /*"ingest with config" in new Conn{ val dbName ="iwcfg"
+    "ingest with config" in new Conn{ val dbName ="iwcfg"
+      import DefaultBijections.jvalueToChunk
       tblA;tblB; dataA; dataB
+
       val r=client.parameters(
         'dbUrl-> dbUrl(dbName),
         'apiKey->apiKey,
-        'path -> basePath                                            //path('database / "table" / 'table / "auto") {
-      ).post[ByteChunk]("/ingest/%s/table/%s/config".format(dbName,"A"))(JValueToByteArray(tblABDesc))
-      Await.result(r,1 minute) must beLike {
+        'path -> basePath
+      ).post[ByteChunk]("/ingest/%s/table/%s/config".format(dbName,"A"))(ingestInfo2Json(tblABDesc))
+      Await.result(r,2 minute) must beLike {
         case HttpResponse(_ ,_,Some(Left(buffer)),_) => new String(buffer.array(), "UTF-8") must_==
           """{"failed":0,"skipped":0,"errors":[],"total":1,"ingested":1}"""
       }
-    }*/
+    }
   }
 
 }

@@ -3,12 +3,26 @@ package com.precog.tools.importers.jdbc
 import org.specs2.mutable.Specification
 import DbAnalysis._
 import Datatypes._
+import com.precog.tools.importers.jdbc.ImportJdbc._
+import com.precog.tools.importers.jdbc.Datatypes.Table
+import com.precog.tools.importers.jdbc.Datatypes.Join
 
 /**
  * User: gabriel
  * Date: 12/4/12
  */
 class DbAnalysisTest extends Specification {
+
+
+  "find tables" should {
+
+
+    "find all tables" in new Conn { val dbName="tables"
+      tblA; tblB; tblC; tblD
+      findTables(conn.getMetaData,None,None) must_== Array(Table("A"),Table("B"),Table("C"),Table("D"))
+    }
+
+  }
 
   "declared relations" should {
     "identify one to many" in new Conn{ val dbName ="onemany"

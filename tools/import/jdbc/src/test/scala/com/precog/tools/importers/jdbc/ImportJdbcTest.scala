@@ -18,6 +18,8 @@ import com.precog.tools.importers.jdbc.ImportJdbc.ImportTable
 import blueeyes.bkka.AkkaDefaults._
 import blueeyes.core.http.{HttpStatus, HttpResponse}
 import blueeyes.core.http.HttpStatusCodes.OK
+import scalaz.StreamT
+import blueeyes.bkka.FutureMonad
 
 /**
  * User: gabriel
@@ -49,50 +51,97 @@ class ImportJdbcTest extends Specification with FutureMatchers with HttpRequestM
     }
   }
 
+
+  implicit def toStreamElem[T](l:List[T])=l.toSeq::StreamT.empty
+
   "Json build from data" should {
     "build a simple Json" in {
-      ImportJdbc.mkPartialJson("a",tblADesc,aData)._1 must_== jA
+      ImportJdbc.mkPartialJson("a",tblADesc,aData).get._1 must_== jA
     }
 
     "build a composite Json" in {
-      ImportJdbc.mkPartialJson("a",tblABDesc,aData++bData)._1 must_== jAB
+      ImportJdbc.mkPartialJson("a",tblABDesc,aData++bData).get._1 must_== jAB
     }
 
     "build a relation Json" in {
-      ImportJdbc.mkPartialJson("c",tblCABDesc,cData++aData++bData)._1 must_== jC
+      ImportJdbc.mkPartialJson("c",tblCABDesc,cData++aData++bData).get._1 must_== jC
     }
 
-    "build a JArray for multiple values" in {
-      val tblDesc = IngestInfo(List(ImportTable("parent",List("ID","name"), Left(Table("Parent"))),ImportTable("child",List("ID","name","P_ID"), Right(Join("id",Key(Table("child"),"parent_id"),ExportedKey)))))
-      val dataChld1 = List("1","parent","1","child1","1")
-      val dataNoChld = List("1","parent",null,null,null)
-      val dataChld2 = List("1","parent","2","child2","1")
-      val dataParent3 = List("3","parent3","2","child2","1")
+    val tblDesc = IngestInfo(List(ImportTable("parent",List("ID","name"), Left(Table("Parent"))),ImportTable("child",List("ID","name","P_ID"), Right(Join("id",Key(Table("child"),"parent_id"),ExportedKey)))))
+    val dataChld1 = List("1","parent","1","child1","1")
+    val dataNoChld = List("1","parent",null,null,null)
+    val dataChld2 = List("1","parent","2","child2","1")
+    val dataParent3 = List("3","parent3","2","child2","1")
 
-      val (emptyChildJson,_)=ImportJdbc.mkPartialJson("parent",tblDesc,dataNoChld)
+
+    "build Jobjects for multiple values" in {
+
+      val Some((emptyChildJson,_))=ImportJdbc.mkPartialJson("parent",tblDesc,dataNoChld)
       emptyChildJson must_==
-        JObject(JField("ID",JString("1"))::JField("name",JString("parent"))::JField("child",JArray(Nil))::Nil)
+        JObject(JField("ID",JString("1"))::JField("name",JString("parent"))::JField("CHILD",JArray(Nil))::Nil)
 
 
-      val (partJson,m)=ImportJdbc.mkPartialJson("parent",tblDesc,dataChld2)
+      val Some((partJson,_))=ImportJdbc.mkPartialJson("parent",tblDesc,dataChld2)
       partJson must_==
         JObject(JField("ID",JString("1"))::JField("name",JString("parent"))::
-          JField("child",JArray(
+          JField("CHILD",JArray(
             JObject(JField("ID",JString("2"))::JField("name",JString("child2"))::JField("P_ID",JString("1"))::Nil)::Nil)
           )::Nil)
 
-      val (d1Json,m1)=ImportJdbc.mkPartialJson("parent",tblDesc,dataChld1,m)
+
+      ImportJdbc.mkPartialJson("parent",tblDesc,dataParent3).get._1 must_== JObject(JField("ID",JString("3"))::JField("name",JString("parent3"))::
+        JField("CHILD",JArray(
+          JObject(JField("ID",JString("2"))::JField("name",JString("child2"))::JField("P_ID",JString("1"))::Nil)::Nil)
+        )::Nil)
+    }
+
+    "build a composite object" in {
+      val ds=dataChld1.toSeq::dataChld2.toSeq::StreamT.empty
+      val Some((d1Json,_))=ImportJdbc.mkPartialJson("parent",tblDesc,ds)
       d1Json must_==
         JObject(JField("ID",JString("1"))::JField("name",JString("parent"))::
-          JField("child",JArray(
+          JField("CHILD",JArray(
             JObject(JField("ID",JString("1"))::JField("name",JString("child1"))::JField("P_ID",JString("1"))::Nil)::
               JObject(JField("ID",JString("2"))::JField("name",JString("child2"))::JField("P_ID",JString("1"))::Nil)::Nil)
           )::Nil)
+    }
 
-      ImportJdbc.mkPartialJson("parent",tblDesc,dataParent3,m1)._1 must_== JObject(JField("ID",JString("3"))::JField("name",JString("parent3"))::
-        JField("child",JArray(
+    "objects must be uppercase" in {
+      val ds=dataChld1.toSeq::dataChld2.toSeq::StreamT.empty
+      val Some((d1Json,_))=ImportJdbc.mkPartialJson("parent",tblDesc,ds)
+      d1Json must_==
+        JObject(JField("ID",JString("1"))::JField("name",JString("parent"))::
+          JField("CHILD",JArray(
+            JObject(JField("ID",JString("1"))::JField("name",JString("child1"))::JField("P_ID",JString("1"))::Nil)::
+              JObject(JField("ID",JString("2"))::JField("name",JString("child2"))::JField("P_ID",JString("1"))::Nil)::Nil)
+          )::Nil)
+    }
+
+    "buildBody  for multiple values" in {
+      val tblDesc = IngestInfo(List(ImportTable("parent",List("ID","name"), Left(Table("Parent"))),ImportTable("child",List("ID","name","P_ID"), Right(Join("id",Key(Table("child"),"parent_id"),ExportedKey)))))
+      val dataChld1 = List("1","parent1","1","child1","1")
+      val dataChld2 = List("1","parent1","2","child2","1")
+      val dataNoChld = List("2","parent2",null,null,null)
+      val dataParent3 = List("3","parent3","2","child2","1")
+
+      val allData= StreamT.fromIterable((dataChld1::dataChld2::dataNoChld::dataParent3::Nil).reverse.map( _.toIndexedSeq).toIterable)
+
+      implicit val executionContext = defaultFutureDispatch
+      implicit val futureMonad= new FutureMonad(executionContext)
+
+      val r= ImportJdbc.buildBody(allData,"parent",tblDesc)
+      Await.result(r.toStream,1 minute).toList must_==(
+        JObject(JField("ID",JString("1"))::JField("name",JString("parent1"))::
+          JField("CHILD",JArray(
+            JObject(JField("ID",JString("2"))::JField("name",JString("child2"))::JField("P_ID",JString("1"))::Nil)::
+            JObject(JField("ID",JString("1"))::JField("name",JString("child1"))::JField("P_ID",JString("1"))::Nil)::
+            Nil)
+          )::Nil)::
+          JObject(JField("ID",JString("2"))::JField("name",JString("parent2"))::JField("CHILD",JArray(Nil))::Nil)::
+          JObject(JField("ID",JString("3"))::JField("name",JString("parent3"))::
+          JField("CHILD",JArray(
           JObject(JField("ID",JString("2"))::JField("name",JString("child2"))::JField("P_ID",JString("1"))::Nil)::Nil)
-        )::Nil)
+          )::Nil)::Nil).reverse
     }
   }
 
@@ -122,4 +171,3 @@ class ImportJdbcTest extends Specification with FutureMatchers with HttpRequestM
       }
     }
 }
-
