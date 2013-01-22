@@ -86,7 +86,7 @@ object ImportMongo {
     }
     val (fds, fmaxId) = (fdsid map (_._1), fdsid map (_._2))
     val fjsons = fds.map(_.flatMap(MongoToJson(_).toStream))
-    val fullPath = "%s/ingest/v1/sync/fs%s/%s".format(precogHost, basePath, collName)
+    val fullPath = "%s/ingest/v1/sync/fs%s/%s/%s".format(precogHost, basePath, dbName, collName)
     val data = StreamT.fromStream[Future, JValue](fjsons)
     val fresult = M.lift2((a: HttpResponse[ByteChunk], b: ObjectId) => (a, b))(sendToPrecog(fullPath, apiKey, data), fmaxId)
 
