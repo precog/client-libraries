@@ -14,6 +14,7 @@ import com.precog.json.gson.GsonToJson;
 import com.precog.json.gson.RawJson;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.Ignore;
 
 import java.io.IOException;import java.util.Map;
 
@@ -211,6 +212,7 @@ public class ClientTest {
     }
 
     @Test
+    @Ignore
     public void testQuery() throws IOException {
         //just test the query was sent and executed successfully
 
