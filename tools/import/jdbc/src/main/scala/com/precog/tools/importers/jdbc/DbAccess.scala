@@ -2,6 +2,7 @@ package com.precog.tools.importers.jdbc
 
 import java.sql._
 import Datatypes._
+import scalaz.{StreamT, Id}
 
 /**
  * User: gabriel
@@ -26,10 +27,13 @@ object DbAccess {
     for ( i <- 1 to count) yield Column(tblMetaData.getColumnName(i),Table(tblMetaData.getTableName(i)))
   }
 
-  def rsIterator[T](rs:ResultSet)(f:ResultSet => T) = new Iterator[T] {
+  //don't use!
+  private def rsIterator[T](rs:ResultSet)(f:ResultSet => T) = new Iterator[T] {
     def hasNext = rs.next()
     def next():T = f(rs)
   }
+
+  def rsStreamT[T](rs:ResultSet)(f:ResultSet => T)=StreamT.unfold(rs)( (rs:ResultSet) => if (rs.next()) { Some(f(rs),rs)} else None )
 
   def oneColumnRs(rs:ResultSet) = rsIterator(rs)(rs=> rs.getString(1))
   def tables(rs:ResultSet) = rsIterator(rs)(rs=> Table(rs.getString("TABLE_NAME")))
