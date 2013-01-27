@@ -1,5 +1,7 @@
 name := "import-mongodb"
 
+organization := "org.precog"
+
 version := "0.1"
 
 scalaVersion := "2.9.2"
@@ -14,12 +16,12 @@ resolvers ++= Seq(
 
 scalacOptions ++= Seq("-unchecked", "-deprecation")
 
-seq(com.github.retronym.SbtOneJar.oneJarSettings: _*)
+//seq(com.github.retronym.SbtOneJar.oneJarSettings: _*)
 
 libraryDependencies ++= Seq(
-  "com.reportgrid" %% "blueeyes-core" % "1.0.0-M6",
-  "com.reportgrid" %% "blueeyes-json" % "1.0.0-M6",
-  "com.reportgrid" %% "blueeyes-mongo" % "1.0.0-M6",
+  "com.reportgrid" %% "blueeyes-core" % "latest.milestone", //"1.0.0-M6",
+  "com.reportgrid" %% "blueeyes-json" % "latest.milestone", //"1.0.0-M6",
+  "com.reportgrid" %% "blueeyes-mongo" % "latest.milestone", //"1.0.0-M6",
   "org.mongodb" %% "casbah" % "2.3.0",
   "org.scalaz"  %% "scalaz-core"        % "7.0.0-M3" ,
   "org.specs2" %% "specs2" % "1.12.2" % "test"

@@ -6,7 +6,7 @@ import blueeyes.persistence.mongo.json.BijectionsMongoJson.MongoToJson._
 import com.mongodb.casbah.commons.TypeImports.ObjectId
 import scalaz.{Monad, StreamT}
 import akka.dispatch.{Await, Future}
-import blueeyes.json.{JObject, JString, JParser, JValue}
+import blueeyes.json._
 import blueeyes.core.service.engines.HttpClientXLightWeb
 import blueeyes.bkka.AkkaDefaults._
 import blueeyes.core.data.DefaultBijections._
@@ -17,7 +17,17 @@ import java.nio.ByteBuffer
 import akka.util.Duration
 import blueeyes.core.http.HttpResponse
 import blueeyes.core.service._
-import annotation.tailrec
+import com.precog.tools.importers.common._
+import ConsoleUtils._
+import scala.Left
+import scala.Some
+import scala.Right
+import scala.Left
+import scala.Some
+import scala.Right
+import com.mongodb
+import collection.JavaConversions.SeqWrapper
+
 
 /**
  * User: gabriel
@@ -29,10 +39,48 @@ object ImportMongo {
   implicit val executionContext = defaultFutureDispatch
   implicit val M: Monad[Future] = new FutureMonad(executionContext)
 
+  val configDb="_precog_mongo_importer"
+  val collsConfig="collections_to_import"
+  val sampleSize=100
+
   def parseInt(s : String) : Option[Int] = try {
     Some(s.toInt)
   } catch {
     case _ : java.lang.NumberFormatException => None
+  }
+
+  // No @tailrec but we don't expect getting back from mongoDb a hierarchy big enough to blow the stack
+  def columnsOf(bObject: MongoDBObject): Seq[String]={
+    bObject.flatMap(kv => kv._2 match {
+      case m:MongoDBObject => columnsOf(m).map("%s.%s".format(kv._1,_))
+      case _ => Set(kv._1)
+    }).toSeq
+  }
+
+  def sampleColumns(db: String, coll: String)(implicit mongoConn:MongoConnection)={
+    val collection=mongoConn(db)(coll).find().take(sampleSize)
+    collection.flatMap(columnsOf(_)).toSet
+  }
+
+  def configureCollections(connection: MongoConnection):Seq[DBObject]={
+    implicit val c=connection
+    println("No configuration found in the mongo instance, creating a new one.")
+    val databases=selectSet("database",connection.databaseNames)
+    val dbColls=databases.map( db=>{ println("Database %s".format(db)); (db,selectSet("collection",connection(db).getCollectionNames().toSeq))})
+    dbColls.flatMap(dbColl =>{
+        val (db,colls) = dbColl
+        colls.map( coll =>{
+          val fields=if (readLine("Sample and select columns of %s.%s? (y/N)".format(db,coll)).toLowerCase == "y"){
+              Some(selectSet("column", sampleColumns(db,coll).toSeq ))
+            } else {
+              None
+            }
+          val dbObj =MongoDBObject("database"->db, "collection"->coll)
+          fields.map(flds=>dbObj ++ ("fields"->flds)).getOrElse(dbObj)
+          }
+        )
+      }
+    )
   }
 
   def main(args:Array[String]){
@@ -50,65 +98,76 @@ object ImportMongo {
     val precogHost=args(2)
     val basePath=args(3)
     val apiKey=args(4)
+    try {
+      implicit val mongoConn= MongoConnection(mongoHost,mongoPort)
 
-    implicit val mongoConn= MongoConnection(mongoHost,mongoPort)
+      val inputConfigColl=mongoConn(configDb)(collsConfig)
 
-    @tailrec
-    def readConfigLine(acc:List[String]):List[String]={
-      val line=readLine()
-      if (line != null && line != ""){
-        if (line.startsWith("#")) readConfigLine(acc) //skip lines starting with #
-        else readConfigLine(line::acc)
-      } else acc
+      //workaround
+      if (inputConfigColl.isEmpty) {
+        val configs=configureCollections(mongoConn)
+        configs.map(inputConfigColl.save(_))
+      }
+      val jsonImputs= inputConfigColl.find().toList
+
+      val fimports=jsonImputs.flatMap(x=> MongoToJson(x).toList.map(importCollection(precogHost,basePath,apiKey,_)))
+
+      val fresults=Await.result(Future.sequence(fimports), Duration("24 hours"))
+
+      jsonImputs.zip(fresults).map( r =>{
+          val (mDbObj,(result,lastId)) = r
+          println("%s".format(result))
+          inputConfigColl.save(mDbObj++("lastId"->lastId)) //JsonToMongo(continueJson).map(inputConfigColl.save(_))
+        }
+      )
+    } finally {
+      println("Shutting down...")
+      actorSystem.shutdown()
     }
-    println("# enter json import descriptors, EOF or empty line to continue")
-    println("""# format: { "database":"<database name>", "collection":"<database name>" } or { "database":"<database name>", "collection":"<database name>",  "lastId":"<last id>" } """)
-    val jsonImputs=readConfigLine(Nil)
-    val fresults=jsonImputs.map(JParser.parseFromString(_).map(importCollection(precogHost,basePath,apiKey,_))).flatMap(_.toList)
-
-    val continueJson=Await.result(Future.sequence(fresults), Duration("24 hours"))
-    println("#################################################################")
-    println("# to continue ingestion from last point, use the following imput:")
-    println(continueJson.mkString("\n"))
-
-    actorSystem.shutdown()
-
   }
 
-  def importCollection(precogHost:String, basePath:String, apiKey:String, jparams: JValue) (implicit mongoConn: MongoConnection):Future[String]={
-    def strValue(jv: JValue) = (jv --> classOf[JString]).value
-    val dbName = strValue(jparams \ "database")
-    val collName = strValue(jparams \ "collection")
-    val lastId = (jparams \? "lastId").map(strValue(_)) getOrElse ("000000000000000000000000")
+  def pair[T](getter: String=>T)(name:String ) = (name-> getter(name))
 
+  def getString(jo: JObject)(field:String) = strValue(jo \ field)
+  def getArray(jo: JObject)(field:String) = arrOfStrValues(jo \ field)
+
+  def strValue(jv: JValue) = (jv --> classOf[JString]).value
+  def arrOfStrValues(jv: JValue) = (jv -->? classOf[JArray]).map(_.elements.map(strValue(_))).getOrElse(Nil)
+
+  def importCollection(precogHost:String, basePath:String, apiKey:String, jparams: JObject) (implicit mongoConn: MongoConnection):Future[(String,String)]={
+    val dbName = getString(jparams)("database")
+    val collName = getString(jparams)("collection")
+    val fieldNames = getArray(jparams)("fields")
+    val lastId = (jparams \? "lastId").map(strValue(_)) getOrElse ("000000000000000000000000")
     val fdsid = Future {
-      readFromMongo(mongoConn, dbName, collName, lastId)
+      val rStrm=readFromMongo(mongoConn, dbName, collName, lastId, fieldNames)
+      val (oids,dataStrm)=rStrm.map(m=>(m.get("_id").asInstanceOf[ObjectId],m)).unzip
+      val maxOid= if (oids.isEmpty) lastId else oids.max.toStringMongod
+      (dataStrm,maxOid)
     }
     val (fds, fmaxId) = (fdsid map (_._1), fdsid map (_._2))
-    val fjsons = fds.map(_.flatMap(MongoToJson(_).toStream))
-    val fullPath = "%s/ingest/v1/sync/fs%s/%s/%s".format(precogHost, basePath, dbName, collName)
-    val data = StreamT.fromStream[Future, JValue](fjsons)
-    val fresult = M.lift2((a: HttpResponse[ByteChunk], b: ObjectId) => (a, b))(sendToPrecog(fullPath, apiKey, data), fmaxId)
 
-    fresult.map(r => {
-      val (result, oid) = r
-      result match {
-        case HttpResponse(_, _, Some(Left(buffer)), _) => {
-          println("### result from precog: %s".format(new String(buffer.array(), "UTF-8")))
+    val fjsons = fds.map(_.flatMap(MongoToJson(_).toStream))
+    val fullPath = "%s/ingest/v1/sync/fs%s/%sr/%s".format(precogHost, basePath, dbName, collName)
+    val data = StreamT.fromStream[Future, JObject](fjsons)
+    val fsend=data.isEmpty.flatMap( isEmpty =>
+      if (isEmpty) Future("No new data found in %s.%s".format(dbName,collName))
+      else sendToPrecog(fullPath, apiKey, data)map( _ match {
+          case HttpResponse(_, _, Some(Left(buffer)), _) => {
+            "Result from precog: %s".format(new String(buffer.array(), "UTF-8"))
+          }
+          case result => "Error: %s".format(result.toString())
         }
-        case _ => println("### error: %s".format(result.toString()))
-      }
-      """{ "database":"%s", "collection":"%s"  "lastId":"%s" }""".format(dbName, collName, oid)
-    })
+      ))
+    M.lift2((a: String, b: String) => (a, b))(fsend, fmaxId)
   }
 
-  def readFromMongo(mongoConn: MongoConnection, dbName: String, colName: String, oid:String):(Stream[DBObject],ObjectId)={
+  def readFromMongo(mongoConn: MongoConnection, dbName: String, colName: String, oid:String, fieldNames:Seq[String]):Stream[DBObject]={
     val mongoDB = mongoConn(dbName)
     val mongoColl = mongoDB(colName)
     val q = "_id" $gt (new ObjectId(oid))
-    val rStrm=mongoColl.find(q).toStream //.view ?
-    val (oids,dataStrm)=rStrm.map(m=>(m.get("_id").asInstanceOf[ObjectId],m)).unzip
-    (dataStrm,oids.max)
+    val fields = MongoDBObject(fieldNames.map(_->""):_*)
+    mongoColl.find(q,fields).toStream //.view ?
   }
 
   def sendToPrecog(fullPath:String, apiKey:String, dataStream:StreamT[Future,JValue]): Future[HttpResponse[ByteChunk]] = {
@@ -117,7 +176,7 @@ object ImportMongo {
 
     val byteStream: StreamT[Future, ByteBuffer] = dataStream.map(jv => ByteBuffer.wrap({
       val js = "%s\n".format(jv.renderCompact)
-      print("# %s".format(js))
+      print("%s".format(js))
       js
     }.getBytes("UTF-8")))
 
