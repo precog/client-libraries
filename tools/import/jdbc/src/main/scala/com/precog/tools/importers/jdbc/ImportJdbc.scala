@@ -134,18 +134,26 @@ object ImportJdbc {
 
     val dataStream:StreamT[Future,ByteBuffer] =buildBody(data, objName, tblDesc)
       .map(jv=>ByteBuffer.wrap({val js="%s\n".format(jv.renderCompact); print(js); js}.getBytes("UTF-8")))
+    dataStream.isEmpty.flatMap( isEmpty =>
+      if (isEmpty) Future(HttpResponse.empty)
+      else {
+        val body:ByteChunk= Right(dataStream)
+        val fullPath = "%s/ingest/v1/sync/fs%s/%s".format(host, ingestPath,objName)
+        //TODO add owner account id
+        println("sending to ingest: path=%s query=%s".format(fullPath,query))
+        httpClient.parameters('apiKey -> apiKey).post(fullPath)(body)
+      }
+    )
 
-    val body:ByteChunk= Right(dataStream)
-    val fullPath = "%s/ingest/v1/sync/fs%s/%s".format(host, ingestPath,objName)
-    //TODO add owner account id
-    println("sending to ingest: path=%s query=%s".format(fullPath,query))
-    httpClient.parameters('apiKey -> apiKey).post(fullPath)(body)
   }
 
+
+  //def unfoldM[Future[+_],A,StreamT[Future,Seq[String]](start: StreamT[Future,Seq[String])(f: B => Future[Option[(A,StreamT[Future,Seq[String])]])(implicit Future: Functor[Future]): StreamT[Future,A]
   def buildBody(data: StreamT[Id,Seq[String]], baseTable: String, i: IngestInfo)(implicit executor: ExecutionContext, m:FutureMonad): StreamT[Future,JValue] =
     StreamT.unfoldM[Future,JValue,StreamT[Id,Seq[String]]](data)(ds=>
         if (ds.isEmpty) Future(None)
         else Future(mkPartialJson(baseTable,i,ds)))
+
 
 
 }

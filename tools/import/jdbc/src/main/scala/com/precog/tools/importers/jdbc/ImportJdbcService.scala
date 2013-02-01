@@ -39,11 +39,7 @@ trait ImportJdbcService extends BlueEyesServiceBuilder {
     val user = r.parameters.get('user).getOrElse(null)
     val pwd = r.parameters.get('password).getOrElse(null)
     val c=getConnection(dbUrl, user, pwd,database)
-    try {
-      f(c,r)
-    } finally {
-      c.close()
-    }
+    f(c,r).flatMap(x=>Future({c.close();x}))
   }
 
   def handleRequestWithConnection[T](f: (Connection,HttpRequest[T])=> Future[HttpResponse[T]])= handleRequest( (r: HttpRequest[T]) =>  withConnectionFromRequest(r)(f))
