@@ -1,21 +1,11 @@
-QUnit.config = {
-//	autostart : false
-};
-
 var email    = "test-js2@precog.com",
 	password = "1234abc";
 
 function ensureAccount(callack) {
-	Precog.cache.disable();
 	Precog.createAccount(email, password, function(r) {
 		Precog.describeAccount(email, password, r['accountId'], function(d) {
 			Precog.$.Config.apiKey = d.apiKey;
 			Precog.$.Config.basePath = d.rootPath;
-
-//		Precog.$.Config.apiKey = "A1C62105-691B-4D77-9372-36A693E5D905";
-//		Precog.$.Config.basePath = "/0000000024";
-
-//console.log(Precog.$.Config);
 			callack(r['accountId'], d.apiKey, d.rootPath);
 		});
 	});
@@ -23,12 +13,11 @@ function ensureAccount(callack) {
 
 function createDelayedAction(f) {
 	return function(r) {
-		setTimeout(function() { f(r); }, 6000);
+		setTimeout(function() { f(r); }, 3000);
 	};
 }
 
 
-//TODO refactor into a single function that takes an optional argument
 function isApiKeyInArray(arr, val) {
 	for (i = 0; i < arr.length; i++)
 		if (val == arr[i]["apiKey"]){
@@ -53,6 +42,11 @@ function isInArray(arr, val) {
 		}
 			return false;
 }
+
+QUnit.testStart(function() {
+	Precog.cache.disable();
+});
+
 
 ensureAccount(function(id, apiKey, rootPath) {
 
@@ -117,19 +111,6 @@ ensureAccount(function(id, apiKey, rootPath) {
 
 
 		});
-//	});
-
-/*
-		Precog.addGrantToAccount(email, password, accountId, grantId function(result) {
-			equal(result.accountId, id);
-			equal(result.email, email);
-			ok(result.accountCreationDate);
-			ok(result.apiKey);
-			ok(result.rootPath);
-			ok(result.plan);
-			start();
-		});
-	*/
 	});
 
 	asyncTest("describe plan", function() {
@@ -303,10 +284,6 @@ window.console.log(details);
 	});
 */
 
-/*
-Precog.addGrantToKey(apiKey, grant, success, failure, options);
-*/
-
 	asyncTest("add grant to key", function() {
 		var grants1 = {"name":"js-test","description":"","grants":[{"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountIds":[id]}]}]},
             grants2 = {"name":"js-test","description":"","grants":[{"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/bar/","ownerAccountIds":[id]}]}]};
@@ -402,7 +379,6 @@ Precog.addGrantToKey(apiKey, grant, success, failure, options);
 			"{ \"timestamp\" : \""+now+"\", \"index\" : 1 }\n{ \"timestamp\" : \""+now+"\", \"index\" : 2 }\n{ \"timestamp\" : \""+now+"\", \"index\" : 3 }",
 			"json",
 			createDelayedAction(function() {
-			//	console.log(result);
 				Precog.query("ds := /"+path+" ds where ds.timestamp = \""+now+"\"", function(result) {
 					equal(result.length, 3);
 					console.log(result);
@@ -410,7 +386,6 @@ Precog.addGrantToKey(apiKey, grant, success, failure, options);
 				});
 			})
 		);
-//
 	});
 
 	asyncTest( "ingest async json", function() {
@@ -449,7 +424,6 @@ Precog.addGrantToKey(apiKey, grant, success, failure, options);
 		);
 	});
 
-//			/*
 	// **********************
 	// ***      QUERY     ***
 	// **********************
@@ -467,6 +441,190 @@ Precog.addGrantToKey(apiKey, grant, success, failure, options);
 					start();
 				});
 			})
+		);
+	});
+
+	asyncTest( "query error", function() {
+		Precog.query("x",
+			function(result) {
+				ok(false, "should not succeed");
+				start();
+			},
+			function(status, errors) {
+				ok(errors instanceof Array && errors.length > 0);
+				start();
+			}
+		);
+	});
+
+	asyncTest( "detailed query", function() {
+		var path      = "/test/js/detailed-query",
+			timeStamp = +new Date(),
+			event     = {strTest: "string loaded", numTest: 43, time:timeStamp};
+		Precog.store(path,
+			event,
+			createDelayedAction(function() {
+				var query = "data := /"+path+" data where data.time = "+timeStamp;
+				Precog.query(query,
+					function(data, errors, warnings) {
+						deepEqual(data, [event]);
+						ok(errors instanceof Array);
+						ok(warnings instanceof Array);
+						start();
+					},
+					function(status, error) {
+						ok(false, "should not fail");
+						start();
+					}, {
+						format : "detailed"
+					}
+				);
+			})
+		);
+	});
+
+	function unexepectedBranch(message) {
+		return function() {
+			ok(false, message);
+			start();
+		};
+	}
+
+	function testError(callack) {
+		return function(status, errors) {
+			ok(status && errors instanceof Array && errors.length > 0);
+			if(callack) {
+				callack();
+			} else {
+				start();
+			}
+		};
+	}
+
+	asyncTest( "detailed query error", function() {
+		Precog.query("x",
+			unexepectedBranch("should not be succesful"),
+			testError(),
+			{
+				format : "detailed"
+			}
+		);
+	});
+
+	asyncTest( "cached query", function() {
+		Precog.cache.enable();
+		var path      = "/test/js/cached-query",
+			timeStamp = +new Date(),
+			event     = {strTest: "string loaded", numTest: 43, time:timeStamp};
+		Precog.store(path,
+			event,
+			createDelayedAction(function() {
+				var query = "data := /"+path+" data where data.time = "+timeStamp;
+				Precog.query(query, function(result1) {
+					deepEqual(result1, [event]);
+					// results should come from cache after creation
+					Precog.query(query, function(result2) {
+						deepEqual(result2, [event]);
+						start();
+					});
+				});
+				// concurrent cached query
+				Precog.query(query, function(result) {
+					deepEqual(result, [event]);
+				});
+			})
+		);
+	});
+
+	asyncTest( "cached query error", function() {
+		Precog.cache.enable();
+
+		Precog.query("x",
+			unexepectedBranch("should not be succesful"),
+			testError(function() {
+				Precog.query("x",
+					unexepectedBranch("should not be succesful"),
+					function(status, errors) {
+						ok(status && errors instanceof Array && errors.length > 0);
+						start();
+					}
+				);
+			})
+		);
+		// trigger concurrent cached error
+		Precog.query("x",
+			unexepectedBranch("should not be succesful"),
+			testError()
+		);
+	});
+
+	asyncTest( "cached detailed query", function() {
+		Precog.cache.enable();
+		var options   = { format : "detailed" },
+			path      = "/test/js/cached-query",
+			timeStamp = +new Date(),
+			event     = {strTest: "string loaded", numTest: 43, time:timeStamp};
+		Precog.store(path,
+			event,
+			createDelayedAction(function() {
+				var query = "data := /"+path+" data where data.time = "+timeStamp;
+				Precog.query(query,
+					function(data, errors, warnings) {
+						deepEqual(data, [event]);
+						ok(errors instanceof Array);
+						ok(warnings instanceof Array);
+						// results should come from cache after creation
+						Precog.query(query,
+							function(data, errors, warnings) {
+								deepEqual(data, [event]);
+								ok(errors instanceof Array);
+								ok(warnings instanceof Array);
+								start();
+							},
+							null,
+							options
+						);
+					},
+					null,
+					options
+				);
+				// concurrent cached query
+				Precog.query(query,
+					function(data, errors, warnings) {
+						deepEqual(data, [event]);
+						ok(errors instanceof Array);
+						ok(warnings instanceof Array);
+					},
+					null,
+					options
+				);
+			})
+		);
+	});
+
+	asyncTest( "cached detailed query error", function() {
+		Precog.cache.enable();
+		var options = { format : "detailed" };
+
+		Precog.query("x",
+			unexepectedBranch("should not be succesful"),
+			testError(function() {
+				Precog.query("x",
+					unexepectedBranch("should not be succesful"),
+					function(status, errors) {
+						ok(status && errors instanceof Array && errors.length > 0);
+						start();
+					},
+					options
+				);
+			}),
+			options
+		);
+		// trigger concurrent cached error
+		Precog.query("x",
+			unexepectedBranch("should not be succesful"),
+			testError(),
+			options
 		);
 	});
 
@@ -600,5 +758,4 @@ Precog.addGrantToKey(apiKey, grant, success, failure, options);
 			})
 		);
 	});
-
 });

@@ -664,6 +664,16 @@ throw new SyntaxError('JSON.parse');};}}());
       parameters.sortOn = JSON.stringify(options.sortOn);
     if(options.sortOrder)
       parameters.sortOrder = options.sortOrder;
+    if("undefined" !== typeof options.format) {
+      parameters.format = options.format;
+    }
+
+    if(parameters.format === "detailed") {
+      var old = success;
+      success = function(o) {
+        old(o.data, o.errors, o.warnings);
+      };
+    }
 
     return http.get(
       Util.actionUrl("analytics", "fs", options) + Util.actionPath(null, options),
@@ -1127,25 +1137,26 @@ throw new SyntaxError('JSON.parse');};}}());
     var queue = {};
     function executeCachedQuery(query, success, failure, options)
     {
-      var id = uid(query, options),
-          val = cacheGet(id);
-      if(val)
+      var id   = uid(query, options),
+          args = cacheGet(id);
+      if(args)
       {
-        success(val);
+        success.apply(null, args);
       } else if(queue[id]) {
         queue[id].push({success: success, failure: failure});
       } else {
         queue[id] = [{success: success, failure: failure}];
-        executeQuery(query, function(data) {
+        executeQuery(query, function() {
+          args = Array.prototype.slice.call(arguments);
           try{
-            cacheSet(id, data);
+            cacheSet(id, args);
             delayedCleanup(id);
           } catch(e){
             Precog.cache.disable();
           }
           for(var i = 0; i < queue[id].length; i++)
           {
-            queue[id][i].success(data);
+            queue[id][i].success.apply(null, args);
           }
           delete queue[id];
         }, function(){
