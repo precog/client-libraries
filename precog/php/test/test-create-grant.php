@@ -7,9 +7,9 @@ class CreateGrantTest extends PrecogBaseTest {
         $api = PrecogBaseTest::createApi($this->info);
 
         $grant= array(
-    			"parentIds"=> array(), 
+    			"parentIds"=> array(),
     			"expirationDate"=> null,
-    			"permissions"=>array(array("accessType"=>"read", "path"=>$this->info["path"]."foo/","ownerAccountId"=> $this->info["accountId"]))
+    			"permissions"=>array(array("accessType"=>"read", "path"=>$this->info["path"]."foo/","ownerAccountIds" => array($this->info["accountId"])))
     	);
 
         $result = $api->createGrant($grant);

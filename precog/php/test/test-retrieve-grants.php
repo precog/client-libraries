@@ -6,13 +6,14 @@ class RetrieveGrantsTest extends PrecogBaseTest {
     function testRetrieveGrants() {
         $api = PrecogBaseTest::createApi($this->info);
 
-		$grant= array("name"=>"php-test","description"=>"",
+		$grant = array("name"=>"php-test","description"=>"",
 	    	"grants"=>array(array(
-	    			"parentIds"=> array(), 
+	    			"parentIds"=> array(),
 	    			"expirationDate"=> null,
-	    			"permissions"=>array(array("accessType"=>"read", "path"=>$this->info["path"]."foo/","ownerAccountId"=> $this->info["accountId"]))
+	    			"permissions"=>array(array("accessType"=>"read", "path"=>$this->info["path"]."foo/","ownerAccountIds"=> array($this->info["accountId"]))
 	    		))
-	    	);
+	    	)
+	    );
 
         $result = $api->createKey($grant);
  		$apiKey = $result["apiKey"];

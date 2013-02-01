@@ -8,9 +8,9 @@ class AddGrantToKeyTest extends PrecogBaseTest {
 
 		$grant= array("name"=>"php-test","description"=>"",
     	"grants"=>array(array(
-    			"parentIds"=> array(), 
+    			"parentIds"=> array(),
     			"expirationDate"=> null,
-    			"permissions"=>array(array("accessType"=>"read", "path"=>$this->info["path"]."foo/","ownerAccountId"=> $this->info["accountId"]))
+    			"permissions"=>array(array("accessType"=>"read", "path"=>$this->info["path"]."foo/","ownerAccountIds" => array($this->info["accountId"])))
     		))
     	);
 

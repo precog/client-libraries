@@ -7,7 +7,7 @@ class DescribePlanTest extends PrecogBaseTest {
     {
         $pg = PrecogBaseTest::ensureAccount($this->info);
         $result = PrecogAPI::describePlan($pg['user'], $pg['password'], $pg['accountId'], $pg['baseUrl'], $pg['version']);
-        
+
         $this->assertTrue(isset($result['data']['type']));
     }
 }

@@ -29,29 +29,29 @@ function createDelayedAction(f) {
 
 
 //TODO refactor into a single function that takes an optional argument
-function isApiKeyInArray(arr, val) { 
-	for (i = 0; i < arr.length; i++) 
+function isApiKeyInArray(arr, val) {
+	for (i = 0; i < arr.length; i++)
 		if (val == arr[i]["apiKey"]){
-			return true; 
-		} 
-			return false; 
+			return true;
+		}
+			return false;
 }
 
-function isGrantIdInArray(arr, val) { 
-	for (i = 0; i < arr.length; i++) 
+function isGrantIdInArray(arr, val) {
+	for (i = 0; i < arr.length; i++)
 		if (val == arr[i]["grantId"]){
-			return true; 
-		} 
-			return false; 
+			return true;
+		}
+			return false;
 }
 
-function isInArray(arr, val) { 
-	for (i = 0; i < arr.length; i++) 
+function isInArray(arr, val) {
+	for (i = 0; i < arr.length; i++)
 		if (val == arr[i]){
 			console.log(val);
-			return true; 
-		} 
-			return false; 
+			return true;
+		}
+			return false;
 }
 
 ensureAccount(function(id, apiKey, rootPath) {
@@ -61,14 +61,14 @@ ensureAccount(function(id, apiKey, rootPath) {
 	// **********************
 
 	asyncTest("create account", function() {
-		var random = Math.floor((Math.random()*1000000)+1); 
+		var random = Math.floor((Math.random()*1000000)+1);
 		Precog.createAccount("test-js"+random+"@precog.com", password, function(result) {
 			equal(result.accountId.length, 10);
 			ok(result.accountId);
 			start();
 		});
 	});
-	
+
 	asyncTest("describe account", function() {
 		Precog.describeAccount(email, password, id, function(result) {
 			equal(result.accountId, id);
@@ -82,38 +82,40 @@ ensureAccount(function(id, apiKey, rootPath) {
 	});
 
 	asyncTest("add grant to account", function() {
-		var random = Math.floor((Math.random()*1000000)+1); 
+		var random = Math.floor((Math.random()*1000000)+1);
 		Precog.createAccount("test-js"+random+"@precog.com", password, function(result) {
+			window.console.log("1", result);
 			Precog.describeAccount("test-js"+random+"@precog.com", password, result.accountId,
 				function(description){
+					window.console.log("2", description);
 					var accountId = description.accountId;
-					var grants = {"name":"js-test","description":"","grants":[{"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountId":id}]}]};
+					var grants = {"name":"js-test","description":"","grants":[{"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountIds":[id]}]}]};
 					Precog.createKey(grants,
 						function(result) {
-							console.log(result);
+							window.console.log("3", result);
 							var ak = result['apiKey'];
-							console.log(ak);
+							window.console.log(ak);
 							Precog.describeKey(ak,
 								function(description){
-									console.log(description);
-									console.log(description.grants[0].grantId);
+									window.console.log(description);
+									window.console.log(description.grants[0].grantId);
 									var grantId = description.grants[0].grantId;
 									Precog.addGrantToAccount(email, password, accountId, grantId,
 										function() {
-											Precog.retrieveGrants(ak, 
+											Precog.retrieveGrants(ak,
 												function(grantArray){
 													ok(isGrantIdInArray(grantArray, grantId));
 													start();
-												})
-											
+												});
+
 									});
-								})
-								
+								});
+
 							}
 					);
-				})
+				});
 
-			
+
 		});
 //	});
 
@@ -138,13 +140,13 @@ ensureAccount(function(id, apiKey, rootPath) {
 	});
 
 	asyncTest("change plan", function() {
-		var random = Math.floor((Math.random()*1000000)+1); 
+		var random = Math.floor((Math.random()*1000000)+1);
 		Precog.changePlan(email, password, id, "bronze"+random, function(result) {
 			Precog.describePlan(email, password, id, function(result){
 				equal(result.type, "bronze"+random);
 				start();
-			})
-			
+			});
+
 		});
 	});
 
@@ -153,8 +155,8 @@ ensureAccount(function(id, apiKey, rootPath) {
 			Precog.describePlan(email, password, id, function(result){
 				equal(result.type, "Free");
 				start();
-			})
-			
+			});
+
 		});
 	});
 
@@ -163,7 +165,7 @@ ensureAccount(function(id, apiKey, rootPath) {
 	// **********************
 
 	asyncTest("create and delete key", function() {
-		var grants = {"name":"js-test","description":"","grants":[{"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountId":id}]}]};
+		var grants = {"name":"js-test","description":"","grants":[{"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountIds":[id]}]}]};
 		Precog.createKey(grants,
 			function(result) {
 				var ak = result['apiKey'];
@@ -189,23 +191,24 @@ ensureAccount(function(id, apiKey, rootPath) {
 			}
 		);
 	});
-
+/*
 	asyncTest("list keys", function() {
-		var grants = {"name":"js-test","description":"","grants":[{"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountId":id}]}]};
+		var grants = {"name":"js-test","description":"","grants":[{"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountIds":[id]}]}]};
 		Precog.createKey(grants,
 			function(result) {
 				var ak = result['apiKey'];
-				console.log(ak);
+console.log(ak);
 				Precog.listKeys(function(details) {
+window.console.log(details);
 					ok(isApiKeyInArray(details, ak));
 					start();
 				});
 			}
 		);
 	});
-
+*/
 	asyncTest("describe key", function() {
-		var grants = {"name":"js-test","description":"","grants":[{"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountId":id}]}]};
+		var grants = {"name":"js-test","description":"","grants":[{"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountIds":[id]}]}]};
 		Precog.createKey(grants,
 			function(result) {
 				var ak = result['apiKey'];
@@ -219,7 +222,7 @@ ensureAccount(function(id, apiKey, rootPath) {
 	});
 
 	asyncTest("create and describe new grant", function() {
-		var grant = {"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountId":id}]};
+		var grant = {"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountIds":[id]}]};
 		console.log("initial grant "+JSON.stringify(grant));
 		Precog.createGrant(grant, function(g) {
 			ok(g.grantId);
@@ -236,7 +239,7 @@ ensureAccount(function(id, apiKey, rootPath) {
 	});
 
 	asyncTest("delete grant", function() {
-		var grant = {"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountId":id}]};
+		var grant = {"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountIds":[id]}]};
 		Precog.createGrant(grant, function(g) {
 			Precog.deleteGrant(g.grantId, function(result) {
 				ok(true);
@@ -244,16 +247,19 @@ ensureAccount(function(id, apiKey, rootPath) {
 			});
 		});
 	});
-
+/*
 	asyncTest("create child grant and list", function() {
 		// var grant1 = { "type": "read", "path": rootPath+"foo/",     "ownerAccountId": id, "expirationDate": null },
-		// 	grant2 = { "type": "read", "path": rootPath+"foo/bar/", "ownerAccountId": id, "expirationDate": null };
+		// grant2 = { "type": "read", "path": rootPath+"foo/bar/", "ownerAccountId": id, "expirationDate": null };
 
-		var grant1 = {"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountId":id}]},
-			grant2 = {"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/bar/","ownerAccountId":id}]};	
+		var grant1 = {"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountIds":[id]}]},
+			grant2 = {"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/bar/","ownerAccountIds":[id]}]};
 		Precog.createGrant(grant1, function(g1) {
+			window.console.log("1", g1);
 			Precog.createGrantChild(g1.grantId, grant2, function(g2) {
+				window.console.log("2", g2);
 				Precog.listGrantChildren(g1.grantId, function(result) {
+					window.console.log("3", result);
 					ok(result instanceof Array);
 					equal(result.length, 1);
 					equal(result[0].ownerAccountId, id);
@@ -265,8 +271,8 @@ ensureAccount(function(id, apiKey, rootPath) {
 	});
 
 	asyncTest("retrieve grants", function() {
-		var grant1 = {"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountId":id}]},
-			grant2 = {"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/bar/","ownerAccountId":id}]};	
+		var grant1 = {"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountIds":[id]}]},
+			grant2 = {"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/bar/","ownerAccountIds":[id]}]};
 		Precog.createGrant(grant1, function(g1) {
 			Precog.createGrantChild(g1.grantId, grant2, function(g2) {
 				Precog.retrieveGrants(Precog.$.Config.apiKey, function(result) {
@@ -278,10 +284,9 @@ ensureAccount(function(id, apiKey, rootPath) {
 		});
 	});
 
-	
 	asyncTest("remove grant", function() {
-		var grant1 = {"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountId":id}]},
-			grant2 = {"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/bar/","ownerAccountId":id}]};	
+		var grant1 = {"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountIds":[id]}]},
+			grant2 = {"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/bar/","ownerAccountIds":[id]}]};
 			console.log("in remove grant");
 		Precog.createGrant(grant1, function(g1) {
 			console.log(g1.grantId);
@@ -296,15 +301,15 @@ ensureAccount(function(id, apiKey, rootPath) {
 			});
 		});
 	});
+*/
 
-
-	/*
-	  	Precog.addGrantToKey(apiKey, grant, success, failure, options);
-	*/
+/*
+Precog.addGrantToKey(apiKey, grant, success, failure, options);
+*/
 
 	asyncTest("add grant to key", function() {
-		var grants1 = {"name":"js-test","description":"","grants":[{"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountId":id}]}]},
-		    grants2 = {"name":"js-test","description":"","grants":[{"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/bar/","ownerAccountId":id}]}]};
+		var grants1 = {"name":"js-test","description":"","grants":[{"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/","ownerAccountIds":[id]}]}]},
+            grants2 = {"name":"js-test","description":"","grants":[{"parentIds":[],"expirationDate":null,"permissions":[{"accessType":"read","path":rootPath+"foo/bar/","ownerAccountIds":[id]}]}]};
 			Precog.createKey(grants1,
 				function(result) {
 					var ak = result['apiKey'];
@@ -325,12 +330,12 @@ ensureAccount(function(id, apiKey, rootPath) {
 												ok(isGrantIdInArray(grantArray, grantId));
 												start();
 											}
-										)	
+										);
 									}
 								);
 								}
-							)	
-						}	
+							);
+						}
 					);
 				}
 			);
@@ -350,7 +355,7 @@ ensureAccount(function(id, apiKey, rootPath) {
 	// **********************
 	// ***     INGEST     ***
 	// **********************
-     
+
 	asyncTest( "store event", function() {
 		Precog.store("/test/js/store",
 			{strTest: "string loaded", numTest: 42},
@@ -375,7 +380,7 @@ ensureAccount(function(id, apiKey, rootPath) {
 			})
 		);
 	});
-     
+
 	asyncTest( "ingest sync json", function() {
 		var path = "/test/js/json",
 			now  = +new Date();
@@ -392,7 +397,7 @@ ensureAccount(function(id, apiKey, rootPath) {
 			})
 		);
 */
-		
+
 		Precog.ingest(path,
 			"{ \"timestamp\" : \""+now+"\", \"index\" : 1 }\n{ \"timestamp\" : \""+now+"\", \"index\" : 2 }\n{ \"timestamp\" : \""+now+"\", \"index\" : 3 }",
 			"json",
@@ -407,7 +412,7 @@ ensureAccount(function(id, apiKey, rootPath) {
 		);
 //
 	});
-	
+
 	asyncTest( "ingest async json", function() {
 		var path = "/test/js/json",
 			now  = +new Date();
@@ -443,7 +448,7 @@ ensureAccount(function(id, apiKey, rootPath) {
 			})
 		);
 	});
-			
+
 //			/*
 	// **********************
 	// ***      QUERY     ***
@@ -504,7 +509,7 @@ ensureAccount(function(id, apiKey, rootPath) {
 					},
 					null,
 					{basePath: rootPath+"/test"}
-				); 
+				);
 			})
 		);
 	});
@@ -583,7 +588,7 @@ ensureAccount(function(id, apiKey, rootPath) {
 
 	asyncTest("children", function() {
 		var store = { value : 1 },
-		    random = Math.floor((Math.random()*1000000)+1), 
+            random = Math.floor((Math.random()*1000000)+1),
 			childPath = "/test/js/metadata/child"+random,
 			parentPath = "/test/js/metadata";
 		Precog.store(childPath, store,
