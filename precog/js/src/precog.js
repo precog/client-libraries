@@ -670,9 +670,8 @@ throw new SyntaxError('JSON.parse');};}}());
 
     if(parameters.format === "detailed") {
       var old = success;
-      success = function(o) {
-        var rest = Array.prototype.slice.call(arguments, 1);
-        old.apply(null, [o.data, o.errors, o.warnings].concat(rest));
+      success = function(o, headers) {
+        old(o.data, o.errors, o.warnings, headers);
       };
     }
 
