@@ -1,122 +1,336 @@
-(function(exports){
-  if("undefined" === typeof this.define){
-    this.define = function(callback){
-      var value = callback(this.require, exports);
-      if("undefined" !== typeof value)
-        exports['precog'] = value;
+(function (definition) {
+    /*jshint strict: false*/
+
+    // Montage Require
+    if (typeof bootstrap === "function") {
+        bootstrap("precog", definition);
+
+    // CommonJS
+    } else if (typeof exports === "object") {
+        module.exports = definition();
+
+    // RequireJS
+    } else if (typeof define === "function") {
+        define(definition);
+
+    // SES (Secure EcmaScript)
+    } else if (typeof ses !== "undefined") {
+        if (!ses.ok()) {
+            return;
+        } else {
+            ses.makePrecog = definition;
+        }
+    // <script>
+    } else {
+        precog = definition();
     }
-  }
+})(function(){
+  "use strict";
 
   var util = {
-    ajax_nodejs : function(options, success, failure) {
-      var http = require(options.protocol);
-      var req = https.request(options, function(res) {
-        res.on('data', success);
-      });
-
-      req.on('error', failure);
-      req.end();
+    constants : {
+      PORT_HTTP  : 80,
+      PORT_HTTPS : 443
     },
-    actionUrl: function(api, action, options) {
-      var version = (options && options.version) || api.config("version");
-      return "/" + (version ? version + "/" : "") + (action ? action + "/" : "");
+    _nodejs : {
+      ajax : function(request) {
+        complete_request(request);
+        var protocol = request.protocol;
+        delete request.protocol;
+        var deferred = new precog.Deferred(),
+            http     = require(protocol),
+            req      = http.request(request, function(res) {
+console.log(res.headers);
+
+              var body = '';
+              res.setEncoding('utf8');
+              res.on('data', function (chunk) {
+console.log("DATA", chunk);
+                body += chunk;
+              });
+              res.on('end', function () {
+                deferred.fulfill(body);
+              });
+            });
+        req.on('error', deferred.reject);
+        req.end();
+        return deferred.promise;
+      }
+    },
+    eachField : function(ob, handler) {
+      if(!ob) return;
+      for(var key in ob) {
+        if(!ob.hasOwnProperty(key)) continue;
+        handler(key, ob[key]);
+      }
+    },
+    objectMap : function(ob, handler) {
+      var result = [];
+      util.eachField(ob, function(key, value) {
+        result.push(handler(key, value));
+      });
+      return result;
+    },
+    stripSlashes : function(s) {
+      if(s.substr(0, 1) === "/")
+        s = s.substr(1);
+      if(s.substr(-1) === "/")
+        s = s.substr(0, s.length - 1);
+      return s;
+    },
+    actionUrl : function(api, service, action, qs) {
+      var buffer = [service],
+          t;
+      if("object" === typeof action) {
+        qs = action;
+        action = null;
+      }
+      if(t = api.config("version")) {
+        buffer.push(t);
+      }
+      if(action) {
+        buffer.push(action);
+      }
+      t = api.config("basePath");
+      buffer.push(t === "/" ? "" : t);
+      
+      var querystring = util.objectMap(qs, function(key, value) {
+        return encodeURIComponent(key) + "=" + encodeURIComponent(value);
+      }).join("&");
+
+      return "/" + buffer.join("/") + (querystring ? "?" + querystring : "");
     }
   };
-  util.ajax = ajax_nodejs;
+  util.ajax = util._nodejs.ajax;
 
-    //inside this is where exposed functions go
+  var precog = {};
 
-  define(function (require, exports) {
-    function assemble_service(config) {
-      var service = 
-            config.protocol +
-            "://" +
-            config.host;
-        if(config.protocol === 'http' && config.port != 80)
-          service += ":" + config.port; 
-        else if(config.protocol === 'https' && config.port != 8081)
-          service += ":" + config.port; 
-        return service;
+  function complete_request(request) {
+    if(!request.protocol) request.protocol = "http";
+    if(!request.port)     request.port = request.protocol === "http" ? util.constants.PORT_HTTP : util.constants.PORT_HTTPS;
+    if(!request.method)   request.method = "GET";
+    if(!request.path)     request.path = "/";
+    
+    if(!request.headers)  request.headers = {};
+    if(!request.headers["Accept"]) 
+      request.headers["Accept"] = "applicaiton/json;text/plain";
+//    if(!request.headers["Connection"]) 
+//      request.headers["Connection"] = "close";
+    
+  }
+
+  function assemble_service(config) {
+    var service = config("protocol") + "://" + config("hostname");
+      if(config("protocol") === 'http' && config("port") !== util.constants.PORT_HTTP)
+        service += ":" + config("port"); 
+      else if(config("protocol") === 'https' && config("port") !== util.constants.PORT_HTTPS)
+        service += ":" + config("port"); 
+      return service;
+  }
+
+  var config_setters = {
+    analyticsService : {
+      filter : function(value) {
+        return util.stripSlashes(value);
+      },
+      after  : function(config) {
+        var service  = config("analyticsService"),
+            protocol = service.split("://")[0],
+            hostname = service.split("://").slice(1).join("://"),
+            pos      = hostname.indexOf(":");
+
+        config("protocol", protocol, true);
+        if(pos >= 0){
+          config("port", hostname.substring(pos+1), true);
+          config("hostname", hostname.substring(0, pos), true);
+        } else {
+          config("port", config("protocol") === "http" ? util.constants.PORT_HTTP: util.constants.PORT_HTTPS, true);
+          config("hostname", hostname, true);
+        }
+      }
+    },
+    hostname : {
+      filter : function(value) { return util.stripSlashes(value);},
+      after  : assemble_service
+    },
+    port     : {
+      filter : function(value) { return parseInt(value); },
+      after  : assemble_service
+    },
+    protocol : {
+      filter : function(value) { return value.toLowerCase(); },
+      after  : function(config) {
+        var protocol = config("protocol"),
+            port = config("port");
+        if(port === util.constants.PORT_HTTP || port === util.constants.PORT_HTTPS) {
+          port = protocol === "http" ? util.constants.PORT_HTTP : util.constants.PORT_HTTPS;
+          config("port", port, true);
+        }
+        assemble_service(config);
+      }
+    },
+    basePath : {
+      filter : function(value) {
+        if(!value) {
+          value = "/";
+        } else {
+          value = util.stripSlashes(value) + "/";
+        }
+        return value;
+      }
+    },
+    apiKey   : {},
+    version  : {}
+  };
+
+
+
+  precog.Api = function(options){
+    options = options || {};
+    var config_params = {};
+
+    function config(key, value, silent){
+      if("undefined" === typeof value){
+        return config_params[key];
+      } else {
+        if(!config_setters[key]) throw "invalid config parameter: " + key;
+        config_params[key] = config_setters[key].filter && config_setters[key].filter(value) || value;
+        if(!silent && config_setters[key].after)
+          config_setters[key].after(config);
+      }
     }
 
-    var config_setters = {
-      analyticsService : function(value, config) {
-        config.protocol = value.split("://").shift().toLowerCase();
-        config.host = value.split("://").pop();
-        var pos = config.host.lastIndexOf(":");
-        if(pos >= 0){
-          config.port = config.host.substring(pos+1);
-          config.host = config.host.substring(0, pos);
-        } else {
-          config.host = config.protocol === "http" ? "80": "8081";
-        }
-        return value;
-      },
-      host             : function(value, config) {
-        config.host = value;
-        config.analyticsService = assemble_service(config); 
-        return value;
-      },
-      port             : function(value, config) {
-        config.port = value;
-        config.analyticsService = assemble_service(config); 
-        return value;
-      },
-      protocol         : function(value, config) {
-        config.protocol = value.toLowerCase();
-        config.analyticsService = assemble_service(config); 
-        return value;
-      },
-      basePath         : function(value, config) { return value; },
-      apiKey           : function(value, config) { return value; },
-      version          : function(value, config) { return value; }
-    };
+    this.config = config;
 
-    exports.Api = function(options){
+    this.query = function(query, options){
       options = options || {};
-      var config_params = {};
+      var description = 'Precog query ' + query,
+          parameters = { apiKey : config("apiKey"), q : query };
 
-      this.config = function(key, value){
-        if("undefined" === typeof value){
-          return config_params[key];
+      if(options.limit)
+        parameters.limit = options.limit;
+      if(options.basePath)
+        parameters.basePath = options.basePath;
+      if(options.skip)
+        parameters.skip = options.skip;
+      if(options.order)
+        parameters.order = options.order;
+      if(options.sortOn)
+        parameters.sortOn = JSON.stringify(options.sortOn);
+      if(options.sortOrder)
+        parameters.sortOrder = options.sortOrder;
+
+      parameters.q = query;
+
+      var request = {
+        protocol : config("protocol"),
+        hostname : config("hostname"),
+        method   : "GET",
+        port     : config("port"),
+        path     : util.actionUrl(this, "analytics", "fs", parameters)
+      };
+
+      return util.ajax(request);
+    }
+
+    config("basePath", null, true);
+    config("version", "v1", true);
+    util.eachField(options, config);
+  };
+
+  /***
+    based on https://github.com/ForbesLindesay/promises-a
+  */
+  precog.Deferred = function() {
+    var resolved  = false,
+        fulfilled = false,
+        val,
+        waiting = [],
+        running = false,
+        prom = {then: then, valueOf: valueOf, done: done}
+
+    function next(skipTimeout) {
+      if (waiting.length) {
+        running = true;
+        waiting.shift()(skipTimeout || false)
+      } else {
+        running = false;
+      }
+    }
+    function then(cb, eb) {
+      var def = new precog.Deferred();
+      function done(skipTimeout) {
+        var callback = fulfilled ? cb : eb;
+        function timeoutDone() {
+          var value;
+          try {
+            value = callback(val)
+          } catch (ex) {
+            def.reject(ex)
+            return next();
+          }
+          def.fulfill(value);
+          next(true);
+        }
+        if (typeof callback === 'function') {
+          if (skipTimeout)
+            timeoutDone();
+          else
+            setTimeout(timeoutDone, 0);
+        } else if (fulfilled) {
+          def.fulfill(val);
+          next(skipTimeout);
         } else {
-          if(!config_setters[key]) throw "invalid config parameter: " + key;
-          config_params[key] = config_setters[key](value, config_params);
+          def.reject(val);
+          next(skipTimeout);
         }
       }
-
-      this.query = function(query, options){
-        options = options || {};
-        var description = 'Precog query ' + query,
-            parameters = { apiKey : this.config("apiKey") q : query };
-
-        if(options.limit)
-          parameters.limit = options.limit;
-        if(options.basePath)
-          parameters.basePath = options.basePath;
-        if(options.skip)
-          parameters.skip = options.skip;
-        if(options.order)
-          parameters.order = options.order;
-        if(options.sortOn)
-          parameters.sortOn = JSON.stringify(options.sortOn);
-        if(options.sortOrder)
-          parameters.sortOrder = options.sortOrder;
-
-        return http.get(
-          Util.actionUrl("analytics", "fs", options) + Util.actionPath(null, options),
-          Util.createCallbacks(success, failure, description),
-          parameters
-        );
+      waiting.push(done);
+      if (resolved && !running) {
+        next();
       }
-
-      this.config("version", "v1");
-      for(var key in options) {
-        if(!options.hasOwnProperty(key)) continue;
-        this.config(key, options[key]);
+      return def.promise;
+    }
+    function resolve(success, value) {
+      if (resolved) return;
+      if (success  && value && typeof value.then === 'function') {
+        value.then(fulfill, reject);
+        return;
       }
-    };
+      resolved = true;
+      fulfilled = success;
+      val = value;
+      next();
+    }
+    function fulfill(val) {
+      resolve(true, val);
+    }
+    function reject(err) {
+      resolve(false, err);
+    }
+
+    function valueOf() {
+      return fulfilled ? val : prom;
+    }
+
+    function done(cb, eb) {
+      var p = this; // support 'hot' promises
+      if (cb || eb) {
+        p = p.then(cb, eb);
+      }
+      p.then(null, function (reason) {
+        setTimeout(function () {
+          throw reason;
+        }, 0)
+      });
+    }
+
+    this.promise = prom;
+    this.fulfill = fulfill;
+    this.reject  = reject;
   }
-  );
 
-})(typeof exports === 'undefined'? this['precog']={}: exports);
+  precog.util = util;
+
+  return precog;
+});
