@@ -1,8 +1,10 @@
+import AssemblyKeys._ 
+
 name := "import-mongodb"
 
 organization := "org.precog"
 
-version := "0.1"
+version := "0.2"
 
 scalaVersion := "2.9.2"
 
@@ -17,6 +19,8 @@ resolvers ++= Seq(
 scalacOptions ++= Seq("-unchecked", "-deprecation")
 
 //seq(com.github.retronym.SbtOneJar.oneJarSettings: _*)
+
+assemblySettings
 
 libraryDependencies ++= Seq(
   "com.reportgrid" %% "blueeyes-core" % "latest.milestone", //"1.0.0-M6",
