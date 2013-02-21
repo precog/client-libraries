@@ -56,6 +56,11 @@
         return deferred.promise;
       }
     },
+    extend : function(dst, src) {
+      for(key in src) {
+        dst[key] = src[key];
+      }
+    },
     eachField : function(ob, handler) {
       if(!ob) return;
       for(var key in ob) {
