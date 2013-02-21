@@ -23,6 +23,7 @@
     // <script>
     } else {
         precog = definition();
+        // TODO, add compatibility layer with current implementation
     }
 })(function(){
   "use strict";
@@ -40,12 +41,10 @@
         var deferred = new precog.Deferred(),
             http     = require(protocol),
             req      = http.request(request, function(res) {
-console.log(res.headers);
 
               var body = '';
               res.setEncoding('utf8');
               res.on('data', function (chunk) {
-console.log("DATA", chunk);
                 body += chunk;
               });
               res.on('end', function () {
@@ -112,11 +111,14 @@ console.log("DATA", chunk);
     if(!request.path)     request.path = "/";
     
     if(!request.headers)  request.headers = {};
-    if(!request.headers["Accept"]) 
-      request.headers["Accept"] = "applicaiton/json;text/plain";
+//    if(!request.headers["Accept"]) 
+//      request.headers["Accept"] = "applicaiton/json;text/plain";
 //    if(!request.headers["Connection"]) 
 //      request.headers["Connection"] = "close";
-    
+//    if(!request.headers['Content-length'])
+//      request.headers['Content-length'] = '0';
+//    if(!request.headers['Expect'])
+//      request.headers['Expect'] = '100-continue';
   }
 
   function assemble_service(config) {
@@ -230,7 +232,7 @@ console.log("DATA", chunk);
         path     : util.actionUrl(this, "analytics", "fs", parameters)
       };
 
-      return util.ajax(request);
+      return util.ajax(request).then(JSON.parse);
     }
 
     config("basePath", null, true);

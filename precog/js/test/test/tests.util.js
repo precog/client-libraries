@@ -2,7 +2,6 @@ var should = require('should'),
 	  precog = require('../../src/precog.amd.js');
 
 describe("ajax", function() {
-  /*
   describe("simple GET", function() {
     it("should load content from url", function(done) {
         precog.util.ajax({
@@ -53,5 +52,4 @@ describe("ajax", function() {
         );
     });
   });
-*/
 });
