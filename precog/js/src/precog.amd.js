@@ -36,12 +36,14 @@
     _nodejs : {
       ajax : function(request) {
         complete_request(request);
-        var protocol = request.protocol;
+        var protocol = request.protocol,
+            content  = request.content;
         delete request.protocol;
+        delete request.body;
+
         var deferred = new precog.Deferred(),
             http     = require(protocol),
             req      = http.request(request, function(res) {
-
               var body = '';
               res.setEncoding('utf8');
               res.on('data', function (chunk) {
@@ -52,6 +54,9 @@
               });
             });
         req.on('error', deferred.reject);
+        if(content) {          
+          req.write(content);
+        }
         req.end();
         return deferred.promise;
       }
@@ -76,33 +81,39 @@
       return result;
     },
     stripSlashes : function(s) {
+      if(!s)
+        return s;
       if(s.substr(0, 1) === "/")
         s = s.substr(1);
       if(s.substr(-1) === "/")
         s = s.substr(0, s.length - 1);
       return s;
     },
-    actionUrl : function(api, service, action, qs) {
-      var buffer = [service],
+    actionUrl : function(api, service, action, path, qs) {
+      var buffer = [service + "/"],
           t;
       if("object" === typeof action) {
         qs = action;
         action = null;
       }
       if(t = api.config("version")) {
-        buffer.push(t);
+        buffer.push(t + "/");
       }
       if(action) {
-        buffer.push(action);
+        buffer.push(action + "/");
       }
       t = api.config("basePath");
-      buffer.push(t === "/" ? "" : t);
+      if(!!t && t !== "/")
+        buffer.push(t + "/");
+      if (path) {
+        buffer.push(util.stripSlashes(path) + "/");
+      }
       
       var querystring = util.objectMap(qs, function(key, value) {
         return encodeURIComponent(key) + "=" + encodeURIComponent(value);
       }).join("&");
 
-      return "/" + buffer.join("/") + (querystring ? "?" + querystring : "");
+      return "/" + buffer.join("") + (querystring ? "?" + querystring : "");
     }
   };
   util.ajax = util._nodejs.ajax;
@@ -179,9 +190,9 @@
     basePath : {
       filter : function(value) {
         if(!value) {
-          value = "/";
+          value = "";
         } else {
-          value = util.stripSlashes(value) + "/";
+          value = util.stripSlashes(value);
         }
         return value;
       }
@@ -234,11 +245,77 @@
         hostname : config("hostname"),
         method   : "GET",
         port     : config("port"),
-        path     : util.actionUrl(this, "analytics", "fs", parameters)
+        path     : util.actionUrl(this, "analytics", "fs", options.path, parameters)
       };
 
       return util.ajax(request).then(JSON.parse);
     }
+
+    this.ingest = function(path, content, options) {
+      options = options || {};
+      var type = options.type || "json",
+          parameters = { apiKey : config("apiKey") };
+      path = util.stripSlashes(path);
+      if(!content) throw Error("argument 'content' must contain a non empty value formatted as described by type or an array of javascript values");
+      switch(type.toLowerCase()) {
+        case 'application/x-gzip':
+        case 'gz':
+        case 'gzip':
+          type = 'application/x-gzip';
+          break;
+        case 'zip':
+          type = 'application/zip';
+          break;
+        case 'application/json':
+        case 'json':
+          type = 'application/json';
+          if(content instanceof Array) {
+            content = content
+              .map(function(item){ return JSON.stringify(item); })
+              .join("\n");
+          } else if("string" !== typeof content) {
+            content = JSON.stringify(content);
+          }
+          break;
+        case 'text/csv':
+        case 'csv':
+          type = 'text/csv';
+          if(options.delimiter)
+            parameters.delimiter = options.delimiter;
+          if(options.quote)
+            parameters.quote = options.quote;
+          if(options.escape)
+            parameters.escape = options.escape;
+          break;
+        default:
+          throw Error("argument 'type' must be 'json' or 'csv'");
+      }
+
+      var request = {
+        protocol : config("protocol"),
+        hostname : config("hostname"),
+        method   : "POST",
+        port     : config("port"),
+        content  : content,
+        path     : util.actionUrl(this, "ingest", (options.async ? "async" : "sync") + "/fs", path, parameters)
+      };
+      return util.ajax(request).then(JSON.parse);
+    };
+
+/*
+  Precog.ingest = function(path, content, type, success, failure, options) {
+
+    $.Http.Ajax.post(
+      Util.actionUrl("ingest", (options.async ? "async" : "sync") + "/fs", options) + Util.actionPath(path, options),
+      content,
+      Util.createCallbacks(success, failure, description),
+      parameters,
+      { "Content-Type" : type },
+      options.progress ? options.progress : null
+    );
+  };
+*/
+
 
     config("basePath", null, true);
     config("version", "v1", true);
