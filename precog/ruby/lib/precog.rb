@@ -24,6 +24,7 @@
 
 require 'logger'
 require 'net/http'
+
 require 'pp'
 require 'time'
 require 'uri'
@@ -36,7 +37,7 @@ module Precog
 
   # API server constants
   module API
-    HOST = 'api.precog.io'
+    HOST = 'devapi.precog.com'
     PORT = 443
     VERSION = '1'
   end
@@ -84,7 +85,7 @@ module Precog
     end
 
     def basic_auth(user, password)
-      { "Authorization" => "Basic " + Base64.encode64(user + ':' + password).chomp }
+      { "Authorization" => "Basic " + Base64.urlsafe_encode64(user + ':' + password).chomp }
     end
 
     def action_url(service, action )
@@ -177,6 +178,13 @@ module Precog
     def initialize(api_key, host = API::HOST, port = API::PORT)
       @api_key = api_key
       @api = HttpClient.new(api_key, host, port)
+    end
+
+    def self.from_heroku(token)
+      values=Utils.from_token(token)
+      no_key_api=Precog.new(nil, values[:host])
+      response =no_key_api.describe_account(values[:user],values[:pwd],values[:account_id])
+      Precog.new(response['apiKey'], values[:host])
     end
 
     ######################
@@ -284,4 +292,20 @@ module Precog
     end
 
   end
+
+  class Utils
+
+    def self.to_token(user,pwd,host, account_id)
+      Base64.urlsafe_encode64("#{user}:#{pwd}:#{host}:#{account_id}")
+    end
+
+    def self.from_token(token)
+      values=Base64.urlsafe_decode64(token).split(":")
+      { :user=>values[0], :pwd=>values[1], :host=>values[2], :account_id=>values[3] }
+    end
+
+  end
+
 end
+
+

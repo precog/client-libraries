@@ -23,10 +23,11 @@
 #
 
 require 'test/unit'
+require 'base64'
 
 class PrecogClientTest < Test::Unit::TestCase
 
-    HOST = 'devapi.precog.com'
+    HOST = 'beta.precog.com'
     PORT = 443
     ROOT_API_KEY = '2D36035A-62F6-465E-A64A-0E37BCC5257E'
 
@@ -148,6 +149,15 @@ class PrecogClientTest < Test::Unit::TestCase
     response=@api.query(@account_id, "count(//"+@account_id+")")
     assert_equal Array, response.class
     assert_equal 0, response[0]
+  end
+
+  def test_from_heroku
+      #connection with Heroku token
+      token=Precog::Utils.to_token("test-rb@precog.com","password","#{HOST}","#{@account_id}")
+      assert_equal Precog::Utils.from_token(token) { :user=>"test-rb@precog.com", :pwd=>"password", :host=>"#{HOST}", :account_id=>"#{@account_id}" }
+      heroku_api=Precog::Precog.from_heroku(token)
+      response =heroku_api.describe_account("test-rb@precog.com","password",@account_id)
+      assert_equal @api_key, response['apiKey']
   end
 
 end
