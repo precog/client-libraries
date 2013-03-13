@@ -18,7 +18,7 @@ class SortTest extends PrecogBaseTest {
         $path = $this->setupPath();
         $options1 = array("limit" => 1, "sortOn" => "foo", "sortOrder" => "asc");
         $options2 = array("limit" => 1, "sortOn" => "foo", "sortOrder" => "desc");
-        sleep(5);
+        sleep(15);
 
         $value1 = $this->api->query("/$path", $options1);
         $value2 = $this->api->query("/$path", $options2);

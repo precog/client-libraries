@@ -17,7 +17,7 @@ class LimitTest extends PrecogBaseTest {
         $path = $this->setupPath();
         $options = array("limit"=>1);
 
-        sleep(5);
+        sleep(15);
 
         $value = $this->api->query("/$path", $options);
         $this->assertTrue(count($value), 1);

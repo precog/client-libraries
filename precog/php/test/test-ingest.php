@@ -9,13 +9,14 @@ class IngestSyncTest extends PrecogBaseTest {
         $path = "/test/php/ingestsync/T" . str_replace(".", "", uniqid(rand(), true));
         $r = $api->ingest($path, file_get_contents("testData1.json"), "json");
 
-        sleep(5);
+        sleep(15);
 
         $result = $api->query("count(/$path)");
         $this->assertTrue($result[0] === 6);
 
     }
-
+  //async no longer returns results but returns a job id, support for this functionality needs to be added  
+ /*
     function testIngestAsync()
     {
         $api = PrecogBaseTest::createApi($this->info);
@@ -28,6 +29,8 @@ class IngestSyncTest extends PrecogBaseTest {
         $this->assertTrue($result[0] === 6);
 
     }
+    */
 }
+
 ?>
 
