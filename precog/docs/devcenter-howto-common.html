@@ -1,0 +1,298 @@
+ <span class="page-title">
+      Developer Center
+    </span>
+ <div>
+   <h1>How To</h1> 
+<div>
+<div>
+    <h2>Compute Common Analytics on Precog</h2>   
+    <h3>Introduction</h3>
+    <p>
+This is a short guide that shows how to perform very common analytical queries using the Quirrel query language.        
+    </p>
+    <p>
+       Quirrel is a very powerful language that lets you perform much more advanced analytics and statistics than shown in this guide. For more information on how to write advanced Quirrel, please see the following resources: 
+    </p>
+    <ul>
+        <li>
+            <a href="http://www.precog.com/products/labcoat">The Quirrel Whitepaper</a>
+        </li>
+        <li>
+            <a href="http://quirrel-lang.org/">Homepage for the Quirrel Language</a>
+        </li>
+         <li>
+            <a href="irc://irc.freenode.net:6667/quirrel">The Quirrel IRC Channel</a>
+        </li>
+         <li>
+            <a href="mailto:support@precog.com">support@precog.com</a>
+        </li>
+    </ul>
+    <p>
+        All of these examples have been constructed so you can run them in the demo Labcoat environment, which you can access <a href="https://labcoat.precog.com">here</a>. By tweaking the names of the directories and field names, you should be able to easily run them on your own data, too.
+    </p>
+    <h3>How to compute a count</h3>
+
+<pre><a class="button-launch-labcoat" href="#">labcoat</a>clicks := //clicks
+&nbsp;
+count(clicks)</pre>
+    <h3>How to compute a sum</h3>
+
+<pre><a class="button-launch-labcoat" href="#">labcoat</a>conversions := //conversions
+&nbsp;
+sum(conversions.product.price)</pre>
+    <h3>How to find the minimum, maximum, and average</h3>
+
+<pre><a class="button-launch-labcoat" href="#">labcoat</a>product := (//conversions).product
+&nbsp;
+  {min:    min(product.price),
+&nbsp;
+  max:     max(product.price),
+&nbsp;
+  average: mean(product.price)}</pre>
+    <h3>How to discard extreme values (outliers)</h3>
+
+<pre><a class="button-launch-labcoat" href="#">labcoat</a>conversions := //conversions
+&nbsp;
+average := mean(conversions.product.price)
+&nbsp;
+bound := 3 * stdDev(conversions.product.price)
+&nbsp;
+conversions where
+&nbsp;
+ (conversions.product.price > (average - bound)) &
+&nbsp;
+ (conversions.product.price < (average + bound))</pre>
+    <h3>How to filter data</h3>
+
+<pre><a class="button-launch-labcoat" href="#">labcoat</a>conversions := //conversions
+&nbsp;
+conversions where
+&nbsp;
+ (conversions.product.price > 2) &
+&nbsp;
+ (conversions.customer.age < 20)</pre>
+    <h3>How to sort data</h3>
+
+<pre><a class="button-launch-labcoat" href="#">labcoat</a>import std::stats::rankNum
+&nbsp;
+conversions := //conversions
+&nbsp;
+conversions where
+&nbsp;
+ rankNum(conversions.customer.age) < 10</pre>
+    <h3>How to group data</h3>
+
+<pre><a class="button-launch-labcoat" href="#">labcoat</a>conversions := //conversions
+&nbsp;
+solve 'age, 'gender
+&nbsp;
+ conversions' := conversions where
+&nbsp;
+   conversions.customer.age = 'age &
+&nbsp;
+   conversions.customer.gender = 'gender
+&nbsp;
+ {age: 'age, gender: 'gender, count: count(conversions')}</pre>
+    <h3>How to compute a histogram</h3>
+
+<pre><a class="button-launch-labcoat" href="#">labcoat</a>london := //summer_games/london_medals
+&nbsp;
+solve 'age
+&nbsp;
+ london' := london where london.Age = 'age
+&nbsp;
+ {age: 'age, count: count(london')}</pre>
+    <h3>How to compute a top-10 histogram</h3>
+
+<pre><a class="button-launch-labcoat" href="#">labcoat</a>import std::stats::rank
+&nbsp;
+london := //summer_games/london_medals
+&nbsp;
+histogram := solve 'age
+&nbsp;
+ london' := london where london.Age = 'age
+&nbsp;
+ {age: 'age, count: count(london')}
+&nbsp;
+ranked := histogram with {rank: rank(histogram.count)}
+&nbsp;
+ranked where ranked.rank < 10</pre>
+    <h3>How to compute a bottom-10 histogram</h3>
+
+<pre><a class="button-launch-labcoat" href="#">labcoat</a>import std::stats::rank
+&nbsp;
+london := //summer_games/london_medals
+&nbsp;
+histogram := solve 'age
+&nbsp;
+ london' := london where london.Age = 'age
+&nbsp;
+ {age: 'age, count: count(london')}
+&nbsp;
+ranked := histogram with {rank: rank(neg histogram.count)}
+&nbsp;
+ranked where ranked.rank < 10</pre>
+    <h3>How to parse dates and times</h3>
+
+<pre><a class="button-launch-labcoat" href="#">labcoat</a>import std::time::parseDateTime
+&nbsp;
+conversions := //conversions
+&nbsp;
+parseDateTime(conversions.timeStamp, "yyyy-MM-ddThh:mm:ss.SSS")</pre>
+    <h3>How to fuzzily parse dates and times</h3>
+
+<pre><a class="button-launch-labcoat" href="#">labcoat</a>import std::time::parseDateTimeFuzzy
+&nbsp;
+conversions := //conversions
+&nbsp;
+parseDateTimeFuzzy(conversions.timeStamp)</pre>
+    <h3>How to compute a day-by-day histogram</h3>
+
+<pre><a class="button-launch-labcoat" href="#">labcoat</a>import std::time::date
+&nbsp;
+conversions := //conversions
+&nbsp;
+solve 'date
+&nbsp;
+ conversions' := conversions where
+&nbsp;
+   date(conversions.timeStamp) = 'date
+&nbsp;
+ {count: count(conversions'), date: 'date}</pre>
+    <h3>How to compute a day-of-week histogram</h3>
+
+<pre><a class="button-launch-labcoat" href="#">labcoat</a>import std::time::dayOfWeek
+&nbsp;
+conversions := //conversions
+&nbsp;
+solve 'dow
+&nbsp;
+ conversions' := conversions where
+&nbsp;
+   dayOfWeek(conversions.timeStamp) = 'dow
+&nbsp;
+ {count: count(conversions'), dow: 'dow}</pre>
+    <h3>How to compute an hour-by-hour histogram</h3>
+
+<pre><a class="button-launch-labcoat" href="#">labcoat</a>import std::time::dateHour
+&nbsp;
+conversions := //conversions
+&nbsp;
+solve 'dateHour
+&nbsp;
+ conversions' := conversions where
+&nbsp;
+   dateHour(conversions.timeStamp) = 'dateHour
+&nbsp;
+ {count: count(conversions'), dateHour: 'dateHour}</pre>
+    <h3>How to compute an hour-of-day histogram</h3>
+
+<pre><a class="button-launch-labcoat" href="#">labcoat</a>import std::time::hourOfDay
+&nbsp;
+conversions := //conversions
+&nbsp;
+solve 'hour
+&nbsp;
+ conversions' := conversions.timeStamp where
+&nbsp;
+   hourOfDay(conversions.timeStamp) = 'hour
+&nbsp;
+ {count: count(conversions'), hour: 'hour}</pre>
+    <h3>How to join two different data sets</h3>
+
+<pre><a class="button-launch-labcoat" href="#">labcoat</a>billing := //billing
+&nbsp;
+conversions := //conversions
+&nbsp;
+billing ~ conversions
+&nbsp;
+{customerId: conversions.customer.ID,
+&nbsp;
+billDate: billing.date} where
+&nbsp;
+ conversions.customer.ID = billing.customer.ID</pre>
+    <h3>How to perform a time-windowed query</h3>
+
+<pre><a class="button-launch-labcoat" href="#">labcoat</a>import std::time::hourOfDay
+&nbsp;
+transactions := //tutorial/transactions
+&nbsp;
+transactions' := transactions with {hourOfDay: hourOfDay(transactions.timeStamp)}
+&nbsp;
+solve 'hour = transactions'.hourOfDay
+&nbsp;
+ lowerBound := 'hour - 1
+&nbsp;
+ upperBound := 'hour + 1
+&nbsp;
+ window := transactions' where
+&nbsp;
+   transactions'.hourOfDay >= lowerBound &
+&nbsp;
+    transactions'.hourOfDay <= upperBound
+&nbsp;
+ {hour: 'hour, count: count(window)}</pre>
+    <h3>How to compute a cummulative total over time</h3>
+
+<pre><a class="button-launch-labcoat" href="#">labcoat</a>import std::stats::rank
+&nbsp;
+import std::time::date
+&nbsp;
+transactions := //tutorial/transactions
+&nbsp;
+transactions' := transactions with
+&nbsp;
+ {order: rank(date(transactions.timeStamp)),
+&nbsp;
+  day: date(transactions.timeStamp)}
+&nbsp;
+solve 'day
+&nbsp;
+ daysT := transactions' where transactions'.day = 'day
+&nbsp;
+ dayOrder := min(daysT.order)
+&nbsp;
+ {day: 'day,
+&nbsp;
+  total: sum(transactions'.price where
+&nbsp;
+               transactions'.order <= dayOrder)}</pre>
+    <h3>How to find the duration between events</h3>
+
+<pre><a class="button-launch-labcoat" href="#">labcoat</a>import std::stats::denseRank
+&nbsp;
+import std::time::getMillis
+&nbsp;
+conversions := //conversions
+&nbsp;
+solve 'customerId
+&nbsp;
+   conversions' := conversions where
+&nbsp;
+   conversions.customer.ID = 'customerId
+&nbsp;
+ c1 := conversions' with
+&nbsp;
+   {rank: denseRank(conversions.timeStamp),
+&nbsp;
+    millis: getMillis(conversions.timeStamp)}
+&nbsp;
+ c2 := new c1
+&nbsp;
+ solve 'rank
+&nbsp;
+   c1' := c1 where c1.rank = 'rank
+&nbsp;
+   c2' := c2 where c2.rank - 1 = 'rank
+&nbsp;
+   c1' ~ c2'
+&nbsp;
+   {customerId: 'customerId,
+&nbsp;
+    duration: c1'.millis - c2'.millis,
+&nbsp;
+    price: c2'.product.price}</pre>
+</div>
+
+
+
