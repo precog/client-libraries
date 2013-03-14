@@ -24,17 +24,20 @@
             GET
           </dt>
           <dd class="m-text">
-           GET /meta/v1/fs/<span class="tool-tip-path">'path</span>?type=[type]&apiKey=<span class="tool-tip-apikey">[auth API key]</span>
+           GET /meta/v1/fs/<span class="tool-tip-path">'path</span>?type=[type]&property=[JSON property]&apiKey=<span class="tool-tip-apikey">[auth API key]</span>
          </dd>
           <dt class="d-title">
             description
           </dt>
           <dd class="d-text">
            <p>
-          Retrieves metadata for a particular path in the file system. 
+          Retrieves metadata for a particular path in the file system.
          </p>
            <p>
-            The valid metadata types include size, structure, and children. If no metadata type is specified, then all metadata is returned.
+           The valid metadata types (the <code>type=[type]</code> parameter) include <code>size</code>, <code>structure</code>, and <code>children</code>. If no metadata type is specified, then all metadata is returned.
+           </p>
+           <p>
+           You can retrieve information about a specific JSON property by specifying the <code>property=[JSON property]</code> query parmeter. This works the same way <em>derefing</em> and object in Quirrel works. For example, if our data looks like <code>{"a": [0, 1]}<code>, we can retrieve metadata for the 1st element of the "a" property by using <code>property=a[0]</code>. This is only valid if <code>type</code> is <em>structure</em> or omitted.
            </p>
           </dd>
            <dt class="r-title">
@@ -45,6 +48,8 @@
 "size": 1024,
 
 "structure": {
+
+   "children": [ ".a", ".b" ],
 
    "types": {
 
@@ -62,7 +67,7 @@
 
  },
 
-"children": ["foo", "bar"]
+"children": ["/foo/", "/bar/"]
 }</pre>
            </dd>
         </dl>
