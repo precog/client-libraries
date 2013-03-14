@@ -39,6 +39,7 @@
            <p>
            You can retrieve information about a specific JSON property by specifying the <code>property=[JSON property]</code> query parmeter. This works the same way <em>derefing</em> and object in Quirrel works. For example, if our data looks like <code>{"a": [0, 1]}<code>, we can retrieve metadata for the 1st element of the "a" property by using <code>property=a[0]</code>. This is only valid if <code>type</code> is <em>structure</em> or omitted.
            </p>
+           <p><em>Note that we currently do not provide counts of objects and arrays inside of the <code>structure.types</code> object, though this is planned for a future release</em></p>
           </dd>
            <dt class="r-title">
             response body
@@ -67,7 +68,7 @@
 
  },
 
-"children": ["/foo/", "/bar/"]
+"children": ["foo/", "bar/"]
 }</pre>
            </dd>
         </dl>
