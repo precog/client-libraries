@@ -25,6 +25,7 @@
 from precog import precog
 import time
 import pytest
+import base64
 
 def setup_module(module):
     ROOT_API_KEY = pytest.config.getvalue('apiKey')
@@ -191,4 +192,24 @@ class TestPrecog:
     #     #assert precog.Periodicity.Eternity in response
     #     #assert type(response[precog.Periodicity.Eternity]) is list
     #     #assert len(response[precog.Periodicity.Eternity]) > 0
+
+    def test_from_heroku(self):
+        api=precog.from_heroku("user:password:beta.host.com:12345:AAAAA-BBBBB-CCCCCC-DDDDD:/00001234/")
+        assert type(api) is Precog
+
+    def test_from_token(self):
+        token=base64.urlsafe_b64encode("user1:password1:beta.host.com:12345:AAAAA-BBBBB-CCCCCC-DDDDD:/00001234/")
+        values=precog.from_token(token)
+        assert values['user']=="user1"
+        assert values['pwd']=="password1"
+        assert values['host']=="beta.host.com"
+        assert values['account_id']=="12345"
+        assert values['api_key']=="AAAAA-BBBBB-CCCCCC-DDDDD"
+        assert values['root_path']=="/00001234/"
+
+    def test_to_token(self):
+        token=precog.to_token("user","password","beta.host.com","12345","AAAAA-BBBBB-CCCCCC-DDDDD","/00001234/")
+        assert token == base64.urlsafe_b64encode("user:password:beta.host.com:12345:AAAAA-BBBBB-CCCCCC-DDDDD:/00001234/")
+
+
 
