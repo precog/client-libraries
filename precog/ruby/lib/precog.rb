@@ -295,13 +295,13 @@ module Precog
 
   class Utils
 
-    def self.to_token(user,pwd,host, account_id)
-      Base64.urlsafe_encode64("#{user}:#{pwd}:#{host}:#{account_id}")
+    def self.to_token(user,pwd,host, account_id, api_key, root_path)
+      Base64.urlsafe_encode64("#{user}:#{pwd}:#{host}:#{account_id}:#{api_key}:#{root_path}")
     end
 
     def self.from_token(token)
       values=Base64.urlsafe_decode64(token).split(":")
-      { :user=>values[0], :pwd=>values[1], :host=>values[2], :account_id=>values[3] }
+      { :user=>values[0], :pwd=>values[1], :host=>values[2], :account_id=>values[3], :api_key=> values[4], :root_path=> values[5] }
     end
 
   end

@@ -153,11 +153,28 @@ class PrecogClientTest < Test::Unit::TestCase
 
   def test_from_heroku
       #connection with Heroku token
-      token=Precog::Utils.to_token("test-rb@precog.com","password","#{HOST}","#{@account_id}")
-      assert_equal Precog::Utils.from_token(token) { :user=>"test-rb@precog.com", :pwd=>"password", :host=>"#{HOST}", :account_id=>"#{@account_id}" }
+      token=Precog::Utils.to_token("test-rb@precog.com","password","#{HOST}","#{@account_id}","#{@api_key}","/base/")
+      values ={ :user=>"test-rb@precog.com", :pwd=>"password", :host=>"#{HOST}", :account_id=>"#{@account_id}", :api_key=>"#{@api_key}", :root_path=>"/base/" }
+      assert_equal Precog::Utils.from_token(token), values
       heroku_api=Precog::Precog.from_heroku(token)
       response =heroku_api.describe_account("test-rb@precog.com","password",@account_id)
       assert_equal @api_key, response['apiKey']
+  end
+
+  def test_from_token
+    token=Base64.urlsafe_encode64("user1:password1:beta.host.com:12345:AAAAA-BBBBB-CCCCCC-DDDDD:/00001234/")
+    values=Precog::Utils.from_token(token)
+    assert_equal values[:user],"user1"
+    assert_equal values[:pwd],"password1"
+    assert_equal values[:host],"beta.host.com"
+    assert_equal values[:account_id],"12345"
+    assert_equal values[:api_key],"AAAAA-BBBBB-CCCCCC-DDDDD"
+    assert_equal values[:root_path],"/00001234/"
+  end
+
+  def test_to_token
+    token=Precog::Utils.to_token("user","password","beta.host.com","12345","AAAAA-BBBBB-CCCCCC-DDDDD","/00001234/")
+    assert token == Base64.urlsafe_encode64("user:password:beta.host.com:12345:AAAAA-BBBBB-CCCCCC-DDDDD:/00001234/")
   end
 
 end

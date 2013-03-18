@@ -1,6 +1,7 @@
 package com.precog.api;
 
 import com.precog.api.Request.ContentType;
+import com.precog.api.dto.PrecogServiceInfo;
 import com.precog.api.options.IngestOptions;
 import com.precog.json.ToJson;
 
@@ -30,6 +31,14 @@ public class Client {
         public static String INGEST = "/ingest";
     }
 
+    /**
+     * Factory method to create a Precog client from a Heroku addon token
+     * @param precogToken Heroku precog addon token
+     * @return Precog client
+     */
+    public static Client fromHeroku(String precogToken) {
+        return new Client(PrecogServiceInfo.fromToken(precogToken));
+    }
 
     /**
      * A convenience constructor that uses the default production API.
@@ -44,6 +53,16 @@ public class Client {
         this.service = Service.ProductionHttps;
         this.apiKey = apiKey;
         this.rest = new Rest(service, apiKey);
+    }
+
+    /**
+     * Builds a new client to connect to precog services based on an PrecogServiceInfo
+     * @param ac account token
+     */
+    public Client(PrecogServiceInfo ac){
+        this.service=ServiceBuilder.service(ac.getHost());
+        this.apiKey=ac.getApiKey();
+        this.rest= new Rest(service,apiKey);
     }
 
     /**
