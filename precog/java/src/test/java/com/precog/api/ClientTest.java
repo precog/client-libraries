@@ -67,6 +67,12 @@ public class ClientTest {
         testClient =new Client(svc, testApiKey);
     }
 
+    /**
+     * Builds the service under test.
+     * Defaults to devapi.precog.com but a different one can be specified by setting the Java property "host"
+     * (to allow run the unit tests against a different server)
+     * @return  Service
+     */
     private static Service getService() {
         String host=System.getProperty("host");
         Service svc;

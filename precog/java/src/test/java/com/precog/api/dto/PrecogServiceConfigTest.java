@@ -8,7 +8,7 @@ import javax.xml.bind.DatatypeConverter;
  * User: gabriel
  * Date: 3/18/13
  */
-public class PrecogServiceInfoTest {
+public class PrecogServiceConfigTest {
 
     static public String user="user";
     static public String password="password";
@@ -21,7 +21,7 @@ public class PrecogServiceInfoTest {
     public void testFormToken() throws Exception {
         String values=user+":"+password+":"+host+":"+accountId+":"+apiKey+":"+ rootPath;
         String token= DatatypeConverter.printBase64Binary(values.getBytes("UTF-8"));
-        PrecogServiceInfo psi=PrecogServiceInfo.fromToken(token);
+        PrecogServiceConfig psi= PrecogServiceConfig.fromToken(token);
 
         assertEquals(psi.getUser(),user);
         assertEquals(psi.getPassword(), password);
@@ -33,7 +33,7 @@ public class PrecogServiceInfoTest {
 
     @Test
     public void testToToken() throws Exception {
-        PrecogServiceInfo psi=new PrecogServiceInfo(user,password,host,accountId,apiKey, rootPath);
+        PrecogServiceConfig psi=new PrecogServiceConfig(user,password,host,accountId,apiKey, rootPath);
         String token=psi.toToken();
         assertEquals(DatatypeConverter.printBase64Binary((user+":"+password+":"+host+":"+accountId+":"+apiKey+":"+ rootPath).getBytes("UTF-8")),token);
     }

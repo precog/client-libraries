@@ -27,7 +27,7 @@ require 'base64'
 
 class PrecogClientTest < Test::Unit::TestCase
 
-    HOST = 'beta.precog.com'
+    HOST = 'devapi.precog.com'
     PORT = 443
     ROOT_API_KEY = '2D36035A-62F6-465E-A64A-0E37BCC5257E'
 

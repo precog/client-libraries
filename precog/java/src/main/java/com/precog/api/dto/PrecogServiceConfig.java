@@ -10,7 +10,7 @@ import java.io.UnsupportedEncodingException;
  * All the information needed to connect to precog
  * Intended to build form the token provided from Heroku addon accounts
  */
-public class PrecogServiceInfo {
+public class PrecogServiceConfig {
 
     private String user;
     private String password;
@@ -19,7 +19,7 @@ public class PrecogServiceInfo {
     private String apiKey;
     private String rootPath;
 
-    public PrecogServiceInfo(String user, String password, String host, String accountId, String apiKey, String rootPath) {
+    public PrecogServiceConfig(String user, String password, String host, String accountId, String apiKey, String rootPath) {
         this.user = user;
         this.password = password;
         this.host = host;
@@ -28,11 +28,11 @@ public class PrecogServiceInfo {
         this.rootPath = rootPath;
     }
 
-    public static PrecogServiceInfo fromToken(String token){
+    public static PrecogServiceConfig fromToken(String token){
         byte[] data=DatatypeConverter.parseBase64Binary(token);
         String decoded= new String(data);
         String[] values=decoded.split(":");
-        return new PrecogServiceInfo(values[0],values[1],values[2],values[3],values[4],values[5]);
+        return new PrecogServiceConfig(values[0],values[1],values[2],values[3],values[4],values[5]);
     }
 
     public String toToken() throws UnsupportedEncodingException {
