@@ -225,7 +225,7 @@ public class ClientTest {
     public void testQueryLoad() throws IOException {
         Path path=testPath.append(new Path("load"));
         String rawJson = "{\"test\":[{\"v\": 1}, {\"v\": 2}]}";
-        testClient.store(accountTestPath.append(new Path("load")), rawJson);
+        testClient.store(testPath.append(new Path("load")), rawJson);
         //just test the query was sent and executed successfully
         String result = testClient.query(new Path(testAccountId), "load(\"//"+ path +"\")");
         assertNotNull(result);
