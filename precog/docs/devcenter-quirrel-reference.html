@@ -1,0 +1,391 @@
+   <span class="page-title">
+      Developer Center
+    </span>
+        <div>
+			    <h1>Reference</h1>
+			    <h2>Syntax, operators and functions of the Quirrel language</h2>
+			    <h3>Highlights</h3>
+			    <ul>
+			    	<li>Set-oriented data manipulation</li>
+    				<li>Powerful built-in operations and functions</li>
+    				<li>User-definable functions to abstract out common functionality</li>
+			    </ul>
+			          <h3>Data In Quirrel</h3>
+                                  <p>Quirrel has native support for JSON. You can create strings, numbers, booleans, arrays, and objects just like you do in JavaScript.
+				    Additionally, Quirrel is set-oriented, which means all data are represented as sets of JSON values (surrounded by "[]"). For example:</p>
+				    
+			      <pre>{name: "John", age: 29, gender: "male"}
+[{name: "John", age: 29, gender: "male"}]
+
+true
+[true]
+
+"hello world"
+["hello world"]</pre>
+				    
+                            <p>Note that single values are represented as single-element sets.</p>
+
+                            <a name = "operator"></a>
+                            <h3>Operator Reference</h3>
+                            <ul>
+                              <li><p class="funcsig">new arg</p><p>Produces a copy of the given set with a fresh set of identities (for use in self-joins)</p></li>
+                              <li><p class="funcsig">arg1 + arg2</p><p>Numeric addition</p></li>
+                              <li><p class="funcsig">arg1 - arg2</p><p>Numeric subtraction</p></li>
+                              <li><p class="funcsig">arg1 * arg2</p><p>Numeric multiplication</p></li>
+                              <li><p class="funcsig">arg1 / arg2</p><p>Numeric division</p></li>
+                              <li><p class="funcsig">arg1 &lt; arg2</p><p>Numeric less-than comparison</p></li>
+                              <li><p class="funcsig">arg1 &lt;= arg2</p><p>Numeric less-than-equal comparison</p></li>
+                              <li><p class="funcsig">arg1 &gt; arg2</p><p>Numeric greater-than comparison</p></li>
+                              <li><p class="funcsig">arg1 &gt;= arg2</p><p>Numeric greater-than-equal comparison</p></li>
+                              <li><p class="funcsig">arg1 = arg2</p><p>Equality comparison</p></li>
+                              <li><p class="funcsig">arg1 != arg2</p><p>Negated equality comparison</p></li>
+                              <li><p class="funcsig">arg1 &amp; arg2</p><p>Boolean conjunction</p></li>
+                              <li><p class="funcsig">arg1 | arg2</p><p>Boolean disjunction</p></li>
+                              <li><p class="funcsig">! arg</p><p>Boolean complementation</p></li>
+                              <li><p class="funcsig">neg arg</p><p>Numeric negation</p></li>
+                              <li><p class="funcsig">arg1 ~ arg2 arg3</p><p>Set relation (for use in cross-set joins)</p></li>
+                              <li><p class="funcsig">arg1 union arg2</p><p>Set union</p></li>
+                              <li><p class="funcsig">arg1 intersect arg2</p><p>Set intersection</p></li>
+                              <li><p class="funcsig">arg1 difference arg2</p><p>Set difference. Returns the events contained in arg1 which are not contained in arg2.</p></li>
+                            </ul>
+
+                            <a name = "standard"></a>
+                            <h3>Standard Function Reference</h3>
+                            <ul>
+                              <li><p class="funcsig">count (s : Any): Int</p>
+                              <p>Takes a single set and returns its size.</p></li>                              
+                              
+                              <li><p class="funcsig">distinct (s : Any): Any</p>
+                               <p>Takes a single set and returns a set of the distinct (unique) values.</p></li>                             
+                              
+                              <li><p class="funcsig">geometricMean (n : Numeric): Numeric</p>
+                                <p>Takes a single set and returns its geometric mean.</p></li>
+                              
+                              <li><p class="funcsig">load (s : String): Any</p>
+                                <p>Takes a single string path and returns the set of events in the data store which correspond to the path in question.</p></li>
+                              
+                              <li><p class="funcsig">max (n : Numeric): Numeric</p>
+                                <p>Takes a single set of numeric events and returns the maximum value among all the events.</p></li>
+                              
+                              <li><p class="funcsig">mean (n : Numeric): Numeric</p>
+                                <p>Takes a single set of numeric events and returns the arithmetic mean of all the values.</p></li>
+                              
+                              <li><p class="funcsig">min (n : Numeric): Numeric</p>
+                                <p>Takes a single set of numeric events and returns the minimum of all the values.</p></li>
+                              
+                              <li><p class="funcsig">stdDev (n : Numeric): Numeric</p>
+                                <p>Takes a single set of numeric events and returns the standard deviation from the arithmetic mean of all the values.</p></li>
+                              
+                              <li><p class="funcsig">sum (n : Numeric): Numeric</p>
+                                <p>Takes a single set of numeric events and returns the sum of all the values.</p></li>
+                                
+                              <li><p class="funcsig">sumSq (n : Numeric): Numeric</p>
+                               <p>Takes a single set and returns the sum of the square of each value.</p></li>                             
+                               
+                              <li><p class="funcsig">variance (n : Numeric): Numeric</p>
+                                <p>Takes a single set and returns its population variance.</p></li>
+                            </ul>
+
+                            <a name = "statistics"></a>
+                            <h3>Statistics Function Reference</h3>
+                            <ul>
+                              <li><p class="funcsig">std::stats::corr (n1 : Numeric, n2 : Numeric): Numeric</p>
+                                <p>Takes two sets and returns the correlation coefficient of the matched pairs of numbers.</p></li>                              
+
+                              <li><p class="funcsig">std::stats::cov (n1 : Numeric, n2 : Numeric): Numeric</p>
+                                <p>Takes two sets and returns the population covariance of the matched pairs of numbers.</p></li>                              
+
+                              <li><p class="funcsig">std::stats::linReg (x : Numeric, y : Numeric): Object[Numeric]</p>
+                                <p>Takes two sets and returns an object containing two numeric fields which determine a linear regression. The number in the field 'slope' is the slope of the line, and the number in the field 'intercept' is the y-intercept of the line. 'x' is considered the independent variable, and 'y' is considered the dependent variable.</p></li>                              
+
+                              <li><p class="funcsig">std::stats::logReg (x : Numeric, y : Numeric): Object[Numeric]</p>
+                                <p>Takes two sets and returns an object containing two numeric fields which determine a logarithmic regression of the form 'y = m*log(x) + b'. 'x' is considered the independent variable, and 'y' is considered the dependent variable. The number in the field 'slope' is the value of 'm', and the number in the field 'intercept' is the value of the y-intercept, 'b'.</p></li>                              
+
+                              <li><p class="funcsig">std::stats::rank (n : Numeric): Numeric</p>
+                                <p>Takes a single set and returns a set of ranks. Numbers with the same value receive the same rank, and the ranks might not be consecutive. To calculate the next rank, the number of rows with the same value is added to the current rank.</p></li>                              
+
+                              <li><p class="funcsig">std::stats::denseRank (n : Numeric): Numeric</p>
+                                <p>Takes a single set and returns a set of ranks. Numbers with the same value receive the same rank, and the ranks are consecutive. To calculate the next rank, the next sequential integer is chosen.</p></li>                              
+                            </ul>
+
+                            <a name = "math"></a>
+                            <h3> Math Function Reference</h3>
+                            <ul>
+                              <li><p class="funcsig">std::math::abs (n: Numeric): Double</p>
+                                <p>Takes a single set of numeric events and returns a set of each absolute value.</p></li>
+
+                              <li><p class="funcsig">std::math::acos (n: Numeric): Double</p>
+                                <p>Takes a single set of numeric events and returns a set of each arccosine.</p></li>
+
+                              <li><p class="funcsig">std::math::asin (n: Numeric): Double</p>
+                                <p>Takes a single set of numeric events and returns a set of each arcsine.</p></li>
+                                
+                              <li><p class="funcsig">std::math::atan (n: Numeric): Double</p>
+                                <p>Takes a single set of numeric events and returns a set of each arctangent.</p></li>
+
+                              <li><p class="funcsig">std::math::atan2 (n1: Numeric, n2: Numeric): Double</p>
+                                <p>Takes two sets of numeric events and returns a set of the angle theta from the conversion of each pair of rectangular coordinates to polar coordinates.</p></li>
+
+                              <li><p class="funcsig">std::math::cbrt (n: Numeric): Double</p>
+                                <p>Takes a single set of numeric events and returns a set of each cube root.</p></li>
+
+                              <li><p class="funcsig">std::math::ceil (n: Numeric): Double</p>
+                                <p>Takes a single set of numeric events and returns a set of each ceiling.</p></li>
+
+                              <li><p class="funcsig">std::math::copySign (n: Numeric): Double</p>
+                                <p>Takes two sets of numeric events and returns the first value with the sign of the second value.</p></li>
+
+                              <li><p class="funcsig">std::math::cos (n: Numeric): Double</p>
+                                <p>Takes a single set of numeric events and returns a set of each cosine.</p></li>
+
+                              <li><p class="funcsig">std::math::cosh (n: Numeric): Double</p>
+                                <p>Takes a single set of numeric events and returns a set of each hyperbolic cosine.</p></li>
+
+                              <li><p class="funcsig">std::math::exp (n: Numeric): Double</p>
+                                <p>Takes a single set of numeric events and returns a set of Euler's number (e) raised to each value.</p></li>
+
+                              <li><p class="funcsig">std::math::floor (n: Numeric): Double</p>
+                                <p>Takes a single set of numeric events and returns a set of each floor.</p></li>
+
+                              <li><p class="funcsig">std::math::hypot (n1: Numeric, n2: Numeric): Double</p>
+                                <p>Takes two sets of numeric events and returns a set of the square root of the sum of the square of each pair.</p></li>
+
+                              <li><p class="funcsig">std::math::IEEEremainder (n1: Numeric, n2: Numeric): Double</p>
+                                <p>Takes two sets of numeric events and returns a set of the remainder operation computed on the two values, as prescribed by the IEEE 754 standard.</p></li>
+
+                              <li><p class="funcsig">std::math::log (n: Numeric): Double</p>
+                                <p>Takes a single set of numeric events and returns a set of each natural log.</p></li>
+
+                              <li><p class="funcsig">std::math::log10 (n: Numeric): Double</p>
+                                <p>Takes a single set of numeric events and returns a set of each log in base 10.</p></li>
+
+                              <li><p class="funcsig">std::math::min (n1: Numeric, n2: Numeric): Double</p>
+                                <p>Takes two sets of numeric events and returns a set of the minimum of each pair.</p></li>
+
+                              <li><p class="funcsig">std::math::max (n1: Numeric, n2: Numeric): Double</p>
+                                <p>Takes two sets of numeric events and returns a set of the maximum of each pair.</p></li>
+
+                              <li><p class="funcsig">std::math::pow (n1: Numeric, n2: Numeric): Double</p>
+                                <p>Takes two sets of numeric events and returns a set of the first value raised to the power of the second value.</p></li>
+
+                              <li><p class="funcsig">std::math::round (n: Numeric): Double</p>
+                                <p>Takes a single set of numeric events and returns a set of each value rounded.</p></li>
+
+                              <li><p class="funcsig">std::math::sin (n: Numeric): Double</p>
+                                <p>Takes a single set of numeric events and returns a set of each sine.</p></li>
+
+                              <li><p class="funcsig">std::math::signum (n: Numeric): Double</p>
+                                <p>Takes a single set of numeric events and returns a set of each signum. 1.0 if the argument is greater than zero. -1.0 if the argument is less than zero.</p></li>
+
+                              <li><p class="funcsig">std::math::sinh (n: Numeric): Double</p>
+                                <p>Takes a single set of numeric events and returns a set of each hyperbolic sine.</p></li>
+
+                              <li><p class="funcsig">std::math::sqrt (n: Numeric): Double</p>
+                                <p>Takes a single set of numeric events and returns a set of each square root.</p></li>
+
+                              <li><p class="funcsig">std::math::tan (n: Numeric): Double</p>
+                                <p>Takes a single set of numeric events and returns a set of each tangent.</p></li>
+
+                              <li><p class="funcsig">std::math::tanh (n: Numeric): Double</p>
+                                <p>Takes a single set of numeric events and returns a set of each hyperbolic tangent.</p></li>
+
+                              <li><p class="funcsig">std::math::toDegrees (n: Numeric): Double</p>
+                                <p>Takes a single set of numeric events (in Radians) and returns a set of each value in degrees.</p></li>
+
+                              <li><p class="funcsig">std::math::toRadians (n: Numeric): Double</p>
+                                <p>Takes a single set of numeric events (in degrees) and returns a set of each value in Radians.</p></li>
+
+                              <li><p class="funcsig">std::math::ulp (n: Numeric): Double</p>
+                                <p>Takes a single set of numeric events and returns a set of the size of each unit in the last place.</p></li>
+                            </ul>
+
+                            <a name = "string"></a>
+                            <h3>String Function Reference</h3>
+                            <ul>
+
+                              <li><p class="funcsig">std::string::codePointAt (s: String, n: Numeric): Int</p>
+                                <p>Takes a single set of string events and a set of numeric events. Returns the character (Unicode code point) at the specified index.</p></li>
+
+                              <li><p class="funcsig">std::string::codePointBefore (s: String, n: Numeric): Int</p>
+                                <p>Takes a single set of string events and a set of numeric events. Returns the character (Unicode code point) before the specified index.</p></li>
+
+                              <li><p class="funcsig">std::string::concat (s1: String, s2: String): String</p>
+                                <p>Takes two sets of string events and returns the concatenation of the two strings.</p></li>
+
+                              <li><p class="funcsig">std::string::endsWith (s1: String, s2: String): Boolean</p>
+                                <p>Takes two sets of string events and returns a set of true or false. True if and only if the first string ends with the suffix specified by the second string.</p></li>
+
+                              <li><p class="funcsig">std::string::equals (s1: String, s2: String): Boolean</p>
+                                <p>Takes two sets of string events and returns a set of true or false. True if and only if the two strings are equivalent.</p></li>
+
+                              <li><p class="funcsig">std::string::equalsIgnoreCase (s1: String, s2: String): Boolean</p>
+                                <p>Takes two sets of string events and returns a set of true or false. True if and only if the two strings are equivalent, ignoring case considerations.</p></li>
+
+                              <li><p class="funcsig">std::string::indexOf (s1: String, s2: String): Int</p>
+                                <p>Takes two sets of string events and returns the index in the first string of the first occurrence of the substring specified by the second string.</p></li>
+
+                              <li><p class="funcsig">std::string::isEmpty (s: String): Boolean</p>
+                                <p>Takes a single set of string events and returns a set of true or false. True if and only if the length of the string is zero.</p></li>
+                                
+                              <li><p class="funcsig">std::string::lastIndexOf (s1: String, s2: String): Int</p>
+                                <p>Takes two sets of string events and returns the index in the first string of the last occurrence of the substring specified by the second string.</p></li>
+
+                              <li><p class="funcsig">std::string::length (s: String): Int</p>
+                                <p>Takes a single set of string events and returns a set of each string length.</p></li>
+
+                              <li><p class="funcsig">std::string::matches (s1: String, s2: String): Boolean</p>
+                                <p>Takes two sets of string events and returns true or false. True if and only if the first string matches the regular expression specified by the second string.</p></li>
+
+                              <li><p class="funcsig">std::string::startsWith (s1: String, s2: String): Boolean</p>
+                                <p>Takes two sets of string events and returns true or false. True if and only if the first string starts with the prefix specified by the second string.</p></li>
+
+                              <li><p class="funcsig">std::string::substring (s: String, n: Numeric): String</p>
+                                <p>Takes two sets of string events and returns a new substring of the first string, beginning at the specified index.</p></li>
+
+                              <li><p class="funcsig">std::string::toLowerCase (s: String): String</p>
+                                <p>Takes a single set of string events and returns a set of each string with each character in lower case.</p></li>
+
+                              <li><p class="funcsig">std::string::toUpperCase (s: String): String</p>
+                                <p>Takes a single set of string events and returns a set of each string with each character in upper case.</p></li>
+
+                              <li><p class="funcsig">std::string::trim (s: String): String</p>
+                                <p>Takes a single set of string events and returns a set of each string copied with leading and trailing whitespace omitted.</p></li>
+                            </ul>
+
+                            <a name = "datetime"></a>
+                            <h3>DateTime Function Reference</h3>
+                            <ul>
+                              <li><p class="funcsig">std::time::changeTimeZone (time : ISO8601, tz: String): ISO8601</p>
+                                <p>Takes a set of ISO8601 strings and a set of time zone strings (of the form "+04:00") and returns a set of ISO8601 strings.</p></li>
+                              
+                              <li><p class="funcsig">std::time::date (time : ISO8601): String</p>
+                                <p>Takes a single set of ISO8601 strings and returns the date in format "yyyy-MM-dd".</p></li>
+                                 
+                              <li><p class="funcsig">std::time::dateHour(time : ISO8601): String</p>
+                                <p>Takes a single set of ISO8601 strings and returns a set of the date and hour in format "yyyy-MM-dd'T'HH".</p></li>
+                                 
+                              <li><p class="funcsig">std::time::dateHourMinute(time : ISO8601): String</p>
+                                <p>Takes a single set of ISO8601 strings and returns a set of the date, hour, and minute in format "yyyy-MM-dd'T'HH:mm".</p></li>
+                                 
+                              <li><p class="funcsig">std::time::dateHourMinuteSecond(time : ISO8601): String</p>
+                                <p>Takes a single set of ISO8601 strings and returns a set of the date, hour, minute, and second in format "yyyy-MM-dd'T'HH:mm:ss".</p></li>
+                                 
+                              <li><p class="funcsig">std::time::dateHourMinuteSecondMillis(time : ISO8601): String</p>
+                                <p>Takes a single set of ISO8601 strings and returns a set of the date, hour, minute, second, and millisecond in format "yyyy-MM-dd'T'HH:mm:ss.SSS".</p></li>
+                              
+                              <li><p class="funcsig">std::time::daysBetween (time1 : ISO8601, time2 : ISO8601): Int</p>
+                                <p>Takes two sets of ISO8601 strings and returns a set of the days between two times.</p></li>
+                              
+                              <li><p class="funcsig">std::time::dayOfMonth (time : ISO8601): Int</p>
+                                <p>Takes a single set of ISO8601 strings and returns a set of the day of the month.</p></li>
+                              
+                              <li><p class="funcsig">std::time::dayOfWeek (time : ISO8601): Int</p>
+                                <p>Takes a single set of ISO8601 strings and returns a set of the day of the week as an integer. Monday is day 1.</p></li>
+                              
+                              <li><p class="funcsig">std::time::dayOfYear (time : ISO8601): Int</p>
+                                <p>Takes a single set of ISO8601 strings and returns a set of the day of the year.</p></li>
+                              
+                              <li><p class="funcsig">std::time::daysPlus(time : ISO8601, i : Int): String</p>
+                                <p>Takes a single set of ISO8601 strings and an integer, and returns a set of ISO8601 Strings plus the specified number of days.</p></li>
+
+                              <li><p class="funcsig">std::time::getMillis (time : ISO8601): Long</p>
+                                <p>Takes a set of ISO8601 strings and returns a set of millisecond longs</p></li>
+                                 
+                              <li><p class="funcsig">std::time::hourMinute(time : ISO8601): String</p>
+                                <p>Takes a single set of ISO8601 strings and returns a set of the hour and minute in format "HH:mm".</p></li>
+                                 
+                              <li><p class="funcsig">std::time::hourMinuteSecond(time : ISO8601): String</p>
+                                <p>Takes a single set of ISO8601 strings and returns a set of the hour, minute, and second in format "HH:mm:ss".</p></li>
+                              
+                              <li><p class="funcsig">std::time::hourOfDay (time : ISO8601): Int</p>
+                                <p>Takes a single set of ISO8601 strings and returns a set of the hour of the day.</p></li>
+                              
+                              <li><p class="funcsig">std::time::hoursBetween (time1 : ISO8601, time2 : ISO8601): Long</p>
+                                <p>Takes two sets of ISO8601 strings and returns a set of the hours between two times.</p></li>
+                              
+                              <li><p class="funcsig">std::time::hoursPlus(time : ISO8601, i : Int): String</p>
+                                <p>Takes a single set of ISO8601 strings and an integer, and returns a set of ISO8601 Strings plus the specified number of hours.</p></li>
+
+                              <li><p class="funcsig">std::time::millisOfSecond (time : ISO8601): Int</p>
+                                <p>Takes a single set of ISO8601 strings and returns a set of the mills of the second.</p></li>
+                              
+                              <li><p class="funcsig">std::time::millisPlus(time : ISO8601, i : Int): String</p>
+                                <p>Takes a single set of ISO8601 strings and an integer, and returns a set of ISO8601 Strings plus the specified number of millis.</p></li>
+
+                              <li><p class="funcsig">std::time::millisToISO (time : Long, tz : String): ISO8601</p>
+                                <p>Takes a set of long millis-since-epoch and a set of time zone strings (of the form "+04:00") and returns a set of ISO8601 strings. </p></li>
+                              
+                              <li><p class="funcsig">std::time::minuteOfHour (time : ISO8601): Int</p>
+                                <p>Takes a single set of ISO8601 strings and returns a set of the minute of the hour.</p></li>
+                              
+                              <li><p class="funcsig">std::time::minutesBetween (time1 : ISO8601, time2 : ISO8601): Long</p>
+                                <p>Takes two sets of ISO8601 strings and returns a set of the minutes between two times.</p></li>
+                                 
+                              <li><p class="funcsig">std::time::minutesPlus(time : ISO8601, i : Int): String</p>
+                                <p>Takes a single set of ISO8601 strings and an integer, and returns a set of ISO8601 Strings plus the specified number of minutes.</p></li>
+
+                              <li><p class="funcsig">std::time::monthDay(time : ISO8601): String</p>
+                                <p>Takes a single set of ISO8601 strings and returns a set of the month and day in format "MM-dd".</p></li>
+                              
+                              <li><p class="funcsig">std::time::monthOfYear (time : ISO8601): Int</p>
+                                <p>Takes a single set of ISO8601 strings and returns a set of the month of the year as an integer. January is month 1.</p></li>
+                              
+                              <li><p class="funcsig">std::time::monthsBetween (time1 : ISO8601, time2 : ISO8601): Int</p>
+                                <p>Takes two sets of ISO8601 strings and returns a set of the months between two times.</p></li>
+                              
+                              <li><p class="funcsig">std::time::monthsPlus(time : ISO8601, i : Int): String</p>
+                                <p>Takes a single set of ISO8601 strings and an integer, and returns a set of ISO8601 Strings plus the specified number of months.</p></li>
+
+                              <li><p class="funcsig">std::time::quarter (time : ISO8601): Int</p>
+                                <p>Takes a single set of ISO8601 strings and returns a set of the quarter of year as an integer. January/February/March is quarter 1.</p></li>
+                              
+                              <li><p class="funcsig">std::time::parse (time : String, format : String): ISO8601</p>
+                                <p>Takes a set of time strings and a set of time string formats. Returns a set of ISO8601 strings. If no time zone is specified, the default is UTC.</p></li>
+                              
+                              <li><p class="funcsig">std::time::season (time : ISO8601): String</p>
+                                <p>Takes a set of ISO8601 strings and returns a set of strings. According to the solstices and equinoxes, the seasons are "fall", "winter", "spring", "summer".</p></li>
+                              
+                              <li><p class="funcsig">std::time::secondOfMinute (time : ISO8601): Int</p>
+                                <p>Takes a single set of ISO8601 strings and returns a set of the second of the minute.</p></li>
+                              
+                              <li><p class="funcsig">std::time::seconds (time1 : ISO8601, time2 : ISO8601): Long</p>
+                                <p>Takes two sets of ISO8601 strings and returns a set of the seconds between two times.</p></li>
+                                 
+                              <li><p class="funcsig">std::time::secondsPlus(time : ISO8601, i : Int): String</p>
+                                <p>Takes a single set of ISO8601 strings and an integer, and returns a set of ISO8601 Strings plus the specified number of seconds.</p></li>
+
+                              <li><p class="funcsig">std::time::timeWithZone(time : ISO8601): String</p>
+                                <p>Takes a single set of ISO8601 strings and returns a set of the time and time zone in format "HH:mm:ss.SSSZZ".</p></li>
+                                 
+                              <li><p class="funcsig">std::time::timeWithoutZone(time : ISO8601): String</p>
+                                <p>Takes a single set of ISO8601 strings and returns a set of the time in format "HH:mm:ss.SSS".</p></li>
+                              
+                              <li><p class="funcsig">std::time::timeZone (time : ISO8601): String</p>
+                                <p>Takes a single set of ISO8601 strings and returns a set of the time zone as a string of the form "+04:00".</p></li>
+                              
+                              <li><p class="funcsig">std::time::weeksBetween (time1 : ISO8601, time2 : ISO8601): Int</p>
+                                <p>Takes two sets of ISO8601 strings and returns a set of the weeks between two times.</p></li>
+                              
+                              <li><p class="funcsig">std::time::weekOfYear (time : ISO8601): Int</p>
+                                <p>Takes a single set of ISO8601 strings and returns a set of the week of the year.</p></li>
+                              
+                              <li><p class="funcsig">std::time::weeksPlus(time : ISO8601, i : Int): String</p>
+                                <p>Takes a single set of ISO8601 strings and an integer, and returns a set of ISO8601 Strings plus the specified number of weeks.</p></li>
+
+                              <li><p class="funcsig">std::time::year (time : ISO8601): Int</p>
+                                <p>Takes a single set of ISO8601 strings and returns a set of the year.</p></li>
+                              
+                              <li><p class="funcsig">std::time::yearsBetween (time1 : ISO8601, time2 : ISO8601): Int</p>
+                                <p>Takes two sets of ISO8601 strings and returns a set of the years between two times.</p></li>
+                                 
+                              <li><p class="funcsig">std::time::yearDayOfYear(time : ISO8601): String</p>
+                                <p>Takes a single set of ISO8601 strings and returns a set of the year and day of year in format "yyyy-DDD".</p></li>
+                                 
+                              <li><p class="funcsig">std::time::yearMonth(time : ISO8601): String</p>
+                                <p>Takes a single set of ISO8601 strings and returns a set of the year and month in format "yyyy-MM".</p></li>
+
+                              <li><p class="funcsig">std::time::yearsPlus(time : ISO8601, i : Int): String</p>
+                                <p>Takes a single set of ISO8601 strings and an integer, and returns a set of ISO8601 Strings plus the specified number of years.</p></li>
+
+                            </ul>
+                          </div>

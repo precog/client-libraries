@@ -1,0 +1,71 @@
+
+    <span class="page-title">
+      Developer Center
+    </span>
+    <div>
+      <h1>
+        REST API
+      </h1>
+      <div>
+        <h2>
+          metadata api
+        </h2>
+        <p>
+          The metadata API provides a one-stop resource for metadata on the structure of data, statistics on queries, and so forth.
+        </p>
+        <h3 >
+          Retrieve Path Metadata
+        </h3>
+         <dl class="api-call-json">
+          <dt class="button-json">
+            JSON
+          </dt>
+          <dt class="m-title">
+            GET
+          </dt>
+          <dd class="m-text">
+           GET /meta/v1/fs/<span class="tool-tip-path">'path</span>?type=[type]&apiKey=<span class="tool-tip-apikey">[auth API key]</span>
+         </dd>
+          <dt class="d-title">
+            description
+          </dt>
+          <dd class="d-text">
+           <p>
+          Retrieves metadata for a particular path in the file system. 
+         </p>
+           <p>
+            The valid metadata types include size, structure, and children. If no metadata type is specified, then all metadata is returned.
+           </p>
+          </dd>
+           <dt class="r-title">
+            response body
+           </dt>
+           <dd>
+<pre>{
+"size": 1024,
+
+"structure": {
+
+   "types": {
+
+     "Object": 1923,
+
+     "Array": 9743,
+
+     "String": 93,
+
+     "Boolean": 712,
+
+     "Number": 23745
+
+   }
+
+ },
+
+"children": ["foo", "bar"]
+}</pre>
+           </dd>
+        </dl>
+      </div>
+      </div>
+      

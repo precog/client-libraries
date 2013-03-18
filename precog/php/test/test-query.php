@@ -16,7 +16,7 @@ class QueryTest extends PrecogBaseTest {
     {
         $path = $this->setupPath();
 
-        sleep(5);
+        sleep(15);
 
         $value = $this->api->query("count(/$path)");
 

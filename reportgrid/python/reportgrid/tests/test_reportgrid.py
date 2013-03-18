@@ -115,6 +115,7 @@ class TestReportGrid:
         #assert type(response[reportgrid.Periodicity.Eternity]) is list
         #assert len(response[reportgrid.Periodicity.Eternity]) > 0
 
+    @pytest.mark.xfail(msg = "v1 test skipped")
     def test_property_values(self):
         response = self.test_api.property_values(path='/', property='pytest.pyprop')
         assert type(response) is list

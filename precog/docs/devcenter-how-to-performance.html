@@ -1,0 +1,64 @@
+ <span class="page-title">
+      Developer Center
+    </span>
+<div>
+   <h1>How To</h1> 
+<div>
+ <h2>Optimizing Query Performance with Precog</h2>   
+     <p>
+If you are deploying a production application that uses Precog, you may be interested in ways to optimize the runtime query performance.
+     </p>
+     <p>
+In this document, you can find our recommended tips to getting the most out of Precog.
+     </p>
+<h3>1. Partition by path</h3>
+     <p>
+Precog partitions all data by its location in the file system. Data stored in one path does not degrade the performance of queries on other paths.
+     </p>
+     <p>
+Precog makes it easy to analyze data even when the data is stored across different paths. So you should freely partition your data into different paths. The less data is located in any one path, the faster it will be to run queries across that path.
+     </p>
+<h3>2. Minimize columns</h3>
+     <p>
+For the beta version of Precog, you should not store JSON objects that have more than 250 strings, numbers, and boolean values (this is the equivalent of 250 columns in a relational database). We expect to lift this limitation when Precog comes out of beta.
+     </p>
+<h3>3. Specify columns</h3>
+     <p>
+Precog is a columnar database, which means that all data from the same column is stored together. For typical analytical queries that only involve one or a few columns, this results in a dramatic reduction in IO, which improves performance.
+     </p>
+     <p>
+To maximize performance, when you perform a query across a data set, you should always specify the columns you are interested in.
+     </p>
+     <p>
+For example, you might be interested in counting all the data from a set foo.
+     </p>
+     <p>
+If you write count(foo), Precog will have to load all the columns that make up the values of foo. However, if you write, count(foo.bar), then Precog only has to load the bar column of the data, which will be tremendously faster.
+     </p>
+     <p>
+Compare the following two queries:
+     </p>
+     <p>
+         <a href="https://labcoat.precog.com/?q=clicks+%3A%3D+%2F%2Fclicks%0Acount(clicks.product.price)"> clicks := //clicks count(clicks.product.price)</a>
+     </p>
+     <p>
+<a href="https://labcoat.precog.com/?q=clicks+%3A%3D+%2F%2Fclicks%0Acount(clicks)"> clicks := //clicks count(clicks)</a>
+     </p>
+     <p>
+The first query completes 10 times faster than the second query, because it only has to load a fraction of the data that the second query has to load.
+     </p>
+<h3>4. Pull up filters</h3>
+     <p>
+If you are going to filter data at some point, it makes sense to filter it before performing any computationally expensive operations on it. For example, queries will generally complete faster if filtering is done before a solve statement rather than after.
+     </p>
+<h3>5. Push down relates</h3>
+     <p>
+The relate operator results in Cartesian cross product on the sets being related. Therefore, moving the relate operator as far down into a query as possible will increase performance.
+     </p>
+     <p>
+Ideally, sets being related are always small, such that the results can be computed rapidly.
+     </p>
+<h3>6. When all else fails</h3>
+     <p>
+Precog is still in beta, with new releases coming out weekly. If you encounter a slow running query that you cannot optimize, <a href="https://precog.com/contact">please let us know </a>and we’ll look into it.
+     </p>

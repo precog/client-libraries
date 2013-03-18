@@ -14,8 +14,10 @@ import com.precog.json.gson.GsonToJson;
 import com.precog.json.gson.RawJson;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.Ignore;
 
 import java.io.IOException;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -24,8 +26,8 @@ import static org.junit.Assert.*;
  */
 public class ClientTest {
 
+    private static String testId = null;
     private static Path testPath = null;
-    private static Path accountTestPath = null;
 
     public static String testAccountId;
     public static String testApiKey;
@@ -46,7 +48,7 @@ public class ClientTest {
 
     @BeforeClass
     public static void beforeAll() throws Exception {
-        String testId = "" + Double.valueOf(java.lang.Math.random() * 10000).intValue();
+        testId = "" + Double.valueOf(java.lang.Math.random() * 10000).intValue();
 
         String host=System.getProperty("host");
         Service svc;
@@ -65,9 +67,8 @@ public class ClientTest {
         res = GsonFromJson.of(new TypeToken<AccountInfo>() {
         }).deserialize(result);
         testApiKey = res.getApiKey();
+        testPath = new Path(testAccountId).append(new Path("/test" + testId));
         testClient =new Client(svc, testApiKey);
-        testPath = new Path("/test" + testId);
-        accountTestPath = new Path(testAccountId).append(testPath);
     }
 
     @Test
@@ -79,7 +80,7 @@ public class ClientTest {
         TestData testData = new TestData(42, "Hello\" World", testJson);
 
         Record<TestData> testRecord = new Record<TestData>(testData);
-        testClient.store(accountTestPath, testRecord, toJson);
+        testClient.store(testPath, testRecord, toJson);
     }
 
     @Test
@@ -88,7 +89,7 @@ public class ClientTest {
 
 
         Record<String> testRecord = new Record<String>("{\"test\":[{\"v\": 1}, {\"v\": 2}]}");
-        testClient.store(accountTestPath, testRecord, toJson);
+        testClient.store(testPath, testRecord, toJson);
     }
 
     @Test
@@ -96,21 +97,21 @@ public class ClientTest {
 
 
         String rawJson = "{\"test\":[{\"v\": 1}, {\"v\": 2}]}";
-        testClient.store(accountTestPath, rawJson);
+        testClient.store(testPath, rawJson);
     }
 
     @Test
     public void testStoreRawUTF8() throws IOException {
 
         String rawJson = "{\"test\":[{\"ดีลลิเชียส\": 1}, {\"v\": 2}]}";
-        testClient.store(accountTestPath, rawJson);
+        testClient.store(testPath, rawJson);
     }
 
     @Test
     public void testIngestCSV() throws IOException {
 
         IngestOptions options = new CSVIngestOptions();
-        String response = testClient.ingest(accountTestPath, "blah,\n\n", options);
+        String response = testClient.ingest(testPath, "blah,\n\n", options);
         IngestResult result = GsonFromJson.of(new TypeToken<IngestResult>() {
         }).deserialize(response);
         assertEquals(1, result.getIngested());
@@ -121,7 +122,7 @@ public class ClientTest {
 
         IngestOptions options = new IngestOptions(ContentType.JSON);
         String rawJson = "{\"test\":[{\"v\": 1}, {\"v\": 2}]}";
-        String response = testClient.ingest(accountTestPath, rawJson, options);
+        String response = testClient.ingest(testPath, rawJson, options);
         IngestResult result = GsonFromJson.of(new TypeToken<IngestResult>() {
         }).deserialize(response);
         assertEquals(1, result.getIngested());
@@ -134,7 +135,7 @@ public class ClientTest {
         options.setDelimiter(",");
         options.setQuote("'");
         options.setEscape("\\");
-        String response = testClient.ingest(accountTestPath, "blah\n\n", options);
+        String response = testClient.ingest(testPath, "blah\n\n", options);
         IngestResult result = GsonFromJson.of(new TypeToken<IngestResult>() {
         }).deserialize(response);
         assertEquals(1, result.getIngested());
@@ -145,7 +146,7 @@ public class ClientTest {
 
         IngestOptions options = new CSVIngestOptions();
         options.setAsync(true);
-        String response = testClient.ingest(accountTestPath, "blah,\n\n", options);
+        String response = testClient.ingest(testPath, "blah,\n\n", options);
         //is async, so we don't expect results
         assertEquals("", response);
     }
