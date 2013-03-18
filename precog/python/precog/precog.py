@@ -34,7 +34,7 @@ import base64
 __app_name__     = 'precog'
 __version__      = '2012.10.23'
 __author__       = 'Gabriel Claramunt'
-__author_email__ = 'gabriel [at] xxxxxxx [dot] com'
+__author_email__ = 'gabriel [at] precog [dot] com'
 __description__  = 'Python client library for Precog (http://www.precog.com)'
 __url__          = 'https://github.com/reportgrid/client-libraries/precog/python'
 
@@ -43,7 +43,7 @@ class API:
     """API server constants"""
 
     Host = 'api.precog.io'
-    Port = 80
+    Port = 443
     Version = 1
 
 class Path:
@@ -85,7 +85,10 @@ class HttpClient(object):
         # New connection per request, to avoid issues with servers closing connections
         # We ran into this while testing against the dev cluster. Tests would fail with 
         # a long stack trace and the error CannotSendRequest
-        self.conn = httplib.HTTPConnection("%s:%d" % (self.host, int(self.port)))
+        if (self.port == 443 ):
+            self.conn = httplib.HTTPSConnection("%s:%d" % (self.host, int(self.port)))
+        else :
+            self.conn = httplib.HTTPConnection("%s:%d" % (self.host, int(self.port)))
 
         name = name.upper()
 

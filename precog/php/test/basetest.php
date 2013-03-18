@@ -24,8 +24,8 @@ abstract class PrecogBaseTest extends UnitTestCase {
 	static $password  = "test1234";
 	public static function serviceInfo()
 	{
-		$HOST  = "beta.precog.com";
-		$PORT  = null;
+		$HOST  = "staging.precog.com";
+		$PORT  = 443;
 		$VERSION  = 1;
 
         $options = getopt("", array("host:", "port:", "version:"));
@@ -43,8 +43,11 @@ abstract class PrecogBaseTest extends UnitTestCase {
 					break;
 			}
 		}
-
-		$URL = "http://$HOST" . ($PORT ? ":$PORT" : "");
+		if ($PORT == 443){
+			$URL = "https://$HOST" . ($PORT ? ":$PORT" : "");
+		} else {
+			$URL = "http://$HOST" . ($PORT ? ":$PORT" : "");
+		}
 		return array("baseUrl"=>$URL, "version"=>$VERSION);
 	}
 

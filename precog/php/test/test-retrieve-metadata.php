@@ -18,7 +18,7 @@ class RetrieveMetadataTest extends PrecogBaseTest {
         $childPath = $path."/childPath";
         $this->api->store($childPath, array('foo'=> 43));
 
-        sleep(5);
+        sleep(15);
         $result = $this->api->retrieveMetadata($path, "children");
 
         $this->assertTrue(in_array("/childPath/", $result["children"]));
@@ -30,7 +30,7 @@ class RetrieveMetadataTest extends PrecogBaseTest {
         $childPath = $path."/childPath";
         $this->api->store($childPath, array('foo'=> 43));
 
-        sleep(5);
+        sleep(15);
 
         $value = $this->api->listChildren($path);
 

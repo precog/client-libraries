@@ -20,7 +20,7 @@ class SkipTest extends PrecogBaseTest {
         $options1 = array("limit" => 1, "skip" => 0);
         $options2 = array("limit" => 1, "skip" => 1);
 
-        sleep(5);
+        sleep(15);
 
         $value1 = $this->api->query("/$path", $options1);
         $value2 = $this->api->query("/$path", $options2);

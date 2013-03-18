@@ -27,7 +27,7 @@ class AllTests extends TestSuite {
 
         $this->addFile('test-store.php');
         $this->addFile('test-ingest.php');
-        
+
         $this->addFile('test-delete-path.php');
 
         $this->addFile('test-retrieve-metadata.php');

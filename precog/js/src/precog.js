@@ -354,9 +354,7 @@ throw new SyntaxError('JSON.parse');};}}());
       options = options || {};
       var host    = options.analyticsService || $.Config.analyticsService,
           version = options.version || $.Config.version;
- //     console.log("in action URL");
- //     console.log(host + service + "/v" + version + "/" + (action ? action + "/" : ""));
-      return host + service + "/v" + version + "/" + (action ? action + "/" : "");
+      return host + service + (version === "false" ? "" : "/v" + version) + "/" + (action ? action + "/" : "");
     },
 
     actionPath: function(path, options) {
@@ -444,6 +442,8 @@ throw new SyntaxError('JSON.parse');};}}());
       else {
         request.send(null);
       }
+
+      return request;
     },
 
     doJsonpRequest: function(options) {
@@ -506,7 +506,7 @@ throw new SyntaxError('JSON.parse');};}}());
     createHttpInterface: function(doRequest) {
       return {
         get: function(path, callbacks, query, headers) {
-          doRequest(
+          return doRequest(
             {
               method:   'GET',
               path:     path,
@@ -519,7 +519,7 @@ throw new SyntaxError('JSON.parse');};}}());
         },
 
         put: function(path, content, callbacks, query, headers) {
-          doRequest(
+          return doRequest(
             {
               method:   'PUT',
               path:     path,
@@ -533,7 +533,7 @@ throw new SyntaxError('JSON.parse');};}}());
         },
 
         post: function(path, content, callbacks, query, headers, progress) {
-          doRequest(
+          return doRequest(
             {
               method:   'POST',
               path:     path,
@@ -548,7 +548,7 @@ throw new SyntaxError('JSON.parse');};}}());
         },
 
         remove: function(path, callbacks, query, headers) {
-          doRequest(
+          return doRequest(
             {
               method:   'DELETE',
               path:     path,
@@ -571,6 +571,7 @@ throw new SyntaxError('JSON.parse');};}}());
 
   $.PageConfig = Util.getPageConfiguration();
   $.Config = Util.getConfiguration();
+
   $.Bool = function(v) {
     return v === true || v === 1 || (v = (""+v).toLowerCase()) == "true" || v == "on" || v == "1";
   };
@@ -586,6 +587,9 @@ throw new SyntaxError('JSON.parse');};}}());
 
   $.Config.analyticsService = $.PageConfig.analyticsService || $.Config.analyticsService;
   $.Config.apiKey = $.PageConfig.apiKey || $.Config.apiKey;
+  $.Config.version = $.PageConfig.version || $.Config.version;
+  $.Config.useJsonp = ($.PageConfig.useJsonp || $.Config.useJsonp) === "true";
+  $.Config.enableLog = $.PageConfig.enableLog || $.Config.enableLog;
 
   $.Http = function() {
     return $.Bool(Precog.$.Config.useJsonp) ? Precog.$.Http.Jsonp : Precog.$.Http.Ajax;
@@ -660,8 +664,18 @@ throw new SyntaxError('JSON.parse');};}}());
       parameters.sortOn = JSON.stringify(options.sortOn);
     if(options.sortOrder)
       parameters.sortOrder = options.sortOrder;
+    if("undefined" !== typeof options.format) {
+      parameters.format = options.format;
+    }
 
-    http.get(
+    if(parameters.format === "detailed") {
+      var old = success;
+      success = function(o, headers) {
+        old(o.data, o.errors, o.warnings, headers);
+      };
+    }
+
+    return http.get(
       Util.actionUrl("analytics", "fs", options) + Util.actionPath(null, options),
       Util.createCallbacks(success, failure, description),
       parameters
@@ -914,7 +928,7 @@ throw new SyntaxError('JSON.parse');};}}());
     var description = 'Precog retrieve metadata ' + options.type,
         parameters = { apiKey : options.apiKey || $.Config.apiKey };
     if(!parameters.apiKey) throw Error("apiKey not specified");
-    http.get(
+    return http.get(
       Util.actionUrl("meta", "fs", options) + Util.actionPath(path, options) + "#" + options.type,
       Util.createCallbacks(success, failure, description),
       parameters
@@ -1123,25 +1137,35 @@ throw new SyntaxError('JSON.parse');};}}());
     var queue = {};
     function executeCachedQuery(query, success, failure, options)
     {
-      var id = uid(query, options),
-          val = cacheGet(id);
-      if(val)
+      var id   = uid(query, options),
+          args = cacheGet(id);
+      if(args)
       {
-        success(val);
+        success.apply(null, args);
       } else if(queue[id]) {
-        queue[id].push(success);
+        queue[id].push({success: success, failure: failure});
       } else {
-        queue[id] = [];
-        executeQuery(query, function(data) {
-          cacheSet(id, data);
-          delayedCleanup(id);
-          success(data);
+        queue[id] = [{success: success, failure: failure}];
+        executeQuery(query, function() {
+          args = Array.prototype.slice.call(arguments);
+          try{
+            cacheSet(id, args);
+            delayedCleanup(id);
+          } catch(e){
+            Precog.cache.disable();
+          }
           for(var i = 0; i < queue[id].length; i++)
           {
-            queue[id][i](data);
+            queue[id][i].success.apply(null, args);
           }
           delete queue[id];
-        }, failure, options);
+        }, function(){
+          for(var i = 0; i < queue[id].length; i++)
+          {
+            queue[id][i].failure.apply(null, arguments);
+          }
+          delete queue[id];
+        }, options);
       }
     }
     cleanOld();

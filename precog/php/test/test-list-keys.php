@@ -6,11 +6,22 @@ class ListAPIkeyTest extends PrecogBaseTest {
         function testListAPIkey() {
             $api = PrecogBaseTest::createApi($this->info);
             $authorizingApiKey = $api->getApiKey();
-            $result = $api->createKey(array("grants"=>array(array("type"=>"read", "path"=>$this->info["path"]."foo/", "ownerAccountId"=> $this->info["accountId"], "expirationDate"=> null))));
-           // var_dump($result);
-           // var_dump($result["apiKey"]);
-            $apiKey = $result["apiKey"];
+
+            $grants = array("name"=>"php-test","description"=>"",
+                "grants"=>array(array(
+                        "parentIds"=> array(),
+                        "expirationDate"=> null,
+                        "permissions"=>array(
+                            array("accessType"=>"read", "path"=>$this->info["path"]."foo/","ownerAccountIds"=> array($this->info["accountId"])
+                            )
+                    ))
+                )
+            );
+
+            $value = $api->createKey($grants);
+
             $result = $api->listKeys();
+
             $this->assertTrue(count($result) > 0);
             $found = false;
             foreach ($result as $key => $value) {

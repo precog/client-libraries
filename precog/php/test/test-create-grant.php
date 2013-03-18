@@ -5,7 +5,14 @@ require_once('basetest.php');
 class CreateGrantTest extends PrecogBaseTest {
     function testCreateGrant() {
         $api = PrecogBaseTest::createApi($this->info);
-        $result = $api->createGrant(array("type"=>"read", "path"=>$this->info['path']."/foo/", "ownerAccountId"=> $this->info["accountId"], "expirationDate"=> null));
+
+        $grant= array(
+    			"parentIds"=> array(),
+    			"expirationDate"=> null,
+    			"permissions"=>array(array("accessType"=>"read", "path"=>$this->info["path"]."foo/","ownerAccountIds" => array($this->info["accountId"])))
+    	);
+
+        $result = $api->createGrant($grant);
  		$this->assertTrue(isset($result["grantId"]));
     }
 }

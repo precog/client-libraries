@@ -1,0 +1,108 @@
+  <span class="page-title">
+      Developer Center
+    </span>
+    <div>
+      <h1>
+        CLIENT LIBRARIES
+      </h1>
+      <p>
+        Client libraries allow you to access the Precog REST API using a growing roster of popular programming languages. A client library can be used to either ingest data, query data, issue grants, or interact with other parts of the Precog API.
+      </p>
+ <div>
+  <h2>
+          Python
+        </h2>
+        <h3>
+          GETTING STARTED: Python
+        </h3>
+        <p>
+          If you already have a Precog Account, you can initialize an API with your API Key.  The following code snippet creates an instance of the Precog API called <span>api</span> that you can then use to call the methods listed below.  Note that the analytics service used here is 'beta.precog.com'.  If your analytics service is different, it should be input there.
+        </p>
+        <pre>api = precog.Precog('your_api_key', 'beta.precog.com')</pre>
+        <p>
+          Functions can then be called using api.function_name(). For example:
+        </p>
+        <pre>account_description = api.describe_account("email_address", "password", "0230193012")</pre>
+        <h3>
+          API REFERENCE: Python
+        </h3>
+        <h4>
+          Accounts API Functions
+        </h4>
+        <ul class="api-function">
+         <li>
+          <pre><span>create_account</span>(email, password) </pre>
+         </li>
+           <li >
+            <p>
+              This function requires two strings as arguments: an email and a password.  It returns an object: <pre>{"accountId": 2389482834}</pre>
+            </p>
+          </li>
+         <li>
+          <pre><span>describe_account</span>(email, password, accountId) </pre>
+         </li>
+          <li >
+            <p>
+              This function requires three strings as arguments: email, password and accountId.  It returns an object containing details of the account: <pre>{ "accountId": 9384923423, "email": "jdoe&#64;gmail.com", "accountCreationDate": "09-21-2001", "apiKey": "[masterAPIKey]", "rootPath": "/jdoe/", "plan": { "type": "developer", } }</pre>
+            </p>
+          </li>
+        <h4>
+          Ingest API Functions
+        </h4>
+        <ul class="api-function">
+          <li>
+            <pre><span>ingest</span>(path, content, type [,options]) </pre>
+          </li>
+          <li >
+            <p>
+              This function requires three arguments: a string specifying the path where the data should be ingested, the content to be ingested and a string specifying the type of content to be ingested. The current types are: "json", "application/json", "csv" and "text/csv". The default option is synchronus ingest, but this can be changed to asychronus ingest by passing the following object: { async : true } as an optional argument.
+            </p>
+             <p>
+          Note that path the full path is required, including your root path.  If your root path is /000387509/foo/ and you want to store data at /000387509/foo/bar/ then the path argument you will use in the ingest function is "/000387509/foo/bar/".
+          </p>
+          </li>
+          <li>
+            <pre><span>store</span>(path, event [, options]) </pre>
+          </li>
+           <li >
+            <p>
+              This function requires two arguments: a string specifying the path where the data should be ingested and a single JSON object to be stored. The default option is synchronus ingest, but this can be changed to asychronus ingest by passing the following object: { async : true }.
+            </p>
+             <p>
+          Note that path the full path is required, including your root path. For example, if your root path is /000387509/foo/ and you want to store data at /000387509/foo/bar/baz then the path argument you will use in the store function is "/000387509/foo/bar/baz/".
+          </p>
+          </li>
+          <li>
+            <pre><span>deletePath</span>(path) </pre>
+          </li>
+          <li >
+            <p>
+              This function requires a string specifying the path to delete. <span>CAUTION: This method cannot be undone!</span> Be certain that you want to delete this path. 
+            </p>
+            <p>
+          Note that path the full path is required, including your root path.  For example, if your root path is /000387509/ and you want to delete /000387509/foo/bar/baz then the path argument you will use in the delete function is "/000387509/foo/bar/baz/".
+          </p>
+          </li>
+        </ul>
+        <h4>
+          Analytics API Functions
+        </h4>
+        <ul class="api-function">
+          <li>
+            <pre><span>query</span>(path, query) </pre>
+          </li>
+          <li >
+            <p>
+              This function requires two strings: a path to evaluate the query relative to and a properly formatted quirrel query. 
+            </p>
+             <p>
+           The query will be evaluated relative to the path specified in the first argument.  One common usage would be to specify your root path in this argument. If your root path is /000387509/ and you pass it as the first argument, then if you want to load data from /000387509/test/data, the proper load syntax is //test/data or load("/test/data").
+          </p>
+            <p>
+              This function returns an object containing the results of the query. 
+            </p>
+          </li>
+        </ul>
+      </div>
+    </div>
+   

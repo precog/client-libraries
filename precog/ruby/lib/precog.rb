@@ -37,7 +37,7 @@ module Precog
   # API server constants
   module API
     HOST = 'api.precog.io'
-    PORT = 80
+    PORT = 443
     VERSION = '1'
   end
 
@@ -80,6 +80,7 @@ module Precog
       @port       = port
       @version    = API::VERSION 
       @conn       = Net::HTTP.new(host, port)
+      @conn.use_ssl = (@port == 443)
     end
 
     def basic_auth(user, password)
@@ -234,13 +235,13 @@ module Precog
 
       parameters={}
       case(type.downcase) 
-        when 'application/x-gzip','gz','gzip':
+        when 'application/x-gzip','gz','gzip' then
           type = 'application/x-gzip'
-        when 'zip':
+        when 'zip' then 
           type = 'application/zip'
-        when 'application/json','json':
+        when 'application/json','json' then
           type = 'application/json'
-        when 'text/csv','csv':
+        when 'text/csv','csv' then
           type = 'text/csv';
           if(options[:delimiter])
             parameters['delimiter'] = options[:delimiter]

@@ -1,0 +1,318 @@
+  <span class="page-title">
+      Developer Center
+    </span>
+    <div>
+      <h1>
+        CLIENT LIBRARIES
+      </h1>
+      <p>
+        Client libraries allow you to access the Precog REST API using a growing roster of popular programming languages. Client libraries can be used to either ingest data, query data, issue grants, or interact with other parts of the Precog API.
+      </p>
+      <div>
+        <h2>
+          JAVASCRIPT
+        </h2>
+        <h3>
+          GETTING STARTED: JavaScript
+        </h3>
+        <p>
+          The JavaScript client library can be be used without downloading the library, but if you want to see the full source code, check out the <a href="https://github.com/reportgrid/client-libraries/tree/master/precog">public Github repository</a>.
+        </p>
+        <p>
+          To utilize the JavaScript client library, just embed this script in your html page: <pre>&lt;script src="https://api.reportgrid.com/js/precog.js?apiKey=<span class="tool-tip-apikey">[auth API Key]</span>&amp;analyticsService=https://beta.Precog.com/&basePath=<span class="tool-tip-root-path">[root path]</span>"&gt;&lt;/script&gt;</pre>
+        </p>
+        <p>
+          All of the information required to configure the Precog API object is contained in the URL above.  The object is then accessible and functions can be called using Precog.functionName().
+        </p>
+        <h3>
+          API REFERENCE: JavaScript
+        </h3>
+        <p>
+          The last three arguments for all of these functions are optional: successCallback is a function to be run if the function succeeds in running, failureCallback is a function to be run if the function fails to run and options is an argument for additional parameters.
+        </p>
+         <p>
+          Note that all references to a path in the functions will be relative to the root path used in the URL above.  For example, if your root path is /000387509/ and you want to store data at /000387509/foo/bar/ then the path argument you will use in the store function is "/foo/bar/".
+        </p>
+        <h4>
+          Accounts API Functions
+        </h4>
+        <ul class="api-function">
+         <li>
+          <pre>Precog.<span>createAccount</span>(email, password[, successCallback [, failureCallback [, options]]]): Object</pre>
+         </li>
+           <li >
+            <p>
+              This function requires two strings as arguments: an email and a password.  It returns an object: <pre>{"accountId": 2389482834}</pre>
+            </p>
+          </li>
+         <li>
+          <pre>Precog.<span>describeAccount</span>(email, password, accountId[, successCallback [, failureCallback [, options]]]): Object</pre>
+         </li>
+          <li >
+            <p>
+              This function requires three strings as arguments: email, password and accountId.  It returns an object containing details of the account: <pre>{ "accountId": 9384923423, "email": "jdoe&#64;gmail.com", "accountCreationDate": "09-21-2001", "apiKey": "[masterAPIKey]", "rootPath": "/jdoe/", "plan": { "type": "developer", } }</pre>
+            </p>
+          </li>
+         <li>
+          <pre>Precog.<span>addGrantToAccount</span>(email, password, accountId, grantId[, successCallback [, failureCallback [, options]]]): void</pre>
+         </li>
+          <li >
+            <p>
+              This function requires four strings as arguments: email, password, accountId and grantId.  
+            </p>
+          </li>
+         <li>
+          <pre>Precog.<span>describePlan</span>(email, password, accountId[, successCallback [, failureCallback [, options]]]): Object </pre>
+         </li>
+          <li >
+            <p>
+              This function requires three strings as arguments: email, password and accountId. It returns an object: <pre>{"type": "free"}</pre>
+            </p>
+          </li>
+         <li>
+          <pre>Precog.<span>changePlan</span>(email, password, accountId, type[, successCallback [, failureCallback [, options]]]): void</pre>
+         </li>
+          <li >
+            <p>
+              This function requires four strings as arguments: email, password, accountId and type of account. Please see this <a href="http://www.Precog.com/products/precog/pricing">list of plan types</a> for additional details.
+            </p>
+          </li>
+         <li>
+          <pre>Precog.<span>deletePlan</span>(email, password, accountId[, successCallback [, failureCallback [, options]]]): void</pre>
+         </li>
+           <li >
+            <p>
+              This function requires three strings as arguments: email, password and accountId. Deletes an account's plan. This is the same as switching a plan to the free plan.
+            </p>
+          </li>
+        </ul>
+        <h4>
+          Ingest API Functions
+        </h4>
+        <ul class="api-function">
+          <li>
+            <pre>Precog.<span>ingest</span>(path, content, type[, successCallback [, failureCallback [, options]]]): void</pre>
+          </li>
+          <li >
+            <p>
+              This function requires three arguments: a string specifying the path where the data should be ingested, the content to be ingested and a string specifying the type of content to be ingested. The current types are: "json", "application/json", "csv" and "text/csv". The default option is synchronus ingest, but this can be changed to asychronus ingest by passing the following object: { async : true }.
+            </p>
+             <p>
+          Note that path is relative to the root path used in the URL used to configure the Precog API ojbect.  For example, if your root path is /000387509/foo/ and you want to store data at /000387509/foo/bar/ then the path argument you will use in the ingest function is "/bar/".
+          </p>
+          </li>
+          <li>
+            <pre>Precog.<span>store</span>(path, event[, successCallback [, failureCallback [, options]]]): void</pre>
+          </li>
+           <li >
+            <p>
+              This function requires two arguments: a string specifying the path where the data should be ingested and a single JSON object to be stored. The default option is synchronus ingest, but this can be changed to asychronus ingest by passing the following object: { async : true }.
+            </p>
+             <p>
+          Note that path is relative to the root path used in the URL used to configure the Precog API ojbect.  For example, if your root path is /000387509/foo/ and you want to store data at /000387509/foo/bar/baz then the path argument you will use in the store function is "/bar/baz/".
+          </p>
+          </li>
+          <li>
+            <pre>Precog.<span>deletePath</span>(path[, successCallback [, failureCallback [, options]]]): void</pre>
+          </li>
+          <li >
+            <p>
+              This function requires a string specifying the path to delete. <span>CAUTION: This method cannot be undone!</span> Be certain that you want to delete this path. 
+            </p>
+            <p>
+          Note that path is relative to the root path used in the URL used to configure the Precog API ojbect.  For example, if your root path is /000387509/ and you want to delete /000387509/foo/bar/baz then the path argument you will use in the delete function is "/foo/bar/baz/".
+          </p>
+          </li>
+        </ul>
+        <h4>
+          Metadata API Functions
+        </h4>
+        <ul class="api-function">
+          <li>
+            <pre>Precog.<span>retrieveMetadata</span>(path[, successCallback [, failureCallback [, options]]]): Object</pre>
+          </li>
+          <li >
+            <p>
+              This function requires one string: the path for which metadata is desired. The default option is to return all metadata for a path.  To limit the metadata to a specific type, pass one of the following strings as the optional argument: "size", "structure", "children". It returns an object returning the metadata: <pre>{"size": 1024, "structure": { "types": { "Object": 1923, "Array": 9743, "String": 93, "Boolean": 712, "Number": 23745 } }, "children": ["foo", "bar"] }</pre>
+            </p>
+             <p>
+          Note that path is relative to the root path used in the URL used to configure the Precog API ojbect.  For example, if your root path is /000387509/ and you want to metadata for /000387509/foo/then the path argument you will use in the retrieveMetadata function is "/foo/".  If you want metadata for the root path, simply pass an empty string.
+          </p>
+          </li>
+          <li>
+            <pre>Precog.<span>children</span>(path[, successCallback [, failureCallback [, options]]]): Object</pre>
+          </li>
+           <li >
+            <p>
+              This function requires one string: the path for which children are desired. It returns an object containing an array of the children: <pre>{"children":["/child803266/","/child111087/",...]}</pre>
+            </p>
+            <p>
+          Note that path is relative to the root path used in the URL used to configure the Precog API ojbect.  For example, if your root path is /000387509/ and you want to the children for /000387509/foo/then the path argument you will use in the children function is "/foo/".  If you want children for the root path, simply pass an empty string.
+          </p>
+          </li>
+        </ul>
+        <h4>
+          Analytics API Functions
+        </h4>
+        <ul class="api-function">
+          <li>
+            <pre>Precog.<span>query</span>(query, successCallback [, failureCallback [, options]]]): Object</pre>
+          </li>
+          <li >
+            <p>
+              This function requires two arguments: a string which is a properly formatted quirrel query and a function that will run if the call succeeds. Sort, skip, limit and basepath are additional options that can be accessed by passing an object as the fourth optional argument. For example: <pre>{limit: 100, skip: 25}</pre> This option will limit the query results to 100 and skip the first 25 results. To sort, both the variable to sort on and the order must be specified.  "asc" and "desc" are the valid orders. <pre>{ sortOn : "name", sortOrder : "desc"}</pre> Basepath allows you to specify a path other than your rootpath to return queries relative to.  For example, if your rootpath is /0000023418/, then you can load the data located at: /0000023418/campaign3/mobile/conversions with the following query: //campaign3/mobile/conversions.  If you use the basepath option of <pre>{basePath: /0000023418/campaign3/mobile}</pre> The same data is accessible relative to the new basepath with a query of //conversions. 
+            </p>
+             <p>
+          Note that paths in quirrel are relative to the root path used to in the URL used to configure the Precog API object..  This impacts the usage of the load function in quirrel.  For example, if your root path is /000387509/ and you want to load data from /000387509/test/data, the proper load syntax is //test/data or load("//test/data").
+          </p>
+            <p>
+              This function returns an object containing the results of the query. 
+            </p>
+          </li>
+        </ul>
+        <h4>
+          Security API Functions
+        </h4>
+          <ul class="api-function">
+            <li>
+              <pre>Precog.<span>listKeys</span>(success, failure, options): Array</pre>
+            </li>
+            <li >
+            <p>
+              This function does not require any arguments. It returns an array of API key objects: <pre>[{"apiKey": "[API Key]"}, {"apiKey": "[API Key]"}, É]</pre>
+            </p>
+          </li>
+            <li>
+              <pre>Precog.<span>createKey</span>(grants[, successCallback [, failureCallback [, options]]]): Object</pre>
+            </li>
+            <li >
+            <p>
+              This function requires one argument: a grants object containing an array of details about the grant: <pre>{ "grants": [{ "type": "read", "path":"/foo/", "expirationDate": null, "ownerAccountId" : id }] }</pre> It returns an API key object: <pre>{"apiKey": "[API Key]"}</pre>
+            </p>
+          </li>
+            <li>
+              <pre>Precog.<span>describeKey</span>(apiKey[, successCallback [, failureCallback [, options]]]): Object</pre>
+            </li>
+            <li >
+            <p>
+              This function requires one argument: an API key formatted as a string. It returns an object containing the details of the API key: <pre>{ "apiKey": "[API key]", "grants": [ {"grantId": "[Grant ID]", "type": "read", "path": "/foo/", "ownerAccountId": "[Owner Account ID]", "expirationDate": 0}, {"grantId": "[Write ID]", "type": "write", "path": "/bar/", "ownerAccountId": "[Owner Account ID]", "expirationDate": 0}, ... ] }</pre>
+            </p>
+          </li>
+            <li>
+              <pre>Precog.<span>deleteKey</span>(apiKey[, successCallback [, failureCallback [, options]]]): void</pre>
+            </li>
+            <li >
+            <p>
+              This function requires one argument: an API key formatted as a string. The API key must have been created by the authorization API key. The authorization API key cannot delete itself.
+            </p>
+          </li>
+            <li>
+              <pre>Precog.<span>retrieveGrants</span>(apiKey[, successCallback [, failureCallback [, options]]]): Array</pre>
+            </li>
+             <li >
+            <p>
+              This function requires one argument: an API key formatted as a string. It returns an array of grantId objects: <pre>[ {"grantId": "[Grant Id]", "type": "read", "path": "/foo/", "ownerAccountId": "[Owner Account Id]", "expirationDate": 0}, {"grantId": "[Grant Id]", "type": "write", "path": "/bar/", "expirationDate": 0}, ... ]</pre>
+            </p>
+          </li>
+            <li>
+              <pre>Precog.<span>addGrantToKey</span>(apiKey, grant[, successCallback [, failureCallback [, options]]]): void</pre>
+            </li>
+              <li >
+            <p>
+              This function requires two arguments: an API key formatted as a string and a grants object containing an array of details about the grant: <pre>{ "grants": [{ "type": "read", "path":"/foo/", "expirationDate": null, "ownerAccountId" : id }] }</pre>
+            </p>
+          </li>
+            <li>
+              <pre>Precog.<span>removeGrant</span>(apiKey, grantId[, successCallback [, failureCallback [, options]]]): void</pre>
+            </li>
+              <li >
+            <p>
+              This function requires two arguments: an API key formatted as a string and a grants object containing an array of details about the grant: <pre>{ "grants": [{ "type": "read", "path":"/foo/", "expirationDate": null, "ownerAccountId" : id }] }</pre>The API key must have been created by the authorization API key, and the grant must have been added by the API key.
+            </p>
+          </li>
+            <li>
+              <pre>Precog.<span>createGrant</span>(grant[, successCallback [, failureCallback [, options]]]): Object</pre>
+            </li>
+             <li >
+            <p>
+              This function requires one argument: a grants object containing an array of details about the grant: <pre>{ "grants": [{ "type": "write", "path":"/bar/", "expirationDate": null, "ownerAccountId" : id }] }</pre> It returns a grantId object: <pre>{"grantId": "[Grant Id]"}</pre>
+            </p>
+          </li>
+            <li>
+              <pre>Precog.<span>describeGrant</span>(grantId[, successCallback [, failureCallback [, options]]]): Object</pre>
+            </li>
+            <li >
+            <p>
+              This function requires one argument: a grantId formatted as a string. It returns and objecting containing the details about the grant: <pre>{"grantId": "[Grant Id]", "type": "read", "path": "/foo/", "ownerAccountId": "[Owner Account Id]", "expirationDate": 0}</pre>
+            </p>
+          </li>
+            <li>
+              <pre>Precog.<span>deleteGrant</span>(grantId[, successCallback [, failureCallback [, options]]]): void</pre>
+            </li>
+            <li >
+            <p>
+              This function requires one argument: a grantId formatted as a string. Only the creator of a grant can delete it.
+            </p>
+          </li>
+            <li>
+              <pre>Precog.<span>listGrantChildren</span>(grantId[, successCallback [, failureCallback [, options]]]): Array</pre>
+            </li>
+            <li >
+            <p>
+              This function requires one argument: a grantId formatted as a string. It returns an array of grantId objects: <pre>[ {"grantId": "[Grant Id]", "type": "read", "path": "/foo/", "ownerAccountId": "[Owner Account Id]", "expirationDate": 0}, {"grantId": "[Grant Id]", "type": "write", "path": "/bar/", "expirationDate": 0}, ... ]</pre>
+            </p>
+          </li>
+            <li>
+              <pre>Precog.<span>createGrantChild</span>(grantId, child[, successCallback [, failureCallback [, options]]]): Object</pre>
+            </li>
+             <li >
+            <p>
+              This function requires two arguments: a grantId formatted as a string and an object describing the type of the grant child: <pre>{ "type": "read", "path": "/foo/bar/", "ownerAccountId": id, "expirationDate": null }</pre> It returns a grantId object: <pre>{"grantId": "[Grant Id]"}</pre>
+            </p>
+          </li>
+          </ul>
+          <h4>
+          Precog.cache
+        </h4>
+        <p>
+          To prevent unnecessary queries from being run, by default query results are stored in the cache for five minutes. If any query is re-run during this window it will used the cached result rather than contacting the server to run the query. While this is often a useful default, it can be important to change this setting. The Precog.cache() function gives you control over the caching behavior.
+        </p>
+        <ul class="api-function">
+          <li><pre>Precog.<span>cache.isEnabled</span>()</pre>
+          </li>
+          <li >
+            <p>
+              This function checks to see if the cache is enabled. It will return a boolean value of true if the cache is enabled and false if it is disabled.
+            </p>
+          </li>
+          <li><pre>Precog.<span>cache.enable</span>()</pre>
+          </li>
+          <li >
+            <p>
+              This function enables the cache.
+            </p>
+          </li>
+          <li><pre>Precog.<span>cache.disable</span>()</pre>
+          </li>
+          <li >
+            <p>
+              This function disables the cache.
+            </p>
+          </li>
+          <li><pre>Precog.<span>cache.setTimeout</span>(millis)</pre>
+          </li>
+          <li >
+            <p>
+              This function allows you to set the cache timeout in milliseconds. So, if you want the cache to clear each minute, set the timeout to 60000.
+            </p>
+          </li>
+          <li><pre>Precog.<span>cache.clear</span>()</pre>
+          </li>
+          <li >
+            <p>
+              This function clears the cache and will force the next query run to contact the server.
+            </p>
+          </li>
+      </div>
+      </div>
+      
