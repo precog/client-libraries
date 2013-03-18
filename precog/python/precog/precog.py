@@ -238,3 +238,17 @@ class Precog(object):
         if property and not property.startswith('.'):
             property = '.%s' % property
         return property
+
+    @classmethod
+    def from_heroku(token):
+        values=from_token(token)
+        return Precog.new(values['api_key'], values['host'])
+
+    @classmethod
+    def to_token(user,pwd,host, account_id, api_key, root_path):
+        return base64.urlsafe_b64encode("%s:%s:%s:%s:%s:%s" % (user, pwd, host, account_id, api_key, root_path))
+
+    @classmethod
+    def from_token(token):
+        values=base64.urlsafe_decode64(token).split(":")
+        return { 'user':values[0], 'pwd':values[1], 'host':values[2], 'account_id':values[3], 'api_key': values[4], 'root_path': values[5] }
