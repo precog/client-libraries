@@ -39,7 +39,6 @@ module Precog
   module API
     HOST = 'devapi.precog.com'
     PORT = 443
-    VERSION = '1'
   end
 
   module Paths
@@ -48,9 +47,9 @@ module Precog
 
   # Services constants
   module Services
-    ANALYTICS = '/analytics'
-    ACCOUNTS = '/accounts'
-    INGEST = '/ingest'
+    ANALYTICS = '/analytics/v1'
+    ACCOUNTS = '/accounts/v1'
+    INGEST = '/ingest/v1'
   end
 
   
@@ -79,7 +78,6 @@ module Precog
       @api_key    = api_key
       @host       = host
       @port       = port
-      @version    = API::VERSION 
       @conn       = Net::HTTP.new(host, port)
       @conn.use_ssl = (@port == 443)
     end
@@ -89,7 +87,7 @@ module Precog
     end
 
     def action_url(service, action )
-      return "#{service}/v#{@version}/#{action}";
+      return "#{service}/#{action}";
     end
 
     # Sanitize a URL path
@@ -97,7 +95,8 @@ module Precog
       newpath = path.gsub(/\/+/, '/')
       while newpath.gsub!(%r{([^/]+)/\.\./?}) { |match|
         $1 == '..' ? match : ''
-      } do end
+      }
+      end
       newpath.gsub(%r{/\./}, '/').sub(%r{/\.\z}, '/')
     end
 
@@ -235,6 +234,9 @@ module Precog
 
 
     # Ingests csv or json data at the specified path
+    # (mode = batch, receipt = true), 
+    # (mode = batch, receipt = false), 
+    # (mode = streaming)
     def ingest(path, content, type, options={})
       path = @api.sanitize_path(path);
       if(!content) 
@@ -267,20 +269,28 @@ module Precog
           parameters['ownerAccountId'] = options[:ownerAccountId]
       end
 
-      action = @api.sanitize_path("#{options[:async] ? "async" : "sync" }/#{Paths::FS}/#{path}")
+      action = @api.sanitize_path("/#{Paths::FS}/#{path}")
       @api.post(Services::INGEST,action, 
         { :headers => parameters, :body => content },type)
     end
 
+    def ingest_batch(path,content,type, receipt, options={})
+      ingest(path, content, type, options.merge!({'mode'=> 'batch' , 'receipt'=> receipt}))
+    end
+
+    def ingest_stream(path,content,type, options={})
+      ingest(path, content, type, options.merge!({'mode'=> 'streaming' }))
+    end
+
     # Store a record at the specified path
     def store(path, event, options = {})
-        ingest(path, event.to_json, "application/json", options);
+        ingest(path, event.to_json, "application/json", options.merge!({'mode'=> 'batch' , 'receipt'=> 'true'}))
     end
 
 
     def delete(path)
       action = @api.sanitize_path("sync/#{Paths::FS}/#{path}")
-      @api.delete(Services::INGEST,path);
+      @api.delete(Services::INGEST,path)
     end
 
     # Send a quirrel query to be evaluated relative to the specified base path.
@@ -290,6 +300,8 @@ module Precog
       options={  :parameters => { :q => query } } 
       @api.get(Services::ANALYTICS, path, options)
     end
+
+    private :ingest
 
   end
 
