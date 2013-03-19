@@ -264,7 +264,13 @@ module Precog
           end
         else
           raise "argument 'type' must be 'json' or 'csv'"
-      end    
+      end
+      
+      parameters['mode']=options[:mode]
+      if (options[:mode]="batch")
+        parameters['receipt']="#{options[:receipt]}"
+      end
+
       if(options[:ownerAccountId])
           parameters['ownerAccountId'] = options[:ownerAccountId]
       end
@@ -275,16 +281,16 @@ module Precog
     end
 
     def ingest_batch(path,content,type, receipt, options={})
-      ingest(path, content, type, options.merge!({'mode'=> 'batch' , 'receipt'=> receipt}))
+      ingest(path, content, type, options.merge!({:mode=> 'batch' , :receipt=> receipt}))
     end
 
     def ingest_stream(path,content,type, options={})
-      ingest(path, content, type, options.merge!({'mode'=> 'streaming' }))
+      ingest(path, content, type, options.merge!({:mode=> 'streaming' }))
     end
 
     # Store a record at the specified path
     def store(path, event, options = {})
-        ingest(path, event.to_json, "application/json", options.merge!({'mode'=> 'batch' , 'receipt'=> 'true'}))
+        ingest(path, event.to_json, "application/json", options.merge!({:mode=> 'batch' , :receipt=> 'true'}))
     end
 
 

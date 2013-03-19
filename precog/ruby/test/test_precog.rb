@@ -130,7 +130,8 @@ class PrecogClientTest < Test::Unit::TestCase
     #no anda csv?
 
   def test_ingest_csv
-    response=@api.ingest_batch(@account_id,  '"bah1","bah2"\n', "csv",true)
+    options = {:delimiter => ",", :quote =>"'", :escape => "\\" }
+    response=@api.ingest_batch(@account_id,  '"bah1"', "csv",true)
     assert_equal 1, response['ingested']
   end
 
@@ -151,13 +152,6 @@ class PrecogClientTest < Test::Unit::TestCase
     response=@api.ingest_stream(@account_id, json_data, "json")
     #async just returns 202 result code
     assert_equal 1, response['ingested'] # ?
-  end
-
-  def test_ingest_stream_csv
-    options = {:delimiter => ",", :quote =>"'", :escape => "\\" }
-    response=@api.ingest_stream(@account_id, "blah,blah\n", "csv", options)
-    #async just returns 202 result code
-    assert_equal "", response
   end
 
   def test_store
