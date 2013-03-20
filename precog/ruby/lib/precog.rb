@@ -31,7 +31,6 @@ require 'uri'
 
 require 'rubygems'
 require 'json'
-require 'base64'
 
 module Precog
 
@@ -83,7 +82,7 @@ module Precog
     end
 
     def basic_auth(user, password)
-      { "Authorization" => "Basic " + Base64.urlsafe_encode64(user + ':' + password).chomp }
+      { :auth =>{ :user=>"#{user}", :password=>"#{password}" }}
     end
 
     def action_url(service, action )
@@ -114,6 +113,7 @@ module Precog
       options[:body]    ||= ''
       options[:headers] ||= {}
       options[:parameters] ||= {}
+      options[:auth] ||= {}
 
       # Add api key to path and set headers
       path = action_url(service,action)
@@ -140,6 +140,9 @@ module Precog
       # Send request and get response
       begin
         request = Net::HTTP.const_get(name.to_s.capitalize).new(path)
+        if options[:auth]
+          request.basic_auth options[:auth][:user],options[:auth][:password]
+        end
         options[:headers].each { |k,v| request.add_field(k, v) }
         response = @conn.request(request, body)
       rescue StandardError => e
@@ -197,32 +200,32 @@ module Precog
     
     #Retrieves the details about a particular account. This call is the primary mechanism by which you can retrieve your master API key.
     def describe_account(email, password, accountId)
-      @api.get(Services::ACCOUNTS,"accounts/#{accountId}",:headers =>  @api.basic_auth(email, password) )
+      @api.get(Services::ACCOUNTS,"accounts/#{accountId}",@api.basic_auth(email, password) )
     end
 
     #Adds a grant to an account's API key.
     def add_grant_to_account(email, password, accountId, grantId)
-      @api.post(Services::ACCOUNTS,"accounts/grants/",{ :headers =>  @api.basic_auth(email, password),:body => { :grantId => grantId  } })
+      @api.post(Services::ACCOUNTS,"accounts/grants/",@api.basic_auth(email, password).merge!({ :body => { :grantId => grantId  } }))
     end
 
     #Describe Plan
     def describe_plan(email, password, accountId)
-      @api.get(Services::ACCOUNTS,"accounts/#{accountId}/plan",:headers =>  @api.basic_auth(email, password))
+      @api.get(Services::ACCOUNTS,"accounts/#{accountId}/plan",@api.basic_auth(email, password))
     end
 
     #Changes an account's plan (only the plan type itself may be changed). Billing for the new plan, if appropriate, will be prorated.
     def change_plan(email, password, accountId, type)
-      @api.put(Services::ACCOUNTS,"accounts/#{accountId}/plan",{ :headers =>  @api.basic_auth(email, password), :body => { :type => type } })
+      @api.put(Services::ACCOUNTS,"accounts/#{accountId}/plan",@api.basic_auth(email, password).merge!({ :body => { :type => type } }))
     end
 
     #Changes your account access password. This call requires HTTP Basic authentication using the current password.
     def change_password(email, password, accountId, newPassword)
-      @api.put(Services::ACCOUNTS,"accounts/#{accountId}/password",{ :headers =>  @api.basic_auth(email, password), :body => { :password => newPassword  } })
+      @api.put(Services::ACCOUNTS,"accounts/#{accountId}/password", @api.basic_auth(email, password).merge!({:body => { :password => newPassword  } }))
     end
 
     #Deletes an account's plan. This is the same as switching a plan to the free plan.
     def delete_plan(email, password, accountId)
-      @api.delete(Services::ACCOUNTS,"accounts/#{accountId}/plan",{ :headers =>  @api.basic_auth(email, password) })
+      @api.delete(Services::ACCOUNTS,"accounts/#{accountId}/plan",@api.basic_auth(email, password))
     end
 
     ######################
@@ -267,17 +270,16 @@ module Precog
       end
       
       parameters['mode']=options[:mode]
-      if (options[:mode]="batch")
+      if (options[:mode]=="batch")
         parameters['receipt']="#{options[:receipt]}"
       end
 
       if(options[:ownerAccountId])
           parameters['ownerAccountId'] = options[:ownerAccountId]
       end
-
       action = @api.sanitize_path("/#{Paths::FS}/#{path}")
       @api.post(Services::INGEST,action, 
-        { :headers => parameters, :body => content },type)
+        { :parameters=> parameters, :body => content },type)
     end
 
     def ingest_batch(path,content,type, receipt, options={})

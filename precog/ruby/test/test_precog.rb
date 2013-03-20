@@ -130,27 +130,32 @@ class PrecogClientTest < Test::Unit::TestCase
     #no anda csv?
 
   def test_ingest_csv
-    options = {:delimiter => ",", :quote =>"'", :escape => "\\" }
+    options = {:delimiter => ",", :quote =>'"', :escape => "\\" }
+    response=@api.ingest_batch(@account_id, '"bah1","bah2"\n"bah3","bah4"\n', "csv",true)
+    assert_equal 2, response['ingested']
+  end
+
+  def test_ingest_csv_simple
+    options = {} #{:delimiter => ",", :quote =>'"', :escape => "\\" }
     response=@api.ingest_batch(@account_id,  '"bah1"', "csv",true)
     assert_equal 1, response['ingested']
   end
 
   def test_ingest_json
-    json_data = "{ 'user': 'something' 'json_dta': { 'nested': 'blah'} }"
+    json_data = '{ "user": "something", "json_dta": { "nested": "blah"} }'
     response=@api.ingest_batch(@account_id, json_data, "json",true)
     assert_equal 1, response['ingested']
   end
 
   def test_ingest_json_no_receipt
-    json_data = "{ 'user': 'something' 'json_dta': { 'nested': 'blah'} }"
+    json_data = '{ "user": "something", "json_dta": { "nested": "blah"} }'
     response=@api.ingest_batch(@account_id, json_data, "json",false)
-    assert_equal 1, response['ingested']
+    assert_equal 68, response['content-length'] 
   end
 
   def test_ingest_stream_json
-    json_data = "{ 'user': 'something' 'json_dta': { 'nested': 'blah'} }"
+    json_data = '{ "user": "something", "json_dta": { "nested": "blah"} }'
     response=@api.ingest_stream(@account_id, json_data, "json")
-    #async just returns 202 result code
     assert_equal 1, response['ingested'] # ?
   end
 
