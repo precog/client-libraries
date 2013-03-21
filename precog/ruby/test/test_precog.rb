@@ -131,14 +131,10 @@ class PrecogClientTest < Test::Unit::TestCase
 
   def test_ingest_csv
     options = {:delimiter => ",", :quote =>'"', :escape => "\\" }
-    response=@api.ingest_batch(@account_id, '"bah1","bah2"\n"bah3","bah4"\n', "csv",true)
+    response=@api.ingest_batch(@account_id, '"product","price"
+      "tardis","$10.000"
+      "Dalek armour","$9.999,99"', "csv",true)
     assert_equal 2, response['ingested']
-  end
-
-  def test_ingest_csv_simple
-    options = {} #{:delimiter => ",", :quote =>'"', :escape => "\\" }
-    response=@api.ingest_batch(@account_id,  '"bah1"', "csv",true)
-    assert_equal 1, response['ingested']
   end
 
   def test_ingest_json

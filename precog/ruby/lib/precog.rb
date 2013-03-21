@@ -136,7 +136,7 @@ module Precog
         body = (content_type=='application/json')? options[:body].to_json : options[:body]
         message += " and body (#{body})"
       end
-
+      
       # Send request and get response
       begin
         request = Net::HTTP.const_get(name.to_s.capitalize).new(path)
