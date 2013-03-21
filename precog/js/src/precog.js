@@ -696,7 +696,7 @@ throw new SyntaxError('JSON.parse');};}}());
     );
   };
 
-  Precog.asyncQuery = function(query, success, failure, options = {timeout: 1800000}) {
+  Precog.asyncQuery = function(query, success, failure, options ) {
     options = options || {};
     var description = 'Precog query ' + query,
         parameters = { apiKey : options.apiKey || $.Config.apiKey, q : query };
@@ -713,10 +713,8 @@ throw new SyntaxError('JSON.parse');};}}());
       parameters.sortOn = JSON.stringify(options.sortOn);
     if(options.sortOrder)
       parameters.sortOrder = options.sortOrder;
-    if(options.timeout)
-        parameters.timeout = options.timeout;
-      if(options.prefixPath)
-        parameters.prefixPath = options.prefixPath;
+    parameters.timeout = options.timeout || 1800000;
+    parameters.prefixPath = options.prefixPath || $.Config.basePath;
     if("undefined" !== typeof options.format) {
       parameters.format = options.format;
     }
