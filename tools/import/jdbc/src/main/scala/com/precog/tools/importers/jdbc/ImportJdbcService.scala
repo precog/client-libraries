@@ -1,7 +1,7 @@
 package com.precog.tools.importers.jdbc
 
 
-import akka.dispatch.Future
+import akka.dispatch.{ExecutionContext, Future}
 import blueeyes.BlueEyesServiceBuilder
 import blueeyes.core.http.{HttpRequest, HttpResponse, HttpStatus}
 import blueeyes.core.http.HttpStatusCodes._
@@ -14,6 +14,15 @@ import JsonImplicits._
 import java.sql.{DatabaseMetaData, Connection}
 import blueeyes.json.{JValue, JString, JArray}
 import Datatypes._
+import blueeyes.bkka.AkkaDefaults._
+import scala.Left
+import com.precog.tools.importers.jdbc.Datatypes.Join
+import com.precog.tools.importers.jdbc.ImportJdbc.IngestInfo
+import scala.Right
+import scala.Some
+import com.precog.tools.importers.jdbc.ImportJdbc.ImportTable
+import com.precog.tools.importers.jdbc.Datatypes.Table
+import scalaz.Monad
 
 
 /**
@@ -22,6 +31,8 @@ import Datatypes._
  */
 trait ImportJdbcService extends BlueEyesServiceBuilder {
 
+  implicit def executionContext: ExecutionContext
+  implicit def M: Monad[Future]
 
   val host="https://beta.precog.com" // "https://devapi.precog.com" //TODO move to trait
 
@@ -49,10 +60,6 @@ trait ImportJdbcService extends BlueEyesServiceBuilder {
   def handleRequestWithConnection[T](f: (Connection,HttpRequest[T])=> Future[HttpResponse[T]])= handleRequest( (r: HttpRequest[T]) =>  withConnectionFromRequest(r)(f))
 
   def optionYes(ob:Option[String])=ob.map(_.toLowerCase == "y").getOrElse(false)
-  /*def response[T](f: HttpRequest[T] => HttpResponse[T] )(request: HttpRequest[T]):Future[HttpResponse[T]] = {
-
-
-  }*/
 
   def getJoins(infer: Boolean, conn: Connection, metadata: DatabaseMetaData, cat: Option[String], table: Table, idPattern: String, sample: Boolean): Set[Join] = {
       val inferred = if (infer) getInferredRelationships(conn, metadata, cat, table, idPattern, sample) else Set()
@@ -78,7 +85,7 @@ trait ImportJdbcService extends BlueEyesServiceBuilder {
             handleRequestWithConnection( (conn:Connection,request:HttpRequest[ByteChunk]) =>{
               val tables=JArray(oneColumnRs(conn.getMetaData.getCatalogs).map(JString(_)).toList)
               Future {
-                HttpResponse[ByteChunk](content = Option(tables))
+                HttpResponse[ByteChunk](content = Option(jvalueToChunk(tables)))
               }
             }
             )
@@ -92,7 +99,7 @@ trait ImportJdbcService extends BlueEyesServiceBuilder {
                 val ts=findTables(conn.getMetaData,cat,None)
                 val result = JArray(ts.map(t=>JString(t.name)).toList)
                 Future {
-                  HttpResponse[ByteChunk](content = Option(result))
+                  HttpResponse[ByteChunk](content = Option(jvalueToChunk(result)))
                 }
               }
               )

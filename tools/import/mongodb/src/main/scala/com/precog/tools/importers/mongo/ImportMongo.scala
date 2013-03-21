@@ -217,6 +217,6 @@ object ImportMongo {
     }.getBytes("UTF-8")))
 
     val byteChunks: ByteChunk = Right(byteStream)
-    httpClient.parameters('apiKey -> apiKey).post(fullPath)(byteChunks)
+    httpClient.parameters('apiKey -> apiKey,'mode -> "streaming").header("Content-Type","text/csv").post(fullPath)(byteChunks)
   }
 }

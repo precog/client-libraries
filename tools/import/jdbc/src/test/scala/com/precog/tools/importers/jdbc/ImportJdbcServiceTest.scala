@@ -6,17 +6,20 @@ import blueeyes.core.http.test.HttpRequestMatchers
 import blueeyes.core.service._
 import blueeyes.core.data.DefaultBijections._
 import java.sql.DriverManager
-import akka.dispatch.Await
+import akka.dispatch.{Future, Await}
 import blueeyes.core.http.HttpResponse
 import JsonImplicits._
+import scalaz.Monad
+import blueeyes.bkka.{AkkaDefaults, FutureMonad}
 
 /**
  * User: gabriel
  * Date: 12/4/12
  */
-class ImportJdbcServiceTest extends BlueEyesServiceSpecification with ImportJdbcService with HttpRequestMatchers  {
+class ImportJdbcServiceTest extends BlueEyesServiceSpecification with ImportJdbcService with HttpRequestMatchers with AkkaDefaults {
 
   val executionContext = defaultFutureDispatch
+  implicit val M: Monad[Future]  = new FutureMonad(executionContext)
 
   def dbUrl(db:String)="jdbc:h2:~/%s".format(db)
 

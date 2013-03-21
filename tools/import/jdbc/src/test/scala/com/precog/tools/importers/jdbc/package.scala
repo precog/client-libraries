@@ -18,9 +18,9 @@ package object jdbc {
   Class.forName("org.h2.Driver")
 
   // use api key and dispatch to call ingest
-  val host="https://beta.precog.com"
-  val apiKey="43AB865E-BB86-4F74-A57E-7E8BBD77F2B5"
-  val basePath="/0000000457/data"
+  val host="https://devapi.precog.com"
+  val apiKey="0A24F09F-19CB-45D0-8BFA-543C61BA5EE6"
+  val basePath="/0000000075/data"
 
   def tblA(implicit conn:Connection) = conn.createStatement().execute(" create table A( id int primary key, name varchar(10) ) ")
   def tblB(implicit conn:Connection) = conn.createStatement().execute(" create table B( id int primary key, a_id int, name varchar(10)) ")

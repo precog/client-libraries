@@ -27,7 +27,7 @@ object DbAccess {
     for ( i <- 1 to count) yield Column(tblMetaData.getColumnName(i),Table(tblMetaData.getTableName(i)))
   }
 
-  //don't use!
+  //warning: this serves the purpose but it doesn't
   private def rsIterator[T](rs:ResultSet)(f:ResultSet => T) = new Iterator[T] {
     def hasNext = rs.next()
     def next():T = f(rs)

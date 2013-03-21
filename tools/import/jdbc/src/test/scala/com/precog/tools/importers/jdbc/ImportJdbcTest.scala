@@ -155,7 +155,7 @@ class ImportJdbcTest extends Specification with FutureMatchers with HttpRequestM
       dataA
       val r=ImportJdbc.ingest(conn,"a",ImportJdbc.buildQuery(tblADesc),Some(tblADesc),basePath,host,apiKey)
       Await.result(r,1 minute) must beLike {
-        case HttpResponse(_ ,_,Some(Left(buffer)),_) => { new String(buffer.array(), "UTF-8") must_== """{"failed":0,"skipped":0,"errors":[],"total":1,"ingested":1}"""}
+        case HttpResponse(_ ,_,Some(Left(buffer)),_) => { new String(buffer.array(), "UTF-8") must_== """{"ingested":1,"errors":[]}"""}
       }
     }
 
@@ -166,7 +166,7 @@ class ImportJdbcTest extends Specification with FutureMatchers with HttpRequestM
 
       val r=ImportJdbc.ingest(conn,"a",ImportJdbc.buildQuery(tblABDesc),Some(tblABDesc),basePath,host,apiKey)
       Await.result(r,1 minute) must beLike {
-        case HttpResponse(_ ,_,Some(Left(buffer)),_) => { new String(buffer.array(), "UTF-8") must_== """{"failed":0,"skipped":0,"errors":[],"total":1,"ingested":1}"""}
+        case HttpResponse(_ ,_,Some(Left(buffer)),_) => { new String(buffer.array(), "UTF-8") must_== """{"ingested":1,"errors":[]}"""}
         }
       }
     }

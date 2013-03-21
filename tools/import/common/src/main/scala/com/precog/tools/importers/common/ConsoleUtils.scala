@@ -38,6 +38,23 @@ object ConsoleUtils {
       }
     }
 
+  def selectOne[T](label:String, available: Seq[T])(implicit arg0: ClassManifest[T]): T ={
+
+      val availArray=available.toArray
+
+      println("Available %ss:".format(label))
+      println(present(availArray))
+
+      println("Select a number/enter the name: ")
+
+      val selIdx = readLine()
+      selIdx match {
+        case ParseInt(x) if (x<=available.size) => availArray(x - 1)
+        case s:String if (available.exists(_.toString == s)) => availArray.find(_.toString == s).get
+        case _ => selectOne(label,available)
+      }
+  }
+
   def present[T](arr:Seq[T])= (1 to arr.length).zip(arr).map(x=>x._1 +":"+ x._2).mkString(", ")
 
 
