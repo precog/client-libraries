@@ -696,7 +696,7 @@ throw new SyntaxError('JSON.parse');};}}());
     );
   };
 
-  Precog.asyncQuery = function(query, success, failure, options) {
+  Precog.asyncQuery = function(query, success, failure, options = {timeout: 1800000}) {
     options = options || {};
     var description = 'Precog query ' + query,
         parameters = { apiKey : options.apiKey || $.Config.apiKey, q : query };
