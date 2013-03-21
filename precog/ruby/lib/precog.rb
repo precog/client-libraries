@@ -94,7 +94,7 @@ module Precog
       newpath = path.gsub(/\/+/, '/')
       while newpath.gsub!(%r{([^/]+)/\.\./?}) { |match|
         $1 == '..' ? match : ''
-      }
+      } 
       end
       newpath.gsub(%r{/\./}, '/').sub(%r{/\.\z}, '/')
     end
