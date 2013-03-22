@@ -26,30 +26,28 @@ require 'test/unit'
 require 'base64'
 
 class PrecogClientTest < Test::Unit::TestCase
+  HOST = 'devapi.precog.com'
+  PORT = 443
+  ROOT_API_KEY = '2D36035A-62F6-465E-A64A-0E37BCC5257E'
 
-    HOST = 'devapi.precog.com'
-    PORT = 443
-    ROOT_API_KEY = '2D36035A-62F6-465E-A64A-0E37BCC5257E'
-
-    attr_reader :account_id, :api_key, :no_key_api, :api
-
+  attr_reader :account_id, :api_key, :no_key_api, :api
 
   def setup
-      require 'precog'
-      #connection without api key
-      @root_key_api=Precog::Precog.new(ROOT_API_KEY, HOST, PORT)
-      #create test user and extract key
-      response = @root_key_api.create_account("test-rb@precog.com","password")
-      @account_id=response['accountId']
-      response =@root_key_api.describe_account("test-rb@precog.com","password",account_id)
-      @api_key=response['apiKey']
-      #connection with api key
-      @api=Precog::Precog.new(@api_key, HOST, PORT)
-    end
+    require 'precog'
+    #connection without api key
+    @root_key_api=Precog::Precog.new(ROOT_API_KEY, HOST, PORT)
+    #create test user and extract key
+    response = @root_key_api.create_account("test-rb@precog.com","password")
+    @account_id=response['accountId']
+    response =@root_key_api.describe_account("test-rb@precog.com","password",account_id)
+    @api_key=response['apiKey']
+    #connection with api key
+    @api=Precog::Precog.new(@api_key, HOST, PORT)
+  end
 
-    def teardown
-      #nothing :)
-    end
+  def teardown
+    #nothing :)
+  end
 
   def assert_include(collection, value)
     assert collection.include?(value), "#{collection.inspect} does not include the value #{value.inspect}"
@@ -170,7 +168,7 @@ class PrecogClientTest < Test::Unit::TestCase
   end
 
   def test_from_token
-    token=Base64.urlsafe_encode64("user1:password1:beta.host.com:12345:AAAAA-BBBBB-CCCCCC-DDDDD:/00001234/")
+    token=Base64.encode64("user1:password1:beta.host.com:12345:AAAAA-BBBBB-CCCCCC-DDDDD:/00001234/").gsub(/\n/,'')
     values=Precog::Utils.from_token(token)
     assert_equal values[:user],"user1"
     assert_equal values[:pwd],"password1"
@@ -182,7 +180,6 @@ class PrecogClientTest < Test::Unit::TestCase
 
   def test_to_token
     token=Precog::Utils.to_token("user","password","beta.host.com","12345","AAAAA-BBBBB-CCCCCC-DDDDD","/00001234/")
-    assert token == Base64.urlsafe_encode64("user:password:beta.host.com:12345:AAAAA-BBBBB-CCCCCC-DDDDD:/00001234/")
+    assert token == Base64.encode64("user:password:beta.host.com:12345:AAAAA-BBBBB-CCCCCC-DDDDD:/00001234/").gsub(/\n/,'')
   end
-
 end

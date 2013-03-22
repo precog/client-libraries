@@ -24,6 +24,7 @@
 
 require 'logger'
 require 'net/http'
+require 'net/https'
 
 require 'pp'
 require 'time'
@@ -78,7 +79,10 @@ module Precog
       @host       = host
       @port       = port
       @conn       = Net::HTTP.new(host, port)
-      @conn.use_ssl = (@port == 443)
+      if @port == 443
+        @conn.use_ssl = true
+        @conn.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      end
     end
 
     def basic_auth(user, password)
@@ -125,7 +129,7 @@ module Precog
       end
 
       options[:parameters].each do |k, v|
-        path += "&#{k}=#{v}"
+        path += "&#{k}=#{URI.escape(v)}"
       end
 
       options[:headers].merge!({'Content-Type' => content_type})
@@ -146,7 +150,7 @@ module Precog
         options[:headers].each { |k,v| request.add_field(k, v) }
         response = @conn.request(request, body)
       rescue StandardError => e
-        message += " failed (#{e})"
+        message += " failed (#{e.inspect})"
         raise HttpResponseError.new(message, 500)
       end
 
@@ -312,16 +316,13 @@ module Precog
   end
 
   class Utils
-
     def self.to_token(user,pwd,host, account_id, api_key, root_path)
-      Base64.urlsafe_encode64("#{user}:#{pwd}:#{host}:#{account_id}:#{api_key}:#{root_path}")
+      Base64.encode64("#{user}:#{pwd}:#{host}:#{account_id}:#{api_key}:#{root_path}").gsub(/\n/, '')
     end
 
     def self.from_token(token)
-      values=Base64.urlsafe_decode64(token).split(":")
+      values=Base64.decode64(token).split(":")
       { :user=>values[0], :pwd=>values[1], :host=>values[2], :account_id=>values[3], :api_key=> values[4], :root_path=> values[5] }
     end
-
   end
-
 end
