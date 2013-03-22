@@ -82,11 +82,11 @@ module Precog
     end
 
     def basic_auth(user, password)
-      { :auth =>{ :user=>"#{user}", :password=>"#{password}" }}
+      { :auth =>{ :user=>user, :password=>password }}
     end
 
     def action_url(service, action )
-      return "#{service}/#{action}";
+       "#{service}/#{action}"
     end
 
     # Sanitize a URL path
@@ -120,7 +120,7 @@ module Precog
       path = sanitize_path(path)
 
      
-      if (!@api_key.nil? && !@api_key.empty?)
+      if !@api_key.nil? && !@api_key.empty?
         path +="?apiKey=#{@api_key}"
       end
 
@@ -136,7 +136,7 @@ module Precog
         body = (content_type=='application/json')? options[:body].to_json : options[:body]
         message += " and body (#{body})"
       end
-      
+
       # Send request and get response
       begin
         request = Net::HTTP.const_get(name.to_s.capitalize).new(path)
@@ -167,10 +167,8 @@ module Precog
       end
 
       message += " returned: #{response_data}"
-
       response_data
     end
-
   end
 
   # Precog base class
@@ -199,33 +197,33 @@ module Precog
     end
     
     #Retrieves the details about a particular account. This call is the primary mechanism by which you can retrieve your master API key.
-    def describe_account(email, password, accountId)
-      @api.get(Services::ACCOUNTS,"accounts/#{accountId}",@api.basic_auth(email, password) )
+    def describe_account(email, password, account_id)
+      @api.get(Services::ACCOUNTS,"accounts/#{account_id}",@api.basic_auth(email, password) )
     end
 
     #Adds a grant to an account's API key.
-    def add_grant_to_account(email, password, accountId, grantId)
-      @api.post(Services::ACCOUNTS,"accounts/grants/",@api.basic_auth(email, password).merge!({ :body => { :grantId => grantId  } }))
+    def add_grant_to_account(email, password, account_id, grant_id)
+      @api.post(Services::ACCOUNTS,"accounts/grants/",@api.basic_auth(email, password).merge!({ :body => { :grantId => grant_id  } }))
     end
 
     #Describe Plan
-    def describe_plan(email, password, accountId)
-      @api.get(Services::ACCOUNTS,"accounts/#{accountId}/plan",@api.basic_auth(email, password))
+    def describe_plan(email, password, account_id)
+      @api.get(Services::ACCOUNTS,"accounts/#{account_id}/plan",@api.basic_auth(email, password))
     end
 
     #Changes an account's plan (only the plan type itself may be changed). Billing for the new plan, if appropriate, will be prorated.
-    def change_plan(email, password, accountId, type)
-      @api.put(Services::ACCOUNTS,"accounts/#{accountId}/plan",@api.basic_auth(email, password).merge!({ :body => { :type => type } }))
+    def change_plan(email, password, account_id, type)
+      @api.put(Services::ACCOUNTS,"accounts/#{account_id}/plan",@api.basic_auth(email, password).merge!({ :body => { :type => type } }))
     end
 
     #Changes your account access password. This call requires HTTP Basic authentication using the current password.
-    def change_password(email, password, accountId, newPassword)
-      @api.put(Services::ACCOUNTS,"accounts/#{accountId}/password", @api.basic_auth(email, password).merge!({:body => { :password => newPassword  } }))
+    def change_password(email, password, account_id, new_password)
+      @api.put(Services::ACCOUNTS,"accounts/#{account_id}/password", @api.basic_auth(email, password).merge!({:body => { :password => new_password  } }))
     end
 
     #Deletes an account's plan. This is the same as switching a plan to the free plan.
-    def delete_plan(email, password, accountId)
-      @api.delete(Services::ACCOUNTS,"accounts/#{accountId}/plan",@api.basic_auth(email, password))
+    def delete_plan(email, password, account_id)
+      @api.delete(Services::ACCOUNTS,"accounts/#{account_id}/plan",@api.basic_auth(email, password))
     end
 
     ######################
@@ -241,8 +239,8 @@ module Precog
     # (mode = batch, receipt = false), 
     # (mode = streaming)
     def ingest(path, content, type, options={})
-      path = @api.sanitize_path(path);
-      if(!content) 
+      path = @api.sanitize_path(path)
+      if !content
         raise Error.new("argument 'content' must contain a non empty value formatted as described by type")
       end
 
@@ -255,14 +253,14 @@ module Precog
         when 'application/json','json' then
           type = 'application/json'
         when 'text/csv','csv' then
-          type = 'text/csv';
-          if(options[:delimiter])
+          type = 'text/csv'
+          if options[:delimiter]
             parameters['delimiter'] = options[:delimiter]
           end
-          if(options[:quote])
+          if options[:quote]
             parameters['quote'] = options[:quote]
           end
-          if(options[:escape])
+          if options[:escape]
             parameters['escape'] = options[:escape]
           end
         else
@@ -270,12 +268,12 @@ module Precog
       end
       
       parameters['mode']=options[:mode]
-      if (options[:mode]=="batch")
+      if options[:mode]=="batch"
         parameters['receipt']="#{options[:receipt]}"
       end
 
-      if(options[:ownerAccountId])
-          parameters['ownerAccountId'] = options[:ownerAccountId]
+      if options[:owner_account_id]
+          parameters['owner_account_id'] = options[:owner_account_id]
       end
       action = @api.sanitize_path("/#{Paths::FS}/#{path}")
       @api.post(Services::INGEST,action, 
@@ -327,5 +325,3 @@ module Precog
   end
 
 end
-
-

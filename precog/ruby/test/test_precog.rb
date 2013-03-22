@@ -121,14 +121,6 @@ class PrecogClientTest < Test::Unit::TestCase
     assert_equal 'Free', response['type']
   end
 
-    # Ingests csv or json data at the specified path
-    # (mode = batch, receipt = true), 
-    # (mode = batch, receipt = false), 
-    # (mode = streaming)
-
-    #que significa receipt?
-    #no anda csv?
-
   def test_ingest_csv
     options = {:delimiter => ",", :quote =>'"', :escape => "\\" }
     response=@api.ingest_batch(@account_id, '"product","price"
