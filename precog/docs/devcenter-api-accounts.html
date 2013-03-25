@@ -1,0 +1,246 @@
+
+    <span class="page-title">
+      Developer Center
+    </span>
+    <div>
+      <h1>
+        REST API
+      </h1>
+      <p>
+        The API calls below are given relative to an analytics service. For example, create an account is documented as: POST /accounts/v1/accounts/.  The full call will include the analytics service such as https://beta.precog.com:
+      </p>
+      <pre>POST https://beta.precog.com/accounts/v1/accounts/</pre>
+      <p>
+        Tic variables such as <span class="tool-tip-account-id">'accountId</span>, <span class="tool-tip-path">'path</span>, <span class="tool-tip-apikey"><span class="tool-tip-apikey">'apiKey</span></span>, and <span class="tool-tip-grant-id">'grantId</span> are used to indicate a place where you should replace the tic variable with the relevant information.  For example, to describe account 0001205271:
+      </p>
+      <pre>GET /accounts/v1/accounts/<span class="tool-tip-account-id">'accountId</span>/</pre>
+      <p>
+        becomes:
+      </p>
+      <pre>GET /accounts/v1/accounts/0001205271/</pre>
+      <div>
+        <h2>
+          Accounts API
+        </h2>
+        <p>
+          The accounts API is responsible for account management on the Precog platform. Accounts are identified by an account number, which is tied to a unique email address. Each email address can be associated with only one account.
+         </p>
+         <p>All use of the accounts API must be encrypted using SSL/TLS. All API methods except creating a new account must be authenticated using HTTP basic authentication. Any attempt to use the accounts API without proper encryption and / or authentication will fail with an access denied error.</p>
+        <h3 >
+           Create Account
+        </h3>
+        <dl class="api-call-json">
+          <dt class="button-json">
+            JSON
+          </dt>
+          <dt class="m-title">
+            POST
+          </dt>
+          <dd class="m-text">
+            POST /accounts/v1/accounts/
+          </dd>
+          <dt class="d-title">
+            description
+          </dt>
+          <dd class="d-text">
+           <p>
+          Creates a new account ID, accessible by the specified email address and password, or returns the existing account  ID. An email address may be associated with at most one account.
+         </p>
+         <p>This is the only accounts API method that does not require HTTP Basic authentication.
+         </p>
+         <p>Anyone can create an account on the Precog platform, which will be subscribed to the free plan by default and provisioned with a new account root directory (the path to which is the same as the newly created account ID) and API key providing grants to all available permissions for that directory. To retrieve the API key and other information, use the ‘describe’ call described below.
+         </p>
+          </dd>
+           <dt class="r-title">
+            request body
+           </dt>
+           <dd>
+<pre>{
+"email": "jdoe&#64;gmail.com",
+"password": "someFancyString"
+}</pre></dd>
+          <dt class="r-title">
+            response body
+          </dt>
+          <dd class="r-text">
+            <p>
+              Returns the account id of the new (or existing) account. Account IDs are not secure identifiers, and may appear in publicly available URLs and so forth without compromising account security.
+            </p>
+            <pre>{"accountId": "2389482834"}</pre>
+          </dd>
+        </dl>
+        <h3 >
+          Describe an Account
+        </h3>
+             <dl class="api-call-json">
+          <dt class="button-json">
+            JSON
+          </dt>
+          <dt class="m-title">
+            GET
+          </dt>
+          <dd class="m-text">
+            GET /accounts/v1/accounts/<span class="tool-tip-account-id">'accountId</span>
+          </dd>
+          <dt class="d-title">
+            description
+          </dt>
+          <dd class="d-text">
+           <p>
+          Retrieves the details about a particular account. This call is the primary mechanism by which you can retrieve your master API key.
+           </p>
+          </dd>
+          <dt class="r-title">
+            response body
+          </dt>
+          <dd class="r-text">
+<pre>{
+
+ "accountId": 9384923423,
+
+ "email": "jdoe&#64;gmail.com",
+
+ "accountCreationDate": "09-21-2001",
+
+ "apiKey": "[masterAPIKey]",
+
+ "rootPath": "/jdoe/",
+
+ "plan": {
+
+   "type": "developer",
+
+ }
+}</pre>
+          </dd>
+        </dl>
+        <h3>
+          Add a Grant to an Account
+        </h3>
+        <dl class="api-call-json">
+          <dt class="button-json">
+            JSON
+          </dt>
+          <dt class="m-title">
+            POST
+          </dt>
+          <dd class="m-text">
+            POST /accounts/v1/accounts/<span class="tool-tip-account-id">'accountId</span>/grants/
+          </dd>
+          <dt class="d-title">
+            description
+          </dt>
+          <dd class="d-text">
+           <p>
+          Adds a grant to an account's API key.
+         </p>
+         <p>
+        This method is conceptually equivalent to retrieving the API key of the account, and then using the security API to add the specified grant to the API key. The main difference is that this method does not require the client to know the API key of the account. Therefore, this method represents a secure, anonymous way to add additional grants to a third-party account, without first knowing the API key of that account. This request requires HTTP Basic authentication.
+         </p>
+          </dd>
+           <dt class="r-title">
+            request body
+           </dt>
+           <dd>
+            <pre>{"grantId": "[Grant Id]"}</pre>
+           </dd>
+        </dl>
+        <h3>
+          Describe an Account's Plan
+        </h3>
+         <dl class="api-call-json">
+          <dt class="button-json">
+            JSON
+          </dt>
+          <dt class="m-title">
+            GET
+          </dt>
+          <dd class="m-text">
+           GET /accounts/v1/accounts/<span class="tool-tip-account-id">'accountId</span>/plan
+          </dd>
+           <dt class="r-title">
+            response body
+           </dt>
+           <dd>
+            <pre>{"type": "free"}</pre>
+           </dd>
+        </dl>
+        <h3 id="change-plan-api">
+          Change an Account's Plan
+        </h3>
+         <dl class="api-call-json">
+          <dt class="button-json">
+            JSON
+          </dt>
+          <dt class="m-title">
+            PUT
+          </dt>
+          <dd class="m-text">
+           PUT /accounts/v1/accounts/<span class="tool-tip-account-id">'accountId</span>/plan
+          </dd>
+          <dt class="d-title">
+            description
+          </dt>
+          <dd class="d-text">
+           <p>
+          Changes an account's plan (only the plan type itself may be changed). Billing for the new plan, if appropriate, will be prorated.
+         </p>
+          </dd>
+           <dt class="r-title">
+            request body
+           </dt>
+           <dd>
+            <pre>{"type": "bronze"}</pre>
+           </dd>
+        </dl>
+          <h3 id="change-account-password-api">
+          Change an Account's Password
+        </h3>
+         <dl class="api-call-json">
+          <dt class="button-json">
+            JSON
+          </dt>
+          <dt class="m-title">
+            PUT
+          </dt>
+          <dd class="m-text">
+           PUT /accounts/v1/accounts/<span class="tool-tip-account-id">'accountId</span>/password
+          </dd>
+          <dt class="d-title">
+            description
+          </dt>
+          <dd class="d-text">
+           <p>
+          Changes your account access password. This call requires HTTP Basic authentication using the current password.
+         </p>
+         <dt class="r-title">
+            request body
+           </dt>
+           <dd>
+            <pre>{"password": "myPassword"}</pre>
+           </dd>
+        </dl>
+        </dl>
+        <h3>
+          Delete an Account's Plan
+        </h3>
+         <dl class="api-call-json">
+          <dt class="button-json">
+            JSON
+          </dt>
+          <dt class="m-title">
+            DELETE
+          </dt>
+          <dd class="m-text">
+           DELETE /accounts/v1/accounts/<span class="tool-tip-account-id">'accountId</span>/plan
+          </dd>
+          <dt class="d-title">
+            description
+          </dt>
+          <dd class="d-text">
+           <p>
+          Deletes an account's plan. This is the same as switching a plan to the free plan.
+         </p>
+        </dl>
+      </div>
+    </div>

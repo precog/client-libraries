@@ -5,10 +5,10 @@
  * Authors: Alissa Pajer, Nathan Lubchenco
  **/
 
-define ("BASE_URL", "https://beta.precog.com");
-define ("DEFAULT_VERSION", 1);
 
 class PrecogAPI {
+    const BASE_URL = "https://api.precog.com";
+    const DEFAULT_VERSION = 1;
 
     private $apiKey = null;
     private $baseUrl = null;
@@ -20,7 +20,7 @@ class PrecogAPI {
     /*
      * Initialize a new PrecogAPI object
      */
-    public function __construct($apiKey, $basePath, $baseUrl = BASE_URL, $version = DEFAULT_VERSION)
+    public function __construct($apiKey, $basePath, $baseUrl = self::BASE_URL, $version = self::DEFAULT_VERSION)
     {
         $this->setApiKey($apiKey);
         $this->setBasePath($basePath);
@@ -32,43 +32,43 @@ class PrecogAPI {
     // ***************************
     // ****** ACCOUNTS APIS ******
     // ***************************
-    public static function createAccount($email, $password, $baseUrl = BASE_URL, $version = DEFAULT_VERSION)
+    public static function createAccount($email, $password, $baseUrl = self::BASE_URL, $version = self::DEFAULT_VERSION)
     {
         $url = self::baseActionUrl($baseUrl, $version, "accounts", "accounts");
         return self::baseRestHelper($url, json_encode(array("email"=>$email, "password"=>$password)), "POST");
     }
 
-    public static function describeAccount($email, $password, $accountId, $baseUrl = BASE_URL, $version = DEFAULT_VERSION)
+    public static function describeAccount($email, $password, $accountId, $baseUrl = self::BASE_URL, $version = self::DEFAULT_VERSION)
     {
         $url = self::baseActionUrl($baseUrl, $version, "accounts", "accounts").$accountId;
         return self::baseRestHelper($url, null, "GET", self::authHeaders($email, $password));
     }
 
-       public static function addGrantToAccount($email, $password, $accountId, $grantId, $baseUrl = BASE_URL, $version = DEFAULT_VERSION)
+       public static function addGrantToAccount($email, $password, $accountId, $grantId, $baseUrl = self::BASE_URL, $version = self::DEFAULT_VERSION)
     {
         $url = self::baseActionUrl($baseUrl, $version, "accounts", "accounts/$accountId")."grants/";
         return self::baseRestHelper($url, json_encode(array("grantId"=>$grantId)), "POST", self::authHeaders($email, $password));
     }
 
-    public static function describePlan($email, $password, $accountId, $baseUrl = BASE_URL, $version = DEFAULT_VERSION)
+    public static function describePlan($email, $password, $accountId, $baseUrl = self::BASE_URL, $version = self::DEFAULT_VERSION)
     {
         $url = self::baseActionUrl($baseUrl, $version, "accounts", "accounts/$accountId")."plan";
         return self::baseRestHelper($url, null, "GET", self::authHeaders($email, $password));
     }
 
-    public static function changePassword($email, $oldPassword, $newPassword, $accountId, $baseUrl = BASE_URL, $version = DEFAULT_VERSION)
+    public static function changePassword($email, $oldPassword, $newPassword, $accountId, $baseUrl = self::BASE_URL, $version = self::DEFAULT_VERSION)
     {
         $url = self::baseActionUrl($baseUrl, $version, "accounts", "accounts/$accountId")."password";
         return self::baseRestHelper($url, json_encode(array("password"=>$newPassword)), "PUT", self::authHeaders($email, $oldPassword));
     }
 
-    public static function deletePlan($email, $password, $accountId, $baseUrl = BASE_URL, $version = DEFAULT_VERSION)
+    public static function deletePlan($email, $password, $accountId, $baseUrl = self::BASE_URL, $version = self::DEFAULT_VERSION)
     {
         $url = self::baseActionUrl($baseUrl, $version, "accounts", "accounts/$accountId")."plan";
         return self::baseRestHelper($url, null, "DELETE", self::authHeaders($email, $password));
     }
 
-    public static function changePlan($email, $password, $accountId, $plan, $baseUrl = BASE_URL, $version = DEFAULT_VERSION)
+    public static function changePlan($email, $password, $accountId, $plan, $baseUrl = self::BASE_URL, $version = self::DEFAULT_VERSION)
     {
         $url = self::baseActionUrl($baseUrl, $version, "accounts", "accounts/$accountId")."plan";
         return self::baseRestHelper($url, json_encode(array("type"=>$plan)), "PUT", self::authHeaders($email, $password));
@@ -263,7 +263,7 @@ class PrecogAPI {
         return $return;
     }
 
-    
+
 
     // ***************************
     // ***** GETTERS/SETTERS *****
@@ -314,7 +314,7 @@ class PrecogAPI {
     /*********************************
      **** PRIVATE helper function ****
      *********************************/
-    private function restHelper($resturl, $params = null, $verb = 'GET', $headers = false) 
+    private function restHelper($resturl, $params = null, $verb = 'GET', $headers = false)
     {
         $result = self::baseRestHelper($resturl, $params, $verb, $headers);
         if($result['ok']) {
@@ -328,7 +328,7 @@ class PrecogAPI {
         }
     }
 
-    private static function baseRestHelper($resturl, $params = null, $verb = 'GET', $headers = false) 
+    private static function baseRestHelper($resturl, $params = null, $verb = 'GET', $headers = false)
     {
 //echo("$verb $resturl\n");
 //if($params) var_dump($params);
@@ -359,12 +359,9 @@ class PrecogAPI {
             $stream_contents = stream_get_contents($file_pointer);
             fclose($file_pointer);
         }
-//if(isset($stream_contents)) var_dump($stream_contents);
-//if(isset($stream_meta_data)) var_dump($stream_meta_data);
-
 
         if ($verb==="DELETE" || $stream_contents !== false) {
-
+            
             /*
              * In the case of we're receiving stream data back from the API,
              * json decode it here.

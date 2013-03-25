@@ -1,0 +1,199 @@
+
+   <span class="page-title">
+      Developer Center
+    </span>
+<div>
+  <a name="mongodb" id="mongodb"></a>
+  <h1>Precog for mongoDB</h1>
+    <p>
+      <a href="http://precog.com/mongodb">Download Here</a>
+    </p>
+    <p>
+      <em>Precog for MongoDB is a free product that Precog provides to the MongoDB community for doing data analysis on MongoDB.</em>    
+     </p>
+     <p>
+      <em>Due to technical limitations, we only recommend the product for exploratory data analysis. For developers interested in high-performance analytics on their MongoDB data, we recommend our <a href=http://www.precog.com/products>cloud-based analytics solution</a> and the MongoDB data importer, which can nicely complement existing MongoDB installations for analytic-intensive workloads.</em>
+     </p>
+     <p><strong>Precog for MongoDB Changelog</strong></p>
+      <ol>
+         <ul>
+            <li>
+            Version 1.0.5
+         </li>
+            <li>
+          <em>Add support for database authentication for MongoDB (see
+README.md for configuration details)</em>
+            </li>
+            <li>
+               <em>Improve performance of field filtering. For example, running a
+`count(load("/foo/bar").test)` will generally perform faster than
+`count(//foo/bar)`, since mongo will only load the `test` property
+instead of whole documents.</em>
+            </li>
+         </ul>
+         <ul>
+            <li>
+               Version 1.0.4
+            </li>
+            <li>
+               <em>Fix a bug in the quirrel solver that could cause hangs or
+invalid results</em>
+            </li>
+         </ul>
+      </ol>
+    <ul>
+      <li>
+          Step 1: Unpack the Download
+          <p>
+            The download is a ZIP file that contains the following files:
+          </p>
+              <ul>
+                <li>
+                  precog.jar
+                </li>
+                <li>
+                  config.cfg
+                </li>
+                <li>
+                  precog.sh
+                </li>
+                <li>
+                  precog.bat
+                </li>
+              </ul>
+              <p>
+                The file <strong>precog.jar</strong> is the Java JAR that bundles all of the Precog
+dependencies into a single (really big!) file. The files <strong>precog.sh</strong> and
+<strong>precog.bat</strong> are scripts that launch <strong>precog.jar</strong>.
+              </p>
+              <p>
+                The file <strong>config.cfg</strong>contains configuration information.
+              </p>
+      </li>
+      <li>
+        Step 2: Configure Precog
+          <p>
+            All the configuration settings for Precog are stored in the file
+<strong>config.cfg</strong>, with reasonable defaults.
+          </p>
+          <p>
+            There are two things you need to do at a minimum before you can launch
+Precog:
+          </p>
+          <ul>
+            <li>
+               1. Tell Precog where to find the MongoDB server. 
+            </li>
+            <li>
+               2. Tell Precog what the master account is.
+            </li>
+          </ul>
+          <p>
+            To tell Precog where to find the MongoDB server, simply edit the mongo
+server key in the settings:
+          </p>
+<pre>
+queryExecutor { 
+    mongo { 
+        server = "mongodb://localhost:27017" 
+    } 
+}
+</pre>
+          <p>
+            Change the “localhost:27017” portion to the host and port of your
+mongo server. For optimal performance, you should launch Precog on the
+same machine that is running the MongoDB server.
+          </p>
+          <p>
+            Precog will map the MongoDB databases and collections into the file
+system by placing the databases at the top level of the file system,
+and will nest the database collections under the databases
+(e.g. <em>/mydb/mycollection/</em>).
+          </p>
+          <p>
+            To tell Precog what the master account is, edit <strong>config.cfg</strong> and edit
+the following settings under the masterAccount section:
+          </p>
+<pre>
+security { 
+    masterAccount { 
+        apiKey = "12345678-1234-1234-1234-123456789abc"
+    }
+}
+</pre>
+          <p>
+            The API key for the master account can be anything you like, but you
+should treat it securely because whoever has it has full access to all
+of your MongoDB data.
+          </p>
+          <p>
+            You may also want to tweak the ports that Precog uses for the web
+server that exposes the Precog REST API and to serve labcoat:
+          </p>
+<pre>
+server { 
+  port = 8888 
+} 
+...  
+labcoat { 
+  port = 8000 
+}
+</pre>
+      </li>
+      <li>
+        Step 3: Launch Precog
+        <p>
+          To run <strong>precog.jar</strong>, you will need to install JRE 6 or later (many
+systems already have Java installed). If you’re on an OS X or Linux
+machine, just run the <strong>precog.sh</strong> script, which automatically
+launches Java. If you’re on a Windows machine, you can launch Precog
+with the <strong>precog.bat</strong> script.
+        </p>
+        <p>
+          Once Precog has been launched, it will start a web server that exposes
+the Analytics REST API as well as labcoat.
+        </p>
+      </li>
+      <li>
+        Step 4: Try the API
+        <p>
+          Once Precog is running, you have full access to the Precog Analytics REST
+API. However, you will need to load data into MongoDB using MongoDB's API.  That is, you cannot use the Precog Ingest API to load data into MongoDB because Precog for MongoDB does not bundle the auth, accounts or ingest services. To obtain access to the rest of the Precog REST API you will need to sign-up for an account and use the cloud-based service.
+You can find a large number of open source client libraries
+available on Github, and the Precog developers site contains documentation and tutorials for interacting with the API.
+        </p>
+      </li>
+      <li>
+        Step 5: Try Labcoat
+        <p>
+          Labcoat is an HTML5 application that comes bundled in the
+download. You don’t have to use Labcoat, of course, since Precog has a
+REST API, but Labcoat is the best way to interactively explore your
+data and develop Quirrel queries.
+        </p>
+        <p>
+          The precog.jar comes with a bundled web server for labcoat, so once
+it’s running just point your browser at http://localhost:8000/ (or
+whatever port you’ve configured it for) and you’ll have a new labcoat
+IDE pointing at your local Precog REST API.
+        </p>
+      </li>
+      <li>
+        Step 6: Analyze Data!
+        <p>
+          Once you’ve got Labcoat running, you’re all set! You should see your
+MongoDB collections in the file system explorer, and you can query
+data from the collections, develop queries to analyze the data, and
+export queries as code that run against your Precog server.
+        </p>
+        <p>
+          Precog is a beta product, and <em>Precog for MongoDB</em> is hot off the
+press. You may encounter a few rough corners, and if so, we’d love to
+hear about them (just send an email to support&#64;precog.com).
+        </p>
+      </li>
+    </ul>
+     
+
+</div>
+   

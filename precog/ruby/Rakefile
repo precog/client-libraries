@@ -1,14 +1,14 @@
 require 'rubygems'
-require 'rake/gempackagetask'
+require 'rubygems/package_task'
 
 gemspec = Gem::Specification.new do |s|
   s.name              = 'precog'
-  s.version           = '0.1'
+  s.version           = '0.2'
   s.authors           = ['Kris Nuttycombe']
-  s.email             = ['kris [at] precog [dot] io']
-  s.homepage          = 'http://precog.io/ruby'
+  s.email             = ['kris [at] precog [dot] com']
+  s.homepage          = 'http://precog.com/ruby'
   s.rubyforge_project = 'precog'
-  s.summary           = 'Ruby client library for Precog.io (http://precog.io)'
+  s.summary           = 'Ruby client library for Precog.com (http://precog.com)'
   s.description       = File.read(File.expand_path(File.join(File.dirname(__FILE__), 'README.rdoc')))
 
   s.add_dependency('json')

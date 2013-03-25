@@ -50,7 +50,7 @@ Note that in this document whenever you encounter a string enclosed in curly bra
 	
 	<link rel="stylesheet" type="text/css" href="http://api.reportgrid.com/css/rg.css"/>
 
-You can change the color schemes of the visualization loading one of our optional `css palettes`_. The palettes CSS files are located here http://api.reportgrid.com/css/colors/
+You can change the color schemes of the visualization loading one of our optional `css palettes`_. The palettes CSS files are located here http://api.reportgrid.com/css/colors/index.html
 
 Every visualization is a method of the object ``ReportGrid`` and every visualization takes an element placeholder as the first argument. That argument can be a DOM element or a CSS selector (string); usually you will want to use the ID selector of an existing DIV in your page. In the example above the "#chart" selector refers to the <div id="chart"></div> node in the DOM.
 

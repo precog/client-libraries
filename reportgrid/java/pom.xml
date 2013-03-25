@@ -19,8 +19,13 @@
     <repository>
       <id>nexus.reportgrid.com</id>
       <name>reportgrid public Nexus repo</name>
-      <url>http://nexus.reportgrid.com/content/repositories/public-snapshots</url>
+      <url>http://nexus.reportgrid.com/content/repositories/public-releases</url>
     </repository>
+    <snapshotRepository>
+      <id>nexus.reportgrid.com</id>
+      <name>reportgrid public SNAPSHOT Nexus repo</name>
+      <url>http://nexus.reportgrid.com/content/repositories/public-snapshots</url>
+    </snapshotRepository>
   </distributionManagement>
 
   <dependencies>
@@ -37,4 +42,9 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+  </properties>
 </project>

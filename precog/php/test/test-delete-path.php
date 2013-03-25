@@ -19,7 +19,7 @@ class DeletePathTest extends PrecogBaseTest {
         sleep(10);
 
         $value = $this->api->query("count(/$path)");
-    
+
         $this->assertTrue($value[0] > 0);
         $result = $this->api->delete($path);
 

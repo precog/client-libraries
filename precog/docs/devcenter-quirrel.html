@@ -1,0 +1,104 @@
+   <span class="page-title">
+      Developer Center
+    </span>
+    <div>
+      <h1>
+        QUIRREL
+      </h1>
+      <div>
+        <h2>
+          introduction
+        </h2>
+        <p>
+          Queries need to begin with loading some data using the double slash <span>//</span> command. The next step is create a variable and assign the data to it using the <span>:=</span> assignment operator. Assigning the data into a variable will allow the data to be more easily referenced (not having to call the load command of the entire file path repeatedly).<br>
+          <br>
+          Just loading the data then looks something like:
+        </p>
+        <pre>
+//<span class="tool-tip-path">[path]</span>/to/data
+</pre>
+        <p>
+          And assigning it to a variable:
+        </p>
+        <pre>
+data:= //<span class="tool-tip-path">[path]</span>/to/data
+</pre>
+        <p>
+          Note that this query would result in an error. You haven’t told Quirrel to query anything, all you’ve done is assign data into a variable. You have not called the variable. So, to see all of the data, you would then call:
+        </p>
+        <pre>
+data
+</pre>
+        <p>
+          Paths can contain the following list of characters:
+        </p>
+        <ul>
+          <li>
+            a-z
+A-Z
+_
+-
+0-9
+.
+~
+:
+/
+?
+#
+&#64;
+!
+$
+&
+'
+*
++
+=
+          </li>
+          
+          
+        </ul>
+
+        <p>
+          One basic operation is filtered descent with the <span>.</span> dot operator. Rather than accessing all of the data, you can query a particular subset of the data, which looks like:
+        </p>
+        <pre class="execute-code">
+<a class="button-launch-labcoat" href="#">labcoat</a>data := //tutorial/transactions
+data.total
+</pre>
+        <p>
+          To filter data use the <span>where</span> operator. This allows you to get the results of a query limited to situations where some other condition is true. In this case, the filter is for the source to be equal to "ad1".
+        </p>
+        <pre class="execute-code">
+<a class="button-launch-labcoat" href="#">labcoat</a>data := //tutorial/transactions
+data.total where data.source = "ad1"
+</pre>
+        <p>
+          Filtering returns a more narrow subset of the data; in contrast, it is possible to expand a dataset using the <span>with</span> operator. On the left of the <span>with</span> operator is the original data set and on the right is an object that defines the new variable(s) to include. You also typically want to store this in a new variable. The example below creates an augmented dataset called <span>dataWithHour</span> that contains an <span>hour</span> variable formed using a built-in time function: <span>std::time::hourOfDay</span>. This new <span>hour</span> variable is then used as a filter in a <span>where</span> statement.
+        </p>
+        <pre class="execute-code">
+<a class="button-launch-labcoat" href="#">labcoat</a>data := //tutorial/transactions
+dataWithHour := data with {hour: std::time::hourOfDay(data.timeStamp)}
+dataWithHour.total where dataWithHour.hour &gt; 17
+</pre>
+        <p>
+          There are also a whole host of functions built into the standard library that can be accessed using functionName(argumentsToBePassedToTheFunction). For example, if you wanted to average the totals in the //tutorial/transaction dataset:
+        </p>
+        <pre class="execute-code">
+<a class="button-launch-labcoat" href="#">labcoat</a>data := //tutorial/transactions
+mean(data.total)
+</pre>
+        <p>
+          You can use solve statements to call some function on all of the possible values of a parameter for some set. In practice, this allows you to get the results by each member of some set. For example, you might want to know the sum of all sales by each source.
+        </p>
+        <pre class="execute-code">
+<a class="button-launch-labcoat" href="#">labcoat</a>data := //tutorial/transactions
+solve 'source
+  {source: 'source, averageSales: mean(data.total where data.source = 'source)}
+</pre>
+        <p>
+          A solve statement always starts with solve and then some tic variable that will be fed into into the object enclosed by curly braces "{}". Each comma within the curly braces separates a new set that is named by what is on the left of the colon ":" and defined by what is on the right on the colon.<br>
+          <br>
+          This concludes a brief introduction to Quirrel. For additional information, please see the resources.
+        </p>
+      </div>
+      
