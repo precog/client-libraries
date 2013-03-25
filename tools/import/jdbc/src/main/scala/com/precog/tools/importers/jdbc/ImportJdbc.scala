@@ -3,30 +3,26 @@ package com.precog.tools.importers.jdbc
 import java.sql._
 import blueeyes.json._
 import blueeyes.core.data.DefaultBijections._
-import blueeyes.core.service._
 import blueeyes.bkka.AkkaDefaults.defaultFutureDispatch
 import scala.Some
 import blueeyes.core.service.engines.HttpClientXLightWeb
 import Datatypes._
 import blueeyes.bkka.FutureMonad
-import scalaz.{Hoist, StreamT, ~>}
-import akka.dispatch.{Await, ExecutionContext, Future}
+import scalaz.StreamT
+import akka.dispatch.ExecutionContext
 import java.nio.ByteBuffer
 import scalaz.Id._
 import annotation.tailrec
-import akka.util.Duration
 import blueeyes.core.http.HttpResponse
 import blueeyes.core.data.ByteChunk
 import akka.dispatch.Future
-
-
+import com.precog.tools.importers.common.Ingest._
+import DbAccess._
 /**
  * User: gabriel
  * Date: 11/20/12
  */
 object ImportJdbc {
-
-  import DbAccess._
 
   val httpClient=new HttpClientXLightWeb()(defaultFutureDispatch)
 
@@ -52,7 +48,7 @@ object ImportJdbc {
     case _ => Nil
   }
 
-  def toJObject(o:JValue):JObject= o match {
+  def asJObject(o:JValue):JObject= o match {
     case j:JObject => j
     case _ => sys.error("base value is not jobject!")
   }
@@ -89,7 +85,7 @@ object ImportJdbc {
         //if next row is the same object, keep building
         mkPartialJson(baseNameUC,ingestInfo,tail,jsonMap)
       } else {
-        val base= toJObject(jsonMap(baseNameUC))
+        val base= asJObject(jsonMap(baseNameUC))
         val values = (jsonMap-baseNameUC).map(nv => JField(nv._1, nv._2)).toList
         Some(JObject(base.fields ++ values),tail)
       }
@@ -131,16 +127,11 @@ object ImportJdbc {
     implicit val M = new FutureMonad(executor)
     val (data,columns) = executeQuery(connDb, query)
     val tblDesc= oTblDesc.getOrElse(IngestInfo(Seq(ImportTable(objName,names(columns),Left(Table("base"))))))
-
-    val dataStream:StreamT[Future,ByteBuffer] =buildBody(data, objName, tblDesc)
-      .map(jv=>ByteBuffer.wrap({val js="%s\n".format(jv.renderCompact); print(js); js}.getBytes("UTF-8")))
-
-    val body:ByteChunk= Right(dataStream)
-    val fullPath = "%s/ingest/v1/fs%s/%s".format(host, ingestPath,objName)
-    //TODO add owner account id
-    println("sending to ingest: path=%s query=%s".format(fullPath,query))
-    httpClient.parameters('apiKey -> apiKey,'mode -> "streaming").header("Content-Type","application/json").post(fullPath)(body)
+    val path = "%s/%s".format(ingestPath,objName)
+    val dataStream:StreamT[Future,ByteBuffer] =toByteStream(buildBody(data, objName, tblDesc))
+    sendToPrecog(host,path,apiKey,dataStream)
   }
+
 
   def buildBody(data: StreamT[Id,Seq[String]], baseTable: String, i: IngestInfo)(implicit executor: ExecutionContext, m:FutureMonad): StreamT[Future,JValue] =
     StreamT.unfoldM[Future,JValue,StreamT[Id,Seq[String]]](data)(ds=>

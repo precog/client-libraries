@@ -6,28 +6,22 @@ import com.mongodb.casbah.commons.TypeImports.ObjectId
 import scalaz._
 import akka.dispatch.{Await, Future}
 import blueeyes.json._
-import blueeyes.core.service.engines.HttpClientXLightWeb
 import blueeyes.bkka.AkkaDefaults._
 import blueeyes.bkka.AkkaDefaults.defaultFutureDispatch
 import blueeyes.bkka.FutureMonad
-import blueeyes.core.data.ByteChunk
-import java.nio.ByteBuffer
 import akka.util.Duration
 import blueeyes.core.http.HttpResponse
-import blueeyes.core.service._
 import com.precog.tools.importers.common._
 import ConsoleUtils._
 import com.mongodb
 import mongodb.casbah.MongoURI
-import mongodb.casbah.query.AsQueryParam
 import java.util.Date
 import java.util
 import collection.JavaConversions._
 
-//import mongodb.casbah.commons.Imports._
 import scala.Left
 import scala.Some
-import scala.Right
+import com.precog.tools.importers.common.Ingest._
 
 
 /**
@@ -57,19 +51,19 @@ object ImportMongo {
     }).toSeq
   }
 
-  def sampleColumns(db: MongoDB, coll: String)(implicit mongoConn:MongoConnection)={
+  def sampleColumns(mongoConn:MongoConnection)(db: MongoDB, coll: String)={
     val collection=db(coll).find().take(sampleSize)
     collection.flatMap(columnsOf(_)).toSet
   }
 
-  def configureCollections(db: MongoDB)(implicit mongoConn:MongoConnection):Seq[DBObject]={
+  def configureCollections(mongoConn:MongoConnection)(db: MongoDB):Seq[DBObject]={
     println("No configuration found in the mongo instance, creating a new one.")
     val databases=db.name
     println("DATABASE  %s \n".format(db))
     val colls=selectSet("collection",db.getCollectionNames().toSeq)
     colls.map( coll =>{
       println("\n ---- Collection %s ----".format(coll))
-      val columns=sampleColumns(db,coll).toSeq
+      val columns=sampleColumns(mongoConn)(db,coll).toSeq
       val fields=selectSet("column", columns)
 
       //TODO ugly, maybe using a wrapper type?
@@ -104,7 +98,7 @@ object ImportMongo {
     try {
       val uri = MongoURI(mongoUri)
 
-      implicit val mongoConn=MongoConnection(uri)
+      val mongoConn=MongoConnection(uri)
       uri.database.map { database =>
 
         //TODO: use uri.database.asList and if it's empty, load the full list of dbs
@@ -118,18 +112,18 @@ object ImportMongo {
 
         val inputConfigColl=db(collsConfig)
 
-
         if (inputConfigColl.isEmpty) {
-          val configs=configureCollections(db)
+          val configs=configureCollections(mongoConn)(db)
           configs.map(inputConfigColl.save(_))
         }
-        val jsonImputs= inputConfigColl.find().toList
+        val jsonInputs= inputConfigColl.find().toList
 
-        val fimports=jsonImputs.map(config=> importCollection(precogHost,basePath,apiKey,db, config))
+        //TODO: check result of ingest before updating the Id!!!!!
+        val fimports=jsonInputs.map(config=> importCollection(precogHost,basePath,apiKey,db, config, mongoConn))
 
         val fresults=Await.result(Future.sequence(fimports.toList), Duration("24 hours"))
 
-        jsonImputs.zip(fresults).map( r =>{
+        jsonInputs.zip(fresults).map( r =>{
             val (mDbObj,(result,lastId)) = r
             println("%s".format(result))
             inputConfigColl.save(mDbObj++("lastId"->lastId))
@@ -151,12 +145,11 @@ object ImportMongo {
   def arrOfStrValues(jv: JValue) = (jv -->? classOf[JArray]).map(_.elements.map(strValue(_))).getOrElse(Nil)
 
 
-  def importCollection(precogHost:String, basePath:String, apiKey:String, db:MongoDB, mdbobj: MongoDBObject) (implicit mongoConn: MongoConnection):Future[(String,AnyRef)]={
-    //val jparams: JObject=MongoToJson(mdbobj)
-    //val dbName = mdbobj.getAs[String]("database").get//getString(jparams)("database")
-    val collName = mdbobj.getAs[String]("collection").get//getString(jparams)("collection")
-    val fieldNames = mdbobj.getAsOrElse[util.ArrayList[String]]("fields",new util.ArrayList())//getArray(jparams)("fields")   MongoDB
-    val lastId = mdbobj.getAs[String]("lastId") //(jparams \? "lastId").map(strValue(_)) getOrElse ("000000000000000000000000")
+  def importCollection(host:String, basePath:String, apiKey:String, db:MongoDB, mdbobj: MongoDBObject, mongoConn: MongoConnection):Future[(String,AnyRef)]={
+
+    val collName = mdbobj.getAs[String]("collection").get
+    val fieldNames = mdbobj.getAsOrElse[util.ArrayList[String]]("fields",new util.ArrayList())
+    val lastId = mdbobj.getAs[String]("lastId")
     val sortColumn=mdbobj.getAs[String]("sortColumn").get
     val fdsid = Future {
       val rStrm=readFromMongo(db, collName, sortColumn, lastId, fieldNames)
@@ -176,11 +169,11 @@ object ImportMongo {
     val (fds, fmaxId) = (fdsid map (_._1), fdsid map (_._2))
 
     val fjsons = fds.map(_.flatMap(MongoToJson(_).toStream))
-    val fullPath = "%s/ingest/v1/sync/fs%s/%s/%s".format(precogHost, basePath, db.name, collName)
+    val path = "%s/%s/%s".format(basePath, db.name, collName)
     val data = StreamT.fromStream[Future, JObject](fjsons)
-    val fsend=data.isEmpty.flatMap( isEmpty =>
+    val fsend= data.isEmpty.flatMap( isEmpty =>
       if (isEmpty) Future("No new data found in %s.%s".format(db.name,collName))
-      else sendToPrecog(fullPath, apiKey, data)map( _ match {
+      else sendToPrecog(host,path,apiKey,toByteStream(data)) map( _ match {
           case HttpResponse(_, _, Some(Left(buffer)), _) => {
             "Result from precog: %s".format(new String(buffer.array(), "UTF-8"))
           }
@@ -204,19 +197,5 @@ object ImportMongo {
     ).getOrElse(MongoDBObject())
     val fields = MongoDBObject(fieldNames.map(_->""):_*)
     mongoColl.find(q,fields).toStream //.view ?
-  }
-
-  def sendToPrecog(fullPath:String, apiKey:String, dataStream:StreamT[Future,JValue]): Future[HttpResponse[ByteChunk]] = {
-
-    val httpClient = new HttpClientXLightWeb()(defaultFutureDispatch)
-
-    val byteStream: StreamT[Future, ByteBuffer] = dataStream.map(jv => ByteBuffer.wrap({
-      val js = "%s\n".format(jv.renderCompact)
-      print("%s".format(js))
-      js
-    }.getBytes("UTF-8")))
-
-    val byteChunks: ByteChunk = Right(byteStream)
-    httpClient.parameters('apiKey -> apiKey,'mode -> "streaming").header("Content-Type","text/csv").post(fullPath)(byteChunks)
   }
 }

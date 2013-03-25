@@ -2,7 +2,7 @@ package com.precog.tools.importers.jdbc
 
 
 import akka.dispatch.{ExecutionContext, Future}
-import blueeyes.BlueEyesServiceBuilder
+import blueeyes.{BlueEyesServer, BlueEyesServiceBuilder}
 import blueeyes.core.http.{HttpRequest, HttpResponse, HttpStatus}
 import blueeyes.core.http.HttpStatusCodes._
 import blueeyes.core.data.DefaultBijections._
@@ -12,9 +12,7 @@ import DbAnalysis._
 import ImportJdbc._
 import JsonImplicits._
 import java.sql.{DatabaseMetaData, Connection}
-import blueeyes.json.{JValue, JString, JArray}
-import Datatypes._
-import blueeyes.bkka.AkkaDefaults._
+import blueeyes.json.{JString, JArray}
 import scala.Left
 import com.precog.tools.importers.jdbc.Datatypes.Join
 import com.precog.tools.importers.jdbc.ImportJdbc.IngestInfo
@@ -34,7 +32,7 @@ trait ImportJdbcService extends BlueEyesServiceBuilder {
   implicit def executionContext: ExecutionContext
   implicit def M: Monad[Future]
 
-  val host="https://beta.precog.com" // "https://devapi.precog.com" //TODO move to trait
+  val host=Option(System.getProperty("host")).getOrElse("https://beta.precog.com")
 
   def handleRequest[T](f: HttpRequest[T]=> Future[HttpResponse[T]])=
     (request: HttpRequest[T]) =>
@@ -50,11 +48,7 @@ trait ImportJdbcService extends BlueEyesServiceBuilder {
     val user = r.parameters.get('user).getOrElse(null)
     val pwd = r.parameters.get('password).getOrElse(null)
     val c=getConnection(dbUrl, user, pwd,database)
-    try {
-      f(c,r)
-    } finally {
-      c.close()
-    }
+    f(c,r).flatMap(x=>Future({c.close();x}))
   }
 
   def handleRequestWithConnection[T](f: (Connection,HttpRequest[T])=> Future[HttpResponse[T]])= handleRequest( (r: HttpRequest[T]) =>  withConnectionFromRequest(r)(f))
@@ -74,7 +68,7 @@ trait ImportJdbcService extends BlueEyesServiceBuilder {
 
 
 
-  val importService = service("JdbcImportService", "1.0.0") { context =>
+  val importService = service("JdbcImportService", "1.0") { context =>
     startup {
       Future { () }
     } ->
@@ -83,7 +77,7 @@ trait ImportJdbcService extends BlueEyesServiceBuilder {
         path("/databases" ) {
           get {
             handleRequestWithConnection( (conn:Connection,request:HttpRequest[ByteChunk]) =>{
-              val tables=JArray(oneColumnRs(conn.getMetaData.getCatalogs).map(JString(_)).toList)
+              val tables=JArray(oneColumnRs(conn.getMetaData.getCatalogs).map(JString(_)))
               Future {
                 HttpResponse[ByteChunk](content = Option(jvalueToChunk(tables)))
               }
@@ -95,7 +89,7 @@ trait ImportJdbcService extends BlueEyesServiceBuilder {
           path("/databases" / 'database / "tables" ) {
             get {
               handleRequestWithConnection( (conn:Connection,request:HttpRequest[ByteChunk]) => {
-                val cat = request.parameters.get('database)
+                val cat = request.parameters.get('database).map(_.toUpperCase )
                 val ts=findTables(conn.getMetaData,cat,None)
                 val result = JArray(ts.map(t=>JString(t.name)).toList)
                 Future {

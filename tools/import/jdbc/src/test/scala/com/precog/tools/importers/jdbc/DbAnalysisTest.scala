@@ -3,7 +3,6 @@ package com.precog.tools.importers.jdbc
 import org.specs2.mutable.Specification
 import DbAnalysis._
 import Datatypes._
-import com.precog.tools.importers.jdbc.ImportJdbc._
 import com.precog.tools.importers.jdbc.Datatypes.Table
 import com.precog.tools.importers.jdbc.Datatypes.Join
 

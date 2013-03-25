@@ -1,5 +1,7 @@
 name := "import-jdbc"
 
+organization := "org.precog"
+
 version := "0.1"
 
 scalaVersion := "2.9.2"
@@ -20,8 +22,8 @@ scalacOptions ++= Seq("-unchecked", "-deprecation")
 assemblySettings
 
 libraryDependencies ++= Seq(
-  "com.reportgrid" % "blueeyes-core_2.9.2" % "1.0.0-M7.7",
-  "com.reportgrid" % "blueeyes-json_2.9.2" % "1.0.0-M7.7",
+  "com.reportgrid" % "blueeyes-core_2.9.2" % "1.0.0-M8.1",
+  "com.reportgrid" % "blueeyes-json_2.9.2" % "1.0.0-M8.1",
   "org.specs2" %% "specs2" % "1.12.2" ,
   "com.h2database" % "h2" % "1.2.134" % "test"
 )

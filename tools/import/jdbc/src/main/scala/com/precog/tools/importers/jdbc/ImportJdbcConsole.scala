@@ -26,15 +26,25 @@ object ImportJdbcConsole {
 
   implicit val as=actorSystem
 
+  Option(System.getProperty("jdbc.driver")).map(driver => Class.forName(driver))
+
   def main(args:Array[String]){
     println("Welcome to Precog JDBC import wizard")
-    lazy val dbUrl=readLine("Enter database URL:")
+    /*lazy val dbUrl=readLine("Enter database URL:")
     lazy val user=readLine("User:")
     lazy val password = readLine("Password:")
     // use api key and dispatch to call ingest
     lazy val host=readLine("Precog ingestion host")
     lazy val apiKey=readLine("API KEY for ingestion")
-    lazy val basePath=readLine("Base ingestion path ( /{userId}/....)")
+    lazy val basePath=readLine("Base ingestion path ( /{userId}/....)")*/
+
+   lazy val dbUrl="jdbc:mysql://localhost/" //readLine("Enter database URL:")
+   lazy val user="root" //readLine("User:")
+   lazy val password = "root" //readLine("Password:")
+   // use api key and dispatch to call ingest
+   lazy val host="https://beta.precog.com" //readLine("Precog ingestion host")   //         https://beta.precog.com
+   lazy val apiKey="43AB865E-BB86-4F74-A57E-7E8BBD77F2B5" //readLine("API KEY for ingestion")
+   lazy val basePath="/0000000457/import" //readLine("Base ingestion path ( /{userId}/....)")*/
 
     val fresult=importJdbc(dbUrl,user,password, host, apiKey, basePath)
 
@@ -76,7 +86,7 @@ object ImportJdbcConsole {
 
   def getCatalogs(metadata: DatabaseMetaData): String = {
     println("Catalogs:")
-    val catalogs = oneColumnRs(metadata.getCatalogs).toArray
+    val catalogs = oneColumnRs(metadata.getCatalogs)
     selectOne("Catalog/Database",catalogs).getOrElse("")
   }
 

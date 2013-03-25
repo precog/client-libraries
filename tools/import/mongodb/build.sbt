@@ -21,10 +21,9 @@ scalacOptions ++= Seq("-unchecked", "-deprecation")
 assemblySettings
 
 libraryDependencies ++= Seq(
-  "com.reportgrid" %% "blueeyes-core" % "1.0.0-M7.7",
-  "com.reportgrid" %% "blueeyes-json" % "1.0.0-M7.7",
-  "com.reportgrid" %% "blueeyes-mongo" % "1.0.0-M7.7",
+  "com.reportgrid" %% "blueeyes-core" % "1.0.0-M8.1",
+  "com.reportgrid" %% "blueeyes-json" % "1.0.0-M8.1",
+  "com.reportgrid" %% "blueeyes-mongo" % "1.0.0-M8.1",
   "org.mongodb" %% "casbah" % "2.3.0",
-  "org.scalaz"  %% "scalaz-core"        % "7.0.0-M3" ,
   "org.specs2" %% "specs2" % "1.12.2" % "test"
 )
