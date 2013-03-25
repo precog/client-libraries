@@ -17,7 +17,6 @@ object DbAccess {
 
   def getColumns(conn:Connection, query:String):IndexedSeq[Column]={
     //use a prepared statement to get the metadata
-    println(query)
     val stmt = conn.prepareStatement(query)
     getColumns(stmt)
   }

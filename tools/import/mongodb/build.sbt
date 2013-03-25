@@ -25,5 +25,6 @@ libraryDependencies ++= Seq(
   "com.reportgrid" %% "blueeyes-json" % "1.0.0-M8.1",
   "com.reportgrid" %% "blueeyes-mongo" % "1.0.0-M8.1",
   "org.mongodb" %% "casbah" % "2.3.0",
-  "org.specs2" %% "specs2" % "1.12.2" % "test"
+  "org.specs2" %% "specs2" % "1.12.2" % "test",
+  "ch.qos.logback" %  "logback-classic" % "1.0.0"
 )

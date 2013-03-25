@@ -38,6 +38,7 @@ object ConsoleUtils {
       }
     }
 
+  @tailrec
   def selectOne[T](label:String, available: Seq[T])(implicit arg0: ClassManifest[T]): T ={
 
       val availArray=available.toArray

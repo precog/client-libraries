@@ -18,7 +18,7 @@ object DbAnalysis{
 
 
   def findTables(metadata: DatabaseMetaData, oCat: Option[String], tableName: => Option[String]): Array[Table] = {
-    val cat= oCat.getOrElse(null)//toNullUppercase(oCat)
+    val cat= oCat.getOrElse(null)
     val tableNm= tableName.map(_.toUpperCase).getOrElse(null)
     tables(metadata.getTables(cat, null, tableNm, Array("TABLE"))).toArray
   }

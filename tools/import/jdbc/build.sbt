@@ -25,5 +25,6 @@ libraryDependencies ++= Seq(
   "com.reportgrid" % "blueeyes-core_2.9.2" % "1.0.0-M8.1",
   "com.reportgrid" % "blueeyes-json_2.9.2" % "1.0.0-M8.1",
   "org.specs2" %% "specs2" % "1.12.2" ,
-  "com.h2database" % "h2" % "1.2.134" % "test"
+  "com.h2database" % "h2" % "1.2.134" % "test",
+  "ch.qos.logback" %  "logback-classic" % "1.0.0"
 )

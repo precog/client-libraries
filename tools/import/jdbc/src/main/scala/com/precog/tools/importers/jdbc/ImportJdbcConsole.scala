@@ -1,6 +1,5 @@
 package com.precog.tools.importers.jdbc
 
-import annotation.tailrec
 import java.sql.{Connection, DatabaseMetaData}
 import DbAccess._
 import DbAnalysis._
@@ -15,8 +14,10 @@ import scala.Some
 import scala.Right
 import com.precog.tools.importers.jdbc.ImportJdbc.ImportTable
 import com.precog.tools.importers.jdbc.Datatypes.Table
+import com.precog.tools.importers.common.ConsoleUtils._
 import akka.dispatch.{Future, Await}
 import akka.util.Duration
+import org.slf4j.LoggerFactory
 
 /**
  * User: gabriel
@@ -24,34 +25,28 @@ import akka.util.Duration
  */
 object ImportJdbcConsole {
 
+  private lazy val logger = LoggerFactory.getLogger("com.precog.tools.importers.jdbc.ImportJdbc")
+
   implicit val as=actorSystem
 
   Option(System.getProperty("jdbc.driver")).map(driver => Class.forName(driver))
 
   def main(args:Array[String]){
     println("Welcome to Precog JDBC import wizard")
-    /*lazy val dbUrl=readLine("Enter database URL:")
+    lazy val dbUrl=readLine("Enter database URL:")
     lazy val user=readLine("User:")
     lazy val password = readLine("Password:")
     // use api key and dispatch to call ingest
     lazy val host=readLine("Precog ingestion host")
     lazy val apiKey=readLine("API KEY for ingestion")
-    lazy val basePath=readLine("Base ingestion path ( /{userId}/....)")*/
-
-   lazy val dbUrl="jdbc:mysql://localhost/" //readLine("Enter database URL:")
-   lazy val user="root" //readLine("User:")
-   lazy val password = "root" //readLine("Password:")
-   // use api key and dispatch to call ingest
-   lazy val host="https://beta.precog.com" //readLine("Precog ingestion host")   //         https://beta.precog.com
-   lazy val apiKey="43AB865E-BB86-4F74-A57E-7E8BBD77F2B5" //readLine("API KEY for ingestion")
-   lazy val basePath="/0000000457/import" //readLine("Base ingestion path ( /{userId}/....)")*/
+    lazy val basePath=readLine("Base ingestion path ( /{userId}/....)")
 
     val fresult=importJdbc(dbUrl,user,password, host, apiKey, basePath)
 
     Await.result(Future.sequence(fresult),Duration("24 hours")).map(
       result => result match {
-        case HttpResponse(_ ,_,Some(Left(buffer)),_) => { println(new String(buffer.array(), "UTF-8"))}
-        case _ => "error %s".format(result.toString())
+        case HttpResponse(_ ,_,Some(Left(buffer)),_) => { logger.info(new String(buffer.array(), "UTF-8"))}
+        case _ => logger.error("error %s".format(result.toString()))
       }
     )
     as.shutdown()
@@ -69,25 +64,25 @@ object ImportJdbcConsole {
     tqs.map( tqs => {
       val (table,tDesc,q) = tqs
       val path= "%s/%s".format(basePath, table)
-      println("importing %s".format(table))
+      logger.info("importing %s".format(table))
       ingest(connDb,table, q, tDesc, path, host, apiKey).onComplete {
         case Right(result) => callSucceded(result)
-        case Left(failure) => println("Failed to import %s, error: %s".format(table,failure.getMessage))
+        case Left(failure) => logger.error("Failed to import %s, error: %s".format(table,failure.getMessage))
       }
     })
   }
 
   def callSucceded(response:HttpResponse[ByteChunk]){
     response match {
-      case HttpResponse(_ ,_,Some(Left(buffer)),_) => println("Result: %s".format(new String(buffer.array(), "UTF-8")))
-      case _ => println("Unexpected stream in %s".format(response))
+      case HttpResponse(_ ,_,Some(Left(buffer)),_) => logger.info("Result: %s".format(new String(buffer.array(), "UTF-8")))
+      case _ => logger.error("Unexpected stream in %s".format(response))
     }
    }
 
   def getCatalogs(metadata: DatabaseMetaData): String = {
     println("Catalogs:")
     val catalogs = oneColumnRs(metadata.getCatalogs)
-    selectOne("Catalog/Database",catalogs).getOrElse("")
+    selectOne("Catalog/Database",catalogs)
   }
 
   def selectColumns(connDb: Connection, table: Table): List[String] = {
@@ -144,56 +139,6 @@ object ImportJdbcConsole {
   def selectedTables(tablesList: Array[Table]): Seq[Table] = {
     selectSet("table", tablesList)
   }
-
-  @tailrec
-  private def selectSet[T](label:String, available: Seq[T], selected: Seq[T]=List())(implicit arg0: ClassManifest[T]): Seq[T] =
-    if (available.isEmpty) selected
-    else {
-      val availArray=available.toArray
-
-      println("Available %ss:".format(label))
-      println(present(availArray))
-
-      println("Selected %ss:".format(label))
-      println(present(selected))
-
-      println("Select a number/enter the name, 0 to select all, or enter to continue: ")
-
-      val selIdx = readLine()
-      selIdx match {
-        case "" => selected
-        case ParseInt(0) => available
-        case ParseInt(x) if (x<=available.size) => {
-          val elem:T = availArray(x - 1)
-          selectSet(label,available.filterNot(_==elem), selected:+elem)
-        }
-        case s if (available.exists(_.toString == s)) => {
-          val elem:T =availArray.find(_.toString == s).get
-          selectSet(label,available.filterNot(_==elem), selected:+elem)
-        }
-        case _ => selectSet(label,available, selected)
-      }
-    }
-
-  @tailrec
-  private def selectOne[T](label:String, available: Seq[T] )(implicit arg0: ClassManifest[T]): Option[T] =
-    if (available.isEmpty) None
-    else {
-      val availArray=available.toArray
-
-      println("Select a %s:".format(label))
-      println(present(availArray))
-
-      println("Select a number/enter the name: ")
-
-      val selIdx = readLine()
-      selIdx match {
-        case ParseInt(x) if (x<=available.size) => Option(availArray(x - 1))
-        case s if (available.exists(_.toString == s)) => availArray.find(_.toString == s)
-        case _ => selectOne(label,available)
-      }
-    }
-
 
   def present[T](arr:Seq[T])= (1 to arr.length).zip(arr).map(x=>x._1 +":"+ x._2).mkString(", ")
   def show(baseTable:Table,set: Set[Join])= set.map( r=> " %s with %s on %s=%s".format(baseTable.name, r.refKey.table, r.baseColName,r.refKey.columnName )).mkString(", ")

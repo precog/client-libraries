@@ -22,6 +22,7 @@ import collection.JavaConversions._
 import scala.Left
 import scala.Some
 import com.precog.tools.importers.common.Ingest._
+import org.slf4j.LoggerFactory
 
 
 /**
@@ -29,6 +30,8 @@ import com.precog.tools.importers.common.Ingest._
  * Date: 1/17/13
  */
 object ImportMongo {
+
+  private lazy val logger = LoggerFactory.getLogger("com.precog.tools.importers.mongo.ImportMongo")
 
   implicit val as=actorSystem
   implicit val executionContext = defaultFutureDispatch
@@ -60,7 +63,8 @@ object ImportMongo {
     println("No configuration found in the mongo instance, creating a new one.")
     val databases=db.name
     println("DATABASE  %s \n".format(db))
-    val colls=selectSet("collection",db.getCollectionNames().toSeq)
+    val userCollections=db.getCollectionNames().filter(name=> !(name.startsWith("system.") || name.startsWith(collsConfig)))
+    val colls=selectSet("collection",userCollections.toSeq)
     colls.map( coll =>{
       println("\n ---- Collection %s ----".format(coll))
       val columns=sampleColumns(mongoConn)(db,coll).toSeq
@@ -85,7 +89,7 @@ object ImportMongo {
 
     if (args.length != 4) {
       println("Wrong number of parameters.")
-      println("Usage: ImportMongo mongo_uri precog_host precog_ingest_path precog_apiKey")
+      println("Usage: ImportMongo mongo_uri precog_host_url precog_ingest_path precog_apiKey")
       actorSystem.shutdown()
       sys.exit(1)
     }
@@ -118,20 +122,23 @@ object ImportMongo {
         }
         val jsonInputs= inputConfigColl.find().toList
 
-        //TODO: check result of ingest before updating the Id!!!!!
         val fimports=jsonInputs.map(config=> importCollection(precogHost,basePath,apiKey,db, config, mongoConn))
 
         val fresults=Await.result(Future.sequence(fimports.toList), Duration("24 hours"))
 
         jsonInputs.zip(fresults).map( r =>{
             val (mDbObj,(result,lastId)) = r
-            println("%s".format(result))
-            inputConfigColl.save(mDbObj++("lastId"->lastId))
+            result.left.map(s=>
+              logger.warn("%s".format(s))
+            ).right.map({s=>
+              logger.info("%s".format(s))
+              inputConfigColl.save(mDbObj++("lastId"->lastId))
+            })
           }
         )
       }
     } finally {
-      println("Shutting down...")
+      logger.info("Shutting down...")
       actorSystem.shutdown()
     }
   }
@@ -145,7 +152,7 @@ object ImportMongo {
   def arrOfStrValues(jv: JValue) = (jv -->? classOf[JArray]).map(_.elements.map(strValue(_))).getOrElse(Nil)
 
 
-  def importCollection(host:String, basePath:String, apiKey:String, db:MongoDB, mdbobj: MongoDBObject, mongoConn: MongoConnection):Future[(String,AnyRef)]={
+  def importCollection(host:String, basePath:String, apiKey:String, db:MongoDB, mdbobj: MongoDBObject, mongoConn: MongoConnection):Future[(Either[String,String],AnyRef)]={
 
     val collName = mdbobj.getAs[String]("collection").get
     val fieldNames = mdbobj.getAsOrElse[util.ArrayList[String]]("fields",new util.ArrayList())
@@ -172,15 +179,15 @@ object ImportMongo {
     val path = "%s/%s/%s".format(basePath, db.name, collName)
     val data = StreamT.fromStream[Future, JObject](fjsons)
     val fsend= data.isEmpty.flatMap( isEmpty =>
-      if (isEmpty) Future("No new data found in %s.%s".format(db.name,collName))
+      if (isEmpty) Future(Left("No new data found in %s.%s".format(db.name,collName)))
       else sendToPrecog(host,path,apiKey,toByteStream(data)) map( _ match {
           case HttpResponse(_, _, Some(Left(buffer)), _) => {
-            "Result from precog: %s".format(new String(buffer.array(), "UTF-8"))
+            Right("Result from precog: %s".format(new String(buffer.array(), "UTF-8")))
           }
-          case result => "Error: %s".format(result.toString())
+          case result => Left("Error: %s".format(result.toString()))
         }
       ))
-    M.lift2((a: String, b: AnyRef) => (a, b))(fsend, fmaxId)
+    M.lift2((a: Either[String,String], b: AnyRef) => (a, b))(fsend, fmaxId)
   }
 
   def readFromMongo(mongoDB: MongoDB, collName: String, idCol:String, oLastId:Option[AnyRef], fieldNames:Seq[String]):Stream[DBObject]={
