@@ -170,7 +170,6 @@ module Precog
         end
       end
 
-      message += " returned: #{response_data}"
       response_data
     end
   end
@@ -243,7 +242,6 @@ module Precog
     # (mode = batch, receipt = false), 
     # (mode = streaming)
     def ingest(path, content, type, options={})
-      path = @api.sanitize_path(path)
       if !content
         raise Error.new("argument 'content' must contain a non empty value formatted as described by type")
       end
@@ -294,13 +292,13 @@ module Precog
 
     # Store a record at the specified path
     def store(path, event, options = {})
-        ingest(path, event.to_json, "application/json", options.merge!({:mode=> 'batch' , :receipt=> 'true'}))
+        ingest(path, event, "json", options.merge!({:mode=> 'batch' , :receipt=> 'true'}))
     end
 
 
     def delete(path)
-      action = @api.sanitize_path("sync/#{Paths::FS}/#{path}")
-      @api.delete(Services::INGEST,path)
+      action = @api.sanitize_path("#{Paths::FS}/#{path}")
+      @api.delete(Services::INGEST,action)
     end
 
     # Send a quirrel query to be evaluated relative to the specified base path.
