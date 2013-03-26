@@ -43,18 +43,19 @@ class PrecogClientTest < Test::Unit::TestCase
     @api_key=response['apiKey']
     #connection with api key
     @api=Precog::Precog.new(@api_key, HOST, PORT)
+    #clean up previous data if exists
+    @api.delete(@account_id)
   end
 
   def teardown
-    #nothing :)
+    #nothing
   end
 
   def assert_include(collection, value)
     assert collection.include?(value), "#{collection.inspect} does not include the value #{value.inspect}"
   end
 
-  # ACCOUNTS 
-  
+  # ACCOUNTS
   def test_create_account_existing
     response = @root_key_api.create_account("test-rb@precog.com","password")
     assert_equal Hash, response.class
@@ -133,6 +134,32 @@ class PrecogClientTest < Test::Unit::TestCase
     assert_equal 1, response['ingested']
   end
 
+  def test_ingest__and_query_json
+
+    json_data = { 'user'=> 'something', 'json_dta' =>{ 'nested'=> 'blah'} }
+    path="#{@account_id}/data2"
+
+    response=@api.ingest_batch(path, json_data, "json",true)
+    assert_equal 1, response['ingested']
+
+    response=@api.query(@account_id, "load(\"//data2\")")
+
+
+    assert_equal json_data, response[0]
+    assert_equal json_data["user"], response[0]["user"]
+
+  end
+
+  def test_store_and_query
+    path="#{@account_id}/data/user"
+    json_data={ 'user' => 'something'  }
+    response=@api.store(path, json_data)
+    assert_equal 1, response['ingested']
+
+    response=@api.query(@account_id, "load(\"//data/user\")")
+    assert_equal json_data, response[0]
+  end
+
   def test_ingest_json_no_receipt
     json_data = '{ "user": "something", "json_dta": { "nested": "blah"} }'
     response=@api.ingest_batch(@account_id, json_data, "json",false)
@@ -152,19 +179,19 @@ class PrecogClientTest < Test::Unit::TestCase
 
   def test_query
     #just test the query was sent and executed sucessfully
-    response=@api.query(@account_id, "count(//"+@account_id+")")
+    response=@api.query(@account_id, "count(//#{@account_id})")
     assert_equal Array, response.class
     assert_equal 0, response[0]
   end
 
   def test_from_heroku
-      #connection with Heroku token
-      token=Precog::Utils.to_token("test-rb@precog.com","password","#{HOST}","#{@account_id}","#{@api_key}","/base/")
-      values ={ :user=>"test-rb@precog.com", :pwd=>"password", :host=>"#{HOST}", :account_id=>"#{@account_id}", :api_key=>"#{@api_key}", :root_path=>"/base/" }
-      assert_equal Precog::Utils.from_token(token), values
-      heroku_api=Precog::Precog.from_heroku(token)
-      response =heroku_api.describe_account("test-rb@precog.com","password",@account_id)
-      assert_equal @api_key, response['apiKey']
+    #connection with Heroku token
+    token=Precog::Utils.to_token("test-rb@precog.com","password","#{HOST}","#{@account_id}","#{@api_key}","/base/")
+    values ={ :user=>"test-rb@precog.com", :pwd=>"password", :host=>"#{HOST}", :account_id=>"#{@account_id}", :api_key=>"#{@api_key}", :root_path=>"/base/" }
+    assert_equal Precog::Utils.from_token(token), values
+    heroku_api=Precog::Precog.from_heroku(token)
+    response =heroku_api.describe_account("test-rb@precog.com","password",@account_id)
+    assert_equal @api_key, response['apiKey']
   end
 
   def test_from_token
