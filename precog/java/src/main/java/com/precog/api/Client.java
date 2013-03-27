@@ -116,7 +116,7 @@ public class Client {
      * @param <T>        The type of the record object. This type must be serializable to JSON using a ToJson instance
      *                   for some supertype of the specified type.
      * @param path       The path at which the record should be placed in the virtual file system.
-     * @param record     The record being storeed.
+     * @param record     The record being stored.
      * @param serializer The function used to serialize the record to a JSON string.
      * @throws IOException
      */
@@ -131,28 +131,6 @@ public class Client {
         IngestOptions options = new IngestOptions(ContentType.JSON);
         ingest(path, recordJson, options);
     }
-
-    /**
-     * Builds the async/sync data storage path
-     *
-     * @param async boolean, true to do an async storage call
-     * @param path  The path at which the record should be placed in the virtual file system.
-     * @return full path
-     */
-    public Path buildStoragePath(boolean async, Path path) {
-        return new Path(async ? "async" : "sync").append(Paths.FS).append(path);
-    }
-
-    /**
-     * Builds a sync data storage path
-     *
-     * @param path The path at which the record should be placed in the virtual file system.
-     * @return full path
-     */
-    public Path buildStoragePath(Path path) {
-        return buildStoragePath(false, path);
-    }
-
 
     /**
      * Ingest data in the specified path
@@ -176,7 +154,7 @@ public class Client {
         request.getHeader().putAll(options.asMap());
         request.setBody(content);
         request.setContentType(options.getDataType());
-        return rest.request(Rest.Method.POST, actionPath(Services.INGEST, buildStoragePath(options.isAsync(), path)).getPath(), request);
+        return rest.request(Rest.Method.POST, actionPath(Services.INGEST, (Paths.FS).append(path)).getPath(), request);
     }
 
     /**
@@ -188,7 +166,7 @@ public class Client {
      */
     public String delete(Path path) throws IOException {
         Request request = new Request();
-        return rest.request(Rest.Method.DELETE, actionPath(Services.INGEST, buildStoragePath(path)).getPath(), request);
+        return rest.request(Rest.Method.DELETE, actionPath(Services.INGEST, (Paths.FS).append(path)).getPath(), request);
     }
 
     /**

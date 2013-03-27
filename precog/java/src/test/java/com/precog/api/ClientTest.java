@@ -145,8 +145,8 @@ public class ClientTest {
     public void testIngestAsync() throws IOException {
 
         IngestOptions options = new CSVIngestOptions();
-        options.setAsync(true);
-        String response = testClient.ingest(testPath, "blah,\n\n", options);
+        options.setBatch(false);
+        String response = testClient.ingest(testPath, "head,\nblah,\n", options);
         //is async, so we don't expect results
         assertEquals("", response);
     }
@@ -229,9 +229,6 @@ public class ClientTest {
         //just test the query was sent and executed successfully
         String result = testClient.query(new Path(testAccountId), "load(\"//"+ path +"\")");
         assertNotNull(result);
-        System.out.println(result);
-        //String[] res = GsonFromJson.of(String[].class).deserialize(result);
-        //assertEquals("0", res[0]);
     }
 
 }

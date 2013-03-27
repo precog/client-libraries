@@ -11,7 +11,7 @@ import java.util.Map;
 public class AccountInfo {
     private String accountId;
     private String email;
-    private int accountCreationDate;
+    private String accountCreationDate;
     private String apiKey;
     private String rootPath;
     private Map<String, String> plan;
@@ -32,11 +32,11 @@ public class AccountInfo {
         this.email = email;
     }
 
-    public int getAccountCreationDate() {
+    public String getAccountCreationDate() {
         return accountCreationDate;
     }
 
-    public void setAccountCreationDate(int accountCreationDate) {
+    public void setAccountCreationDate(String accountCreationDate) {
         this.accountCreationDate = accountCreationDate;
     }
 
