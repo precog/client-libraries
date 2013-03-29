@@ -141,6 +141,27 @@ public class ClientTest {
     }
 
     @Test
+    public void testIngestJSONBatchNoReceipt() throws IOException {
+
+        IngestOptions options = new IngestOptions(ContentType.JSON);
+        options.setReceipt(false);
+        String rawJson = "{\"test\":[{\"v\": 1}, {\"v\": 2}]}";
+        String response = testClient.ingest(testPath, rawJson, options);
+        assertEquals("{\"content-length\":29}", response);
+    }
+
+    @Test
+    public void testIngestJSONStreaming() throws IOException {
+        IngestOptions options = new IngestOptions(ContentType.JSON);
+        options.setBatch(false);
+        String rawJson = "{\"test\":[{\"v\": 1}, {\"v\": 2}]}";
+        String response = testClient.ingest(testPath, rawJson, options);
+        IngestResult result = GsonFromJson.of(new TypeToken<IngestResult>() {
+        }).deserialize(response);
+        assertEquals(1, result.getIngested());
+    }
+
+    @Test
     public void testIngestCsvWithOptions() throws IOException {
 
         CSVIngestOptions options = new CSVIngestOptions();
