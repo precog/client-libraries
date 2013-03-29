@@ -23,41 +23,41 @@
 #
 
 require 'test/unit'
+require 'base64'
 
 class PrecogClientTest < Test::Unit::TestCase
+  HOST = 'devapi.precog.com'
+  PORT = 443
+  ROOT_API_KEY = '2D36035A-62F6-465E-A64A-0E37BCC5257E'
 
-    HOST = 'devapi.precog.com'
-    PORT = 443
-    ROOT_API_KEY = '2D36035A-62F6-465E-A64A-0E37BCC5257E'
-
-    attr_reader :account_id, :api_key, :no_key_api, :api
-
+  attr_reader :account_id, :api_key, :no_key_api, :api
 
   def setup
-      require 'precog'
-      #connection without api key
-      @no_key_api=Precog::Precog.new(nil, HOST, PORT)
-      #create test user and extract key
-      response = @no_key_api.create_account("test-rb@precog.com","password")
-      @account_id=response['accountId']
-      response =@no_key_api.describe_account("test-rb@precog.com","password",account_id)
-      @api_key=response['apiKey']
-      #connection with api key
-      @api=Precog::Precog.new(@api_key, HOST, PORT)
-    end
+    require 'precog'
+    #connection without api key
+    @root_key_api=Precog::Precog.new(ROOT_API_KEY, HOST, PORT)
+    #create test user and extract key
+    response = @root_key_api.create_account("test-rb@precog.com","password")
+    @account_id=response['accountId']
+    response =@root_key_api.describe_account("test-rb@precog.com","password",account_id)
+    @api_key=response['apiKey']
+    #connection with api key
+    @api=Precog::Precog.new(@api_key, HOST, PORT)
+    #clean up previous data if exists
+    @api.delete(@account_id)
+  end
 
-    def teardown
-      #nothing :)
-    end
+  def teardown
+    #nothing
+  end
 
   def assert_include(collection, value)
     assert collection.include?(value), "#{collection.inspect} does not include the value #{value.inspect}"
   end
 
-  # ACCOUNTS 
-  
+  # ACCOUNTS
   def test_create_account_existing
-    response = @no_key_api.create_account("test-rb@precog.com","password")
+    response = @root_key_api.create_account("test-rb@precog.com","password")
     assert_equal Hash, response.class
     assert_include response, 'accountId'
     assert_equal @account_id, response['accountId']
@@ -65,13 +65,13 @@ class PrecogClientTest < Test::Unit::TestCase
   
   def test_create_account_new
     email= "test-rb#{rand(1000000)}@precog.com"
-    response = @no_key_api.create_account(email,"password")
+    response = @root_key_api.create_account(email,"password")
     assert_equal Hash, response.class
     assert_include response, 'accountId'
   end
 
   def test_describe_account
-    response = @no_key_api.describe_account("test-rb@precog.com","password",@account_id)
+    response = @root_key_api.describe_account("test-rb@precog.com","password",@account_id)
     assert_equal Hash, response.class
     assert_include response, 'accountId'
     assert_equal @account_id, response['accountId']
@@ -82,11 +82,11 @@ class PrecogClientTest < Test::Unit::TestCase
 
   # def test_add_grant_to_account
   #   #   TODO once security API is complete
-  #   #   @no_key_api.add_grant_to_account("test-rb@precog.com","password",@account_id, xxxxxx)
+  #   #   @root_key_api.add_grant_to_account("test-rb@precog.com","password",@account_id, xxxxxx)
   # end
 
   def test_describe_plan
-    response=@no_key_api.describe_plan("test-rb@precog.com","password",@account_id)
+    response=@root_key_api.describe_plan("test-rb@precog.com","password",@account_id)
     assert_equal Hash, response.class
     assert_include response, 'type'
     assert_equal 'Free', response['type']
@@ -94,48 +94,82 @@ class PrecogClientTest < Test::Unit::TestCase
 
   #Changes an account's plan (only the plan type itself may be changed). Billing for the new plan, if appropriate, will be prorated.
   def test_change_plan
-    response=@no_key_api.change_plan("test-rb@precog.com","password",@account_id, "Bronze")
+    response=@root_key_api.change_plan("test-rb@precog.com","password",@account_id, "Bronze")
     
-    response=@no_key_api.describe_plan("test-rb@precog.com","password",@account_id)
+    response=@root_key_api.describe_plan("test-rb@precog.com","password",@account_id)
     assert_include response, 'type'
     assert_equal 'Bronze', response['type']
 
-    response=@no_key_api.change_plan("test-rb@precog.com","password",@account_id, "Free")
+    response=@root_key_api.change_plan("test-rb@precog.com","password",@account_id, "Free")
   end
 
   #Changes your account access password. This call requires HTTP Basic authentication using the current password.
   def test_change_password
-    response=@no_key_api.change_password("test-rb@precog.com","password",@account_id, "xyzzy")
-    response=@no_key_api.change_password("test-rb@precog.com","xyzzy",@account_id, "password")
+    response=@root_key_api.change_password("test-rb@precog.com","password",@account_id, "xyzzy")
+    response=@root_key_api.change_password("test-rb@precog.com","xyzzy",@account_id, "password")
   end
 
   #Deletes an account's plan. This is the same as switching a plan to the free plan.
   def test_delete_plan
-    response=@no_key_api.change_plan("test-rb@precog.com","password",@account_id, "Bronze")
-    response=@no_key_api.delete_plan("test-rb@precog.com","password",@account_id)
+    response=@root_key_api.change_plan("test-rb@precog.com","password",@account_id, "Bronze")
+    response=@root_key_api.delete_plan("test-rb@precog.com","password",@account_id)
     #test it's free after delete
-    response=@no_key_api.describe_plan("test-rb@precog.com","password",@account_id)
+    response=@root_key_api.describe_plan("test-rb@precog.com","password",@account_id)
     assert_equal Hash, response.class
     assert_include response, 'type'
     assert_equal 'Free', response['type']
   end
 
   def test_ingest_csv
-    response=@api.ingest(@account_id,  "blah,\n\n", "csv")
-    assert_equal 1, response['ingested']
+    options = {:delimiter => ",", :quote =>'"', :escape => "\\" }
+    response=@api.ingest_batch(@account_id, '"product","price"
+      "tardis","$10.000"
+      "Dalek armour","$9.999,99"', "csv",true)
+    assert_equal 2, response['ingested']
   end
 
   def test_ingest_json
-    json_data = "{ 'user': 'something' 'json_dta': { 'nested': 'blah'} }"
-    response=@api.ingest(@account_id, json_data, "json")
+    json_data = '{ "user": "something", "json_dta": { "nested": "blah"} }'
+    response=@api.ingest_batch(@account_id, json_data, "json",true)
     assert_equal 1, response['ingested']
   end
 
-  def test_ingest_async
-    options = {:delimiter => ",", :quote =>"'", :escape => "\\", :async => true }
-    response=@api.ingest(@account_id, "blah,blah\n", "csv", options)
-    #async just returns 202 result code
-    assert_equal "", response
+  def test_ingest__and_query_json
+
+    json_data = { 'user'=> 'something', 'json_dta' =>{ 'nested'=> 'blah'} }
+    path="#{@account_id}/data2"
+
+    response=@api.ingest_batch(path, json_data, "json",true)
+    assert_equal 1, response['ingested']
+
+    response=@api.query(@account_id, "load(\"//data2\")")
+
+
+    assert_equal json_data, response[0]
+    assert_equal json_data["user"], response[0]["user"]
+
+  end
+
+  def test_store_and_query
+    path="#{@account_id}/data/user"
+    json_data={ 'user' => 'something'  }
+    response=@api.store(path, json_data)
+    assert_equal 1, response['ingested']
+
+    response=@api.query(@account_id, "load(\"//data/user\")")
+    assert_equal json_data, response[0]
+  end
+
+  def test_ingest_json_no_receipt
+    json_data = '{ "user": "something", "json_dta": { "nested": "blah"} }'
+    response=@api.ingest_batch(@account_id, json_data, "json",false)
+    assert_equal 68, response['content-length'] 
+  end
+
+  def test_ingest_stream_json
+    json_data = '{ "user": "something", "json_dta": { "nested": "blah"} }'
+    response=@api.ingest_stream(@account_id, json_data, "json")
+    assert_equal 1, response['ingested'] # ?
   end
 
   def test_store
@@ -145,9 +179,34 @@ class PrecogClientTest < Test::Unit::TestCase
 
   def test_query
     #just test the query was sent and executed sucessfully
-    response=@api.query(@account_id, "count(//"+@account_id+")")
+    response=@api.query(@account_id, "count(//#{@account_id})")
     assert_equal Array, response.class
     assert_equal 0, response[0]
   end
 
+  def test_from_heroku
+    #connection with Heroku token
+    token=Precog::Utils.to_token("test-rb@precog.com","password","#{HOST}","#{@account_id}","#{@api_key}","/base/")
+    values ={ :user=>"test-rb@precog.com", :pwd=>"password", :host=>"#{HOST}", :account_id=>"#{@account_id}", :api_key=>"#{@api_key}", :root_path=>"/base/" }
+    assert_equal Precog::Utils.from_token(token), values
+    heroku_api=Precog::Precog.from_heroku(token)
+    response =heroku_api.describe_account("test-rb@precog.com","password",@account_id)
+    assert_equal @api_key, response['apiKey']
+  end
+
+  def test_from_token
+    token=Base64.encode64("user1:password1:beta.host.com:12345:AAAAA-BBBBB-CCCCCC-DDDDD:/00001234/").gsub(/\n/,'')
+    values=Precog::Utils.from_token(token)
+    assert_equal values[:user],"user1"
+    assert_equal values[:pwd],"password1"
+    assert_equal values[:host],"beta.host.com"
+    assert_equal values[:account_id],"12345"
+    assert_equal values[:api_key],"AAAAA-BBBBB-CCCCCC-DDDDD"
+    assert_equal values[:root_path],"/00001234/"
+  end
+
+  def test_to_token
+    token=Precog::Utils.to_token("user","password","beta.host.com","12345","AAAAA-BBBBB-CCCCCC-DDDDD","/00001234/")
+    assert token == Base64.encode64("user:password:beta.host.com:12345:AAAAA-BBBBB-CCCCCC-DDDDD:/00001234/").gsub(/\n/,'')
+  end
 end

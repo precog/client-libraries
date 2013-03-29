@@ -16,8 +16,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.Ignore;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
-import java.util.Map;
+import java.io.UnsupportedEncodingException;
 
 import static org.junit.Assert.*;
 
@@ -50,13 +51,7 @@ public class ClientTest {
     public static void beforeAll() throws Exception {
         testId = "" + Double.valueOf(java.lang.Math.random() * 10000).intValue();
 
-        String host=System.getProperty("host");
-        Service svc;
-        if (host == null){
-            svc=Service.DevPrecogHttps;
-        } else {
-            svc= ServiceBuilder.service(host);
-        }
+        Service svc = getService();
 
         Client noApiKeyClient = new Client(svc, null);
         String result = noApiKeyClient.createAccount("java-test@precog.com", "password");
@@ -69,6 +64,23 @@ public class ClientTest {
         testApiKey = res.getApiKey();
         testPath = new Path(testAccountId).append(new Path("/test" + testId));
         testClient =new Client(svc, testApiKey);
+    }
+
+    /**
+     * Builds the service under test.
+     * Defaults to devapi.precog.com but a different one can be specified by setting the Java property "host"
+     * (to allow run the unit tests against a different server)
+     * @return  Service
+     */
+    private static Service getService() {
+        String host=System.getProperty("host");
+        Service svc;
+        if (host == null){
+            svc=Service.DevPrecogHttps;
+        } else {
+            svc= ServiceBuilder.service(host);
+        }
+        return svc;
     }
 
     @Test
@@ -111,7 +123,7 @@ public class ClientTest {
     public void testIngestCSV() throws IOException {
 
         IngestOptions options = new CSVIngestOptions();
-        String response = testClient.ingest(testPath, "blah,\n\n", options);
+        String response = testClient.ingest(testPath, "head1,head2\nblah,bleh\n", options);
         IngestResult result = GsonFromJson.of(new TypeToken<IngestResult>() {
         }).deserialize(response);
         assertEquals(1, result.getIngested());
@@ -135,7 +147,7 @@ public class ClientTest {
         options.setDelimiter(",");
         options.setQuote("'");
         options.setEscape("\\");
-        String response = testClient.ingest(testPath, "blah\n\n", options);
+        String response = testClient.ingest(testPath, "head\nblah\n", options);
         IngestResult result = GsonFromJson.of(new TypeToken<IngestResult>() {
         }).deserialize(response);
         assertEquals(1, result.getIngested());
@@ -144,11 +156,12 @@ public class ClientTest {
     @Test
     public void testIngestAsync() throws IOException {
 
-        IngestOptions options = new CSVIngestOptions();
+        IngestOptions options = new IngestOptions(ContentType.JSON);
+        String rawJson = "{\"test\":[{\"v\": 1}, {\"v\": 2}]}";
         options.setBatch(false);
-        String response = testClient.ingest(testPath, "head,\nblah,\n", options);
+        String response = testClient.ingest(testPath, rawJson, options);
         //is async, so we don't expect results
-        assertEquals("", response);
+        assertEquals("{\"ingested\":1,\"errors\":[]}", response);
     }
 
     @Test
@@ -219,6 +232,20 @@ public class ClientTest {
         assertNotNull(result);
         String[] res = GsonFromJson.of(String[].class).deserialize(result);
         assertEquals("0", res[0]);
+    }
+
+    @Test
+    public void testFromHeroku() throws UnsupportedEncodingException {
+        String user="user";
+        String password="password";
+        String host= "beta.host.com";
+        String accountId="12345";
+        String apiKey="AAAAA-BBBBB-CCCCCC-DDDDD";
+        String rootPath ="/00001234/";
+        String values=user+":"+password+":"+host+":"+accountId+":"+apiKey+":"+ rootPath;
+        String token= DatatypeConverter.printBase64Binary(values.getBytes("UTF-8"));
+        Client precogApi=Client.fromHeroku(token);
+        assertNotNull(precogApi);
     }
 
     @Test

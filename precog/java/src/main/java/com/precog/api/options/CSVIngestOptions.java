@@ -15,9 +15,9 @@ public class CSVIngestOptions extends IngestOptions {
     public static String ESCAPE = "escape";
     public static String DELIMITER = "delimiter";
 
-    private String delimiter;
-    private String quote;
-    private String escape;
+    private String delimiter="'";
+    private String quote="\"";
+    private String escape="\\";
 
     public CSVIngestOptions() {
         super(ContentType.CSV);

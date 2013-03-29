@@ -13,8 +13,11 @@ import java.util.Map;
 public class IngestOptions {
 
     public static String OWNER_ACCOUNT_ID = "ownerAccountId";
-    public static String BATCH = "batch";
+
     public static String RECEIPT = "receipt";
+    public static String MODE="mode";
+    public static String BATCH = "batch";
+    public static String STREAMING="streaming";
 
     private ContentType dataType;
     private String ownerAccountId;
@@ -48,8 +51,10 @@ public class IngestOptions {
         }
         map.put(BATCH,Boolean.toString(batch));
         if(batch){
-            //receipt only valid in batch mode
+            map.put(MODE,BATCH);
             map.put(RECEIPT,Boolean.toString(receipt));
+        } else {
+            map.put(MODE,STREAMING);
         }
         return map;
     }

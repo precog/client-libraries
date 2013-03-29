@@ -1,6 +1,7 @@
 package com.precog.api;
 
 import com.precog.api.Request.ContentType;
+import com.precog.api.dto.PrecogServiceConfig;
 import com.precog.api.options.IngestOptions;
 import com.precog.json.ToJson;
 
@@ -30,6 +31,14 @@ public class Client {
         public static String INGEST = "/ingest";
     }
 
+    /**
+     * Factory method to create a Precog client from a Heroku addon token
+     * @param precogToken Heroku precog addon token
+     * @return Precog client
+     */
+    public static Client fromHeroku(String precogToken) {
+        return new Client(PrecogServiceConfig.fromToken(precogToken));
+    }
 
     /**
      * A convenience constructor that uses the default production API.
@@ -44,6 +53,16 @@ public class Client {
         this.service = Service.ProductionHttps;
         this.apiKey = apiKey;
         this.rest = new Rest(service, apiKey);
+    }
+
+    /**
+     * Builds a new client to connect to precog services based on an PrecogServiceConfig
+     * @param ac account token
+     */
+    public Client(PrecogServiceConfig ac){
+        this.service=ServiceBuilder.service(ac.getHost());
+        this.apiKey=ac.getApiKey();
+        this.rest= new Rest(service,apiKey);
     }
 
     /**
@@ -151,7 +170,7 @@ public class Client {
             throw new IllegalArgumentException("argument 'content' must contain a non empty value formatted as described by type");
         }
         Request request = new Request();
-        request.getHeader().putAll(options.asMap());
+        request.getParams().putAll(options.asMap());
         request.setBody(content);
         request.setContentType(options.getDataType());
         return rest.request(Rest.Method.POST, actionPath(Services.INGEST, (Paths.FS).append(path)).getPath(), request);

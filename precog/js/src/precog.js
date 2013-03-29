@@ -356,6 +356,16 @@ throw new SyntaxError('JSON.parse');};}}());
           version = options.version || $.Config.version;
       return host + service + (version === "false" ? "" : "/v" + version) + "/" + (action ? action + "/" : "");
     },
+     actionUrl2: function(service, action, options) {
+      if("undefined" === typeof options && "object" === typeof action) {
+        options = action;
+        action  = null;
+      }
+      options = options || {};
+      var host    = options.analyticsService || $.Config.analyticsService,
+          version = options.version || $.Config.version;
+      return host + service + (version === "false" ? "" : "/v" + version) + "/" + (action ? action : "");
+    },
 
     actionPath: function(path, options) {
       path = path && this.trimPath(path);
@@ -414,7 +424,11 @@ throw new SyntaxError('JSON.parse');};}}());
         if (request.readyState === 4) {
           if (request.status === 200 || request.status === 202 || request.status === 204 || request.status === "OK" || request.code === "NoContent") {
             if (request.responseText !== null && request.responseText.length > 0) {
-              success(JSON.parse(this.responseText), headers);
+              success(
+                JSON.parse(
+                  request.response//.replace("�","", "g")
+                  ), 
+                headers);
             }
             else {
               success(undefined, headers);
@@ -681,6 +695,64 @@ throw new SyntaxError('JSON.parse');};}}());
       parameters
     );
   };
+
+  Precog.asyncQuery = function(query, success, failure, options ) {
+    options = options || {};
+    var description = 'Precog query ' + query,
+        parameters = { apiKey : options.apiKey || $.Config.apiKey, q : query };
+
+    if(options.limit)
+      parameters.limit = options.limit || $.Config.limit;
+    if(options.basePath)
+      parameters.basePath = options.basePath;
+    if(options.skip)
+      parameters.skip = options.skip;
+    if(options.order)
+      parameters.order = options.order;
+    if(options.sortOn)
+      parameters.sortOn = JSON.stringify(options.sortOn);
+    if(options.sortOrder)
+      parameters.sortOrder = options.sortOrder;
+    parameters.timeout = options.timeout || 1800000;
+    parameters.prefixPath = options.prefixPath || $.Config.basePath;
+    if("undefined" !== typeof options.format) {
+      parameters.format = options.format;
+    }
+
+    if(parameters.format === "detailed") {
+      var old = success;
+      success = function(o, headers) {
+        old(o.data, o.errors, o.warnings, headers);
+      };
+    }
+    
+    return http.post(
+      Util.actionUrl2("analytics", "queries", options),
+      undefined,
+      Util.createCallbacks(success, failure, description),
+      parameters
+    );
+  };
+
+Precog.asyncQueryResults = function(jobId, success, failure, options){
+  var description = 'Return results of job Id: ' + jobId;
+  parameters = { apiKey : (options && options.apiKey) || $.Config.apiKey };
+
+  function complete(data) {
+    if(data) {
+      data.completed = true;
+    } else {
+      data = { completed : false };
+    }
+    success(data);
+  }
+
+  return http.get(
+    Util.actionUrl("analytics", "queries", options) + jobId,
+    Util.createCallbacks(complete, failure, description),
+    parameters
+  );
+}
 
   // **********************
   // ***     ACCOUNT    ***
