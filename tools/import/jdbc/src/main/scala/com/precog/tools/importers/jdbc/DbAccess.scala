@@ -3,12 +3,18 @@ package com.precog.tools.importers.jdbc
 import java.sql._
 import Datatypes._
 import scalaz.StreamT
+import annotation.tailrec
+import scalaz.effect.IO
+import org.slf4j.LoggerFactory
 
 /**
  * User: gabriel
  * Date: 11/30/12
  */
 object DbAccess {
+
+  private lazy val logger = LoggerFactory.getLogger("com.precog.tools.importers.jdbc.DbAccess")
+
   def columnCount(stmt:PreparedStatement)=stmt.getMetaData.getColumnCount
 
   def getColumns(conn:Connection, table:Table):IndexedSeq[Column]={
@@ -30,17 +36,19 @@ object DbAccess {
 
 
   def rsList[T](rs:ResultSet)(f:ResultSet => T)={
-    //warning: this serves the purpose but it not a well behaved iterator.
-    //In particular, a call to hasNext, advances the resultSet
-    //it works in this context, because we just call it with "toList"
-    def rsIterator(rs:ResultSet)(f:ResultSet => T) = new Iterator[T] {
-      def hasNext = rs.next()
-      def next():T = f(rs)
-    }
-    rsIterator(rs)(f).toList
+
+    @tailrec
+    def buildList(rs:ResultSet, acc:List[T]=Nil):List[T]=
+      if (rs.next()) buildList(rs, f(rs)::acc)
+      else acc
+
+    buildList(rs).reverse
   }
 
-  def rsStreamT[T](rs:ResultSet)(f:ResultSet => T)=StreamT.unfold(rs)( (rs:ResultSet) => if (rs.next()) { Some(f(rs),rs)} else None )
+  def rsStreamT[T](rs:ResultSet)(f:ResultSet => T)=StreamT.unfoldM(rs)(
+    (rs:ResultSet) => IO( { val d=if (rs.next()) { Some(f(rs),rs)} else None; logger.info("read stream = %s".format(d)); d }))
+
+  def rsStream[T](rs:ResultSet)(f:ResultSet => T):Stream[T] = if (rs.next) f(rs) #:: rsStream(rs)(f) else Stream.empty
 
   def oneColumnRs(rs:ResultSet) =rsList(rs)(rs=> rs.getString(1))
   def tables(rs:ResultSet) = rsList(rs)(rs=> Table(rs.getString("TABLE_NAME")))

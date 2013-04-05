@@ -6,10 +6,13 @@ version := "0.1"
 
 scalaVersion := "2.9.2"
 
+resolvers ++= Seq(
+  "ReportGrid (public)" at "http://nexus.reportgrid.com/content/repositories/public-releases"
+)
+
 libraryDependencies ++= Seq(
-  "com.reportgrid" %% "blueeyes-core" % "1.0.0-M7.7",
-  "com.reportgrid" %% "blueeyes-json" % "1.0.0-M7.7",
-  "org.scalaz"  %% "scalaz-core"        % "7.0.0-M3"
+  "com.reportgrid" %% "blueeyes-core" % "1.0.0-M8.1",
+  "com.reportgrid" %% "blueeyes-json" % "1.0.0-M8.1"
   )
 
 

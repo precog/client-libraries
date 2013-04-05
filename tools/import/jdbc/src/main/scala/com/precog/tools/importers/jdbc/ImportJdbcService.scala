@@ -32,7 +32,7 @@ trait ImportJdbcService extends BlueEyesServiceBuilder {
   implicit def executionContext: ExecutionContext
   implicit def M: Monad[Future]
 
-  val host=Option(System.getProperty("host")).getOrElse("https://beta.precog.com")
+  val host=System.getProperty("host")
 
   def handleRequest[T](f: HttpRequest[T]=> Future[HttpResponse[T]])=
     (request: HttpRequest[T]) =>

@@ -94,6 +94,4 @@ package object jdbc {
     }
   }
 
-  def manageConn(s:String)= new Conn{ val dbName=s }
-
 }

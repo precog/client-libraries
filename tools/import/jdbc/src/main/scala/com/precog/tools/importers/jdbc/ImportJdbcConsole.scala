@@ -5,8 +5,6 @@ import DbAccess._
 import DbAnalysis._
 import ImportJdbc._
 import blueeyes.bkka.AkkaDefaults._
-import blueeyes.core.http.HttpResponse
-import blueeyes.core.data._
 import scala.Left
 import com.precog.tools.importers.jdbc.Datatypes.Join
 import com.precog.tools.importers.jdbc.ImportJdbc.IngestInfo
@@ -15,9 +13,8 @@ import scala.Right
 import com.precog.tools.importers.jdbc.ImportJdbc.ImportTable
 import com.precog.tools.importers.jdbc.Datatypes.Table
 import com.precog.tools.importers.common.ConsoleUtils._
-import akka.dispatch.{Future, Await}
-import akka.util.Duration
 import org.slf4j.LoggerFactory
+import com.precog.tools.importers.common.Ingest._
 
 /**
  * User: gabriel
@@ -25,7 +22,7 @@ import org.slf4j.LoggerFactory
  */
 object ImportJdbcConsole {
 
-  private lazy val logger = LoggerFactory.getLogger("com.precog.tools.importers.jdbc.ImportJdbc")
+  private lazy val logger = LoggerFactory.getLogger("com.precog.tools.importers.jdbc.ImportJdbcConsole")
 
   implicit val as=actorSystem
 
@@ -41,18 +38,11 @@ object ImportJdbcConsole {
     lazy val apiKey=readLine("API KEY for ingestion")
     lazy val basePath=readLine("Base ingestion path ( /{userId}/....)")
 
-    val fresult=importJdbc(dbUrl,user,password, host, apiKey, basePath)
-
-    Await.result(Future.sequence(fresult),Duration("24 hours")).map(
-      result => result match {
-        case HttpResponse(_ ,_,Some(Left(buffer)),_) => { logger.info(new String(buffer.array(), "UTF-8"))}
-        case _ => logger.error("error %s".format(result.toString()))
-      }
-    )
+    importJdbc(dbUrl,user,password, host, apiKey, basePath)
     as.shutdown()
   }
 
-  def importJdbc(dbUrl: =>String, user: =>String, password: =>String, host: =>String, apiKey: =>String, basePath: =>String)={
+  def importJdbc(dbUrl: =>String, user: =>String, password: =>String, host: =>String, apiKey: =>String, basePath: =>String):Unit={
 
     val catConn= getConnection(dbUrl, user, password,None)
     val cat= getCatalogs(catConn.getMetaData)
@@ -71,13 +61,6 @@ object ImportJdbcConsole {
       }
     })
   }
-
-  def callSucceded(response:HttpResponse[ByteChunk]){
-    response match {
-      case HttpResponse(_ ,_,Some(Left(buffer)),_) => logger.info("Result: %s".format(new String(buffer.array(), "UTF-8")))
-      case _ => logger.error("Unexpected stream in %s".format(response))
-    }
-   }
 
   def getCatalogs(metadata: DatabaseMetaData): String = {
     println("Catalogs:")
@@ -107,7 +90,7 @@ object ImportJdbcConsole {
     selected.map( table =>{
 
       val allRelationships = relationships( conn, metadata, None,table).toSeq
-      println(allRelationships)
+      present(allRelationships)
       val relations= selectSet("relation",allRelationships).toList
 
       val tblDesc=buildIngestInfo(table, conn, relations)
@@ -140,7 +123,7 @@ object ImportJdbcConsole {
     selectSet("table", tablesList)
   }
 
-  def present[T](arr:Seq[T])= (1 to arr.length).zip(arr).map(x=>x._1 +":"+ x._2).mkString(", ")
+  def present[T](arr:Seq[T])= arr.zipWithIndex.map(x=>x._1 +":"+ x._2).mkString(", ")
   def show(baseTable:Table,set: Set[Join])= set.map( r=> " %s with %s on %s=%s".format(baseTable.name, r.refKey.table, r.baseColName,r.refKey.columnName )).mkString(", ")
 
   def readTableName()= {

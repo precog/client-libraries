@@ -10,7 +10,7 @@ import com.precog.tools.importers.jdbc.Datatypes.Join
  * User: gabriel
  * Date: 12/4/12
  */
-class DbAnalysisTest extends Specification {
+class DbAnalysisSpec extends Specification {
 
 
   "find tables" should {

@@ -9,29 +9,28 @@ import annotation.tailrec
 object ConsoleUtils {
 
   @tailrec
-  def selectSet[T](label:String, available: Seq[T], selected: Seq[T]=List())(implicit arg0: ClassManifest[T]): Seq[T] =
+  def selectSet[T](label:String, available: Seq[T], selected: Seq[T]=List()): Seq[T] =
     if (available.isEmpty) selected
     else {
-      val availArray=available.toArray
 
       println("Available %ss:".format(label))
-      println(present(availArray))
+      println(present(available))
 
       println("Selected %ss:".format(label))
       println(present(selected))
 
-      println("Select a number/enter the name, 0 to select all, or enter to continue: ")
+      println("Select %ss by entering its number or name, 0 to select all, enter to continue: ".format(label))
 
       val selIdx = readLine()
       selIdx match {
         case "" => selected
         case ParseInt(0) => available
-        case ParseInt(x) if (x<=available.size) => {
-          val elem:T = availArray(x - 1)
+        case ParseInt(x) if x<=available.size => {
+          val elem:T = available(x - 1)
           selectSet(label,available.filterNot(_==elem), selected:+elem)
         }
         case s:String if (available.exists(_.toString == s)) => {
-          val elem:T =availArray.find(_.toString == s).get
+          val elem:T =available.find(_.toString == s).get
           selectSet(label,available.filterNot(_==elem), selected:+elem)
         }
         case _ => selectSet(label,available, selected)
@@ -39,24 +38,25 @@ object ConsoleUtils {
     }
 
   @tailrec
-  def selectOne[T](label:String, available: Seq[T])(implicit arg0: ClassManifest[T]): T ={
-
-      val availArray=available.toArray
+  def selectOne[T](label:String, available: Seq[T]): T ={
 
       println("Available %ss:".format(label))
-      println(present(availArray))
+      println(present(available))
 
-      println("Select a number/enter the name: ")
+      println("Select one %s by entering its number or name: ".format(label))
 
       val selIdx = readLine()
       selIdx match {
-        case ParseInt(x) if (x<=available.size) => availArray(x - 1)
-        case s:String if (available.exists(_.toString == s)) => availArray.find(_.toString == s).get
+        case ParseInt(x) if x<=available.size => available(x - 1)
+        case s:String  => available.find(_.toString == s) match {
+                            case Some(t) => t
+                            case None => selectOne(label,available)
+                          }
         case _ => selectOne(label,available)
       }
   }
 
-  def present[T](arr:Seq[T])= (1 to arr.length).zip(arr).map(x=>x._1 +":"+ x._2).mkString(", ")
+  def present[T](arr:Seq[T])= arr.zipWithIndex.map({ case (a, b) => (b+1) + ":" + a }).mkString(", ")
 
 
 }
