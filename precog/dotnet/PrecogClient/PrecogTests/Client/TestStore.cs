@@ -43,9 +43,9 @@ namespace Precog.Client
 
 			testId = ""+ new Random().Next (0,10000);
 
-	        AccountInfo res = noKeyClient.CreateAccount("java-test@precog.com", "password");
+	        AccountInfo res = noKeyClient.CreateAccount("test-dotnet@precog.com", "password");
 	        testAccountId = res.accountId;
-	        res = noKeyClient.DescribeAccount("java-test@precog.com", "password", testAccountId);
+	        res = noKeyClient.DescribeAccount("test-dotnet@precog.com", "password", testAccountId);
 	        testApiKey = res.ApiKey;
 
 	        testPath = "/test" + testId;
@@ -81,7 +81,7 @@ namespace Precog.Client
 		public void testCreateAccount()
 		{
 	        PrecogClient noKeyClient = ServiceStack.CreatePrecogClient(SERVICE, null);
-	        AccountInfo res = noKeyClient.CreateAccount("java-test@precog.com", "password");
+	        AccountInfo res = noKeyClient.CreateAccount("test-dotnet@precog.com", "password");
 	        string accountId = res.accountId;
 	        Assert.IsNotNullOrEmpty(accountId);
 	        Assert.AreEqual(testAccountId, accountId);
@@ -91,7 +91,7 @@ namespace Precog.Client
 	    public void testDescribeAccount()
 		{
 	        PrecogClient noKeyClient = ServiceStack.CreatePrecogClient(SERVICE, null);
-	        AccountInfo res = noKeyClient.DescribeAccount("java-test@precog.com", "password", testAccountId);
+	        AccountInfo res = noKeyClient.DescribeAccount("test-dotnet@precog.com", "password", testAccountId);
 	        Assert.AreEqual(testAccountId, res.accountId);
 	    }
 
