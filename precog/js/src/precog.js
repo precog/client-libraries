@@ -799,7 +799,13 @@ Precog.asyncQueryResults = function(jobId, success, failure, options){
     var description = 'Find accounts for ' + email;
     http.get(
       Util.actionUrl("accounts","accounts", options) + "search",
-      Util.createCallbacks(success, failure, description),
+      Util.createCallbacks(
+        function(data) {
+          success(data instanceof Array ? data[0].accountId : data.accountId);
+        },
+        failure,
+        description
+      ),
       { "email" : email }
     );
   };
