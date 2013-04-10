@@ -452,11 +452,9 @@ throw new SyntaxError('JSON.parse');};}}());
         if (request.readyState === 4) {
           if (request.status === 200 || request.status === 202 || request.status === 204 || request.status === "OK" || request.code === "NoContent") {
             if (request.responseText !== null && request.responseText.length > 0) {
-              success(
-                JSON.parse(
-                  request.response//.replace("�","", "g")
-                  ), 
-                headers);
+              var txt = this.responseText,
+                  json = JSON.parse(txt);
+              success(json, headers);
             }
             else {
               success(undefined, headers);
@@ -786,10 +784,14 @@ Precog.asyncQueryResults = function(jobId, success, failure, options){
   // ***     ACCOUNT    ***
   // **********************
   Precog.createAccount = function(email, password, success, failure, options) {
-    var description = 'Create account for ' + email;
+    var description = 'Create account for ' + email,
+        post = { "email" : email, "password" : password };
+    if(options && options.profile) {
+      post.profile = JSON.stringify(options.profile);
+    }
     http.post(
       Util.actionUrl("accounts","accounts", options),
-      { "email" : email, "password" : password },
+      post,
       Util.createCallbacks(success, failure, description),
       null
     );
