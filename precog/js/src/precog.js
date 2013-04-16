@@ -616,9 +616,12 @@ throw new SyntaxError('JSON.parse');};}}());
     return v === true || v === 1 || (v = (""+v).toLowerCase()) == "true" || v == "on" || v == "1";
   };
 
+  var current = window.location.hostname,
+      service = current.substr(-11) == ".precog.com" ? current : "beta.precog.com";
+
   $.Util.extend($.Config,
     {
-      analyticsService: Util.getProtocol() + "//beta.precog.com/",
+      analyticsService: "https://"+service+"/",
       useJsonp  : "true",
       enableLog : "false",
       version   : 1
@@ -787,7 +790,7 @@ Precog.asyncQueryResults = function(jobId, success, failure, options){
     var description = 'Create account for ' + email,
         post = { "email" : email, "password" : password };
     if(options && options.profile) {
-      post.profile = JSON.stringify(options.profile);
+      post.profile = options.profile;
     }
     http.post(
       Util.actionUrl("accounts","accounts", options),
@@ -797,13 +800,29 @@ Precog.asyncQueryResults = function(jobId, success, failure, options){
     );
   };
 
+  Precog.requestResetPassword = function(email, success, failure, options) {
+    var description = 'Request reset password for ' + email;
+    Precog.findAccount(email, function(accountId) {
+      http.post(
+        Util.actionUrl("accounts","accounts", options) + accountId + "/password/reset",
+        { "email" : email },
+        Util.createCallbacks(success, failure, description),
+        null
+      );
+    }, failure);
+  }
+
   Precog.findAccount = function(email, success, failure, options) {
     var description = 'Find accounts for ' + email;
     http.get(
       Util.actionUrl("accounts","accounts", options) + "search",
       Util.createCallbacks(
         function(data) {
-          success(data instanceof Array ? data[0].accountId : data.accountId);
+          try {
+            success(data instanceof Array ? data[0].accountId : data.accountId);
+          } catch(e) {
+            failure(e);
+          }
         },
         failure,
         description
