@@ -1,1 +1,0 @@
-Precog.io Ruby Client Library
