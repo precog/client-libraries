@@ -18,9 +18,9 @@ package object jdbc {
   Class.forName("org.h2.Driver")
 
   // use api key and dispatch to call ingest
-  val host="http://beta.precog.com"
-  val apiKey="43AB865E-BB86-4F74-A57E-7E8BBD77F2B5"
-  val basePath="/0000000457/data"
+  val host="https://devapi.precog.com"
+  val apiKey="0A24F09F-19CB-45D0-8BFA-543C61BA5EE6"
+  val basePath="/0000000075/data"
 
   def tblA(implicit conn:Connection) = conn.createStatement().execute(" create table A( id int primary key, name varchar(10) ) ")
   def tblB(implicit conn:Connection) = conn.createStatement().execute(" create table B( id int primary key, a_id int, name varchar(10)) ")
@@ -77,8 +77,8 @@ package object jdbc {
 
   val jA = JObject(JField("ID",JString("1"))::JField("name",JString("aaa"))::Nil)
   val jB =JObject(JField("ID",JString("2"))::JField("A_ID",JString("1"))::JField("name",JString("bbb"))::Nil)
-  val jAB = JObject(JField("ID",JString("1"))::JField("name",JString("aaa"))::JField("b",JArray(jB::Nil))::Nil)
-  val jC = JObject(JField("A_ID",JString("1"))::JField("B_ID",JString("2"))::JField("name",JString("ccc"))::JField("a",jA)::JField("b",JObject(JField("ID",JString("2"))::JField("A_ID",JString("1"))::JField("name",JString("bbb"))::Nil))::Nil)
+  val jAB = JObject(JField("ID",JString("1"))::JField("name",JString("aaa"))::JField("B",JArray(jB::Nil))::Nil)
+  val jC = JObject(JField("A_ID",JString("1"))::JField("B_ID",JString("2"))::JField("name",JString("ccc"))::JField("A",jA)::JField("B",JObject(JField("ID",JString("2"))::JField("A_ID",JString("1"))::JField("name",JString("bbb"))::Nil))::Nil)
 
   //def getConn(db:String)=DriverManager.getConnection("jdbc:h2:~/%s".format(db))
 
@@ -93,7 +93,5 @@ package object jdbc {
       conn.close()
     }
   }
-
-  def manageConn(s:String)= new Conn{ val dbName=s }
 
 }

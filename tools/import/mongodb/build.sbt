@@ -1,8 +1,10 @@
-name := "import-jdbc"
+import AssemblyKeys._ 
+
+name := "import-mongodb"
 
 organization := "org.precog"
 
-version := "0.1"
+version := "0.2"
 
 scalaVersion := "2.9.2"
 
@@ -11,10 +13,7 @@ resolvers ++= Seq(
   "Sonatype" at "http://oss.sonatype.org/content/repositories/public",
   "Typesafe" at "http://repo.typesafe.com/typesafe/releases/",
   "Typesafe-snapshots" at "http://repo.typesafe.com/typesafe/snapshots/",
-  "Scala Tools" at "http://scala-tools.org/repo-snapshots/",
-  "JBoss"       at "http://repository.jboss.org/nexus/content/groups/public/",
-  "Akka"        at "http://repo.akka.io/releases/",
-  "GuiceyFruit" at "http://guiceyfruit.googlecode.com/svn/repo/releases/"
+  "Scala Tools" at "http://scala-tools.org/repo-snapshots/"
 )
 
 scalacOptions ++= Seq("-unchecked", "-deprecation")
@@ -22,9 +21,10 @@ scalacOptions ++= Seq("-unchecked", "-deprecation")
 assemblySettings
 
 libraryDependencies ++= Seq(
-  "com.reportgrid" % "blueeyes-core_2.9.2" % "1.0.0-M8.1",
-  "com.reportgrid" % "blueeyes-json_2.9.2" % "1.0.0-M8.1",
-  "org.specs2" %% "specs2" % "1.12.2" ,
-  "com.h2database" % "h2" % "1.2.134" % "test",
+  "com.reportgrid" %% "blueeyes-core" % "1.0.0-M8.1",
+  "com.reportgrid" %% "blueeyes-json" % "1.0.0-M8.1",
+  "com.reportgrid" %% "blueeyes-mongo" % "1.0.0-M8.1",
+  "org.mongodb" %% "casbah" % "2.3.0",
+  "org.specs2" %% "specs2" % "1.12.2" % "test",
   "ch.qos.logback" %  "logback-classic" % "1.0.0"
 )
